@@ -450,3 +450,15 @@ export const Tasks = loadable(() =>
   import ('./Omna/Products/ProductList'), {
     fallback: <Loading />,
   });
+
+  export const Stores = loadable(() =>
+  import ('./Omna/Settings/Stores/Stores'), {
+    fallback: <Loading />,
+  });
+
+  export const AddStoreForm = loadable(() =>
+  import ('./Omna/Settings/Stores/AddStoreForm'), {
+    fallback: <Loading />,
+  });
+
+

@@ -1,0 +1,50 @@
+.header-page {
+  margin-bottom: 25px;
+}
+
+/* flex styles like classes */
+
+.display-flex {
+  display: flex;
+}
+
+.flex-direction-column {
+  flex-direction: column;
+}
+
+.flex-direction-row {
+  flex-direction: row;
+}
+
+.flex-direction-row-inverse {
+  flex-direction: row-reverse;
+}
+
+.justify-content-space-between {
+  justify-content: space-between;
+}
+
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.align-items-baseline {
+  align-items: baseline;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.flex-wrap-wrap {
+  flex-wrap: wrap;
+}
+
+.justify-content-flex-end{
+  justify-content: flex-end;
+}
+
+.justify-content-flex-start{
+  justify-content: flex-start;
+}
