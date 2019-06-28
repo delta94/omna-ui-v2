@@ -11,59 +11,79 @@ import Radio from '@material-ui/core/Radio';
 
 
 class GenericTableHead extends React.Component {
+  render() {
+    const {
+      handleClick, numSelected, rowCount, headColumns, selectOption
+    } = this.props;
+    return (
+      selectOption !== '' ? (
+        <TableHead>
+          <TableRow>
+            <TableCell padding={selectOption}>
+              {
+                (selectOption === 'checkbox') ? (
+                  <Checkbox
+                    indeterminate={numSelected > 0 && numSelected < rowCount}
+                    checked={numSelected === rowCount}
+                    onChange={handleClick}
+                  />
+                ) : (
+                  (selectOption === 'radio') ? (
+                    <Radio
+                      checked={numSelected === rowCount}
+                      onChange={handleClick}
+                      value={rowCount}
+                      name={selectOption}
+                      aria-label={selectOption}
+                    />
+                  ) : (
+                    null
+                  )
+                )
+              }
 
-    render() {
-        const { handleClick, numSelected, rowCount, headColumns, selectOption } = this.props;
-
-        return (
-            <TableHead>
-                <TableRow>
-                    {
-                        <TableCell padding={selectOption}>
-                            {
-                                (selectOption === "checkbox") ?
-                                    <Checkbox
-                                        indeterminate={numSelected > 0 && numSelected < rowCount}
-                                        checked={numSelected === rowCount}
-                                        onChange={handleClick}
-                                    /> :
-                                        (selectOption === "radio") ?
-                                            <Radio
-                                                checked={numSelected === rowCount}
-                                                onChange={handleClick}
-                                                value={rowCount}
-                                                name={selectOption}
-                                                aria-label={selectOption}
-                                            /> :
-                                                null
-                            }
-                            
-                        </TableCell>
-                    }
-                    
-                    {
-                        headColumns.map(row => (
-                            <TableCell
-                                key={row.id}
-                                align={row.header ? 'center' : 'left'}
-                                padding={row.disablePadding ? 'none' : 'default'}
-                            >
-                                {row.label}
-                            </TableCell>
-                        ))
-                    }
-                </TableRow>
-            </TableHead>
-        );
-    }
-};
+            </TableCell>
+            {headColumns.map(row => (
+              <TableCell
+                key={row.id}
+                align={row.first ? 'left' : row.last ? 'right' : 'center'}
+                padding="default"
+              >
+                {row.label}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+      ) : (
+        <TableHead>
+          <TableRow>
+            {headColumns.map(row => (
+              <TableCell
+                key={row.id}
+                align={row.first ? 'left' : row.last ? 'right' : 'center'}
+                padding="default"
+              >
+                {row.label}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+      )
+    );
+  }
+}
 
 GenericTableHead.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-    handleClick: PropTypes.func.isRequired,
-    rowCount: PropTypes.number.isRequired,
-    headColumns: PropTypes.array.isRequired,
-    selectOption: PropTypes.string.isRequired,
+  numSelected: PropTypes.number,
+  handleClick: PropTypes.func,
+  rowCount: PropTypes.number.isRequired,
+  headColumns: PropTypes.array.isRequired,
+  selectOption: PropTypes.string,
+};
+GenericTableHead.defaultProps = {
+  handleClick: () => { },
+  numSelected: 0,
+  selectOption: '',
 };
 
 export default (GenericTableHead);
