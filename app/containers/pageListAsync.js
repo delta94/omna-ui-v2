@@ -461,4 +461,12 @@ export const Tasks = loadable(() =>
     fallback: <Loading />,
   });
 
+  export const Workflows = loadable(() =>
+  import ('./Omna/Settings/Flows/Flows'), {
+    fallback: <Loading />,
+  });
 
+  export const AddWorkflow = loadable(() =>
+  import ('./Omna/Settings/Flows/FlowForm'), {
+    fallback: <Loading />,
+  });

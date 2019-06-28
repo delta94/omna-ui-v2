@@ -31,7 +31,8 @@ import {
   ProductPage, Invoice, Profile, BlankPage,
   Photos, Pricing, CheckoutPage, Error, Settings,
   HelpSupport, MapMarker, MapDirection, SearchMap,
-  TrafficIndicator, StreetViewMap, NotFound, Tasks, TaskDetails, Products, Stores, AddStoreForm
+  TrafficIndicator, StreetViewMap, NotFound, Tasks, TaskDetails, Products, Stores,
+  AddStoreForm, Workflows, AddWorkflow
 } from '../pageListAsync';
 
 //
@@ -49,6 +50,8 @@ class Application extends React.Component {
             <Route exact path="/app/products" component={Products} />
             <Route exact path="/app/settings/stores" component={Stores} />
             <Route exact path="/app/settings/stores/add-store" component={AddStoreForm} />
+            <Route exact path="/app/settings/Workflows" component={Workflows} />
+            <Route exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
             { /* Home */}
             <Route exact path="/app" component={PersonalDashboard} />
             <Route path="/app/crm-dashboard" component={CrmDashboard} />
