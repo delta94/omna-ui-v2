@@ -115,61 +115,63 @@ class OrderList extends React.Component {
 
     return (
       <Paper>
-        {loading ? <LoadingState loading={loading} /> : null}
-        {loading ? null : !success ? (
-          <GenericErrorMessage messageError={messageError} />
-        ) : (
-          <Fragment>
-            <div className={classes.rootTable}>
-              <Table className={classNames(classes.table, classes.hover)}>
-                <GenericTableHead
-                  rowCount={count > limit ? limit : count}
-                  headColumns={headColumns}
-                />
-                <TableBody>
-                  {data && data.map(row => (
-                    <TableRow
-                      hover
-                      key={get(row, 'order_id', 0)}
-                    >
-                      <TableCell align="left" component="th" scope="row">
-                        {get(row, 'number', 0)}
-                      </TableCell>
-                      <TableCell align="center">{get(row, 'store.name', 'Shop-01')}</TableCell>
-                      <TableCell align="center">{get(row, 'store.channel', 'LazadaSG')}</TableCell>
-                      <TableCell align="center">{get(row, 'created_date', '2019-03-10T10:50:06+00:00')}</TableCell>
-                      <TableCell align="center">{get(row, 'status', 'canceled')}</TableCell>
-                      <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>
-                      <TableCell align="center">
-                        <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
-                          <DetailsIcon className={classes.rightIcon} />
-                        </Button>
-                      </TableCell>
+        <div className="item-margin">
+          {loading ? <LoadingState loading={loading} /> : null}
+          {loading ? null : !success ? (
+            <GenericErrorMessage messageError={messageError} />
+          ) : (
+            <Fragment>
+              <div className={classes.rootTable}>
+                <Table className={classNames(classes.table, classes.hover)}>
+                  <GenericTableHead
+                    rowCount={count > limit ? limit : count}
+                    headColumns={headColumns}
+                  />
+                  <TableBody>
+                    {data && data.map(row => (
+                      <TableRow
+                        hover
+                        key={get(row, 'order_id', 0)}
+                      >
+                        <TableCell align="left" component="th" scope="row">
+                          {get(row, 'number', 0)}
+                        </TableCell>
+                        <TableCell align="center">{get(row, 'store.name', 'Shop-01')}</TableCell>
+                        <TableCell align="center">{get(row, 'store.channel', 'LazadaSG')}</TableCell>
+                        <TableCell align="center">{get(row, 'created_date', '2019-03-10T10:50:06+00:00')}</TableCell>
+                        <TableCell align="center">{get(row, 'status', 'canceled')}</TableCell>
+                        <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>
+                        <TableCell align="center">
+                          <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
+                            <DetailsIcon className={classes.rightIcon} />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        colSpan={5}
+                        rowsPerPageOptions={[5, 10, 25, 50]}
+                        count={count}
+                        rowsPerPage={limit}
+                        page={page}
+                        SelectProps={{
+                          native: true,
+                        }}
+                        onChangePage={this.handleChangePage}
+                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        ActionsComponent={GenericTablePagination}
+                      />
                     </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      colSpan={5}
-                      rowsPerPageOptions={[5, 10, 25, 50]}
-                      count={count}
-                      rowsPerPage={limit}
-                      page={page}
-                      SelectProps={{
-                        native: true,
-                      }}
-                      onChangePage={this.handleChangePage}
-                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                      ActionsComponent={GenericTablePagination}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
-          </Fragment>
-        )
-        }
+                  </TableFooter>
+                </Table>
+              </div>
+            </Fragment>
+          )
+          }
+        </div>
       </Paper>
     );
   }
