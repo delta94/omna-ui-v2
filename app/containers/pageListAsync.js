@@ -441,32 +441,42 @@ export const Tasks = loadable(() =>
   import ('./Omna/Tasks/TaskList'), {
     fallback: <Loading />,
   });
-  export const TaskDetails = loadable(() =>
-    import ('./Omna/Tasks/TaskDetails'), {
-      fallback: <Loading />,
-  });
+export const TaskDetails = loadable(() =>
+  import ('./Omna/Tasks/TaskDetails'), {
+    fallback: <Loading />,
+});
 
-  export const Products = loadable(() =>
+export const Orders = loadable(() =>
+  import ('./Omna/Orders/OrderList'), {
+    fallback: <Loading />,
+});
+
+export const OrderDetails = loadable(() =>
+  import ('./Omna/Orders/OrderDetails'), {
+    fallback: <Loading />,
+});
+
+export const Products = loadable(() =>
   import ('./Omna/Products/ProductList'), {
     fallback: <Loading />,
-  });
+});
 
-  export const Stores = loadable(() =>
+export const Stores = loadable(() =>
   import ('./Omna/Settings/Stores/Stores'), {
     fallback: <Loading />,
-  });
+});
 
-  export const AddStoreForm = loadable(() =>
+export const AddStoreForm = loadable(() =>
   import ('./Omna/Settings/Stores/AddStoreForm'), {
     fallback: <Loading />,
-  });
+});
 
-  export const Workflows = loadable(() =>
+export const Workflows = loadable(() =>
   import ('./Omna/Settings/Flows/Flows'), {
     fallback: <Loading />,
-  });
+});
 
-  export const AddWorkflow = loadable(() =>
+export const AddWorkflow = loadable(() =>
   import ('./Omna/Settings/Flows/FlowForm'), {
     fallback: <Loading />,
-  });
+});
