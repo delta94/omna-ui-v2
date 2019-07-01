@@ -9,7 +9,6 @@ import Tab from '@material-ui/core/Tab';
 
 
 class GenericTabsHead extends React.Component {
-
   render() {
     const { tabHeaders, value, onChange } = this.props;
 

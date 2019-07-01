@@ -13,7 +13,11 @@ import Radio from '@material-ui/core/Radio';
 class GenericTableHead extends React.Component {
   render() {
     const {
-      handleClick, numSelected, rowCount, headColumns, selectOption
+      handleClick,
+      numSelected,
+      rowCount,
+      headColumns,
+      selectOption
     } = this.props;
     return (
       selectOption !== '' ? (
@@ -23,6 +27,7 @@ class GenericTableHead extends React.Component {
               {
                 (selectOption === 'checkbox') ? (
                   <Checkbox
+                    color="primary"
                     indeterminate={numSelected > 0 && numSelected < rowCount}
                     checked={numSelected === rowCount}
                     onChange={handleClick}
@@ -30,6 +35,7 @@ class GenericTableHead extends React.Component {
                 ) : (
                   (selectOption === 'radio') ? (
                     <Radio
+                      color="primary"
                       checked={numSelected === rowCount}
                       onChange={handleClick}
                       value={rowCount}

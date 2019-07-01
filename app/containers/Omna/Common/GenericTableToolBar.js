@@ -24,7 +24,7 @@ const toolbarStyles = theme => ({
     theme.palette.type === 'light' ? (
       {
         color: theme.palette.secondary.main,
-        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+        backgroundColor: lighten(theme.palette.secondary.light, 0)
       }
     ) : (
       {
@@ -36,7 +36,7 @@ const toolbarStyles = theme => ({
     flex: '1 1 100%'
   },
   actions: {
-    color: theme.palette.text.secondary
+    color: theme.palette.text.primary
   },
   title: {
     flex: '0 0 auto'
@@ -58,11 +58,12 @@ class GenericTableToolbar extends React.Component {
       initialText,
       classes,
       rowCount,
-      onAdd,
-      onDelete,
-      actionList
+      onAdd, // Add onClick function
+      onDelete, // Delete onClick function
+      actionList // List of actions to be considered
     } = this.props;
 
+    // Array with the details of the registered actions
     const detailedArrayActions = {
       Delete: { onclickfunc: onDelete, icon: DeleteIcon },
       Add: { onclickfunc: onAdd, icon: AddIcon },
@@ -72,7 +73,7 @@ class GenericTableToolbar extends React.Component {
       <Toolbar color="primary" className={classNames(classes.root, { [classes.highlight]: numSelected > 0 })}>
         <div className={classes.title}>
           {numSelected > 0 ? (
-            <Typography color="inherit" variant="subtitle1">
+            <Typography color="primary" variant="subtitle1">
               {numSelected}
               {' '}
               selected.
@@ -85,7 +86,14 @@ class GenericTableToolbar extends React.Component {
               }
             </Typography>
           ) : (
-            initialText
+            initialText !== ''
+              ? (
+                <Typography color="primary" variant="subtitle1">
+                  {initialText}
+                </Typography>
+              ) : (
+                null
+              )
           )}
         </div>
         <div className={classes.spacer} />
