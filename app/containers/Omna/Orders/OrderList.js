@@ -28,7 +28,7 @@ const headColumns = [
     id: 'number', first: true, last: false, label: 'Number'
   },
   {
-    id: 'store', first: false, last: false, label: 'Store'
+    id: 'store', first: false, last: false, label: 'Integration'
   },
   {
     id: 'channel', first: false, last: false, label: 'Channel'
@@ -101,7 +101,7 @@ class OrderList extends React.Component {
 
   handleDetailsViewClick = (order) => () => {
     const { history } = this.props;
-    history.push(`/app/orders/${get(order, 'store.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
+    history.push(`/app/orders/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
   }
 
   render() {
@@ -115,7 +115,7 @@ class OrderList extends React.Component {
 
     return (
       <Paper>
-        <div className="item-margin">
+        <div className="item-padding">
           {loading ? <LoadingState loading={loading} /> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
@@ -136,8 +136,8 @@ class OrderList extends React.Component {
                         <TableCell align="left" component="th" scope="row">
                           {get(row, 'number', 0)}
                         </TableCell>
-                        <TableCell align="center">{get(row, 'store.name', 'Shop-01')}</TableCell>
-                        <TableCell align="center">{get(row, 'store.channel', 'LazadaSG')}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.name', 'Shop-01')}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.channel', 'LazadaSG')}</TableCell>
                         <TableCell align="center">{get(row, 'created_date', '2019-03-10T10:50:06+00:00')}</TableCell>
                         <TableCell align="center">{get(row, 'status', 'canceled')}</TableCell>
                         <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>

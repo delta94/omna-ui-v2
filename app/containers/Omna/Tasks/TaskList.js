@@ -49,13 +49,14 @@ const variantIcon = {
 };
 
 function NotificationBottom(type) {
-  const Icon = type !== 'success' && type !== 'error' && type !== 'warning'
+  const not = get(type, 'type', null);
+  const Icon = (not !== null && not !== 'success' && not !== 'error' && not !== 'warning')
     ? (variantIcon.info)
-    : (variantIcon[type]);
+    : (variantIcon[not]);
   return (
-    <Tooltip title={`This task has ${type} notifications`}>
+    <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
-        <Icon className={type} />
+        <Icon className={not} />
       </IconButton>
     </Tooltip>
   );
@@ -268,7 +269,7 @@ class TaskList extends React.Component {
     return (
       <div>
         <Paper>
-          <div className="item-margin">
+          <div className="item-padding">
             {loading ? <LoadingState loading={loading} /> : null}
             {loading ? null : !success ? (
               <GenericErrorMessage messageError={messageError} />

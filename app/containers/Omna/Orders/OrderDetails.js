@@ -62,7 +62,7 @@ class OrderDetails extends Component {
     const number = get(this.props, 'match.params.number', null);
 
     const order = get(this.props, 'location.state.order', null);
-    if (order !== null && storeId === get(order, 'data.store.id', null) && number === get(order, 'data.number', null)) {
+    if (order !== null && storeId === get(order, 'data.integration.id', null) && number === get(order, 'data.number', null)) {
       this.setState({ order, loading: false });
     } else {
       this.callAPI(storeId, number);
@@ -70,7 +70,7 @@ class OrderDetails extends Component {
   }
 
   getAPIorders(params) {
-    API.get(`/stores/${params.store_id}/orders/${params.number}`)
+    API.get(`/integrations/${params.store_id}/orders/${params.number}`)
       .then(response => {
         this.setState({ order: get(response, 'data', { data: {} }) });
       })
@@ -101,7 +101,7 @@ class OrderDetails extends Component {
 
     return (
       <Paper>
-        <div className="item-margin">
+        <div className="item-padding">
           {loading ? <LoadingState loading={loading} /> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
@@ -156,7 +156,7 @@ class OrderDetails extends Component {
                     <Paper className={classNames(classes.subRoot, classes.marginLeft)}>
                       <div className="display-flex justify-content-space-between">
                         <Typography variant="subtitle1" className={classes.marginLeft}>
-                          <strong>Store</strong>
+                          <strong>Integration</strong>
                           {' '}
                         </Typography>
                         <Typography variant="caption" className={classes.marginRight}>
@@ -167,25 +167,25 @@ class OrderDetails extends Component {
                         <Typography variant="caption" className={classes.marginLeft2u}>
                           <strong>ID:</strong>
                           {' '}
-                          {get(order, 'data.store.id', null)}
+                          {get(order, 'data.integration.id', null)}
                           <br />
                           <strong>Name:</strong>
                           {' '}
-                          {get(order, 'data.store.name', null)}
+                          {get(order, 'data.integration.name', null)}
                           <br />
                           <strong>Channel:</strong>
                           {' '}
-                          {get(order, 'data.store.channel', null)}
+                          {get(order, 'data.integration.channel', null)}
                           <br />
                           <strong>Authorized:</strong>
                           {' '}
-                          {get(order, 'data.store.authorized', '').toString()}
+                          {get(order, 'data.integration.authorized', '').toString()}
                           <br />
                           <strong>Last Import Orders Date:</strong>
                           {' '}
                           {
-                            get(order, 'data.store.last_import_orders_date', null) != null
-                              ? (moment(order.data.store.last_import_orders_date).format('Y-MM-DD H:mm:ss')
+                            get(order, 'data.integration.last_import_orders_date', null) != null
+                              ? (moment(order.data.integration.last_import_orders_date).format('Y-MM-DD H:mm:ss')
                               ) : (
                                 '--'
                               )
@@ -194,8 +194,8 @@ class OrderDetails extends Component {
                           <strong>Created at:</strong>
                           {' '}
                           {
-                            get(order, 'data.store.created_at', null) != null
-                              ? (moment(order.data.store.created_at).format('Y-MM-DD H:mm:ss')
+                            get(order, 'data.integration.created_at', null) != null
+                              ? (moment(order.data.integration.created_at).format('Y-MM-DD H:mm:ss')
                               ) : (
                                 '--'
                               )
@@ -205,8 +205,8 @@ class OrderDetails extends Component {
                           <strong>Updated at:</strong>
                           {' '}
                           {
-                            get(order, 'data.store.updated_at', null) != null
-                              ? (moment(order.data.store.updated_at).format('Y-MM-DD H:mm:ss')
+                            get(order, 'data.integration.updated_at', null) != null
+                              ? (moment(order.data.integration.updated_at).format('Y-MM-DD H:mm:ss')
                               ) : (
                                 '--'
                               )

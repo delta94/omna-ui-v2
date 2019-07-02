@@ -333,8 +333,6 @@ class TaskDetails extends React.Component {
       alertDialog
     } = this.state;
     const data = get(task, 'data', { data: {} });
-    let execCount = 0;
-    let notCount = 0;
     const scheduler = get(data, 'scheduler', null);
     const status = get(data, 'status', 'unknown');
     const notifications = get(data, 'notifications', []);
@@ -352,7 +350,7 @@ class TaskDetails extends React.Component {
     return (
       <div>
         <Paper>
-          <div className="item-margin">
+          <div className="item-padding">
             {loading ? <LoadingState loading={loading} /> : null}
             {loading ? null : !success ? (
               <GenericErrorMessage messageError={messageError} />
@@ -504,23 +502,13 @@ class TaskDetails extends React.Component {
                   />
                   {/* Executions */}
                   {content === 0 && (
-                    <TabContainer>
+                    <TabContainer className="item-margin">
                       {executions.length > 0 ? (
                         executions.map(exec => (
-                          <div className={classes.root} key={execCount}>
+                          // Considering that the object is unique in this list
+                          <div className={classes.root} key={JSON.stringify(exec)}>
                             <div className={classes.marginLeft2u}>
                               <div className="display-flex align-items-baseline">
-                                <div>
-                                  <Typography
-                                    variant="subtitle1"
-                                    color="primary"
-                                  >
-                                    <strong>
-                                      {execCount++}
-                                      -
-                                    </strong>
-                                  </Typography>
-                                </div>
                                 <div className={classes.marginLeft}>
                                   <Typography variant="subtitle2">
                                     <strong>Status: </strong>
@@ -575,7 +563,7 @@ class TaskDetails extends React.Component {
                   )}
                   {/* Scheduler */}
                   {content === 1 && (
-                    <TabContainer>
+                    <TabContainer className="item-margin">
                       {scheduler ? (
                         <div className={classes.root}>
                           <div className={classes.marginLeft2u}>
@@ -706,21 +694,26 @@ class TaskDetails extends React.Component {
                   {/* Notifications */}
                   {content === 2 && (
                     <TabContainer>
-                      {notifications.length > 0 ? (
-                        notifications.map(not => (
-                          <div className="item-margin-top" key={notCount++}>
+                      <div>
+                        {notifications.length > 0 ? (
+                          notifications.map((not, index) => (
+                            // eslint-disable-next-line react/no-array-index-key
+                            <div className="item-margin-top item-margin-bottom" key={index}>
+                              <NotificationBottom
+                                type={get(not, 'type', 'info')}
+                                message={get(not, 'message', '')}
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="item-margin-top item-margin-bottom">
                             <NotificationBottom
-                              type={get(not, 'type', 'info')}
-                              message={get(not, 'message', '')}
+                              type="info"
+                              message="There is no retrieved information."
                             />
                           </div>
-                        ))
-                      ) : (
-                        <NotificationBottom
-                          type="info"
-                          message="There is no retrieved information."
-                        />
-                      )}
+                        )}
+                      </div>
                     </TabContainer>
                   )}
                 </div>
