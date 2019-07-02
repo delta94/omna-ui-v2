@@ -1,13 +1,16 @@
 import React from 'react';
-import {PapperBlock} from 'dan-components';
+
+/* material-ui */
+// core
+import Paper from '@material-ui/core/Paper';
 
 class ProductList extends React.Component {
   render() {
     return (
       <div>
-        <PapperBlock icon={false}>
-            Soy un loco de la mata de coco y si no, entonces soy el loco de la mata del lado.
-        </PapperBlock>
+        <Paper>
+            Products.
+        </Paper>
       </div>
     );
   }

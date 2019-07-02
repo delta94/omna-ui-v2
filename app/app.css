@@ -48,3 +48,53 @@
 .justify-content-flex-start{
   justify-content: flex-start;
 }
+
+.item-margin-left{
+  margin-left: 5px;
+}
+
+.item-margin-top{
+  margin-top: 5px;
+}
+
+.item-margin-bottom{
+  margin-bottom: 5px;
+}
+
+.item-margin {
+  margin: 10px;
+}
+
+.item-padding {
+  padding: 10px;
+}
+
+.isa_info {
+  color: #00529B;
+  background-color: #BDE5F8;
+}
+.isa_success {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+.isa_warning {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+.isa_error {
+  color: #D8000C;
+  background-color: #FFD2D2;
+}
+
+.info {
+  color: #00529B;
+}
+.success {
+  color: #4F8A10;
+}
+.warning {
+  color: #9F6000;
+}
+.error {
+  color: #D8000C;
+}

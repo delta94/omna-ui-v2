@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import Dashboard from '../Templates/Dashboard';
+
 import {
   PersonalDashboard, CrmDashboard, CryptoDashboard,
   Infographics, MiniApps, Analytics,
@@ -31,8 +32,9 @@ import {
   ProductPage, Invoice, Profile, BlankPage,
   Photos, Pricing, CheckoutPage, Error, Settings,
   HelpSupport, MapMarker, MapDirection, SearchMap,
-  TrafficIndicator, StreetViewMap, NotFound, Tasks, TaskDetails, Products, Stores,
-  AddStoreForm, Workflows, AddWorkflow
+  TrafficIndicator, StreetViewMap, NotFound,
+  Tasks, TaskDetails, Orders, OrderDetails, Products,
+  Stores, AddStoreForm, Workflows, AddWorkflow
 } from '../pageListAsync';
 
 //
@@ -44,37 +46,39 @@ class Application extends React.Component {
       <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
-            { /* OMNA */}
-            <Route exact path="/app/settings/tasks" component={Tasks} />
-            <Route exact path="/app/settings/tasks/:task_id/" component={TaskDetails} />
-            <Route exact path="/app/products" component={Products} />
+            { /* OMNA */ }
+            <Route exact path="/app/orders-list" component={Orders} />
+            <Route exact path="/app/orders/:store_id/:number/order-details" component={OrderDetails} />
+            <Route exact path="/app/tasks-list" component={Tasks} />
+            <Route exact path="/app/tasks/:task_id/task-details" component={TaskDetails} />
+            <Route exact path="/app/products-list" component={Products} />
             <Route exact path="/app/settings/stores" component={Stores} />
             <Route exact path="/app/settings/stores/add-store" component={AddStoreForm} />
             <Route exact path="/app/settings/Workflows" component={Workflows} />
             <Route exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
-            { /* Home */}
+            { /* Home */ }
             <Route exact path="/app" component={PersonalDashboard} />
             <Route path="/app/crm-dashboard" component={CrmDashboard} />
             <Route path="/app/crypto-dashboard" component={CryptoDashboard} />
-            { /* Widgets */}
+            { /* Widgets */ }
             <Route path="/app/widgets/infographics" component={Infographics} />
             <Route path="/app/widgets/mini-apps" component={MiniApps} />
             <Route path="/app/widgets/analytics" component={Analytics} />
             <Route path="/app/widgets/info-updates" component={InfoUpdates} />
             <Route path="/app/widgets/status" component={Status} />
-            { /* Layout */}
+            { /* Layout */ }
             <Route exact path="/app/layouts" component={Parent} />
             <Route path="/app/layouts/grid" component={Grid} />
             <Route path="/app/layouts/app-layout" component={AppLayout} />
             <Route path="/app/layouts/responsive" component={Responsive} />
-            { /* Table */}
+            { /* Table */ }
             <Route exact path="/app/tables" component={Parent} />
             <Route path="/app/tables/basic-table" component={SimpleTable} />
             <Route path="/app/tables/data-table" component={AdvancedTable} />
             <Route path="/app/tables/table-playground" component={TablePlayground} />
             <Route path="/app/tables/tree-table" component={TreeTable} />
             <Route path="/app/tables/editable-cell" component={EditableCell} />
-            { /* Form & Button */}
+            { /* Form & Button */ }
             <Route exact path="/app/forms" component={Parent} />
             <Route path="/app/forms/reduxform" component={ReduxForm} />
             <Route path="/app/forms/date-time-picker" component={DateTimePicker} />
@@ -113,7 +117,7 @@ class Application extends React.Component {
             <Route path="/app/ui/slider-carousel" component={SliderCarousel} />
             <Route path="/app/ui/tags" component={Tags} />
             <Route path="/app/ui/dividers" component={Dividers} />
-            { /* Chart */}
+            { /* Chart */ }
             <Route exact path="/app/charts" component={Parent} />
             <Route path="/app/charts/line-charts" component={LineCharts} />
             <Route path="/app/charts/bar-charts" component={BarCharts} />
@@ -127,7 +131,7 @@ class Application extends React.Component {
             <Route path="/app/charts/line-scatter-charts" component={LineScatterChart} />
             <Route path="/app/charts/area-filled-charts" component={AreaFilledChart} />
             <Route path="/app/charts/radar-polar-chart" component={RadarPolarCharts} />
-            { /* Sample Apps */}
+            { /* Sample Apps */ }
             <Route path="/app/pages/contact" component={Contact} />
             <Route path="/app/pages/chat" component={Chat} />
             <Route path="/app/pages/email" component={Email} />
@@ -138,7 +142,7 @@ class Application extends React.Component {
             <Route path="/app/pages/calendar" component={Calendar} />
             <Route path="/app/pages/taskboard" component={TaskBoard} />
             <Route path="/app/pages/invoice" component={Invoice} />
-            { /* Pages */}
+            { /* Pages */ }
             <Route exact path="/app/pages" component={Parent} />
             <Route path="/app/pages/user-profile" component={Profile} />
             <Route path="/app/pages/blank-page" component={BlankPage} />
@@ -148,14 +152,14 @@ class Application extends React.Component {
             <Route path="/app/pages/error" component={Error} />
             <Route path="/app/pages/settings" component={Settings} />
             <Route path="/app/pages/help-support" component={HelpSupport} />
-            { /* Map */}
+            { /* Map */ }
             <Route exact path="/app/maps" component={Parent} />
             <Route path="/app/maps/map-marker" component={MapMarker} />
             <Route path="/app/maps/map-direction" component={MapDirection} />
             <Route path="/app/maps/map-searchbox" component={SearchMap} />
             <Route path="/app/maps/map-traffic" component={TrafficIndicator} />
             <Route path="/app/maps/street-view" component={StreetViewMap} />
-            { /* Default */}
+            { /* Default */ }
             <Route component={NotFound} />
           </Switch>
         </Dashboard>

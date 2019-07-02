@@ -135,7 +135,9 @@
     "material-ui-pickers": "^2.1.1",
     "minimist": "1.2.0",
     "moment": "^2.24.0",
+    "moment-timezone": "^0.5.25",
     "mui-datatables": "^2.0.0-beta-1",
+    "notistack": "^0.8.6",
     "prop-types": "15.7.2",
     "rcolor": "^1.0.1",
     "react": "16.8.6",
@@ -184,8 +186,7 @@
     "serve-favicon": "^2.4.5",
     "slick-carousel": "^1.8.1",
     "tunnel-agent": "^0.6.0",
-    "warning": "4.0.2",
-    "notistack": "^0.8.6"
+    "warning": "4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "7.4.3",

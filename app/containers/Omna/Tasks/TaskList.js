@@ -1,14 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import API from './../Utils/api';
-import LoadingState from './../Common/LoadingState';
-import GenericTableToolBar from './../Common/GenericTableToolBar';
-import GenericTablePagination from './../Common/GenericTablePagination';
-import GenericTableHead from './../Common/GenericTableHead';
-import AlertDialog from './../Common/AlertDialog';
 import get from 'lodash/get';
-import { Link } from 'react-router-dom';
-import {PapperBlock} from 'dan-components';
+import moment from 'moment';
+import { withSnackbar } from 'notistack';
 
 /* material-ui */
 // core
@@ -27,345 +21,469 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 // icons
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 import PlayIcon from '@material-ui/icons/PlayCircleOutline';
 import DetailsIcon from '@material-ui/icons/Visibility';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
+// our
+import API from '../Utils/api';
+import LoadingState from '../Common/LoadingState';
+import GenericTableToolBar from '../Common/GenericTableToolBar';
+import GenericTablePagination from '../Common/GenericTablePagination';
+import GenericTableHead from '../Common/GenericTableHead';
+import AlertDialog from '../Common/AlertDialog';
+import GenericErrorMessage from '../Common/GenericErrorMessage';
 
-const actionList = [ 'Delete' ];
+const actionList = ['Delete'];
 const selectOption = 'checkbox';
 const headColumns = [
-    { id: 'task', numeric: false, header: false, disablePadding: false, label: 'Showing Tasks' },
+  {
+    id: 'task', first: true, last: false, label: 'Showing Tasks'
+  },
 ];
+const variantIcon = {
+  warning: WarningIcon,
+  error: ErrorIcon,
+  info: InfoIcon
+};
+
+function NotificationBottom(type) {
+  const not = get(type, 'type', null);
+  const Icon = (not !== null && not !== 'success' && not !== 'error' && not !== 'warning')
+    ? (variantIcon.info)
+    : (variantIcon[not]);
+  return (
+    <Tooltip title={`This task has ${not} notifications`}>
+      <IconButton aria-label="Notifications">
+        <Icon className={not} />
+      </IconButton>
+    </Tooltip>
+  );
+}
+NotificationBottom.prototypes = {
+  type: PropTypes.string.isRequired
+};
 
 const styles = theme => ({
-    root: {
-      marginTop: theme.spacing.unit * 3,
-      overflowX: 'auto',
-    },
-    error: {
-        color: 'red',
-    },
-    warning: {
-        color: 'yellow',
-    },
-    green: {
-        color: 'green',
-    },
-    gray: {
-        color: 'gray',
-    },
-    paper: {
-      marginBottom: theme.spacing.unit * 2,
-    },
-    marginLeft: {
-        marginLeft: theme.spacing.unit,
-    },
-    tableWrapper: {
-      overflowX: 'auto',
-    },
-  });
+  error: {
+    color: 'red'
+  },
+  green: {
+    color: 'green'
+  },
+  gray: {
+    color: 'gray'
+  },
+  marginLeft: {
+    marginLeft: theme.spacing.unit
+  },
+  marginLeft2u: {
+    marginLeft: theme.spacing.unit * 2
+  },
+  tableWrapper: {
+    overflowX: 'auto'
+  }
+});
 
 /* ======= Principal Class ======= */
 class TaskList extends React.Component {
-
-    state = {
-      loading: true,
-      tasks: { data: [], pagination: {} },
-      limit: 5,
-      page: 0,
-      selected: [],
-      success: true,
-      messageError: '',
-      alertDialog: {
-          open: false,
-          message: '',
-          id: -1,
-      },
+  state = {
+    loading: true,
+    tasks: { data: [], pagination: {} },
+    limit: 5,
+    page: 0,
+    selected: [],
+    success: true,
+    messageError: '',
+    alertDialog: {
+      open: false,
+      message: '',
+      id: -1
     }
+  };
 
-    componentDidMount() {
-      this.callAPI();
-    }
+  componentDidMount() {
+    this.callAPI();
+  }
 
-    getAPItasks = (params) => {
-      API.get(`/tasks`, { params: params }).then(response => {
-        this.setState({ tasks: get(response, "data", { data: [], pagination: {} }), limit: get(response, "data.pagination.limit", 0) });
-      }).catch((error) => {
+  getAPItasks = params => {
+    API.get('/tasks', { params })
+      .then(response => {
+        this.setState({
+          tasks: get(response, 'data', { data: [], pagination: {} }),
+          limit: get(response, 'data.pagination.limit', 0)
+        });
+      })
+      .catch(error => {
         // handle error
         console.log(error);
         this.setState({ success: false, messageError: error.message });
-      }).finally(() => {
+      })
+      .finally(() => {
         this.setState({ loading: false });
       });
-    }
+  };
 
-    callAPI = () => {
-      const { limit, page } = this.state;
-      const params = {
-        offset: page * limit,
-        limit: limit
-      };
-
-      this.getAPItasks(params);
-    }
-
-    reRunTaskAPI = (id) => {
-        API.get(`/tasks/${id}/retry`).then(response => {
-            this.props.enqueueSnackbar('Item re-running successfully', {
-                variant: 'success'
-            });
-        }).catch((error) => {
-            this.props.enqueueSnackbar(error, {
-                variant: 'error'
-            });
-        }).finally(() => {
-            this.setState({ alertDialog: false });
-        });
-    }
-
-    handleSelectAllClick = (event) => {
-        if (event.target.checked) {
-            this.setState(state => ({ selected: get(state, "tasks.data", []).map(row => row.id) }));
-            return;
-        }
-        this.setState({ selected: [] });
-    }
-
-    handleClick = (event, id) => {
-        const { selected } = this.state;
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        this.setState({ selected: newSelected });
-    }
-
-    handleChangePage = (event, page) => {
-        this.setState({ page: page }, this.callAPI);
-    }
-
-    handleChangeRowsPerPage = (event) => {
-        this.setState({ limit: parseInt(event.target.value) }, this.callAPI);
+  callAPI = () => {
+    const { limit, page } = this.state;
+    const params = {
+      offset: page * limit,
+      limit
     };
 
-    verifyNotifications = (notifications) => {
-        var result = "";
-        notifications.map(n => (
-            result = (n.type === "error" ? "error" : (n.type === "warning" && result !== "error") ? "warning" : "info")
-        ))
-        return result;
+    this.getAPItasks(params);
+  };
+
+  reRunTaskAPI = id => {
+    const { enqueueSnackbar } = this.props;
+    API.get(`/tasks/${id}/retry`)
+      .then(() => {
+        enqueueSnackbar('Item re-running successfully', { variant: 'success' });
+      })
+      .catch(error => {
+        enqueueSnackbar(error, { variant: 'error' });
+      })
+      .finally(() => {
+        this.setState({ alertDialog: false });
+      });
+  };
+
+  deleteAPItask = (id) => {
+    const { enqueueSnackbar } = this.props;
+    API.get(`/tasks/${id}/destroy`).then(() => {
+      enqueueSnackbar('Task deleted successfully', { variant: 'success' });
+      this.callAPI();
+    }).catch((error) => {
+      enqueueSnackbar(error, { variant: 'error' });
+    }).finally(() => {
+      this.setState({ alertDialog: false });
+    });
+  }
+
+  handleDeleteBlock = (taskIds) => () => {
+    taskIds.map(id => (
+      this.deleteAPItask(id)
+    ));
+    this.setState({ selected: [] });
+  }
+
+  handleSelectAllClick = event => {
+    if (event.target.checked) {
+      this.setState(state => ({
+        selected: get(state, 'tasks.data', []).map(row => row.id)
+      }));
+      return;
+    }
+    this.setState({ selected: [] });
+  };
+
+  handleClick = (event, id) => {
+    const { selected } = this.state;
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
     }
 
-    isSelected = id => this.state.selected.indexOf(id) !== -1;
+    this.setState({ selected: newSelected });
+  };
 
-    handleAlertClick = (id) => {
-        this.setState({alertDialog: {
-            open: true,
-            id: id,
-            message: `Are you sure you want to "re-run" the ${id} task?`
-        }});
+  handleChangePage = (event, page) => {
+    this.setState({ page }, this.callAPI);
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
+  };
+
+  verifyNotifications = notifications => notifications.reduce((acc, item) => {
+    if (acc !== 'error') {
+      if (item.type === 'error') return 'error';
+      if (item.type === 'warning') return 'warning';
+      if (item.type === 'info' && acc !== 'warning') return 'info';
     }
+    return acc;
+  }, '');
 
-    handleDialogCancel = () => {
-        this.setState({alertDialog: false, action: '', id: ''});
-    }
+  isSelected = id => get(this.state, 'selected', []).includes(id);
 
-    handleDialogConfirm = async () => {
-        const { id } = this.state.alertDialog;
-        if(id !== ''){
-            //this.reRunTaskAPI(id);
-            alert("Re-run task action. Remember to make this code available");
-        }
-
-        this.handleDialogCancel();
-    }
-
-    render() {
-        const { classes } = this.props;
-        const { loading, limit, page, selected, tasks, alertDialog, success, messageError } = this.state;
-        const { pagination, data } = tasks;
-
-        var count = get(pagination, "total", 0);
-
-        return(
-            <div>
-                <PapperBlock icon={false}>
-                    <div>
-                        {loading ? <LoadingState loading={loading} /> : null}
-                        {loading ? null :
-                            !success ?
-                                <div className={classes.marginLeft2u}>
-                                    <Typography variant="h6" gutterBottom color="secondary">
-                                        There is the following error: "{messageError}", please reload the page or tray again later.
-                                    </Typography>
-                                </div>: 
-                                <Paper className={classes.root}>
-                                    {
-                                        //********* BODY *********
-                                    }
-                                    {
-                                    <GenericTableToolBar
-                                        numSelected={selected.length}
-                                        itemIDs={selected}
-                                        owner="tasks"
-                                        rowCount={count > limit ? limit : count}
-                                        actionList={actionList}
-                                    />
-                                    }
-                                    <div className={classes.tableWrapper}>
-                                        <Table aria-labelledby="tableTitle">
-                                            <GenericTableHead
-                                                numSelected={selected.length}
-                                                handleClick={this.handleSelectAllClick}
-                                                rowCount={count > limit ? limit : count}
-                                                selectOption={selectOption}
-                                                headColumns={headColumns}
-                                            />
-                                            <TableBody>
-                                                {
-                                                    data && data.map(row => {
-                                                        const isSelected = this.isSelected(get(row, "id", null));
-                                                        const notifications = this.verifyNotifications(get(row, "notifications", []));
-                                                        const status = get(row, "status", "");
-                                                        return (
-                                                            <TableRow
-                                                                hover
-
-                                                                role="checkbox"
-                                                                aria-checked={isSelected}
-                                                                tabIndex={-1}
-                                                                key={row.id}
-                                                                selected={isSelected}
-                                                            >
-                                                                <TableCell padding="checkbox"> <Checkbox checked={isSelected} onClick={event => this.handleClick(event, get(row, "id", null))} /> </TableCell>
-                                                                <TableCell>
-                                                                    <div className="display-flex justify-content-space-between">
-                                                                        <div>
-                                                                            <div>
-                                                                                <Typography variant="subtitle2">
-                                                                                    <strong>{get(row, "id", null)}</strong>
-                                                                                </Typography>
-                                                                            </div>
-                                                                            <div className={classes.marginLeft}>
-                                                                                <Typography variant="subtitle2" color="primary">
-                                                                                    {get(row, "description", "")}
-                                                                                </Typography>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="justify-content-flex-end">
-                                                                            <Button variant="text" size="small" color="inherit">
-                                                                                {get(row, "executions", []).length} Executions
-                                                                            </Button>
-                                                                            <Button variant="text" size="small" color="inherit">
-                                                                                Progress {get(row, "progress", 0)}%
-                                                                            </Button>
-                                                                            <Tooltip title="Status">
-                                                                                <Button variant="text" size="small" className={status === "failed" ? classes.error : status === "completed" ? classes.green : classes.gray}>
-                                                                                    {status}
-                                                                                </Button>
-                                                                            </Tooltip>
-                                                                            {
-                                                                                notifications === "error" ?
-                                                                                <Tooltip title="This Task has Error Notifications">
-                                                                                    <IconButton aria-label="Notifications" className={classes.error}>
-                                                                                        <ReportProblemIcon />
-                                                                                    </IconButton>
-                                                                                </Tooltip>
-                                                                                : notifications === "warning" ?
-                                                                                    <Tooltip title="This Task has Warning Notifications">
-                                                                                        <IconButton aria-label="Notifications" className={classes.warning}>
-                                                                                            <ReportProblemIcon />
-                                                                                        </IconButton>
-                                                                                    </Tooltip>
-                                                                                : null
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="display-flex justify-content-space-between align-items-baseline">
-                                                                        <div className="display-flex justify-content-space-between justify-content-flex-start align-items-baseline">
-                                                                            <Button variant="text" color="inherit" className={classes.button} component={Link} to={`/app/settings/tasks/${get(row, "id", null)}`}>
-                                                                                View Details
-                                                                                <DetailsIcon className={classes.rightIcon} />
-                                                                            </Button>
-                                                                            {
-                                                                                status === "failed" ?
-                                                                                    <Tooltip title="You Can Re-run the Task">
-                                                                                        <Button variant="text" color="secondary" className={classes.button} onClick={this.handleAlertClick.bind(this, get(row, "id", null))}>
-                                                                                            Run Task
-                                                                                            <PlayIcon className={classes.rightIcon} />
-                                                                                        </Button>
-                                                                                    </Tooltip> : null
-                                                                            }
-                                                                        </div>
-                                                                        <div className="justify-content-flex-end">
-                                                                            <div className="display-flex justify-content-space-between align-items-baseline">
-                                                                                <Typography variant="caption">
-                                                                                    <strong>Updated at: </strong>{get(row, "updated_at", null)}
-                                                                                </Typography>
-                                                                                {row.scheduler ?
-                                                                                    <Tooltip title="This Task has a Schedule">
-                                                                                        <IconButton aria-label="Schedule">
-                                                                                            <ScheduleIcon />
-                                                                                        </IconButton>
-                                                                                    </Tooltip>
-                                                                                    : null}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        );
-                                                    })
-                                                }
-                                            </TableBody>
-                                            <TableFooter>
-                                                <TableRow>
-                                                    <TablePagination
-                                                        colSpan={5}
-                                                        rowsPerPageOptions={[5, 10, 25, 50]}
-                                                        count={count}
-                                                        rowsPerPage={limit}
-                                                        page={page}
-                                                        SelectProps={{
-                                                            native: true,
-                                                        }}
-                                                        onChangePage={this.handleChangePage}
-                                                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                                        ActionsComponent={GenericTablePagination}
-                                                    />
-                                                </TableRow>
-                                            </TableFooter>
-                                        </Table>
-                                    </div>
-                                </Paper>
-                        }
-                    </div>
-                    <AlertDialog
-                        open={alertDialog.open}
-                        message={alertDialog.message}
-                        handleCancel={this.handleDialogCancel}
-                        handleConfirm={this.handleDialogConfirm}
-                    />
-                </PapperBlock>
-            </div>
-        );
+  handleAlertClick = id => () => {
+    this.setState({
+      alertDialog: {
+        open: true,
+        id,
+        message: `Are you sure you want to "re-run" the ${id} task?`
       }
+    });
+  };
+
+  handleDialogCancel = () => {
+    this.setState({ alertDialog: false });
+  };
+
+  handleDialogConfirm = async () => {
+    const { alertDialog } = this.state;
+    const { id } = alertDialog;
+    if (id !== '') {
+      this.reRunTaskAPI(id);
+    }
+
+    this.handleDialogCancel();
+    this.callAPI();
+  };
+
+  handleDetailsViewClick = (task) => () => {
+    const { history } = this.props;
+    history.push(`/app/tasks/${task.id}/task-details`, {
+      task: { data: task }
+    });
+  };
+
+  render() {
+    const { classes } = this.props;
+    const {
+      loading,
+      limit,
+      page,
+      selected,
+      tasks,
+      alertDialog,
+      success,
+      messageError
+    } = this.state;
+    const { pagination, data } = tasks;
+
+    const count = get(pagination, 'total', 0);
+
+    return (
+      <div>
+        <Paper>
+          <div className="item-padding">
+            {loading ? <LoadingState loading={loading} /> : null}
+            {loading ? null : !success ? (
+              <GenericErrorMessage messageError={messageError} />
+            ) : (
+              <div>
+                {
+                  // ********* BODY *********
+                }
+                <GenericTableToolBar
+                  numSelected={selected.length}
+                  rowCount={count > limit ? limit : count}
+                  actionList={actionList}
+                  initialText="There are no selected tasks"
+                  onDelete={this.handleDeleteBlock(selected)}
+                />
+                <Table aria-labelledby="tableTitle">
+                  <GenericTableHead
+                    numSelected={selected.length}
+                    handleClick={this.handleSelectAllClick}
+                    rowCount={count > limit ? limit : count}
+                    selectOption={selectOption}
+                    headColumns={headColumns}
+                  />
+                  <TableBody>
+                    {data && data.map(row => {
+                      const isSelected = this.isSelected(get(row, 'id', null));
+                      const notifications = this.verifyNotifications(get(row, 'notifications', []));
+                      const status = get(row, 'status', '');
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          tabIndex={-1}
+                          key={row.id}
+                          selected={isSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              checked={isSelected}
+                              onClick={event => this.handleClick(event, get(row, 'id', null))}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className="display-flex justify-content-space-between">
+                              <Typography variant="subtitle1" color="primary">
+                                <strong>
+                                  {get(row, 'description', '')}
+                                </strong>
+                              </Typography>
+                              <div className="display-flex justify-content-flex-end">
+                                <div className="item-margin-left">
+                                  {
+                                    notifications === 'error'
+                                      || notifications === 'warning'
+                                      || notifications === 'info'
+                                      ? (<NotificationBottom type={notifications} />
+                                      ) : (
+                                        null
+                                      )
+                                  }
+                                </div>
+                                <div className="item-margin-left">
+                                  {
+                                    row.scheduler
+                                      ? (
+                                        <Tooltip title="This Task has a Schedule">
+                                          <IconButton aria-label="Schedule">
+                                            <ScheduleIcon />
+                                          </IconButton>
+                                        </Tooltip>
+                                      ) : (
+                                        null
+                                      )
+                                  }
+                                </div>
+                              </div>
+                            </div>
+                            <div className="display-flex justify-content-space-between align-items-center">
+                              <div className={classes.marginLeft}>
+                                <Typography variant="caption" color="inherit">
+                                  {get(row, 'id', null)}
+                                </Typography>
+                              </div>
+                              <div className="display-flex justify-content-flex-end">
+                                <div>
+                                  <Typography>
+                                    {get(row, 'executions', []).length}
+                                    {' '}
+                                    Executions
+                                  </Typography>
+                                </div>
+                                <div className={classes.marginLeft2u}>
+                                  <Typography className="item-margin-left">
+                                    Progress
+                                    {' '}
+                                    {get(row, 'progress', 0)}
+                                    %
+                                  </Typography>
+                                </div>
+                                <div className={classes.marginLeft2u}>
+                                  <Tooltip title="Status" className="item-margin-left">
+                                    <Typography
+                                      className={
+                                        status === 'failed'
+                                          ? (classes.error
+                                          ) : (
+                                            status === 'completed'
+                                              ? (classes.green
+                                              ) : (
+                                                classes.gray
+                                              )
+                                          )
+                                      }
+                                    >
+                                      {status}
+                                    </Typography>
+                                  </Tooltip>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="display-flex justify-content-space-between align-items-baseline">
+                              <div className="display-flex justify-content-space-between justify-content-flex-start align-items-baseline">
+                                <Button
+                                  variant="text"
+                                  color="inherit"
+                                  className={classes.button}
+                                  onClick={this.handleDetailsViewClick(row)}
+                                >
+                                  View Details
+                                  <DetailsIcon
+                                    className={classes.rightIcon}
+                                  />
+                                </Button>
+                                {
+                                  status === 'failed'
+                                    ? (
+                                      <Tooltip title="You Can Re-run the Task">
+                                        <Button
+                                          variant="text"
+                                          color="secondary"
+                                          className={classes.button}
+                                          onClick={this.handleAlertClick(get(row, 'id', null))}
+                                        >
+                                          Run Task
+                                          <PlayIcon
+                                            className={classes.rightIcon}
+                                          />
+                                        </Button>
+                                      </Tooltip>
+                                    ) : (
+                                      null
+                                    )
+                                }
+                              </div>
+                              <div className="justify-content-flex-end">
+                                <Typography variant="caption">
+                                  <strong>Updated at:</strong>
+                                  {' '}
+                                  {
+                                    get(row, 'updated_at', null) != null
+                                      ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
+                                      ) : (
+                                        '--'
+                                      )
+                                  }
+                                </Typography>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        colSpan={5}
+                        rowsPerPageOptions={[5, 10, 25, 50]}
+                        count={count}
+                        rowsPerPage={limit}
+                        page={page}
+                        SelectProps={{
+                          native: true
+                        }}
+                        onChangePage={this.handleChangePage}
+                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        ActionsComponent={GenericTablePagination}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </div>
+            )}
+          </div>
+          <AlertDialog
+            open={alertDialog.open}
+            message={alertDialog.message}
+            handleCancel={this.handleDialogCancel}
+            handleConfirm={this.handleDialogConfirm}
+          />
+        </Paper>
+      </div>
+    );
+  }
 }
 
 TaskList.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.shape({}).isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
 };
 
-export default withStyles(styles)(TaskList);
+export default withSnackbar(withStyles(styles, { withTheme: true })(TaskList));
