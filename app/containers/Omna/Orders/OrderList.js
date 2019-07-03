@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
+import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
@@ -14,14 +15,28 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
-// icons
-import DetailsIcon from '@material-ui/icons/Visibility';
 // our
 import API from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
 import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
+
+const variantIcon = {
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
+};
 
 const headColumns = [
   {
@@ -143,7 +158,7 @@ class OrderList extends React.Component {
                         <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>
                         <TableCell align="center">
                           <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
-                            <DetailsIcon className={classes.rightIcon} />
+                            <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
                           </Button>
                         </TableCell>
                       </TableRow>

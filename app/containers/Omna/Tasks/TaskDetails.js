@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import moment from 'moment';
+import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
@@ -15,15 +16,6 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-// icons
-import ArrowIcon from '@material-ui/icons/ArrowBack';
-import PlayIcon from '@material-ui/icons/PlayCircleOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
-import RestoreIcon from '@material-ui/icons/Restore';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 // our
 import API from '../Utils/api';
 import GenericTabsHead from '../Common/GenericTabsHead';
@@ -32,11 +24,21 @@ import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 
 const variantIcon = {
-  success: CheckCircleIcon,
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
 };
+
 const myClass = {
   info: 'isa_info',
   success: 'isa_success',
@@ -62,7 +64,7 @@ function NotificationBottom({ type, message }) {
     <div className={myClass[type]}>
       <div className="display-flex justify-content-flex-start">
         <div>
-          <Icon />
+          <Ionicon icon={Icon} />
         </div>
         <div className="display-flex flex-direction-column flex-wrap-wrap item-margin-left">
           {message}
@@ -367,12 +369,7 @@ class TaskDetails extends React.Component {
                     component={Link}
                     to="/app/tasks-list"
                   >
-                    <ArrowIcon
-                      className={classNames(
-                        classes.leftIcon,
-                        classes.iconSmall
-                      )}
-                    />
+                    <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
                     Tasks
                   </Button>
                   <Button
@@ -381,12 +378,7 @@ class TaskDetails extends React.Component {
                     color="primary"
                     onClick={this.onClickGetAPItask(id)}
                   >
-                    <RestoreIcon
-                      className={classNames(
-                        classes.leftIcon,
-                        classes.iconSmall
-                      )}
-                    />
+                    <Ionicon icon={variantIcon.refresh} className={classNames(classes.leftIcon, classes.iconSmall)} />
                     Reload Info
                   </Button>
                   <div>
@@ -400,7 +392,7 @@ class TaskDetails extends React.Component {
                           onClick={this.handleAlertClick(id, 'run')}
                         >
                           Run
-                          <PlayIcon className={classes.rightIcon} />
+                          <Ionicon icon={variantIcon.play} className={classes.rightIcon} />
                         </Button>
                       </Tooltip>
                     ) : null}
@@ -413,7 +405,7 @@ class TaskDetails extends React.Component {
                         onClick={this.handleAlertClick(id, 'remove')}
                       >
                         Delete
-                        <DeleteIcon className={classes.rightIcon} />
+                        <Ionicon icon={variantIcon.delete} className={classes.rightIcon} />
                       </Button>
                     </Tooltip>
                   </div>
