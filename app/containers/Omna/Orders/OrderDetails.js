@@ -83,7 +83,7 @@ class OrderDetails extends Component {
     }
   }
 
-  getAPIorders(params) {
+  getAPIorder(params) {
     API.get(`/integrations/${params.store_id}/orders/${params.number}`)
       .then(response => {
         this.setState({ order: get(response, 'data', { data: {} }) });
@@ -104,8 +104,12 @@ class OrderDetails extends Component {
       number
     };
 
-    this.getAPIorders(params);
+    this.getAPIorder(params);
   };
+
+  onClickGetAPIorder = (StoreId, number) => () => {
+    this.callAPI(StoreId, number);
+  }
 
   render() {
     const { classes } = this.props;
@@ -120,14 +124,23 @@ class OrderDetails extends Component {
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
-            <Paper className={classes.root}>
+            <div>
               {
                 // ******** BUTTONS *********
               }
               <div className="display-flex justify-content-space-between">
-                <Button variant="text" size="small" color="primary" component={Link} to="/app/orders">
+                <Button variant="text" size="small" color="primary" component={Link} to="/app/orders-list">
                   <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Orders
+                </Button>
+                <Button
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  onClick={this.onClickGetAPIorder(get(order, 'data.integration.id', null), get(order, 'data.number', null))}
+                >
+                  <Ionicon icon={variantIcon.refresh} className={classNames(classes.leftIcon, classes.iconSmall)} />
+                  Reload Info
                 </Button>
                 <Button variant="text" size="small" color="primary">
                   <Ionicon icon={variantIcon.print} className={classNames(classes.leftIcon, classes.iconSmall)} />
@@ -388,7 +401,7 @@ class OrderDetails extends Component {
                   </Paper>
                 </div>
               </div>
-            </Paper>
+            </div>
           )}
         </div>
       </Paper>

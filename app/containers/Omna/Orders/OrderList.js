@@ -116,7 +116,7 @@ class OrderList extends React.Component {
 
   handleDetailsViewClick = (order) => () => {
     const { history } = this.props;
-    history.push(`/app/orders/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
+    history.push(`/app/orders-list/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
   }
 
   render() {
@@ -151,11 +151,11 @@ class OrderList extends React.Component {
                         <TableCell align="left" component="th" scope="row">
                           {get(row, 'number', 0)}
                         </TableCell>
-                        <TableCell align="center">{get(row, 'integration.name', 'Shop-01')}</TableCell>
-                        <TableCell align="center">{get(row, 'integration.channel', 'LazadaSG')}</TableCell>
-                        <TableCell align="center">{get(row, 'created_date', '2019-03-10T10:50:06+00:00')}</TableCell>
-                        <TableCell align="center">{get(row, 'status', 'canceled')}</TableCell>
-                        <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.channel', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'created_date', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'status', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
                         <TableCell align="center">
                           <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
                             <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
