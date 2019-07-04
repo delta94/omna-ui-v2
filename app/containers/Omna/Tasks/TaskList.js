@@ -11,6 +11,9 @@ import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Popover from '@material-ui/core/Popover';
 import { withStyles } from '@material-ui/core/styles';
@@ -23,11 +26,9 @@ import Paper from '@material-ui/core/Paper';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Chip from '@material-ui/core/Chip';
-import LinearProgress from '@material-ui/core/LinearProgress';
 // our
 import API from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
@@ -153,7 +154,7 @@ class TaskList extends React.Component {
     const { enqueueSnackbar } = this.props;
     API.get(`/tasks/${id}/retry`)
       .then(() => {
-        enqueueSnackbar('Item re-running successfully', { variant: 'success' });
+        enqueueSnackbar('Task re-ran successfully', { variant: 'success' });
       })
       .catch(error => {
         enqueueSnackbar(error, { variant: 'error' });
@@ -259,7 +260,7 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = (task) => () => {
     const { history } = this.props;
-    history.push(`/app/tasks/${task.id}/task-details`, {
+    history.push(`/app/tasks-list/${task.id}/task-details`, {
       task: { data: task }
     });
   };
@@ -427,40 +428,29 @@ class TaskList extends React.Component {
                                       horizontal: 'center'
                                     }}
                                   >
-                                    <div>
-                                      <Button
-                                        variant="text"
-                                        color="inherit"
-                                        className={classes.button}
-                                        onClick={this.handleDetailsViewClick(row)}
-                                        size="small"
-                                      >
-                                        View Details
-                                        <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
-                                      </Button>
-                                    </div>
-                                    <Divider />
-                                    <div>
-                                      {
-                                        status === 'failed'
-                                          ? (
-                                            <Tooltip title="You Can Re-run the Task">
-                                              <Button
-                                                variant="text"
-                                                color="inherit"
-                                                className={classes.button}
-                                                onClick={this.handleAlertClick(get(row, 'id', null))}
-                                                size="small"
-                                              >
-                                                Run Task
-                                                <Ionicon icon="md-play" className={classes.rightIcon} />
-                                              </Button>
-                                            </Tooltip>
-                                          ) : (
-                                            null
-                                          )
-                                      }
-                                    </div>
+                                    {
+                                      status === 'failed'
+                                        ? (
+                                          <List component="nav">
+                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                              <ListItemText primary="View Details" />
+                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                            </ListItem>
+                                            <Divider />
+                                            <ListItem button onClick={this.handleAlertClick(get(row, 'id', null))}>
+                                              <ListItemText primary="Run Task" />
+                                              <Ionicon icon="md-play" className={classes.rightIcon} />
+                                            </ListItem>
+                                          </List>
+                                        ) : (
+                                          <List component="nav">
+                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                              <ListItemText primary="View Details" />
+                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                            </ListItem>
+                                          </List>
+                                        )
+                                    }
                                   </Popover>
                                 </div>
                               </div>
@@ -487,9 +477,6 @@ class TaskList extends React.Component {
                                 </div>
                               </div>
                             </div>
-                            <Tooltip title={`Progress ${progress}%`}>
-                              <LinearProgress variant="determinate" className={this.getProgress(progress)} value={progress} />
-                            </Tooltip>
                           </TableCell>
                         </TableRow>
                       );

@@ -20,10 +20,10 @@ class Application extends React.Component {
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
             { /* OMNA */ }
-            <Route exact path="/app/order-list" component={Orders} />
-            <Route exact path="/app/orders/:store_id/:number/order-details" component={OrderDetails} />
+            <Route exact path="/app/orders-list" component={Orders} />
+            <Route exact path="/app/orders-list/:store_id/:number/order-details" component={OrderDetails} />
             <Route exact path="/app/tasks-list" component={Tasks} />
-            <Route exact path="/app/tasks/:task_id/task-details" component={TaskDetails} />
+            <Route exact path="/app/tasks-list/:task_id/task-details" component={TaskDetails} />
             <Route exact path="/app/products-list" component={Products} />
             <Route exact path="/app/settings/stores" component={Stores} />
             <Route exact path="/app/settings/stores/add-store" component={AddStoreForm} />
