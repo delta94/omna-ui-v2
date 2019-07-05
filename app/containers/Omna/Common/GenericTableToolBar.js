@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
+import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
@@ -12,9 +13,24 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-// icons
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
+// our
+import GenericFilterTool from './GenericFilterTool';
+
+const variantIcon = {
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
+};
 
 const toolbarStyles = theme => ({
   root: {
@@ -47,10 +63,16 @@ class GenericTableToolbar extends React.Component {
   printBottom = (action, actionClickFunc, Icon) => (
     <Tooltip title={action} key={action}>
       <IconButton aria-label={action} onClick={actionClickFunc}>
-        <Icon />
+        <Ionicon icon={Icon} />
       </IconButton>
     </Tooltip>
   )
+
+  handleSearchClick = (currentTerm, filters) => {
+    const { onSearchFilterClick } = this.props;
+
+    onSearchFilterClick(currentTerm, filters);
+  }
 
   render() {
     const {
@@ -60,13 +82,15 @@ class GenericTableToolbar extends React.Component {
       rowCount,
       onAdd, // Add onClick function
       onDelete, // Delete onClick function
-      actionList // List of actions to be considered
+      actionList, // List of actions to be considered
+      filterList, // Filter item label list
     } = this.props;
 
     // Array with the details of the registered actions
     const detailedArrayActions = {
-      Delete: { onclickfunc: onDelete, icon: DeleteIcon },
-      Add: { onclickfunc: onAdd, icon: AddIcon },
+      Delete: { onclickfunc: onDelete, icon: variantIcon.delete },
+      Add: { onclickfunc: onAdd, icon: variantIcon.add },
+      Filter: { onclickfunc: this.handleSearchClick, icon: variantIcon.filter },
     };
 
     return (
@@ -103,8 +127,8 @@ class GenericTableToolbar extends React.Component {
               {
                 actionList && actionList.map(act => (
                   <div key={act}>
-                    {act !== 'Add' && get(detailedArrayActions, `${act}`, null) !== null ? (
-                      this.printBottom(act, get(detailedArrayActions, `${act}.onclickfunc`, () => {}), get(detailedArrayActions, `${act}.icon`, DeleteIcon))
+                    {act !== 'Add' && act !== 'Filter' && get(detailedArrayActions, `${act}`, null) !== null ? (
+                      this.printBottom(act, get(detailedArrayActions, `${act}.onclickfunc`, () => {}), get(detailedArrayActions, `${act}.icon`, variantIcon.delete))
                     ) : (
                       null
                     )}
@@ -113,15 +137,30 @@ class GenericTableToolbar extends React.Component {
               }
             </div>
           ) : (
-            actionList && actionList.map(act => (
-              <div key={act}>
-                {act === 'Add' ? (
-                  this.printBottom(act, onAdd, AddIcon)
-                ) : (
-                  null
-                )}
-              </div>
-            ))
+            <div className="display-flex justify-content-flex-end">
+              {
+                actionList && actionList.map(act => (
+                  <div key={act}>
+                    {
+                      act === 'Filter'
+                        ? (
+                          <GenericFilterTool
+                            onSearchFilterClick={this.handleSearchClick}
+                            filterList={filterList}
+                          />
+                        ) : (
+                          act === 'Add'
+                            ? (
+                              this.printBottom(act, onAdd, variantIcon.add)
+                            ) : (
+                              null
+                            )
+                        )
+                    }
+                  </div>
+                ))
+              }
+            </div>
           )
           }
         </div>
@@ -131,18 +170,23 @@ class GenericTableToolbar extends React.Component {
 }
 
 GenericTableToolbar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
+  classes: PropTypes.shape({}).isRequired,
+  numSelected: PropTypes.number,
   rowCount: PropTypes.number.isRequired,
   actionList: PropTypes.array.isRequired,
   onDelete: PropTypes.func,
   onAdd: PropTypes.func,
   initialText: PropTypes.string,
+  onSearchFilterClick: PropTypes.func,
+  filterList: PropTypes.array,
 };
 GenericTableToolbar.defaultProps = {
   onDelete: () => {},
   onAdd: () => {},
+  onSearchFilterClick: () => {},
   initialText: '',
+  filterList: [],
+  numSelected: 0,
 };
 
 export default withSnackbar(withStyles(toolbarStyles)(GenericTableToolbar));

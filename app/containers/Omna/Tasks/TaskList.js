@@ -6,7 +6,6 @@ import { withSnackbar } from 'notistack';
 import styles1 from 'dan-components/Widget/widget-jss';
 import classNames from 'classnames';
 import messageStyles from 'dan-styles/Messages.scss';
-import progressStyles from 'dan-styles/Progress.scss';
 import Ionicon from 'react-ionicons';
 
 /* material-ui */
@@ -38,7 +37,8 @@ import GenericTableHead from '../Common/GenericTableHead';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 
-const actionList = ['Delete'];
+const actionList = ['Filter', 'Delete'];
+const filterList = ['Status'];
 const selectOption = 'checkbox';
 const headColumns = [
   {
@@ -276,23 +276,6 @@ class TaskList extends React.Component {
     }
   };
 
-  getProgress = (progress) => {
-    if (progress >= 0 && progress < 20) {
-      return progressStyles.bgError;
-    }
-    if (progress <= 45) {
-      return progressStyles.bgWarning;
-    }
-    if (progress <= 90) {
-      return progressStyles.bgInfo;
-    }
-    if (progress === 100) {
-      return progressStyles.bgSuccess;
-    }
-
-    return progressStyles.bgDefault;
-  };
-
   handleMoreClick = id => (event) => {
     this.setState({
       anchorEl: event.currentTarget, popover: id,
@@ -303,6 +286,19 @@ class TaskList extends React.Component {
     this.setState({
       anchorEl: null, popover: null,
     });
+  };
+
+  handleSearchClick = (currentTerm, filters) => {
+    const { limit, page } = this.state;
+    const params = {
+      offset: page * limit,
+      limit,
+      term: currentTerm,
+      status: filters.Status,
+    };
+
+    this.setState({ loading: true });
+    this.getAPItasks(params);
   };
 
   render() {
@@ -340,6 +336,8 @@ class TaskList extends React.Component {
                   actionList={actionList}
                   initialText="There are no selected tasks"
                   onDelete={this.handleDeleteBlock(selected)}
+                  onSearchFilterClick={this.handleSearchClick}
+                  filterList={filterList}
                 />
                 <Table aria-labelledby="tableTitle">
                   <GenericTableHead

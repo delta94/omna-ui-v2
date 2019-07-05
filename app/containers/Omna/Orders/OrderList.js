@@ -21,6 +21,7 @@ import LoadingState from '../Common/LoadingState';
 import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
+import GenericTableToolBar from '../Common/GenericTableToolBar';
 
 const variantIcon = {
   success: 'md-checkmark-circle',
@@ -37,6 +38,9 @@ const variantIcon = {
   print: 'md-print',
   view: 'md-eye',
 };
+
+const actionList = ['Filter'];
+const filterList = ['Integration'];
 
 const headColumns = [
   {
@@ -119,6 +123,19 @@ class OrderList extends React.Component {
     history.push(`/app/orders-list/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
   }
 
+  handleSearchClick = (currentTerm, filters) => {
+    const { limit, page } = this.state;
+    const params = {
+      offset: page * limit,
+      limit,
+      term: currentTerm,
+      integration_id: filters.Integration,
+    };
+
+    this.setState({ loading: true });
+    this.getAPIorders(params);
+  };
+
   render() {
     const { classes } = this.props;
     const { pagination, data } = get(this.state, 'orders', { data: [], pagination: {} });
@@ -137,6 +154,12 @@ class OrderList extends React.Component {
           ) : (
             <Fragment>
               <div className={classes.rootTable}>
+                <GenericTableToolBar
+                  rowCount={count > limit ? limit : count}
+                  actionList={actionList}
+                  onSearchFilterClick={this.handleSearchClick}
+                  filterList={filterList}
+                />
                 <Table className={classNames(classes.table, classes.hover)}>
                   <GenericTableHead
                     rowCount={count > limit ? limit : count}
