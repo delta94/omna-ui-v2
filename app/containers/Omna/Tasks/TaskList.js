@@ -3,9 +3,18 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
+import styles1 from 'dan-components/Widget/widget-jss';
+import classNames from 'classnames';
+import messageStyles from 'dan-styles/Messages.scss';
+import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Popover from '@material-ui/core/Popover';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
@@ -16,16 +25,9 @@ import Paper from '@material-ui/core/Paper';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-// icons
-import ScheduleIcon from '@material-ui/icons/Schedule';
-import PlayIcon from '@material-ui/icons/PlayCircleOutline';
-import DetailsIcon from '@material-ui/icons/Visibility';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import WarningIcon from '@material-ui/icons/Warning';
+import Chip from '@material-ui/core/Chip';
 // our
 import API from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
@@ -35,17 +37,29 @@ import GenericTableHead from '../Common/GenericTableHead';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 
-const actionList = ['Delete'];
+const actionList = ['Filter', 'Delete'];
+const filterList = ['Status'];
 const selectOption = 'checkbox';
 const headColumns = [
   {
     id: 'task', first: true, last: false, label: 'Showing Tasks'
   },
 ];
+
 const variantIcon = {
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
 };
 
 function NotificationBottom(type) {
@@ -56,7 +70,7 @@ function NotificationBottom(type) {
   return (
     <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
-        <Icon className={not} />
+        <Ionicon icon={Icon} className={not} />
       </IconButton>
     </Tooltip>
   );
@@ -100,7 +114,8 @@ class TaskList extends React.Component {
       open: false,
       message: '',
       id: -1
-    }
+    },
+    anchorEl: null,
   };
 
   componentDidMount() {
@@ -139,7 +154,7 @@ class TaskList extends React.Component {
     const { enqueueSnackbar } = this.props;
     API.get(`/tasks/${id}/retry`)
       .then(() => {
-        enqueueSnackbar('Item re-running successfully', { variant: 'success' });
+        enqueueSnackbar('Task re-ran successfully', { variant: 'success' });
       })
       .catch(error => {
         enqueueSnackbar(error, { variant: 'error' });
@@ -245,9 +260,45 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = (task) => () => {
     const { history } = this.props;
-    history.push(`/app/tasks/${task.id}/task-details`, {
+    history.push(`/app/tasks-list/${task.id}/task-details`, {
       task: { data: task }
     });
+  };
+
+  getStatus = (status) => {
+    switch (status) {
+      case 'failed': return messageStyles.bgError;
+      case 'broken': return messageStyles.bgError;
+      case 'pending': return messageStyles.bgWarning;
+      case 'completed': return messageStyles.bgSuccess;
+      default: return messageStyles.bgInfo;
+      // running, pending, completed, failed, broken, unscheduled
+    }
+  };
+
+  handleMoreClick = id => (event) => {
+    this.setState({
+      anchorEl: event.currentTarget, popover: id,
+    });
+  };
+
+  handleMoreClose = () => {
+    this.setState({
+      anchorEl: null, popover: null,
+    });
+  };
+
+  handleSearchClick = (currentTerm, filters) => {
+    const { limit, page } = this.state;
+    const params = {
+      offset: page * limit,
+      limit,
+      term: currentTerm,
+      status: filters.Status,
+    };
+
+    this.setState({ loading: true });
+    this.getAPItasks(params);
   };
 
   render() {
@@ -260,7 +311,8 @@ class TaskList extends React.Component {
       tasks,
       alertDialog,
       success,
-      messageError
+      messageError,
+      anchorEl,
     } = this.state;
     const { pagination, data } = tasks;
 
@@ -284,6 +336,8 @@ class TaskList extends React.Component {
                   actionList={actionList}
                   initialText="There are no selected tasks"
                   onDelete={this.handleDeleteBlock(selected)}
+                  onSearchFilterClick={this.handleSearchClick}
+                  filterList={filterList}
                 />
                 <Table aria-labelledby="tableTitle">
                   <GenericTableHead
@@ -298,6 +352,7 @@ class TaskList extends React.Component {
                       const isSelected = this.isSelected(get(row, 'id', null));
                       const notifications = this.verifyNotifications(get(row, 'notifications', []));
                       const status = get(row, 'status', '');
+                      const progress = get(row, 'progress', 0);
                       return (
                         <TableRow
                           hover
@@ -315,13 +370,13 @@ class TaskList extends React.Component {
                             />
                           </TableCell>
                           <TableCell>
-                            <div className="display-flex justify-content-space-between">
-                              <Typography variant="subtitle1" color="primary">
+                            <div className="display-flex justify-content-space-between align-items-center">
+                              <Typography variant="subtitle2" color="primary">
                                 <strong>
                                   {get(row, 'description', '')}
                                 </strong>
                               </Typography>
-                              <div className="display-flex justify-content-flex-end">
+                              <div className="display-flex justify-content-flex-end align-items-center">
                                 <div className="item-margin-left">
                                   {
                                     notifications === 'error'
@@ -339,7 +394,7 @@ class TaskList extends React.Component {
                                       ? (
                                         <Tooltip title="This Task has a Schedule">
                                           <IconButton aria-label="Schedule">
-                                            <ScheduleIcon />
+                                            <Ionicon icon={variantIcon.schedule} />
                                           </IconButton>
                                         </Tooltip>
                                       ) : (
@@ -347,97 +402,77 @@ class TaskList extends React.Component {
                                       )
                                   }
                                 </div>
+                                <div className={classes.marginLeft2u}>
+                                  <Tooltip title="Status" className="item-margin-left">
+                                    <Chip label={`${status} ${progress}%`} className={classNames(classes.chip, this.getStatus(status))} />
+                                  </Tooltip>
+                                </div>
+                                <div className={classes.marginLeft2u}>
+                                  <Tooltip title="More...">
+                                    <IconButton aria-label="More" className="item-margin-left" onClick={this.handleMoreClick(row.id)}>
+                                      <Ionicon icon="ios-more" />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Popover
+                                    open={Boolean(get(this.state, 'popover') === row.id)}
+                                    anchorEl={anchorEl}
+                                    onClose={this.handleMoreClose}
+                                    anchorOrigin={{
+                                      vertical: 'bottom',
+                                      horizontal: 'center'
+                                    }}
+                                    transformOrigin={{
+                                      vertical: 'top',
+                                      horizontal: 'center'
+                                    }}
+                                  >
+                                    {
+                                      status === 'failed'
+                                        ? (
+                                          <List component="nav">
+                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                              <ListItemText primary="View Details" />
+                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                            </ListItem>
+                                            <Divider />
+                                            <ListItem button onClick={this.handleAlertClick(get(row, 'id', null))}>
+                                              <ListItemText primary="Run Task" />
+                                              <Ionicon icon="md-play" className={classes.rightIcon} />
+                                            </ListItem>
+                                          </List>
+                                        ) : (
+                                          <List component="nav">
+                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                              <ListItemText primary="View Details" />
+                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                            </ListItem>
+                                          </List>
+                                        )
+                                    }
+                                  </Popover>
+                                </div>
                               </div>
                             </div>
                             <div className="display-flex justify-content-space-between align-items-center">
-                              <div className={classes.marginLeft}>
-                                <Typography variant="caption" color="inherit">
-                                  {get(row, 'id', null)}
-                                </Typography>
-                              </div>
-                              <div className="display-flex justify-content-flex-end">
-                                <div>
-                                  <Typography>
-                                    {get(row, 'executions', []).length}
-                                    {' '}
-                                    Executions
+                              <div className="display-flex justify-content-flex-start">
+                                <div className={classes.marginLeft}>
+                                  <Typography variant="caption" color="inherit">
+                                    {get(row, 'id', null)}
                                   </Typography>
                                 </div>
                                 <div className={classes.marginLeft2u}>
-                                  <Typography className="item-margin-left">
-                                    Progress
+                                  <Typography variant="caption">
+                                    <strong>Updated at:</strong>
                                     {' '}
-                                    {get(row, 'progress', 0)}
-                                    %
+                                    {
+                                      get(row, 'updated_at', null) != null
+                                        ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
+                                        ) : (
+                                          '--'
+                                        )
+                                    }
                                   </Typography>
                                 </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Tooltip title="Status" className="item-margin-left">
-                                    <Typography
-                                      className={
-                                        status === 'failed'
-                                          ? (classes.error
-                                          ) : (
-                                            status === 'completed'
-                                              ? (classes.green
-                                              ) : (
-                                                classes.gray
-                                              )
-                                          )
-                                      }
-                                    >
-                                      {status}
-                                    </Typography>
-                                  </Tooltip>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="display-flex justify-content-space-between align-items-baseline">
-                              <div className="display-flex justify-content-space-between justify-content-flex-start align-items-baseline">
-                                <Button
-                                  variant="text"
-                                  color="inherit"
-                                  className={classes.button}
-                                  onClick={this.handleDetailsViewClick(row)}
-                                >
-                                  View Details
-                                  <DetailsIcon
-                                    className={classes.rightIcon}
-                                  />
-                                </Button>
-                                {
-                                  status === 'failed'
-                                    ? (
-                                      <Tooltip title="You Can Re-run the Task">
-                                        <Button
-                                          variant="text"
-                                          color="secondary"
-                                          className={classes.button}
-                                          onClick={this.handleAlertClick(get(row, 'id', null))}
-                                        >
-                                          Run Task
-                                          <PlayIcon
-                                            className={classes.rightIcon}
-                                          />
-                                        </Button>
-                                      </Tooltip>
-                                    ) : (
-                                      null
-                                    )
-                                }
-                              </div>
-                              <div className="justify-content-flex-end">
-                                <Typography variant="caption">
-                                  <strong>Updated at:</strong>
-                                  {' '}
-                                  {
-                                    get(row, 'updated_at', null) != null
-                                      ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
-                                      ) : (
-                                        '--'
-                                      )
-                                  }
-                                </Typography>
                               </div>
                             </div>
                           </TableCell>
@@ -486,4 +521,4 @@ TaskList.propTypes = {
   }).isRequired,
 };
 
-export default withSnackbar(withStyles(styles, { withTheme: true })(TaskList));
+export default withSnackbar(withStyles(styles, styles1, { withTheme: true })(TaskList));

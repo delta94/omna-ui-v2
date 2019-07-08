@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
+import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
@@ -14,14 +15,32 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
-// icons
-import DetailsIcon from '@material-ui/icons/Visibility';
 // our
 import API from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
 import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
+import GenericTableToolBar from '../Common/GenericTableToolBar';
+
+const variantIcon = {
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
+};
+
+const actionList = ['Filter'];
+const filterList = ['Integration'];
 
 const headColumns = [
   {
@@ -101,8 +120,21 @@ class OrderList extends React.Component {
 
   handleDetailsViewClick = (order) => () => {
     const { history } = this.props;
-    history.push(`/app/orders/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
+    history.push(`/app/orders-list/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
   }
+
+  handleSearchClick = (currentTerm, filters) => {
+    const { limit, page } = this.state;
+    const params = {
+      offset: page * limit,
+      limit,
+      term: currentTerm,
+      integration_id: filters.Integration,
+    };
+
+    this.setState({ loading: true });
+    this.getAPIorders(params);
+  };
 
   render() {
     const { classes } = this.props;
@@ -122,6 +154,12 @@ class OrderList extends React.Component {
           ) : (
             <Fragment>
               <div className={classes.rootTable}>
+                <GenericTableToolBar
+                  rowCount={count > limit ? limit : count}
+                  actionList={actionList}
+                  onSearchFilterClick={this.handleSearchClick}
+                  filterList={filterList}
+                />
                 <Table className={classNames(classes.table, classes.hover)}>
                   <GenericTableHead
                     rowCount={count > limit ? limit : count}
@@ -136,14 +174,14 @@ class OrderList extends React.Component {
                         <TableCell align="left" component="th" scope="row">
                           {get(row, 'number', 0)}
                         </TableCell>
-                        <TableCell align="center">{get(row, 'integration.name', 'Shop-01')}</TableCell>
-                        <TableCell align="center">{get(row, 'integration.channel', 'LazadaSG')}</TableCell>
-                        <TableCell align="center">{get(row, 'created_date', '2019-03-10T10:50:06+00:00')}</TableCell>
-                        <TableCell align="center">{get(row, 'status', 'canceled')}</TableCell>
-                        <TableCell align="center">{get(row, 'total_price', '1.00')}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.channel', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'created_date', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'status', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
                         <TableCell align="center">
                           <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
-                            <DetailsIcon className={classes.rightIcon} />
+                            <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
                           </Button>
                         </TableCell>
                       </TableRow>

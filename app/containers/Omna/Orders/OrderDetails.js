@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 import moment from 'moment';
+import Ionicon from 'react-ionicons';
 
 // material-ui
 // core
@@ -12,14 +13,27 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-// icons
-import PrintIcon from '@material-ui/icons/Print';
-import ArrowIcon from '@material-ui/icons/ArrowBack';
 // our
 import API from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 import './orderDetails.css';
+
+const variantIcon = {
+  success: 'md-checkmark-circle',
+  warning: 'md-warning',
+  error: 'md-alert',
+  info: 'ios-information-circle',
+  delete: 'md-trash',
+  add: 'md-add-circle',
+  schedule: 'md-time',
+  refresh: 'md-refresh',
+  arrowBack: 'md-arrow-back',
+  play: 'md-play',
+  filter: 'md-funnel',
+  print: 'md-print',
+  view: 'md-eye',
+};
 
 const styles = theme => ({
   root: {
@@ -69,7 +83,7 @@ class OrderDetails extends Component {
     }
   }
 
-  getAPIorders(params) {
+  getAPIorder(params) {
     API.get(`/integrations/${params.store_id}/orders/${params.number}`)
       .then(response => {
         this.setState({ order: get(response, 'data', { data: {} }) });
@@ -90,8 +104,12 @@ class OrderDetails extends Component {
       number
     };
 
-    this.getAPIorders(params);
+    this.getAPIorder(params);
   };
+
+  onClickGetAPIorder = (StoreId, number) => () => {
+    this.callAPI(StoreId, number);
+  }
 
   render() {
     const { classes } = this.props;
@@ -106,17 +124,26 @@ class OrderDetails extends Component {
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
-            <Paper className={classes.root}>
+            <div>
               {
                 // ******** BUTTONS *********
               }
               <div className="display-flex justify-content-space-between">
-                <Button variant="text" size="small" color="primary" component={Link} to="/app/orders">
-                  <ArrowIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
+                <Button variant="text" size="small" color="primary" component={Link} to="/app/orders-list">
+                  <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Orders
                 </Button>
+                <Button
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  onClick={this.onClickGetAPIorder(get(order, 'data.integration.id', null), get(order, 'data.number', null))}
+                >
+                  <Ionicon icon={variantIcon.refresh} className={classNames(classes.leftIcon, classes.iconSmall)} />
+                  Reload Info
+                </Button>
                 <Button variant="text" size="small" color="primary">
-                  <PrintIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
+                  <Ionicon icon={variantIcon.print} className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Print Order
                 </Button>
               </div>
@@ -374,7 +401,7 @@ class OrderDetails extends Component {
                   </Paper>
                 </div>
               </div>
-            </Paper>
+            </div>
           )}
         </div>
       </Paper>
