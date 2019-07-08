@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
+import AuthGuardRoute from '../Omna/Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 
 import {
@@ -20,23 +21,23 @@ class Application extends React.Component {
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
             { /* OMNA */ }
-            <Route exact path="/app/orders-list" component={Orders} />
-            <Route exact path="/app/orders-list/:store_id/:number/order-details" component={OrderDetails} />
-            <Route exact path="/app/tasks-list" component={Tasks} />
-            <Route exact path="/app/tasks-list/:task_id/task-details" component={TaskDetails} />
-            <Route exact path="/app/products-list" component={Products} />
-            <Route exact path="/app/settings/stores" component={Stores} />
-            <Route exact path="/app/settings/stores/add-store" component={AddStoreForm} />
-            <Route exact path="/app/settings/Workflows" component={Workflows} />
-            <Route exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
+            <AuthGuardRoute exact path="/app/orders-list" component={Orders} />
+            <AuthGuardRoute exact path="/app/orders-list/:store_id/:number/order-details" component={OrderDetails} />
+            <AuthGuardRoute exact path="/app/tasks-list" component={Tasks} />
+            <AuthGuardRoute exact path="/app/tasks-list/:task_id/task-details" component={TaskDetails} />
+            <AuthGuardRoute exact path="/app/products-list" component={Products} />
+            <AuthGuardRoute exact path="/app/settings/stores" component={Stores} />
+            <AuthGuardRoute exact path="/app/settings/stores/add-store" component={AddStoreForm} />
+            <AuthGuardRoute exact path="/app/settings/Workflows" component={Workflows} />
+            <AuthGuardRoute exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
             { /* Home */ }
-            <Route exact path="/app" component={Analytics} />
-            <Route exact path="/" component={Analytics} />
-            <Route path="/app/widgets/analytics" component={Analytics} />
+            <AuthGuardRoute exact path="/app" component={Analytics} />
+            <AuthGuardRoute exact path="/" component={Analytics} />
+            <AuthGuardRoute exact path="/app/widgets/analytics" component={Analytics} />
             { /* Pages */ }
-            <Route exact path="/app/pages" component={Parent} />
+            <AuthGuardRoute exact path="/app/pages" component={Parent} />
             <Route path="/app/pages/not-found" component={NotFound} />
-            <Route path="/app/pages/error" component={Error} />
+            <AuthGuardRoute path="/app/pages/error" component={Error} />
             { /* Default */ }
             <Route component={NotFound} />
           </Switch>

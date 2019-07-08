@@ -20,7 +20,7 @@ import { withSnackbar } from 'notistack';
 
 import PropTypes from 'prop-types';
 import API from '../../Utils/api';
-import { Utils } from '../../Common/Utils';
+import Utils from '../../Common/Utils';
 import LoadingState from '../../Common/LoadingState';
 import AlertDialog from '../../Common/AlertDialog';
 

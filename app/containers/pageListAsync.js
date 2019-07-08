@@ -54,6 +54,11 @@ export const HelpSupport = loadable(() =>
     fallback: <Loading />,
   });
 
+  export const LockScreen = loadable(() =>
+  import ('./Pages/Users/LockScreen'), {
+    fallback: <Loading />,
+  });
+
 // OMNA
 export const Tasks = loadable(() =>
   import ('./Omna/Tasks/TaskList'), {

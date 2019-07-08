@@ -19,6 +19,7 @@ class App extends React.Component {
                 render={(props) => <Application {...props} changeMode={changeMode} />}
               />
               <Route
+                exact
                 path="/"
                 render={(props) => <Application {...props} changeMode={changeMode} />}
               />

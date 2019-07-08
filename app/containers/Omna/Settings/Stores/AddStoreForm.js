@@ -15,7 +15,7 @@ import Divider from '@material-ui/core/Divider';
 import classNames from 'classnames';
 import LoadingState from '../../Common/LoadingState';
 import API from '../../Utils/api';
-import { Utils } from '../../Common/Utils';
+import Utils from '../../Common/Utils';
 
 
 const styles = () => ({

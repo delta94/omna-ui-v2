@@ -8,7 +8,7 @@ module.exports = [
         key: 'orders',
         name: 'Orders',
         icon: 'md-list',
-        link: '/app/order-list'
+        link: '/app/orders-list'
       }
     ]
   },
