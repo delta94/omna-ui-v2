@@ -4,6 +4,7 @@ import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
 import Ionicon from 'react-ionicons';
+import moment from 'moment';
 
 /* material-ui */
 // core
@@ -47,12 +48,6 @@ const headColumns = [
     id: 'number', first: true, last: false, label: 'Number'
   },
   {
-    id: 'store', first: false, last: false, label: 'Integration'
-  },
-  {
-    id: 'channel', first: false, last: false, label: 'Channel'
-  },
-  {
     id: 'date', first: false, last: false, label: 'Date'
   },
   {
@@ -60,6 +55,9 @@ const headColumns = [
   },
   {
     id: 'total', first: false, last: false, label: 'Total'
+  },
+  {
+    id: 'store', first: false, last: false, label: 'Integration'
   },
   {
     id: 'action', first: false, last: false, label: 'Action'
@@ -174,11 +172,18 @@ class OrderList extends React.Component {
                         <TableCell align="left" component="th" scope="row">
                           {get(row, 'number', 0)}
                         </TableCell>
-                        <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
-                        <TableCell align="center">{get(row, 'integration.channel', null)}</TableCell>
-                        <TableCell align="center">{get(row, 'created_date', null)}</TableCell>
+                        <TableCell align="center">
+                          {
+                            get(row, 'created_date', null) != null
+                              ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
+                              ) : (
+                                '--'
+                              )
+                          }
+                        </TableCell>
                         <TableCell align="center">{get(row, 'status', null)}</TableCell>
                         <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
+                        <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
                         <TableCell align="center">
                           <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
                             <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
