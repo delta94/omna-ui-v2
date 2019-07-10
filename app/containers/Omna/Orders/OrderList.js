@@ -23,22 +23,9 @@ import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 import GenericTableToolBar from '../Common/GenericTableToolBar';
+import Utils from '../Common/Utils';
 
-const variantIcon = {
-  success: 'md-checkmark-circle',
-  warning: 'md-warning',
-  error: 'md-alert',
-  info: 'ios-information-circle',
-  delete: 'md-trash',
-  add: 'md-add-circle',
-  schedule: 'md-time',
-  refresh: 'md-refresh',
-  arrowBack: 'md-arrow-back',
-  play: 'md-play',
-  filter: 'md-funnel',
-  print: 'md-print',
-  view: 'md-eye',
-};
+const variantIcon = Utils.iconVariants();
 
 const actionList = ['Filter'];
 const filterList = ['Integration'];
@@ -174,8 +161,8 @@ class OrderList extends React.Component {
                         </TableCell>
                         <TableCell align="center">
                           {
-                            get(row, 'created_date', null) != null
-                              ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
+                            get(row, 'updated_date', null) != null
+                              ? (moment(row.updated_date).format('Y-MM-DD H:mm:ss')
                               ) : (
                                 '--'
                               )

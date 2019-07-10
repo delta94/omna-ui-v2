@@ -36,6 +36,9 @@ import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
+import Utils from '../Common/Utils';
+
+const variantIcon = Utils.iconVariants();
 
 const actionList = ['Filter', 'Delete'];
 const filterList = ['Status'];
@@ -45,22 +48,6 @@ const headColumns = [
     id: 'task', first: true, last: false, label: 'Showing Tasks'
   },
 ];
-
-const variantIcon = {
-  success: 'md-checkmark-circle',
-  warning: 'md-warning',
-  error: 'md-alert',
-  info: 'ios-information-circle',
-  delete: 'md-trash',
-  add: 'md-add-circle',
-  schedule: 'md-time',
-  refresh: 'md-refresh',
-  arrowBack: 'md-arrow-back',
-  play: 'md-play',
-  filter: 'md-funnel',
-  print: 'md-print',
-  view: 'md-eye',
-};
 
 function NotificationBottom(type) {
   const not = get(type, 'type', null);

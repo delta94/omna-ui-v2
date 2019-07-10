@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { sha256 } from 'js-sha256';
+import get from 'lodash/get';
 
 function setParams(config) {
-  const { params } = config || {};
+  const params = get(config, 'params', {});
   const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
   params.token = currentTenant.token;
   params.timestamp = Date.now();

@@ -15,22 +15,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 // our
 import GenericFilterTool from './GenericFilterTool';
+import Utils from './Utils';
 
-const variantIcon = {
-  success: 'md-checkmark-circle',
-  warning: 'md-warning',
-  error: 'md-alert',
-  info: 'ios-information-circle',
-  delete: 'md-trash',
-  add: 'md-add-circle',
-  schedule: 'md-time',
-  refresh: 'md-refresh',
-  arrowBack: 'md-arrow-back',
-  play: 'md-play',
-  filter: 'md-funnel',
-  print: 'md-print',
-  view: 'md-eye',
-};
+const variantIcon = Utils.iconVariants();
 
 const toolbarStyles = theme => ({
   root: {
@@ -151,7 +138,7 @@ class GenericTableToolbar extends React.Component {
                         ) : (
                           act === 'Add'
                             ? (
-                              this.printBottom(act, onAdd, variantIcon.add)
+                              this.printBottom(act, get(detailedArrayActions, `${act}.onclickfunc`, () => {}), get(detailedArrayActions, `${act}.icon`, variantIcon.delete))
                             ) : (
                               null
                             )
