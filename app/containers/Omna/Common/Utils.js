@@ -62,6 +62,26 @@ class Utils {
   static isAuthenticated2() {
     return true;
   }
+
+  static iconVariants() {
+    const variantIcon = {
+      success: 'md-checkmark-circle',
+      warning: 'md-warning',
+      error: 'md-alert',
+      info: 'ios-information-circle',
+      delete: 'md-trash',
+      add: 'md-add-circle',
+      schedule: 'md-time',
+      refresh: 'md-refresh',
+      arrowBack: 'md-arrow-back',
+      play: 'md-play',
+      filter: 'md-funnel',
+      print: 'md-print',
+      view: 'md-eye',
+    };
+
+    return variantIcon;
+  }
 }
 
 export default Utils;

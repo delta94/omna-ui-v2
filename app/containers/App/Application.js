@@ -8,7 +8,8 @@ import Dashboard from '../Templates/Dashboard';
 import {
   Analytics, Parent, Error, NotFound,
   Tasks, TaskDetails, Orders, OrderDetails, Products,
-  Stores, AddStoreForm, Workflows, AddWorkflow
+  Stores, AddStoreForm, Workflows, AddWorkflow,
+  Webhooks, CreateWebhook
 } from '../pageListAsync';
 
 //
@@ -30,6 +31,8 @@ class Application extends React.Component {
             <AuthGuardRoute exact path="/app/settings/stores/add-store" component={AddStoreForm} />
             <AuthGuardRoute exact path="/app/settings/Workflows" component={Workflows} />
             <AuthGuardRoute exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
+            <AuthGuardRoute exact path="/app/settings/webhooks-list" component={Webhooks} />
+            <AuthGuardRoute exact path="/app/settings/webhooks-list/create-webhook" component={CreateWebhook} />
             { /* Home */ }
             <AuthGuardRoute exact path="/app" component={Analytics} />
             <AuthGuardRoute exact path="/" component={Analytics} />

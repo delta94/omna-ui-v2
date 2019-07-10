@@ -22,22 +22,9 @@ import GenericTabsHead from '../Common/GenericTabsHead';
 import LoadingState from '../Common/LoadingState';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
+import Utils from '../Common/Utils';
 
-const variantIcon = {
-  success: 'md-checkmark-circle',
-  warning: 'md-warning',
-  error: 'md-alert',
-  info: 'ios-information-circle',
-  delete: 'md-trash',
-  add: 'md-add-circle',
-  schedule: 'md-time',
-  refresh: 'md-refresh',
-  arrowBack: 'md-arrow-back',
-  play: 'md-play',
-  filter: 'md-funnel',
-  print: 'md-print',
-  view: 'md-eye',
-};
+const variantIcon = Utils.iconVariants();
 
 const myClass = {
   info: 'isa_info',

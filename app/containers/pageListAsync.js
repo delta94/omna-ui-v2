@@ -79,6 +79,16 @@ export const OrderDetails = loadable(() =>
     fallback: <Loading />,
 });
 
+export const Webhooks = loadable(() =>
+  import ('./Omna/Settings/Webhooks/WebhookList'), {
+    fallback: <Loading />,
+});
+
+export const CreateWebhook = loadable(() =>
+  import ('./Omna/Settings/Webhooks/CreateWebhook'), {
+    fallback: <Loading />,
+});
+
 export const Products = loadable(() =>
   import ('./Omna/Products/ProductList'), {
     fallback: <Loading />,
