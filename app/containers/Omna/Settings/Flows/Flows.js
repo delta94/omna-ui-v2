@@ -15,8 +15,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 //
+import get from 'lodash/get';
+//
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
+import GenericTableToolBar from '../../Common/GenericTableToolBar';
 
 const styles = theme => ({
   inputWidth: {
@@ -63,9 +66,10 @@ function Flows(props) {
     const { enqueueSnackbar } = props;
     try {
       const response = await API.get('flows');
-      setFlows(response.data.data);
+      setFlows(response ? response.data.data : []);
     } catch (error) {
-      enqueueSnackbar(error.response.data ? error.response.data.message : 'Unknown error', {
+      // const errorMessage = get(error, 'response.data.message', 'Unknown error');
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
@@ -85,7 +89,7 @@ function Flows(props) {
       });
       await fetchFlows();
     } catch (error) {
-      enqueueSnackbar(error.response.data ? error.response.data.message : 'Unknown error', {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
@@ -108,9 +112,19 @@ function Flows(props) {
     setAlertDialog({ open: false });
   };
 
+  const handleAddAction = () => {
+    const { history } = props;
+    history.push('/app/settings/workflows/add-workflow');
+  };
+
   return (
     <div>
       <Paper className={classes.tableRoot}>
+        <GenericTableToolBar
+          actionList={['Add']}
+          rowCount={flows.length}
+          onAdd={handleAddAction}
+        />
         <Table>
           <TableHead>
             <TableRow>
@@ -157,7 +171,8 @@ function Flows(props) {
 
 Flows.propTypes = {
   classes: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(Flows));
