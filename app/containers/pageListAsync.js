@@ -94,13 +94,13 @@ export const Products = loadable(() =>
     fallback: <Loading />,
 });
 
-export const Stores = loadable(() =>
-  import ('./Omna/Settings/Stores/Stores'), {
+export const Integrations = loadable(() =>
+  import ('./Omna/Settings/Integrations/Integrations'), {
     fallback: <Loading />,
 });
 
-export const AddStoreForm = loadable(() =>
-  import ('./Omna/Settings/Stores/AddStoreForm'), {
+export const AddIntegrationForm = loadable(() =>
+  import ('./Omna/Settings/Integrations/AddIntegrationForm'), {
     fallback: <Loading />,
 });
 

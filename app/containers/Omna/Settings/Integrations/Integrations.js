@@ -51,26 +51,26 @@ const styles = theme => ({
 
 });
 
-class Stores extends Component {
+class Integrations extends Component {
   state = {
     loading: true,
-    stores: [],
+    integrations: [],
     alertDialog: {
       open: false,
-      storeId: '',
-      storeName: '',
+      integrationId: '',
+      integrationName: '',
       message: ''
     }
   }
 
   componentDidMount() {
-    this.getStores();
+    this.getIntegrations();
   }
 
-  getStores = () => {
+  getIntegrations = () => {
     this.setState({ loading: true });
-    API.get('/stores').then(response => {
-      this.setState({ stores: response.data.data });
+    API.get('/integrations').then(response => {
+      this.setState({ integrations: response.data.data });
     }).catch((error) => {
       // handle error
       console.log(error);
@@ -79,11 +79,11 @@ class Stores extends Component {
     });
   }
 
-  deleteStore = (id) => {
+  deleteIntegration = (id) => {
     const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
-    API.get(`/stores/${id}/destroy`).then(() => {
-      enqueueSnackbar('Store deleted successfully', {
+    API.get(`/integrations/${id}/destroy`).then(() => {
+      enqueueSnackbar('Integration deleted successfully', {
         variant: 'success'
       });
     }).catch((error) => {
@@ -95,20 +95,20 @@ class Stores extends Component {
     });
   }
 
-  handleAddStoreClick = () => {
+  handleAddIntegrationClick = () => {
     const { history } = this.props;
-    history.push('/app/settings/stores/add-store');
+    history.push('/app/settings/integrations/add-integration');
   }
 
   handleAuthorization = (id) => {
-    window.location.replace(`${Utils.baseAPIURL()}/stores/${id}/authorize?redirect_id=${Utils.uri4Back2SPA()}`);
+    window.location.replace(`${Utils.baseAPIURL()}/integrations/${id}/authorize?redirect_id=${Utils.returnAfterAuthorization()}`);
   }
 
   handleUnAuthorization = (id) => {
     const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
-    API.get(`/stores/${id}/unauthorize`).then(() => {
-      enqueueSnackbar('Store unauthorized successfully', {
+    API.get(`/integrations/${id}/unauthorize`).then(() => {
+      enqueueSnackbar('Integration unauthorized successfully', {
         variant: 'success'
       });
     }).catch((error) => {
@@ -116,7 +116,7 @@ class Stores extends Component {
       console.log(error);
     }).then(() => {
       this.setState({ loading: false });
-      this.getStores();
+      this.getIntegrations();
     });
   }
 
@@ -128,13 +128,13 @@ class Stores extends Component {
     const { enqueueSnackbar } = this.props;
     try {
       const { alertDialog } = this.state;
-      const response = await API.delete(`/stores/${alertDialog.storeId}`);
+      const response = await API.delete(`/stores/${alertDialog.integrationId}`);
       if (response && response.data.success) {
-        enqueueSnackbar('Store deleted successfully', {
+        enqueueSnackbar('Integration deleted successfully', {
           variant: 'success'
         });
       }
-      this.getStores();
+      this.getIntegrations();
     } catch (error) {
       const errorMessage = error ? error.response.data.message : 'unknown Error';
       enqueueSnackbar(errorMessage, {
@@ -148,16 +148,16 @@ class Stores extends Component {
     this.setState({
       alertDialog: {
         open: true,
-        storeId: id,
-        storeName: name,
-        message: `Are you sure you want to remove "${name}" Store?`
+        integrationId: id,
+        integrationName: name,
+        message: `Are you sure you want to remove "${name}" integration?`
       }
     });
   }
 
   render() {
     const { classes } = this.props;
-    const { stores, loading, alertDialog } = this.state;
+    const { integrations, loading, alertDialog } = this.state;
 
     return (
       <div>
@@ -168,14 +168,14 @@ class Stores extends Component {
               variant="outlined"
               color="primary"
               style={{ margin: '10px' }}
-              onClick={this.handleAddStoreClick}
+              onClick={this.handleAddIntegrationClick}
             >
-              Add Store
+              Add Integration
             </Button>
           </div>
           <Divider variant="middle" />
           <div className={classes.cardList}>
-            {stores && stores.map(({
+            {integrations && integrations.map(({
               id, name, channel, authorized, logo = Utils.urlLogo(channel)
             }) => (
               <Card className={classes.card} key={name}>
@@ -224,10 +224,10 @@ class Stores extends Component {
   }
 }
 
-Stores.propTypes = {
+Integrations.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(Stores));
+export default withSnackbar(withStyles(styles)(Integrations));

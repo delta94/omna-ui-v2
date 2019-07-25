@@ -8,7 +8,7 @@ import Dashboard from '../Templates/Dashboard';
 import {
   Analytics, Parent, Error, NotFound,
   Tasks, TaskDetails, Orders, OrderDetails, Products,
-  Stores, AddStoreForm, Workflows, AddWorkflow,
+  Integrations, AddIntegrationForm, Workflows, AddWorkflow,
   Webhooks, CreateWebhook
 } from '../pageListAsync';
 
@@ -27,8 +27,8 @@ class Application extends React.Component {
             <AuthGuardRoute exact path="/app/tasks-list" component={Tasks} />
             <AuthGuardRoute exact path="/app/tasks-list/:task_id/task-details" component={TaskDetails} />
             <AuthGuardRoute exact path="/app/products-list" component={Products} />
-            <AuthGuardRoute exact path="/app/settings/stores" component={Stores} />
-            <AuthGuardRoute exact path="/app/settings/stores/add-store" component={AddStoreForm} />
+            <AuthGuardRoute exact path="/app/settings/integrations" component={Integrations} />
+            <AuthGuardRoute exact path="/app/settings/integrations/add-integration" component={AddIntegrationForm} />
             <AuthGuardRoute exact path="/app/settings/Workflows" component={Workflows} />
             <AuthGuardRoute exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
             <AuthGuardRoute exact path="/app/settings/webhooks-list" component={Webhooks} />

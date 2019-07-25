@@ -18,10 +18,10 @@ module.exports = [
     icon: 'ios-settings',
     child: [
       {
-        key: 'stores',
-        name: 'Stores',
+        key: 'integrations',
+        name: 'Integrations',
         icon: 'ios-home-outline',
-        link: '/app/settings/stores'
+        link: '/app/settings/integrations'
       },
       {
         key: 'workflows',

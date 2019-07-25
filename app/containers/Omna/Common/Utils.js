@@ -39,8 +39,8 @@ class Utils {
     }
   }
 
-  static uri4Back2SPA() {
-    return 'http://omna-ui.s3-website-us-west-2.amazonaws.com/settings/stores';
+  static returnAfterAuthorization() {
+    return 'http://omna-ui.s3-website-us-west-2.amazonaws.com/settings/integrations';
   }
 
   static baseAPIURL() {

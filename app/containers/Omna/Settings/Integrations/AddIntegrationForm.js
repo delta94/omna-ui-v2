@@ -27,7 +27,7 @@ const styles = () => ({
   }
 });
 
-class AddStoreForm extends Component {
+class AddIntegrationForm extends Component {
   state = {
     store: '',
     channel: '',
@@ -42,7 +42,7 @@ class AddStoreForm extends Component {
   }
 
   getChannels() {
-    API.get('stores/channels').then(response => {
+    API.get('integrations/channels').then(response => {
       this.setState({ channels: response.data, loadingState: false });
     }).catch((error) => {
       // handle error
@@ -68,7 +68,7 @@ class AddStoreForm extends Component {
       this.setState({ errors: { channel: 'channel is required' } });
     } else {
       this.setState({ loadingState: true });
-      API.post('/stores', { data: { name, channel } }).then(() => {
+      API.post('/integrations', { data: { name, channel } }).then(() => {
         enqueueSnackbar('Store created successfully', {
           variant: 'success'
         });
@@ -89,7 +89,7 @@ class AddStoreForm extends Component {
   }
 
   handleAuthorization = (id) => {
-    window.location.replace(`${Utils.baseAPIURL()}/stores/${id}/authorize?redirect_id=${Utils.uri4Back2SPA()}`);
+    window.location.replace(`${Utils.baseAPIURL()}/integrations/${id}/authorize?redirect_id=${Utils.returnAfterAuthorization()}`);
   }
 
   render() {
@@ -164,10 +164,10 @@ class AddStoreForm extends Component {
   }
 }
 
-AddStoreForm.propTypes = {
+AddIntegrationForm.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(AddStoreForm));
+export default withSnackbar(withStyles(styles)(AddIntegrationForm));
