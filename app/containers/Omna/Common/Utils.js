@@ -40,15 +40,19 @@ class Utils {
   }
 
   static returnAfterAuthorization() {
-    return 'http://omna-ui.s3-website-us-west-2.amazonaws.com/settings/integrations';
+    return 'http://omna-ui-v2.s3-website-us-west-2.amazonaws.com/settings/integrations';
   }
 
   static baseAPIURL() {
     return 'https://cenit.io/app/ecapi-v1';
   }
 
-  static baseAppUrl() {
-    return 'http://127.0.0.1:4000';
+  static baseAppUrl(url) {
+    if (url.includes('127.0.0.1') || url.includes('localhost')) {
+      return 'http://127.0.0.1:4000';
+    }
+
+    return 'http://omna-ui-v2.s3-website-us-west-2.amazonaws.com';
   }
 
   static isAuthenticated() {
