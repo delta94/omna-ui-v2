@@ -52,7 +52,7 @@ class Utils {
       return 'http://127.0.0.1:4000';
     }
 
-    return 'http://omna-ui-v2.s3-website-us-west-2.amazonaws.com';
+    return 'https://master.d3voub2ei4aaze.amplifyapp.com';
   }
 
   static isAuthenticated() {
