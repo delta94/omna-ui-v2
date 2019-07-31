@@ -1,4 +1,10 @@
+
 class Utils {
+  constructor() {
+    this.URL_DEV = 'http://127.0.0.1:4000';
+    this.URL_PROD = 'https://master.d3voub2ei4aaze.amplifyapp.com';
+  }
+
   static fullChannelName(channel) {
     if (channel) {
       const name = channel.substring(0, channel.length - 2);
@@ -39,32 +45,32 @@ class Utils {
     }
   }
 
+  getURL() {
+    const url = window.location.href;
+    if (url.includes('127.0.0.1') || url.includes('localhost')) {
+      return this.URL_DEV;
+    }
+    return this.URL_PROD;
+  }
+
   static returnAfterAuthorization() {
-    return 'http://omna-ui-v2.s3-website-us-west-2.amazonaws.com/settings/integrations';
+    return `${new Utils().getURL()}/settings/integrations`;
   }
 
   static baseAPIURL() {
     return 'https://cenit.io/app/ecapi-v1';
   }
 
-  static baseAppUrl(url) {
-    if (url.includes('127.0.0.1') || url.includes('localhost')) {
-      return 'http://127.0.0.1:4000';
-    }
-
-    return 'https://master.d3voub2ei4aaze.amplifyapp.com';
+  static baseAppUrl() {
+    return new Utils().getURL();
   }
 
   static isAuthenticated() {
-    if (localStorage.getItem('user')) {
+    if (localStorage.getItem('currentTenant')) {
       return true;
     }
 
     return false;
-  }
-
-  static isAuthenticated2() {
-    return true;
   }
 
   static iconVariants() {
