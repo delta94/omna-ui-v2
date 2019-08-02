@@ -2,7 +2,7 @@
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
-    this.URL_PROD = 'https://master.d3voub2ei4aaze.amplifyapp.com';
+    this.URL_PROD = 'https://develop.dfkw4vlxolozi.amplifyapp.com';
   }
 
   static fullChannelName(channel) {

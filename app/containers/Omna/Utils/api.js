@@ -7,9 +7,9 @@ function setParams(config) {
   const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
   params.token = currentTenant.token;
   params.timestamp = Date.now();
-  if (config.data) {
+  /*   if (config.data) {
     params.data = { ...config.data.data };
-  }
+  } */
   // Join the service path and the ordered sequence of characters, excluding the quotes,
   // corresponding to the JSON of the parameters that will be sent.
   const msg = config.url + JSON.stringify(params).replace(/["']/g, '').split('').sort()
