@@ -2,7 +2,7 @@
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
-    this.URL_PROD = 'https://develop.dfkw4vlxolozi.amplifyapp.com';
+    this.URL_PROD = 'http://omna-v2.s3-website-us-west-2.amazonaws.com';
   }
 
   static fullChannelName(channel) {
