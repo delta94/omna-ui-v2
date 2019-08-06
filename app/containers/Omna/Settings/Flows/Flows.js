@@ -16,6 +16,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
+import moment from 'moment';
 //
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
@@ -128,24 +129,22 @@ function Flows(props) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>WorkFlow</TableCell>
-              <TableCell align="center">Store</TableCell>
-              <TableCell align="center">Channel</TableCell>
+              <TableCell>title</TableCell>
               <TableCell align="center">Created at</TableCell>
+              <TableCell align="center">Updated at</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {flows.map(({
-              id, title, store, created_at: createdAt
+              id, title, created_at: createdAt, updated_at: updatedAt
             }) => (
               <TableRow key={id}>
                 <TableCell component="th" scope="row">
                   {title}
                 </TableCell>
-                <TableCell align="center">{store.name}</TableCell>
-                <TableCell align="center">{store.channel}</TableCell>
-                <TableCell align="center">{createdAt}</TableCell>
+                <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
+                <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
                 <TableCell align="center">
                   <Tooltip title="delete">
                     <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>

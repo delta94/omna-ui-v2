@@ -5,15 +5,14 @@ import PropTypes from 'prop-types';
 // material-ui
 import { withStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 
-import classNames from 'classnames';
 import LoadingState from '../../Common/LoadingState';
+import FormActions from '../../Common/FormActions';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
 
@@ -93,7 +92,7 @@ class AddIntegrationForm extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       store, channel, channels, authorized, errors, loadingState
     } = this.state;
@@ -153,9 +152,7 @@ class AddIntegrationForm extends Component {
             <Divider variant="middle" />
             {loadingState ? <LoadingState loading />
               : (
-                <Button variant="contained" type="submit" color="primary" className={classNames(classes.inputWidth, classes.margin)}>
-                  Add
-                </Button>
+                <FormActions history={history} />
               )}
           </form>
         </Paper>

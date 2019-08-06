@@ -7,14 +7,15 @@ import { withStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 // dandelion-template
 import { PapperBlock } from 'dan-components';
 //
 import get from 'lodash/get';
+import moment from 'moment';
 //
 import API from '../../Utils/api';
+import FormActions from '../../Common/FormActions';
 import Scheduler from './Scheduler';
 
 const styles = theme => ({
@@ -60,7 +61,7 @@ function FlowForm(props) {
   const [endDate, setEndDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
 
-  const { classes } = props;
+  const { classes, history } = props;
 
   useEffect(() => {
     async function fetchFlowOptions() {
@@ -122,9 +123,9 @@ function FlowForm(props) {
 
     try {
       const scheduler = {
-        start_date: startDate,
-        end_date: endDate,
-        time,
+        start_date: moment(startDate).format('Y-MM-DD'),
+        end_date: moment(endDate).format('Y-MM-DD'),
+        time: moment(time).format('h:mm'),
         days_of_week: daysOfWeek,
         weeks_of_month: weeksOfMonth,
         months_of_year: monthsOfYear
@@ -141,106 +142,98 @@ function FlowForm(props) {
     }
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    handleAddFlow();
+  };
+
   return (
     <Fragment>
-      <PapperBlock title="Workflow" icon="ios-shuffle" desc="Define a workflow from an available integration">
-        <div className={classes.paper}>
-          <Typography variant="h6">
-            I want to:
-          </Typography>
-          <TextField
-            required
-            id="flows"
-            select
-            label="Flows"
-            value={flowType}
-            name="flows"
-            onChange={onInputFlowChange}
-            SelectProps={{
-              MenuProps: {
-                className: classes.inputWidth
-              },
-            }}
-            margin="normal"
-            variant="outlined"
-            className={classNames(classes.inputWidth, classes.marginLeft)}
-          >
-            {flowsTypes.map(option => (
-              <MenuItem key={option.type} value={option.type}>
-                {option.title}
-              </MenuItem>
-            ))}
-          </TextField>
-          <KeyboardArrowRight className={classes.marginLeft} />
-          <TextField
-            required
-            id="integrations"
-            select
-            label="Integrations"
-            value={integration}
-            name="integrations"
-            onChange={onInputStoreChange}
-            SelectProps={{
-              MenuProps: {
-                className: classes.inputWidth
-              },
-            }}
-            margin="normal"
-            variant="outlined"
-            className={classNames(classes.inputWidth, classes.marginLeft)}
-          >
-            {integrationsOptions.map(option => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        </div>
-      </PapperBlock>
+      <form onSubmit={onSubmit} noValidate autoComplete="off">
+        <PapperBlock title="Workflow" icon="ios-shuffle" desc="Define a workflow from an available integration">
+          <div className={classes.paper}>
+            <Typography variant="h6">
+              I want to:
+            </Typography>
+            <TextField
+              required
+              id="flows"
+              select
+              label="Flows"
+              value={flowType}
+              name="flows"
+              onChange={onInputFlowChange}
+              SelectProps={{
+                MenuProps: {
+                  className: classes.inputWidth
+                },
+              }}
+              margin="normal"
+              variant="outlined"
+              className={classNames(classes.inputWidth, classes.marginLeft)}
+            >
+              {flowsTypes.map(option => (
+                <MenuItem key={option.type} value={option.type}>
+                  {option.title}
+                </MenuItem>
+              ))}
+            </TextField>
+            <KeyboardArrowRight className={classes.marginLeft} />
+            <TextField
+              required
+              id="integrations"
+              select
+              label="Integrations"
+              value={integration}
+              name="integrations"
+              onChange={onInputStoreChange}
+              SelectProps={{
+                MenuProps: {
+                  className: classes.inputWidth
+                },
+              }}
+              margin="normal"
+              variant="outlined"
+              className={classNames(classes.inputWidth, classes.marginLeft)}
+            >
+              {integrationsOptions.map(option => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          </div>
+        </PapperBlock>
 
-      <PapperBlock title="Scheduler" icon="ios-clock-outline" desc="Select how often you want to run the workflow">
-        <Scheduler
-          startDate={startDate}
-          endDate={endDate}
-          time={time}
-          active={active}
-          daysOfWeek={daysOfWeek}
-          weeksOfMonth={weeksOfMonth}
-          monthsOfYear={monthsOfYear}
-          onStartDateChange={onStartDateChange}
-          onEndDateChange={onEndDateChange}
-          onTimeChange={onTimeChange}
-          onActiveChange={onActiveChange}
-          onDaysOfWeekChange={onDaysOfWeekChange}
-          onWeeksOfMonthChange={onWeeksOfMonthChange}
-          onMonthsOfYearChange={onMonthsOfYearChange}
+        <PapperBlock title="Scheduler" icon="ios-clock-outline" desc="Select how often you want to run the workflow">
+          <Scheduler
+            startDate={startDate}
+            endDate={endDate}
+            time={time}
+            active={active}
+            daysOfWeek={daysOfWeek}
+            weeksOfMonth={weeksOfMonth}
+            monthsOfYear={monthsOfYear}
+            onStartDateChange={onStartDateChange}
+            onEndDateChange={onEndDateChange}
+            onTimeChange={onTimeChange}
+            onActiveChange={onActiveChange}
+            onDaysOfWeekChange={onDaysOfWeekChange}
+            onWeeksOfMonthChange={onWeeksOfMonthChange}
+            onMonthsOfYearChange={onMonthsOfYearChange}
+          />
+        </PapperBlock>
+        <FormActions
+          history={history}
+          acceptBtnDisabled={!(flowType && integration)}
         />
-      </PapperBlock>
-      <div className="display-flex flex-direction-row-inverse" style={{ marginBottom: '25px', marginTop: '25px' }}>
-        <Button
-          variant="contained"
-          size="medium"
-          color="primary"
-          disabled={!(flowType && integration)}
-          className={classes.marginLeft}
-          onClick={handleAddFlow}
-        >
-          Add Flow
-        </Button>
-        <Button
-          variant="contained"
-          size="medium"
-          color="default"
-          className={classes.marginLeft}
-        >
-          Cancel
-        </Button>
-      </div>
+      </form>
     </Fragment>
   );
 }
 
 FlowForm.propTypes = {
+  history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
