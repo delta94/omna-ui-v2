@@ -17,6 +17,7 @@ import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
 import moment from 'moment';
+import Ionicon from 'react-ionicons';
 //
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
@@ -118,6 +119,20 @@ function Flows(props) {
     history.push('/app/settings/workflows/add-workflow');
   };
 
+  const handleStartFlow = async (id) => {
+    const { enqueueSnackbar } = props;
+    try {
+      await API.get(`flows/${id}/start`);
+      enqueueSnackbar('Workflow started successfuly', {
+        variant: 'success'
+      });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }
+  };
+
   return (
     <div>
       <Paper className={classes.tableRoot}>
@@ -130,6 +145,7 @@ function Flows(props) {
           <TableHead>
             <TableRow>
               <TableCell>title</TableCell>
+              <TableCell align="center">integration</TableCell>
               <TableCell align="center">Created at</TableCell>
               <TableCell align="center">Updated at</TableCell>
               <TableCell align="center">Actions</TableCell>
@@ -137,18 +153,22 @@ function Flows(props) {
           </TableHead>
           <TableBody>
             {flows.map(({
-              id, title, created_at: createdAt, updated_at: updatedAt
+              id, title, integration, created_at: createdAt, updated_at: updatedAt
             }) => (
               <TableRow key={id}>
-                <TableCell component="th" scope="row">
-                  {title}
-                </TableCell>
+                <TableCell component="th" scope="row">{title}</TableCell>
+                <TableCell align="center">{integration.name}</TableCell>
                 <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
                 <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
                 <TableCell align="center">
                   <Tooltip title="delete">
                     <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
                       <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Start">
+                    <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
+                      <Ionicon icon="md-play" />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
