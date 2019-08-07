@@ -131,7 +131,8 @@ class TaskList extends React.Component {
     const { limit, page } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      with_details: true
     };
 
     this.getAPItasks(params);
