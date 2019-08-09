@@ -8,11 +8,9 @@ import Dashboard from '../Templates/Dashboard';
 import {
   Analytics, Parent, Error, NotFound,
   Tasks, TaskDetails, Orders, OrderDetails, Products,
-  Integrations, AddIntegrationForm, Workflows, AddWorkflow,
+  Integrations, AddIntegrationForm, Workflows, AddWorkflow, EditWorkflow,
   Webhooks, CreateWebhook
 } from '../pageListAsync';
-
-//
 
 class Application extends React.Component {
   render() {
@@ -21,7 +19,6 @@ class Application extends React.Component {
       <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
-            { /* OMNA */ }
             <AuthGuardRoute exact path="/app/orders-list" component={Orders} />
             <AuthGuardRoute exact path="/app/orders-list/:store_id/:number/order-details" component={OrderDetails} />
             <AuthGuardRoute exact path="/app/tasks-list" component={Tasks} />
@@ -31,6 +28,7 @@ class Application extends React.Component {
             <AuthGuardRoute exact path="/app/settings/integrations/add-integration" component={AddIntegrationForm} />
             <AuthGuardRoute exact path="/app/settings/Workflows" component={Workflows} />
             <AuthGuardRoute exact path="/app/settings/Workflows/add-workflow" component={AddWorkflow} />
+            <AuthGuardRoute exact path="/app/settings/Workflows/edit-workflow/:id" component={EditWorkflow} />
             <AuthGuardRoute exact path="/app/settings/webhooks-list" component={Webhooks} />
             <AuthGuardRoute exact path="/app/settings/webhooks-list/create-webhook" component={CreateWebhook} />
             { /* Home */ }

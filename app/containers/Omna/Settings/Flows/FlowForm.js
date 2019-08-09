@@ -1,9 +1,8 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
-import { withStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -11,145 +10,45 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 // dandelion-template
 import { PapperBlock } from 'dan-components';
 //
-import get from 'lodash/get';
-import moment from 'moment';
-//
-import API from '../../Utils/api';
 import FormActions from '../../Common/FormActions';
 import Scheduler from './Scheduler';
 
-const styles = theme => ({
-  root: {
-    padding: theme.spacing.unit
-  },
-  inputWidth: {
-    width: '300px',
-  },
-  marginTop: {
-    marginTop: theme.spacing.unit,
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit,
-  },
-  paper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  }
-});
-
-
 function FlowForm(props) {
-  const [flowType, setFlowType] = useState('');
-  const [flowsTypes, setFlowsTypes] = useState([]);
-  const [integration, setIntegration] = useState('');
-  const [integrationsOptions, setIntegrationsOptions] = useState([]);
-  const [active, setActive] = useState(false);
-  const [daysOfWeek, setDaysOfWeek] = useState([]);
-  const [weeksOfMonth, setWeeksOfMonth] = useState([]);
-  const [monthsOfYear, setMonthsOfYear] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
+  const {
+    classes, history, flowType, flowsTypes, integration, integrationsOptions, onSubmit, scheduler,
+    disableRule
+  } = props;
 
-  const { classes, history } = props;
+  const {
+    startDate, endDate, time, active, daysOfWeek, weeksOfMonth, monthsOfYear, status
+  } = scheduler;
 
-  useEffect(() => {
-    async function fetchFlowOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('flows/types');
-        setFlowsTypes(response.data.data);
-      } catch (error) {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchFlowOptions();
-  }, []);
+  const onInputFlowChange = (e) => { props.onInputFlowChange(e.target.value); };
 
-  useEffect(() => {
-    async function fetchIntegrationsOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('integrations');
-        setIntegrationsOptions(response.data.data);
-      } catch (error) {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchIntegrationsOptions();
-  }, []);
+  const onInputStoreChange = (e) => { props.onInputStoreChange(e.target.value); };
 
+  const onActiveChange = (e) => { props.onActiveChange(e); };
 
-  const onInputFlowChange = (e) => { setFlowType(e.target.value); };
+  const onStartDateChange = (e) => { props.onStartDateChange(e); };
 
-  const onInputStoreChange = (e) => { setIntegration(e.target.value); };
+  const onEndDateChange = (e) => { props.onEndDateChange(e); };
 
-  const onActiveChange = (e) => { setActive(e); };
+  const onTimeChange = (e) => { props.onTimeChange(e); };
 
-  const onStartDateChange = (e) => { setStartDate(e); };
+  const onDaysOfWeekChange = (e) => { props.onDaysOfWeekChange(e); };
 
-  const onEndDateChange = (e) => { setEndDate(e); };
+  const onWeeksOfMonthChange = (e) => { props.onWeeksOfMonthChange(e); };
 
-  const onTimeChange = (e) => { setTime(e); };
+  const onMonthsOfYearChange = (e) => { props.onMonthsOfYearChange(e); };
 
-  const onDaysOfWeekChange = (e) => { setDaysOfWeek(e); };
-
-  const onWeeksOfMonthChange = (e) => { setWeeksOfMonth(e); };
-
-  const onMonthsOfYearChange = (e) => { setMonthsOfYear(e); };
-
-
-  function clearFields() {
-    setFlowType('');
-    setIntegration('');
-  }
-
-  const handleAddFlow = async () => {
-    const { enqueueSnackbar } = props;
-
-    try {
-      const scheduler = {
-        start_date: moment(startDate).format('Y-MM-DD'),
-        end_date: moment(endDate).format('Y-MM-DD'),
-        time: moment(time).format('h:mm'),
-        days_of_week: daysOfWeek,
-        weeks_of_month: weeksOfMonth,
-        months_of_year: monthsOfYear
-      };
-      await API.post('flows', { data: { integration_id: integration, type: flowType, scheduler } });
-      enqueueSnackbar('Workflow created successfully', {
-        variant: 'success'
-      });
-      clearFields();
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
-  };
-
-  const onSubmit = (e) => {
+  const onSubmitForm = (e) => {
     e.preventDefault();
-    handleAddFlow();
+    onSubmit();
   };
 
   return (
     <Fragment>
-      <form onSubmit={onSubmit} noValidate autoComplete="off">
+      <form onSubmit={onSubmitForm} noValidate autoComplete="off">
         <PapperBlock title="Workflow" icon="ios-shuffle" desc="Define a workflow from an available integration">
           <div className={classes.paper}>
             <Typography variant="h6">
@@ -162,6 +61,7 @@ function FlowForm(props) {
               label="Flows"
               value={flowType}
               name="flows"
+              disabled={disableRule}
               onChange={onInputFlowChange}
               SelectProps={{
                 MenuProps: {
@@ -186,6 +86,7 @@ function FlowForm(props) {
               label="Integrations"
               value={integration}
               name="integrations"
+              disabled={disableRule}
               onChange={onInputStoreChange}
               SelectProps={{
                 MenuProps: {
@@ -211,6 +112,7 @@ function FlowForm(props) {
             endDate={endDate}
             time={time}
             active={active}
+            status={status}
             daysOfWeek={daysOfWeek}
             weeksOfMonth={weeksOfMonth}
             monthsOfYear={monthsOfYear}
@@ -232,10 +134,32 @@ function FlowForm(props) {
   );
 }
 
+FlowForm.defaultProps = {
+  disableRule: false,
+  flowType: '',
+  integration: '',
+  scheduler: {}
+};
+
 FlowForm.propTypes = {
   history: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  disableRule: PropTypes.bool,
+  flowType: PropTypes.string,
+  flowsTypes: PropTypes.array.isRequired,
+  integration: PropTypes.string,
+  integrationsOptions: PropTypes.array.isRequired,
+  scheduler: PropTypes.object,
+  onSubmit: PropTypes.func.isRequired,
+  onInputFlowChange: PropTypes.func.isRequired,
+  onInputStoreChange: PropTypes.func.isRequired,
+  onActiveChange: PropTypes.func.isRequired,
+  onStartDateChange: PropTypes.func.isRequired,
+  onEndDateChange: PropTypes.func.isRequired,
+  onTimeChange: PropTypes.func.isRequired,
+  onDaysOfWeekChange: PropTypes.func.isRequired,
+  onWeeksOfMonthChange: PropTypes.func.isRequired,
+  onMonthsOfYearChange: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(FlowForm));
+export default withSnackbar(FlowForm);

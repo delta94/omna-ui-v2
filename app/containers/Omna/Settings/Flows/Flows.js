@@ -62,7 +62,7 @@ function Flows(props) {
     message: ''
   });
 
-  const { classes } = props;
+  const { classes, history } = props;
 
   async function fetchFlows() {
     const { enqueueSnackbar } = props;
@@ -115,7 +115,6 @@ function Flows(props) {
   };
 
   const handleAddAction = () => {
-    const { history } = props;
     history.push('/app/settings/workflows/add-workflow');
   };
 
@@ -131,6 +130,10 @@ function Flows(props) {
         variant: 'error'
       });
     }
+  };
+
+  const handleEditFlow = (flow) => {
+    history.push(`/app/settings/workflows/edit-workflow/${flow.id}`);
   };
 
   return (
@@ -152,28 +155,36 @@ function Flows(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {flows.map(({
-              id, title, integration, created_at: createdAt, updated_at: updatedAt
-            }) => (
-              <TableRow key={id}>
-                <TableCell component="th" scope="row">{title}</TableCell>
-                <TableCell align="center">{integration.name}</TableCell>
-                <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                <TableCell align="center">
-                  <Tooltip title="delete">
-                    <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Start">
-                    <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
-                      <Ionicon icon="md-play" />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
+            {flows.map((flow) => {
+              const {
+                id, title, createdAt, updatedAt, integration
+              } = flow;
+              return (
+                <TableRow key={id}>
+                  <TableCell component="th" scope="row">{title}</TableCell>
+                  <TableCell align="center">{integration.name}</TableCell>
+                  <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
+                  <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="edit">
+                      <IconButton aria-label="edit" onClick={() => handleEditFlow(flow)}>
+                        <Ionicon icon="md-create" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="start">
+                      <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
+                        <Ionicon icon="md-play" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="delete">
+                      <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </Paper>

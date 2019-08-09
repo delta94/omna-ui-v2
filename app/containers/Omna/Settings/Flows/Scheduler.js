@@ -48,7 +48,7 @@ const styles = theme => ({
 
 function Scheduler(props) {
   const {
-    classes, daysOfWeek, weeksOfMonth, monthsOfYear, startDate, endDate, time, active
+    classes, daysOfWeek, weeksOfMonth, monthsOfYear, startDate, endDate, time, active, status
   } = props;
 
   const onStartDateChange = (e) => { props.onStartDateChange(e); };
@@ -90,6 +90,7 @@ function Scheduler(props) {
           <div>
             <TimePicker
               className={classNames(classes.formControl)}
+              ampm={false}
               label="Time"
               value={time}
               onChange={onTimeChange}
@@ -163,36 +164,51 @@ function Scheduler(props) {
           </Select>
         </FormControl>
       </div>
-      <div>
-        <FormControlLabel
-          className={classes.formControl}
-          control={
-            (
-              <Checkbox
-                name="active"
-                checked={active}
-                onChange={onActiveChange}
-                value="active"
-                color="default"
-              />
-            )
-          }
-          label="Active"
-        />
-      </div>
+      {status && (
+        <div>
+          <FormControlLabel
+            className={classes.formControl}
+            disabled
+            control={
+              (
+                <Checkbox
+                  name="active"
+                  checked={active}
+                  onChange={onActiveChange}
+                  value="active"
+                  color="default"
+                />
+              )
+            }
+            label="Active"
+          />
+        </div>
+      )}
     </div>
   );
 }
 
+Scheduler.defaultProps = {
+  daysOfWeek: [],
+  weeksOfMonth: [],
+  monthsOfYear: [],
+  startDate: new Date(),
+  endDate: new Date(),
+  time: new Date(),
+  active: false,
+  status: true
+};
+
 Scheduler.propTypes = {
   classes: PropTypes.object.isRequired,
-  daysOfWeek: PropTypes.array.isRequired,
-  weeksOfMonth: PropTypes.array.isRequired,
-  monthsOfYear: PropTypes.array.isRequired,
-  startDate: PropTypes.shape({}).isRequired,
-  endDate: PropTypes.shape({}).isRequired,
-  time: PropTypes.shape({}).isRequired,
-  active: PropTypes.bool.isRequired,
+  daysOfWeek: PropTypes.array,
+  weeksOfMonth: PropTypes.array,
+  monthsOfYear: PropTypes.array,
+  startDate: PropTypes.shape({}),
+  endDate: PropTypes.shape({}),
+  time: PropTypes.shape({}),
+  active: PropTypes.bool,
+  status: PropTypes.bool,
   onStartDateChange: PropTypes.func.isRequired,
   onEndDateChange: PropTypes.func.isRequired,
   onTimeChange: PropTypes.func.isRequired,

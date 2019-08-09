@@ -110,6 +110,11 @@ export const Workflows = loadable(() =>
 });
 
 export const AddWorkflow = loadable(() =>
-  import ('./Omna/Settings/Flows/FlowForm'), {
+  import ('./Omna/Settings/Flows/AddFlowForm'), {
+    fallback: <Loading />,
+});
+
+export const EditWorkflow = loadable(() =>
+  import ('./Omna/Settings/Flows/EditFlowForm'), {
     fallback: <Loading />,
 });

@@ -40,7 +40,7 @@ function FormActions(props) {
 
 FormActions.defaultProps = {
   cancelBtnLabel: 'Cancel',
-  acceptBtnLabel: 'Add',
+  acceptBtnLabel: 'Save',
   type: 'submit',
   acceptBtnDisabled: false,
   acceptBtnAction: () => {}
