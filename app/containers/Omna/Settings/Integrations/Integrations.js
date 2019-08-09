@@ -73,8 +73,14 @@ class Integrations extends Component {
 
   getIntegrations = params => {
     this.setState({ loading: true });
-    const params = { with_details: true };
-    API.get('/integrations', { params })
+    let reqParams = params;
+    if (typeof reqParams !== 'undefined') {
+      reqParams.with_details = true;
+    } else {
+      reqParams = { with_details: true };
+    }
+
+    API.get('/integrations', { params: reqParams })
       .then(response => {
         this.setState({
           integrations: get(response, 'data', { data: [], pagination: {} }),
@@ -147,7 +153,9 @@ class Integrations extends Component {
     const { enqueueSnackbar } = this.props;
     try {
       const { alertDialog } = this.state;
-      const response = await API.delete(`/integrations/${alertDialog.integrationId}`);
+      const response = await API.delete(
+        `/integrations/${alertDialog.integrationId}`
+      );
       if (response && response.data.success) {
         enqueueSnackbar('Integration deleted successfully', {
           variant: 'success'
