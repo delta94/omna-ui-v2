@@ -50,7 +50,10 @@ const styles = theme => ({
     width: '100%',
     marginTop: theme.spacing.unit * 3,
     overflowX: 'auto',
-  }
+  },
+  icon: {
+    color: '#9e9e9e',
+  },
 });
 
 function Flows(props) {
@@ -132,8 +135,23 @@ function Flows(props) {
     }
   };
 
-  const handleEditFlow = (flow) => {
-    history.push(`/app/settings/workflows/edit-workflow/${flow.id}`);
+  const handleEditFlow = (id) => {
+    history.push(`/app/settings/workflows/edit-workflow/${id}`);
+  };
+
+  const handleToggleScheduler = async (id) => {
+    const { enqueueSnackbar } = props;
+    try {
+      await API.get(`flows/${id}/toggle/scheduler/status`);
+      fetchFlows();
+      enqueueSnackbar('Scheduler toggled successfuly', {
+        variant: 'success'
+      });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }
   };
 
   return (
@@ -155,36 +173,41 @@ function Flows(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {flows.map((flow) => {
-              const {
-                id, title, createdAt, updatedAt, integration
-              } = flow;
-              return (
-                <TableRow key={id}>
-                  <TableCell component="th" scope="row">{title}</TableCell>
-                  <TableCell align="center">{integration.name}</TableCell>
-                  <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                  <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="edit">
-                      <IconButton aria-label="edit" onClick={() => handleEditFlow(flow)}>
-                        <Ionicon icon="md-create" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="start">
-                      <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
-                        <Ionicon icon="md-play" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="delete">
-                      <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {flows.map(({
+              id, title, createdAt, updatedAt, integration, task
+            }) => (
+              <TableRow key={id}>
+                <TableCell component="th" scope="row">{title}</TableCell>
+                <TableCell align="center">{integration.name}</TableCell>
+                <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
+                <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
+                <TableCell align="center">
+                  <Tooltip title="edit">
+                    <IconButton aria-label="edit" onClick={() => handleEditFlow(id)}>
+                      <Ionicon icon="md-create" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="start">
+                    <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
+                      <Ionicon icon="md-play" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="delete">
+                    <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={task.scheduler && task.scheduler.active ? 'disable scheduler' : 'enable scheduler'}>
+                    <IconButton aria-label="start" onClick={() => handleToggleScheduler(id)}>
+                      {task.scheduler && task.scheduler.active ? <Ionicon icon="ios-close" />
+                        : <Ionicon icon="ios-timer" />
+                      }
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))
+            }
           </TableBody>
         </Table>
       </Paper>

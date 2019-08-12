@@ -2,49 +2,19 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
-import { withStyles } from '@material-ui/core';
 //
 import get from 'lodash/get';
 import moment from 'moment';
 //
 import API from '../../Utils/api';
 import FlowForm from './FlowForm';
-
-const styles = theme => ({
-  root: {
-    padding: theme.spacing.unit
-  },
-  inputWidth: {
-    width: '300px',
-  },
-  marginTop: {
-    marginTop: theme.spacing.unit,
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit,
-  },
-  paper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  }
-});
-
+import withFetchOptions from './WithFetchOptions';
 
 function EditFlowForm(props) {
-  const { classes, history, match } = props;
+  const {
+    history, match, flowTypes, integrations
+  } = props;
 
-  const [flowsTypes, setFlowsTypes] = useState([]);
-  const [integrationsOptions, setIntegrationsOptions] = useState([]);
   const [flowType, setFlowType] = useState('');
   const [integration, setIntegration] = useState('');
   const [scheduler, setScheduler] = useState({
@@ -56,6 +26,7 @@ function EditFlowForm(props) {
     endDate: new Date(),
     time: new Date()
   });
+
 
   useEffect(() => {
     async function getFlow() {
@@ -86,42 +57,9 @@ function EditFlowForm(props) {
     getFlow();
   }, []);
 
-
-  useEffect(() => {
-    async function fetchFlowOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('flows/types');
-        setFlowsTypes(response.data.data);
-      } catch (error) {
-        console.log(error);
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchFlowOptions();
-  }, []);
-
-  useEffect(() => {
-    async function fetchIntegrationsOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('integrations');
-        setIntegrationsOptions(response.data.data);
-      } catch (error) {
-        console.log(error);
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchIntegrationsOptions();
-  }, []);
-
   const onInputFlowChange = (e) => { setFlowType(e); };
 
-  const onInputStoreChange = (e) => { setIntegration(e); };
+  const onIntegrationChange = (e) => { setIntegration(e); };
 
   const onActiveChange = (e) => { setScheduler({ ...scheduler, active: e }); };
 
@@ -136,11 +74,6 @@ function EditFlowForm(props) {
   const onWeeksOfMonthChange = (e) => { setScheduler({ ...scheduler, weeksOfMonth: e }); };
 
   const onMonthsOfYearChange = (e) => { setScheduler({ ...scheduler, monthsOfYear: e }); };
-
-  function clearFields() {
-    setFlowType('');
-    setIntegration('');
-  }
 
   const handleEditFlow = async () => {
     const { enqueueSnackbar } = props;
@@ -158,7 +91,6 @@ function EditFlowForm(props) {
       enqueueSnackbar('Scheduler edited successfully', {
         variant: 'success'
       });
-      clearFields();
       history.goBack();
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -174,15 +106,14 @@ function EditFlowForm(props) {
   return (
     <FlowForm
       flowType={flowType}
-      flowsTypes={flowsTypes}
+      flowsTypes={flowTypes}
       integration={integration}
-      integrationsOptions={integrationsOptions}
+      integrationsOptions={integrations}
       scheduler={scheduler}
       history={history}
-      classes={classes}
       disableRule
       onInputFlowChange={onInputFlowChange}
-      onInputStoreChange={onInputStoreChange}
+      onIntegrationChange={onIntegrationChange}
       onActiveChange={onActiveChange}
       onStartDateChange={onStartDateChange}
       onEndDateChange={onEndDateChange}
@@ -198,8 +129,9 @@ function EditFlowForm(props) {
 EditFlowForm.propTypes = {
   match: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  flowTypes: PropTypes.array.isRequired,
+  integrations: PropTypes.array.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(EditFlowForm));
+export default withSnackbar(withFetchOptions(EditFlowForm));

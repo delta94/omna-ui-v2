@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
+import { withStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -12,6 +13,35 @@ import { PapperBlock } from 'dan-components';
 //
 import FormActions from '../../Common/FormActions';
 import Scheduler from './Scheduler';
+
+const styles = theme => ({
+  root: {
+    padding: theme.spacing.unit
+  },
+  inputWidth: {
+    width: '300px',
+  },
+  marginTop: {
+    marginTop: theme.spacing.unit,
+  },
+  marginLeft: {
+    marginLeft: theme.spacing.unit,
+  },
+  paper: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  }
+});
 
 function FlowForm(props) {
   const {
@@ -25,7 +55,7 @@ function FlowForm(props) {
 
   const onInputFlowChange = (e) => { props.onInputFlowChange(e.target.value); };
 
-  const onInputStoreChange = (e) => { props.onInputStoreChange(e.target.value); };
+  const onIntegrationChange = (e) => { props.onIntegrationChange(e.target.value); };
 
   const onActiveChange = (e) => { props.onActiveChange(e); };
 
@@ -87,7 +117,7 @@ function FlowForm(props) {
               value={integration}
               name="integrations"
               disabled={disableRule}
-              onChange={onInputStoreChange}
+              onChange={onIntegrationChange}
               SelectProps={{
                 MenuProps: {
                   className: classes.inputWidth
@@ -152,7 +182,7 @@ FlowForm.propTypes = {
   scheduler: PropTypes.object,
   onSubmit: PropTypes.func.isRequired,
   onInputFlowChange: PropTypes.func.isRequired,
-  onInputStoreChange: PropTypes.func.isRequired,
+  onIntegrationChange: PropTypes.func.isRequired,
   onActiveChange: PropTypes.func.isRequired,
   onStartDateChange: PropTypes.func.isRequired,
   onEndDateChange: PropTypes.func.isRequired,
@@ -162,4 +192,4 @@ FlowForm.propTypes = {
   onMonthsOfYearChange: PropTypes.func.isRequired
 };
 
-export default withSnackbar(FlowForm);
+export default withSnackbar(withStyles(styles)(FlowForm));

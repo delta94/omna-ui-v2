@@ -1,50 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
-import { withStyles } from '@material-ui/core';
 //
 import get from 'lodash/get';
 import moment from 'moment';
 //
 import API from '../../Utils/api';
 import FlowForm from './FlowForm';
-
-const styles = theme => ({
-  root: {
-    padding: theme.spacing.unit
-  },
-  inputWidth: {
-    width: '300px',
-  },
-  marginTop: {
-    marginTop: theme.spacing.unit,
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit,
-  },
-  paper: {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  }
-});
-
+import withFetchOptions from './WithFetchOptions';
 
 function AddFlowForm(props) {
   const [flowType, setFlowType] = useState('');
-  const [flowsTypes, setFlowsTypes] = useState([]);
   const [integration, setIntegration] = useState('');
-  const [integrationsOptions, setIntegrationsOptions] = useState([]);
   const [scheduler, setScheduler] = useState({
     status: false,
     daysOfWeek: [],
@@ -55,41 +23,11 @@ function AddFlowForm(props) {
     time: new Date()
   });
 
-  const { classes, history } = props;
-
-  useEffect(() => {
-    async function fetchFlowOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('flows/types');
-        setFlowsTypes(response.data.data);
-      } catch (error) {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchFlowOptions();
-  }, []);
-
-  useEffect(() => {
-    async function fetchIntegrationsOptions() {
-      const { enqueueSnackbar } = props;
-      try {
-        const response = await API.get('integrations');
-        setIntegrationsOptions(response.data.data);
-      } catch (error) {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    }
-    fetchIntegrationsOptions();
-  }, []);
+  const { history, flowTypes, integrations } = props;
 
   const onInputFlowChange = (e) => { setFlowType(e); };
 
-  const onInputStoreChange = (e) => { setIntegration(e); };
+  const onIntegrationChange = (e) => { setIntegration(e); };
 
   const onActiveChange = (e) => { setScheduler({ ...scheduler, active: e }); };
 
@@ -104,11 +42,6 @@ function AddFlowForm(props) {
   const onWeeksOfMonthChange = (e) => { setScheduler({ ...scheduler, weeksOfMonth: e }); };
 
   const onMonthsOfYearChange = (e) => { setScheduler({ ...scheduler, monthsOfYear: e }); };
-
-  function clearFields() {
-    setFlowType('');
-    setIntegration('');
-  }
 
   const handleAddFlow = async () => {
     const { enqueueSnackbar } = props;
@@ -126,7 +59,6 @@ function AddFlowForm(props) {
       enqueueSnackbar('Workflow created successfully', {
         variant: 'success'
       });
-      clearFields();
       history.goBack();
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -142,14 +74,13 @@ function AddFlowForm(props) {
   return (
     <FlowForm
       flowType={flowType}
-      flowsTypes={flowsTypes}
+      flowsTypes={flowTypes}
       integration={integration}
-      integrationsOptions={integrationsOptions}
+      integrationsOptions={integrations}
       scheduler={scheduler}
       history={history}
-      classes={classes}
       onInputFlowChange={onInputFlowChange}
-      onInputStoreChange={onInputStoreChange}
+      onIntegrationChange={onIntegrationChange}
       onActiveChange={onActiveChange}
       onStartDateChange={onStartDateChange}
       onEndDateChange={onEndDateChange}
@@ -164,8 +95,9 @@ function AddFlowForm(props) {
 
 AddFlowForm.propTypes = {
   history: PropTypes.object.isRequired,
-  classes: PropTypes.object.isRequired,
+  flowTypes: PropTypes.array.isRequired,
+  integrations: PropTypes.array.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(AddFlowForm));
+export default withSnackbar(withFetchOptions(AddFlowForm));
