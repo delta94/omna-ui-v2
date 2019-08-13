@@ -185,15 +185,25 @@ class Integrations extends Component {
   };
 
   handleChangePage = (e, page) => {
-    const { limit } = this.state;
     this.setState({ page });
+    this.makeRequest();
+  };
 
+  makeRequest = () => {
+    const { limit, page } = this.state;
     const params = {
       offset: page * limit,
       limit
     };
 
     this.getIntegrations(params);
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState(
+      { limit: parseInt(event.target.value, 10) },
+      this.makeRequest
+    );
   };
 
   render() {
