@@ -18,12 +18,6 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import styles from './sidebar-jss';
 
 class MainMenu extends React.Component {
-  handleClick() {
-    const { toggleDrawerOpen, loadTransition } = this.props;
-    toggleDrawerOpen();
-    loadTransition(false);
-  }
-
   render() {
     const {
       classes,
@@ -92,7 +86,6 @@ class MainMenu extends React.Component {
           activeClassName={classes.active}
           component={NavLink}
           to={item.link}
-          onClick={() => this.handleClick()}
         >
           {item.icon && (
             <ListItemIcon className={classes.icon}>
@@ -118,8 +111,6 @@ MainMenu.propTypes = {
   classes: PropTypes.object.isRequired,
   open: PropTypes.object.isRequired,
   openSubMenu: PropTypes.func.isRequired,
-  toggleDrawerOpen: PropTypes.func.isRequired,
-  loadTransition: PropTypes.func.isRequired,
   dataMenu: PropTypes.array.isRequired,
 };
 
