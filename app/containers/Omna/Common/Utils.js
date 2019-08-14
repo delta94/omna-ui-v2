@@ -65,7 +65,7 @@ class Utils {
   }
 
   static isAuthenticated() {
-    if (localStorage.getItem('currentTenant')) {
+    if (sessionStorage.getItem('currentTenant')) {
       return true;
     }
     return false;

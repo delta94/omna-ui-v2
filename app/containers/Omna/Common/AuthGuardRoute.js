@@ -19,7 +19,7 @@ const AuthGuardRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={props => (
-        sessionStorage.getItem('currentTenant') ? <Component {...props} />
+        Utils.isAuthenticated() ? <Component {...props} />
           : <Redirect to={{ pathname: '/lock-screen', state: { redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${location.pathname}` } }} />
       )}
     />
