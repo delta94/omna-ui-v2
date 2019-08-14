@@ -16,7 +16,7 @@ class Application extends React.Component {
   render() {
     const { changeMode, history } = this.props;
     return (
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+      <SnackbarProvider maxSnack={2} anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
             <AuthGuardRoute exact path="/app/orders-list" component={Orders} />

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
+//
+import Loading from 'dan-components/Loading';
 //
 import get from 'lodash/get';
 import moment from 'moment';
@@ -15,6 +17,7 @@ function EditFlowForm(props) {
     history, match, flowTypes, integrations
   } = props;
 
+  const [loading, setLoading] = useState(true);
   const [flowType, setFlowType] = useState('');
   const [integration, setIntegration] = useState('');
   const [scheduler, setScheduler] = useState({
@@ -32,6 +35,7 @@ function EditFlowForm(props) {
     async function getFlow() {
       const { enqueueSnackbar } = props;
       try {
+        setLoading(true);
         const response = await API.get(`flows/${match.params.id}`);
         const { data } = response.data;
         setFlowType(data.type);
@@ -48,11 +52,11 @@ function EditFlowForm(props) {
         };
         setScheduler(schedulerToShow);
       } catch (error) {
-        console.log(error);
         enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
           variant: 'error'
         });
       }
+      setLoading(false);
     }
     getFlow();
   }, []);
@@ -104,25 +108,28 @@ function EditFlowForm(props) {
   };
 
   return (
-    <FlowForm
-      flowType={flowType}
-      flowsTypes={flowTypes}
-      integration={integration}
-      integrationsOptions={integrations}
-      scheduler={scheduler}
-      history={history}
-      disableRule
-      onInputFlowChange={onInputFlowChange}
-      onIntegrationChange={onIntegrationChange}
-      onActiveChange={onActiveChange}
-      onStartDateChange={onStartDateChange}
-      onEndDateChange={onEndDateChange}
-      onTimeChange={onTimeChange}
-      onDaysOfWeekChange={onDaysOfWeekChange}
-      onWeeksOfMonthChange={onWeeksOfMonthChange}
-      onMonthsOfYearChange={onMonthsOfYearChange}
-      onSubmit={onSubmit}
-    />
+    <Fragment>
+      <FlowForm
+        flowType={flowType}
+        flowsTypes={flowTypes}
+        integration={integration}
+        integrationsOptions={integrations}
+        scheduler={scheduler}
+        history={history}
+        disableRule
+        onInputFlowChange={onInputFlowChange}
+        onIntegrationChange={onIntegrationChange}
+        onActiveChange={onActiveChange}
+        onStartDateChange={onStartDateChange}
+        onEndDateChange={onEndDateChange}
+        onTimeChange={onTimeChange}
+        onDaysOfWeekChange={onDaysOfWeekChange}
+        onWeeksOfMonthChange={onWeeksOfMonthChange}
+        onMonthsOfYearChange={onMonthsOfYearChange}
+        onSubmit={onSubmit}
+      />
+      {loading && <Loading />}
+    </Fragment>
   );
 }
 

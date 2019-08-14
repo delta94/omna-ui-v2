@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
+import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,7 +17,7 @@ import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
 import moment from 'moment';
-import Ionicon from 'react-ionicons';
+import Loading from 'dan-components/Loading';
 //
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
@@ -57,6 +57,7 @@ const styles = theme => ({
 });
 
 function Flows(props) {
+  const [loading, setLoading] = useState(true);
   const [flows, setFlows] = useState([]);
   const [alertDialog, setAlertDialog] = useState({
     open: false,
@@ -73,21 +74,26 @@ function Flows(props) {
       const response = await API.get('flows');
       setFlows(response ? response.data.data : []);
     } catch (error) {
-      // const errorMessage = get(error, 'response.data.message', 'Unknown error');
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
   }
 
+  async function getFlows() {
+    setLoading(true);
+    await fetchFlows();
+    setLoading(false);
+  }
+
   useEffect(() => {
-    fetchFlows();
+    getFlows();
   }, []);
 
   const handleDeleteFlow = async () => {
     const { enqueueSnackbar } = props;
-
     try {
+      setLoading(true);
       await API.delete(`flows/${alertDialog.objectId}`);
       enqueueSnackbar('Workflow deleted successfuly', {
         variant: 'success'
@@ -98,6 +104,7 @@ function Flows(props) {
         variant: 'error'
       });
     }
+    setLoading(false);
   };
 
   const handleOnClickDeleteFlow = (id, title) => {
@@ -142,6 +149,7 @@ function Flows(props) {
   const handleToggleScheduler = async (id) => {
     const { enqueueSnackbar } = props;
     try {
+      setLoading(true);
       await API.get(`flows/${id}/toggle/scheduler/status`);
       fetchFlows();
       enqueueSnackbar('Scheduler toggled successfuly', {
@@ -152,6 +160,7 @@ function Flows(props) {
         variant: 'error'
       });
     }
+    setLoading(false);
   };
 
   return (
@@ -194,7 +203,7 @@ function Flows(props) {
                   </Tooltip>
                   <Tooltip title="delete">
                     <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
-                      <DeleteIcon />
+                      <Ionicon icon="md-trash" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={task.scheduler && task.scheduler.active ? 'disable scheduler' : 'enable scheduler'}>
@@ -218,14 +227,15 @@ function Flows(props) {
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />
+      {loading && <Loading />}
     </div>
   );
 }
 
 Flows.propTypes = {
   classes: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(Flows));

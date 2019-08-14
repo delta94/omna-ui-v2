@@ -32,12 +32,9 @@ function setParams(config) {
 }
 
 const API = axios.create({
-  baseURL: 'https://cenit.io/app/ecapi-v1'
+  baseURL: 'https://cenit.io/app/ecapi-v1',
 });
 
-API.interceptors.request.use(
-  (config) => setParams(config),
-  (error) => Promise.reject(error)
-);
+API.interceptors.request.use(setParams, Promise.reject);
 
 export default API;

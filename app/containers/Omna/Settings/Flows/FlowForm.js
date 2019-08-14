@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import Ionicon from 'react-ionicons';
 // dandelion-template
 import { PapperBlock } from 'dan-components';
 //
@@ -108,7 +108,7 @@ function FlowForm(props) {
                 </MenuItem>
               ))}
             </TextField>
-            <KeyboardArrowRight className={classes.marginLeft} />
+            <Ionicon icon="ios-repeat" className={classes.marginLeft} />
             <TextField
               required
               id="integrations"
