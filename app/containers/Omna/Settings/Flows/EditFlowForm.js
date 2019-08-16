@@ -83,6 +83,7 @@ function EditFlowForm(props) {
     const { enqueueSnackbar } = props;
 
     try {
+      setLoading(true);
       const _scheduler = {
         start_date: moment(scheduler.startDate).format('Y-MM-DD'),
         end_date: moment(scheduler.endDate).format('Y-MM-DD'),
@@ -101,6 +102,7 @@ function EditFlowForm(props) {
         variant: 'error'
       });
     }
+    setLoading(false);
   };
 
   const onSubmit = () => {

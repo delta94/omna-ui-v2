@@ -80,14 +80,14 @@ function Flows(props) {
     }
   }
 
-  async function getFlows() {
+  async function initializeDataTable() {
     setLoading(true);
     await fetchFlows();
     setLoading(false);
   }
 
   useEffect(() => {
-    getFlows();
+    initializeDataTable();
   }, []);
 
   const handleDeleteFlow = async () => {
@@ -107,11 +107,11 @@ function Flows(props) {
     setLoading(false);
   };
 
-  const handleOnClickDeleteFlow = (id, title) => {
+  const handleOnClickDeleteFlow = (id, title, integration) => {
     setAlertDialog({
       open: true,
       objectId: id,
-      message: `Are you sure you want to remove "${title}"  workflow?`
+      message: `Are you sure you want to remove "${title}: ${integration}" workflow?`
     });
   };
 
@@ -202,7 +202,7 @@ function Flows(props) {
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="delete">
-                    <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title)}>
+                    <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title, integration.name)}>
                       <Ionicon icon="md-trash" />
                     </IconButton>
                   </Tooltip>

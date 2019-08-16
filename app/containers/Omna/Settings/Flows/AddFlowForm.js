@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
+//
+import Loading from 'dan-components/Loading';
 //
 import get from 'lodash/get';
 import moment from 'moment';
@@ -11,6 +13,7 @@ import FlowForm from './FlowForm';
 import withFetchOptions from './WithFetchOptions';
 
 function AddFlowForm(props) {
+  const [loading, setLoading] = useState(false);
   const [flowType, setFlowType] = useState('');
   const [integration, setIntegration] = useState('');
   const [scheduler, setScheduler] = useState({
@@ -47,6 +50,7 @@ function AddFlowForm(props) {
     const { enqueueSnackbar } = props;
 
     try {
+      setLoading(true);
       const _scheduler = {
         start_date: moment(scheduler.startDate).format('Y-MM-DD'),
         end_date: moment(scheduler.endDate).format('Y-MM-DD'),
@@ -65,6 +69,7 @@ function AddFlowForm(props) {
         variant: 'error'
       });
     }
+    setLoading(false);
   };
 
   const onSubmit = () => {
@@ -72,24 +77,27 @@ function AddFlowForm(props) {
   };
 
   return (
-    <FlowForm
-      flowType={flowType}
-      flowsTypes={flowTypes}
-      integration={integration}
-      integrationsOptions={integrations}
-      scheduler={scheduler}
-      history={history}
-      onInputFlowChange={onInputFlowChange}
-      onIntegrationChange={onIntegrationChange}
-      onActiveChange={onActiveChange}
-      onStartDateChange={onStartDateChange}
-      onEndDateChange={onEndDateChange}
-      onTimeChange={onTimeChange}
-      onDaysOfWeekChange={onDaysOfWeekChange}
-      onWeeksOfMonthChange={onWeeksOfMonthChange}
-      onMonthsOfYearChange={onMonthsOfYearChange}
-      onSubmit={onSubmit}
-    />
+    <Fragment>
+      {loading && <Loading />}
+      <FlowForm
+        flowType={flowType}
+        flowsTypes={flowTypes}
+        integration={integration}
+        integrationsOptions={integrations}
+        scheduler={scheduler}
+        history={history}
+        onInputFlowChange={onInputFlowChange}
+        onIntegrationChange={onIntegrationChange}
+        onActiveChange={onActiveChange}
+        onStartDateChange={onStartDateChange}
+        onEndDateChange={onEndDateChange}
+        onTimeChange={onTimeChange}
+        onDaysOfWeekChange={onDaysOfWeekChange}
+        onWeeksOfMonthChange={onWeeksOfMonthChange}
+        onMonthsOfYearChange={onMonthsOfYearChange}
+        onSubmit={onSubmit}
+      />
+    </Fragment>
   );
 }
 

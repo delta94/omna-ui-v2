@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withSnackbar } from 'notistack';
-import get from 'lodash/get';
 
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
@@ -22,8 +20,12 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import BlockIcon from '@material-ui/icons/Block';
-
-import LoadingState from '../../Common/LoadingState';
+//
+import Loading from 'dan-components/Loading';
+//
+import { withSnackbar } from 'notistack';
+import get from 'lodash/get';
+//
 import AlertDialog from '../../Common/AlertDialog';
 import Utils from '../../Common/Utils';
 import GenericTablePagination from '../../Common/GenericTablePagination';
@@ -67,81 +69,61 @@ class Integrations extends Component {
     page: 0
   };
 
-  componentDidMount() {
-    this.getIntegrations();
+
+  async componentDidMount() {
+    this.initializeDatatable();
   }
 
-  getIntegrations = params => {
-    this.setState({ loading: true });
+  getIntegrations = async (params) => {
+    const { enqueueSnackbar } = this.props;
     let reqParams = params;
     if (typeof reqParams !== 'undefined') {
       reqParams.with_details = true;
     } else {
       reqParams = { with_details: true };
     }
-
-    API.get('/integrations', { params: reqParams })
-      .then(response => {
-        this.setState({
-          integrations: get(response, 'data', { data: [], pagination: {} }),
-          limit: get(response, 'data.pagination.limit', 0)
-        });
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      })
-      .then(() => {
-        this.setState({ loading: false });
+    try {
+      // this.setState({ loading: true });
+      const response = await API.get('/integrations', { params: reqParams });
+      this.setState({
+        integrations: get(response, 'data', { data: [], pagination: {} }),
+        limit: get(response, 'data.pagination.limit', 0)
       });
-  };
-
-  deleteIntegration = id => {
-    const { enqueueSnackbar } = this.props;
-    this.setState({ loading: true });
-    API.get(`/integrations/${id}/destroy`)
-      .then(() => {
-        enqueueSnackbar('Integration deleted successfully', {
-          variant: 'success'
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(error, {
-          variant: 'error'
-        });
-      })
-      .then(() => {
-        this.setState({ loading: false });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
       });
-  };
+    }
+    // this.setState({ loading: false });
+  }
 
   handleAddIntegrationClick = () => {
     const { history } = this.props;
     history.push('/app/settings/integrations/add-integration');
   };
 
-  handleAuthorization = id => {
-    window.location.replace(
-      `${Utils.baseAPIURL()}/integrations/${id}/authorize?redirect_id=${Utils.returnAfterAuthorization()}`
-    );
-  };
+  handleAuthorization = (id) => {
+    const path = `integrations/${id}/authorize`;
+    Utils.handleAutorization(path);
+  }
 
   handleUnAuthorization = id => {
     const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
-    API.get(`/integrations/${id}/unauthorize`)
-      .then(() => {
-        enqueueSnackbar('Integration unauthorized successfully', {
-          variant: 'success'
+    API.delete(`/integrations/${id}/authorize`, { data: { data: { integration_id: id } } }).then(response => {
+      console.log(response);
+      enqueueSnackbar('Integration unauthorized successfully', {
+        variant: 'success'
+      });
+    })
+      .catch(error => {
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
         });
       })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      })
       .then(() => {
-        this.setState({ loading: false });
         this.getIntegrations();
+        this.setState({ loading: false });
       });
   };
 
@@ -149,13 +131,11 @@ class Integrations extends Component {
     this.setState({ alertDialog: false });
   };
 
-  handleDialogConfirm = async () => {
+  handleDeleteIntegration = async () => {
     const { enqueueSnackbar } = this.props;
     try {
       const { alertDialog } = this.state;
-      const response = await API.delete(
-        `/integrations/${alertDialog.integrationId}`
-      );
+      const response = await API.delete(`/integrations/${alertDialog.integrationId}`);
       if (response && response.data.success) {
         enqueueSnackbar('Integration deleted successfully', {
           variant: 'success'
@@ -163,13 +143,14 @@ class Integrations extends Component {
       }
       this.getIntegrations();
     } catch (error) {
-      const errorMessage = error
-        ? error.response.data.message
-        : 'unknown Error';
-      enqueueSnackbar(errorMessage, {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
+  }
+
+  handleDialogConfirm = async () => {
+    this.handleDeleteIntegration();
     this.setState({ alertDialog: false });
   };
 
@@ -206,6 +187,12 @@ class Integrations extends Component {
     );
   };
 
+  async initializeDatatable() {
+    this.setState({ loading: true });
+    await this.getIntegrations();
+    this.setState({ loading: false });
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -217,7 +204,7 @@ class Integrations extends Component {
 
     return (
       <div>
-        {loading ? <LoadingState loading={loading} /> : null}
+        {loading && <Loading />}
         <Paper>
           <div className="display-flex flex-direction-row-inverse">
             <Button

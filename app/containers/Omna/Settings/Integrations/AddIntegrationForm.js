@@ -10,8 +10,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
-
-import LoadingState from '../../Common/LoadingState';
+//
+import Loading from 'dan-components/Loading';
+//
 import FormActions from '../../Common/FormActions';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
@@ -88,7 +89,8 @@ class AddIntegrationForm extends Component {
   }
 
   handleAuthorization = (id) => {
-    window.location.replace(`${Utils.baseAPIURL()}/integrations/${id}/authorize?redirect_id=${Utils.returnAfterAuthorization()}`);
+    const path = `integrations/${id}/authorize`;
+    Utils.handleAutorization(path);
   }
 
   render() {
@@ -99,6 +101,7 @@ class AddIntegrationForm extends Component {
 
     return (
       <div>
+        { loadingState && <Loading /> }
         <Paper className="display-flex justify-content-center">
           <form onSubmit={this.onSubmit} className="display-flex flex-direction-column" noValidate autoComplete="off">
             <TextField
@@ -150,10 +153,7 @@ class AddIntegrationForm extends Component {
             />
 
             <Divider variant="middle" />
-            {loadingState ? <LoadingState loading />
-              : (
-                <FormActions history={history} />
-              )}
+            <FormActions history={history} />
           </form>
         </Paper>
       </div>

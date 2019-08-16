@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
@@ -6,8 +6,7 @@ import classNames from 'classnames';
 import Ionicon from 'react-ionicons';
 import moment from 'moment';
 
-/* material-ui */
-// core
+// material-ui
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,12 +15,12 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
-// our
+//
+import Loading from 'dan-components/Loading';
+//
 import API from '../Utils/api';
-import LoadingState from '../Common/LoadingState';
 import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
-import GenericErrorMessage from '../Common/GenericErrorMessage';
 import GenericTableToolBar from '../Common/GenericTableToolBar';
 import Utils from '../Common/Utils';
 
@@ -74,6 +73,7 @@ class OrderList extends React.Component {
   }
 
   getAPIorders(params) {
+    this.setState({ loading: true });
     API.get('/orders', { params }).then(response => {
       this.setState({ orders: get(response, 'data', { data: [], pagination: {} }), limit: get(response, 'data.pagination.limit', 0) });
     }).catch((error) => {
@@ -124,85 +124,74 @@ class OrderList extends React.Component {
   render() {
     const { classes } = this.props;
     const { pagination, data } = get(this.state, 'orders', { data: [], pagination: {} });
-    const {
-      loading, limit, page, success, messageError
-    } = this.state;
+    const { loading, limit, page } = this.state;
 
     const count = get(pagination, 'total', 0);
 
     return (
-      <Paper>
-        <div className="item-padding">
-          {loading ? <LoadingState loading={loading} /> : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
-          ) : (
-            <Fragment>
-              <div className={classes.rootTable}>
-                <GenericTableToolBar
-                  rowCount={count > limit ? limit : count}
-                  actionList={actionList}
-                  onSearchFilterClick={this.handleSearchClick}
-                  filterList={filterList}
+      <div>
+        {loading && <Loading />}
+        <Paper className={classes.rootTable}>
+          <GenericTableToolBar
+            rowCount={count > limit ? limit : count}
+            actionList={actionList}
+            onSearchFilterClick={this.handleSearchClick}
+            filterList={filterList}
+          />
+          <Table className={classNames(classes.table, classes.hover)}>
+            <GenericTableHead
+              rowCount={count > limit ? limit : count}
+              headColumns={headColumns}
+            />
+            <TableBody>
+              {data && data.map(row => (
+                <TableRow
+                  hover
+                  key={get(row, 'order_id', 0)}
+                >
+                  <TableCell align="left" component="th" scope="row">
+                    {get(row, 'number', 0)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {
+                      get(row, 'updated_date', null) != null
+                        ? (moment(row.updated_date).format('Y-MM-DD H:mm:ss')
+                        ) : (
+                          '--'
+                        )
+                    }
+                  </TableCell>
+                  <TableCell align="center">{get(row, 'status', null)}</TableCell>
+                  <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
+                  <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
+                  <TableCell align="center">
+                    <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
+                      <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  colSpan={5}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  count={count}
+                  rowsPerPage={limit}
+                  page={page}
+                  SelectProps={{
+                    native: true,
+                  }}
+                  onChangePage={this.handleChangePage}
+                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                  ActionsComponent={GenericTablePagination}
                 />
-                <Table className={classNames(classes.table, classes.hover)}>
-                  <GenericTableHead
-                    rowCount={count > limit ? limit : count}
-                    headColumns={headColumns}
-                  />
-                  <TableBody>
-                    {data && data.map(row => (
-                      <TableRow
-                        hover
-                        key={get(row, 'order_id', 0)}
-                      >
-                        <TableCell align="left" component="th" scope="row">
-                          {get(row, 'number', 0)}
-                        </TableCell>
-                        <TableCell align="center">
-                          {
-                            get(row, 'updated_date', null) != null
-                              ? (moment(row.updated_date).format('Y-MM-DD H:mm:ss')
-                              ) : (
-                                '--'
-                              )
-                          }
-                        </TableCell>
-                        <TableCell align="center">{get(row, 'status', null)}</TableCell>
-                        <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
-                        <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
-                        <TableCell align="center">
-                          <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
-                            <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        colSpan={5}
-                        rowsPerPageOptions={[5, 10, 25, 50]}
-                        count={count}
-                        rowsPerPage={limit}
-                        page={page}
-                        SelectProps={{
-                          native: true,
-                        }}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                        ActionsComponent={GenericTablePagination}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </Fragment>
-          )
-          }
-        </div>
-      </Paper>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </Paper>
+      </div>
     );
   }
 }

@@ -6,7 +6,7 @@ function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
   const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
-  if (config.method === 'post') {
+  if (config.method === 'post' || config.method === 'delete') {
     data.token = currentTenant.token;
     data.timestamp = Date.now();
 

@@ -28,14 +28,14 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Chip from '@material-ui/core/Chip';
+//
+import Loading from 'dan-components/Loading';
 // our
 import API from '../Utils/api';
-import LoadingState from '../Common/LoadingState';
 import GenericTableToolBar from '../Common/GenericTableToolBar';
 import GenericTablePagination from '../Common/GenericTablePagination';
 import GenericTableHead from '../Common/GenericTableHead';
 import AlertDialog from '../Common/AlertDialog';
-import GenericErrorMessage from '../Common/GenericErrorMessage';
 import Utils from '../Common/Utils';
 
 const variantIcon = Utils.iconVariants();
@@ -110,6 +110,7 @@ class TaskList extends React.Component {
   }
 
   getAPItasks = params => {
+    this.setState({ loading: true });
     API.get('/tasks', { params })
       .then(response => {
         this.setState({
@@ -298,8 +299,6 @@ class TaskList extends React.Component {
       selected,
       tasks,
       alertDialog,
-      success,
-      messageError,
       anchorEl,
     } = this.state;
     const { pagination, data } = tasks;
@@ -308,187 +307,176 @@ class TaskList extends React.Component {
 
     return (
       <div>
+        {loading && <Loading />}
         <Paper>
-          <div className="item-padding">
-            {loading ? <LoadingState loading={loading} /> : null}
-            {loading ? null : !success ? (
-              <GenericErrorMessage messageError={messageError} />
-            ) : (
-              <div>
-                {
-                  // ********* BODY *********
-                }
-                <GenericTableToolBar
-                  numSelected={selected.length}
-                  rowCount={count > limit ? limit : count}
-                  actionList={actionList}
-                  initialText="There are no selected tasks"
-                  onDelete={this.handleDeleteBlock(selected)}
-                  onSearchFilterClick={this.handleSearchClick}
-                  filterList={filterList}
-                />
-                <Table aria-labelledby="tableTitle">
-                  <GenericTableHead
-                    numSelected={selected.length}
-                    handleClick={this.handleSelectAllClick}
-                    rowCount={count > limit ? limit : count}
-                    selectOption={selectOption}
-                    headColumns={headColumns}
-                  />
-                  <TableBody>
-                    {data && data.map(row => {
-                      const isSelected = this.isSelected(get(row, 'id', null));
-                      const notifications = this.verifyNotifications(get(row, 'notifications', []));
-                      const status = get(row, 'status', '');
-                      const progress = get(row, 'progress', 0);
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          tabIndex={-1}
-                          key={row.id}
-                          selected={isSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isSelected}
-                              onClick={event => this.handleClick(event, get(row, 'id', null))}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <div className="display-flex justify-content-space-between align-items-center">
-                              <Typography variant="subtitle2" color="primary">
-                                <strong>
-                                  {get(row, 'description', '')}
-                                </strong>
-                              </Typography>
-                              <div className="display-flex justify-content-flex-end align-items-center">
-                                <div className="item-margin-left">
-                                  {
-                                    notifications === 'error'
-                                      || notifications === 'warning'
-                                      || notifications === 'info'
-                                      ? (<NotificationBottom type={notifications} />
-                                      ) : (
-                                        null
-                                      )
-                                  }
-                                </div>
-                                <div className="item-margin-left">
-                                  {
-                                    row.scheduler
-                                      ? (
-                                        <Tooltip title="This Task has a Schedule">
-                                          <IconButton aria-label="Schedule">
-                                            <Ionicon icon={variantIcon.schedule} />
-                                          </IconButton>
-                                        </Tooltip>
-                                      ) : (
-                                        null
-                                      )
-                                  }
-                                </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Tooltip title="Status" className="item-margin-left">
-                                    <Chip label={`${status} ${progress}%`} className={classNames(classes.chip, this.getStatus(status))} />
-                                  </Tooltip>
-                                </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Tooltip title="More...">
-                                    <IconButton aria-label="More" className="item-margin-left" onClick={this.handleMoreClick(row.id)}>
-                                      <Ionicon icon="ios-more" />
+          <GenericTableToolBar
+            numSelected={selected.length}
+            rowCount={count > limit ? limit : count}
+            actionList={actionList}
+            initialText="There are no selected tasks"
+            onDelete={this.handleDeleteBlock(selected)}
+            onSearchFilterClick={this.handleSearchClick}
+            filterList={filterList}
+          />
+          <Table aria-labelledby="tableTitle">
+            <GenericTableHead
+              numSelected={selected.length}
+              handleClick={this.handleSelectAllClick}
+              rowCount={count > limit ? limit : count}
+              selectOption={selectOption}
+              headColumns={headColumns}
+            />
+            <TableBody>
+              {data.map(row => {
+                const isSelected = this.isSelected(get(row, 'id', null));
+                const notifications = this.verifyNotifications(get(row, 'notifications', []));
+                const status = get(row, 'status', '');
+                const progress = get(row, 'progress', 0);
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isSelected}
+                        onClick={event => this.handleClick(event, get(row, 'id', null))}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="display-flex justify-content-space-between align-items-center">
+                        <Typography variant="subtitle2" color="primary">
+                          <strong>
+                            {get(row, 'description', '')}
+                          </strong>
+                        </Typography>
+                        <div className="display-flex justify-content-flex-end align-items-center">
+                          <div className="item-margin-left">
+                            {
+                              notifications === 'error'
+                                || notifications === 'warning'
+                                || notifications === 'info'
+                                ? (<NotificationBottom type={notifications} />
+                                ) : (
+                                  null
+                                )
+                            }
+                          </div>
+                          <div className="item-margin-left">
+                            {
+                              row.scheduler
+                                ? (
+                                  <Tooltip title="This Task has a Schedule">
+                                    <IconButton aria-label="Schedule">
+                                      <Ionicon icon={variantIcon.schedule} />
                                     </IconButton>
                                   </Tooltip>
-                                  <Popover
-                                    open={Boolean(get(this.state, 'popover') === row.id)}
-                                    anchorEl={anchorEl}
-                                    onClose={this.handleMoreClose}
-                                    anchorOrigin={{
-                                      vertical: 'bottom',
-                                      horizontal: 'center'
-                                    }}
-                                    transformOrigin={{
-                                      vertical: 'top',
-                                      horizontal: 'center'
-                                    }}
-                                  >
-                                    {
-                                      status === 'failed'
-                                        ? (
-                                          <List component="nav">
-                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
-                                              <ListItemText primary="View Details" />
-                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
-                                            </ListItem>
-                                            <Divider />
-                                            <ListItem button onClick={this.handleAlertClick(get(row, 'id', null))}>
-                                              <ListItemText primary="Run Task" />
-                                              <Ionicon icon="md-play" className={classes.rightIcon} />
-                                            </ListItem>
-                                          </List>
-                                        ) : (
-                                          <List component="nav">
-                                            <ListItem button onClick={this.handleDetailsViewClick(row)}>
-                                              <ListItemText primary="View Details" />
-                                              <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
-                                            </ListItem>
-                                          </List>
-                                        )
-                                    }
-                                  </Popover>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="display-flex justify-content-space-between align-items-center">
-                              <div className="display-flex justify-content-flex-start">
-                                <div className={classes.marginLeft}>
-                                  <Typography variant="caption" color="inherit">
-                                    {get(row, 'id', null)}
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Typography variant="caption">
-                                    <strong>Updated at:</strong>
-                                    {' '}
-                                    {
-                                      get(row, 'updated_at', null) != null
-                                        ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
-                                        ) : (
-                                          '--'
-                                        )
-                                    }
-                                  </Typography>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        colSpan={5}
-                        rowsPerPageOptions={[5, 10, 25, 50]}
-                        count={count}
-                        rowsPerPage={limit}
-                        page={page}
-                        SelectProps={{
-                          native: true
-                        }}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                        ActionsComponent={GenericTablePagination}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            )}
-          </div>
+                                ) : (
+                                  null
+                                )
+                            }
+                          </div>
+                          <div className={classes.marginLeft2u}>
+                            <Tooltip title="Status" className="item-margin-left">
+                              <Chip label={`${status} ${progress}%`} className={classNames(classes.chip, this.getStatus(status))} />
+                            </Tooltip>
+                          </div>
+                          <div className={classes.marginLeft2u}>
+                            <Tooltip title="More...">
+                              <IconButton aria-label="More" className="item-margin-left" onClick={this.handleMoreClick(row.id)}>
+                                <Ionicon icon="ios-more" />
+                              </IconButton>
+                            </Tooltip>
+                            <Popover
+                              open={Boolean(get(this.state, 'popover') === row.id)}
+                              anchorEl={anchorEl}
+                              onClose={this.handleMoreClose}
+                              anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'center'
+                              }}
+                              transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'center'
+                              }}
+                            >
+                              {
+                                status === 'failed'
+                                  ? (
+                                    <List component="nav">
+                                      <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                        <ListItemText primary="View Details" />
+                                        <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                      </ListItem>
+                                      <Divider />
+                                      <ListItem button onClick={this.handleAlertClick(get(row, 'id', null))}>
+                                        <ListItemText primary="Run Task" />
+                                        <Ionicon icon="md-play" className={classes.rightIcon} />
+                                      </ListItem>
+                                    </List>
+                                  ) : (
+                                    <List component="nav">
+                                      <ListItem button onClick={this.handleDetailsViewClick(row)}>
+                                        <ListItemText primary="View Details" />
+                                        <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
+                                      </ListItem>
+                                    </List>
+                                  )
+                              }
+                            </Popover>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="display-flex justify-content-space-between align-items-center">
+                        <div className="display-flex justify-content-flex-start">
+                          <div className={classes.marginLeft}>
+                            <Typography variant="caption" color="inherit">
+                              {get(row, 'id', null)}
+                            </Typography>
+                          </div>
+                          <div className={classes.marginLeft2u}>
+                            <Typography variant="caption">
+                              <strong>Updated at:</strong>
+                              {' '}
+                              {
+                                get(row, 'updated_at', null) != null
+                                  ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
+                                  ) : (
+                                    '--'
+                                  )
+                              }
+                            </Typography>
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  colSpan={5}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  count={count}
+                  rowsPerPage={limit}
+                  page={page}
+                  SelectProps={{
+                    native: true
+                  }}
+                  onChangePage={this.handleChangePage}
+                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                  ActionsComponent={GenericTablePagination}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
           <AlertDialog
             open={alertDialog.open}
             message={alertDialog.message}

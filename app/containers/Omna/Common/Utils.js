@@ -1,3 +1,4 @@
+import { sha256 } from 'js-sha256';
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
@@ -52,8 +53,33 @@ class Utils {
     return this.URL_PROD;
   }
 
+  static getHeaders(url) {
+    const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
+    const params = {};
+    params.token = currentTenant.token;
+    params.timestamp = Date.now();
+    params.redirect_uri = this.returnAfterAuthorization();
+
+    // Join the service path and the ordered sequence of characters, excluding the quotes,
+    // corresponding to the JSON of the parameters that will be sent.
+    const msg = url + JSON.stringify(params).replace(/["']/g, '').split('').sort()
+      .join('');
+
+    // Generate the corresponding hmac using the js-sha256 or similar library.
+    params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
+
+    // const queryParams = `&token=${params.token}&timestamp=${Date.now()}&hmac=${params.hmac}`;
+    const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+
+    return queryString;
+  }
+
+  static handleAutorization(path) {
+    window.location.replace(`${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(path)}`);
+  }
+
   static returnAfterAuthorization() {
-    return `${new Utils().getURL()}/settings/integrations`;
+    return `${new Utils().getURL()}/app/settings/integrations`;
   }
 
   static baseAPIURL() {
