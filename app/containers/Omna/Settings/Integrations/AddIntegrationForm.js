@@ -29,7 +29,7 @@ const styles = () => ({
 
 class AddIntegrationForm extends Component {
   state = {
-    store: '',
+    integration: '',
     channel: '',
     authorized: true,
     errors: {},
@@ -59,17 +59,17 @@ class AddIntegrationForm extends Component {
   onSubmit = (e) => {
     const { enqueueSnackbar, history } = this.props;
     e.preventDefault();
-    const { store: name, channel, authorized } = this.state;
+    const { integration: name, channel, authorized } = this.state;
 
     // validate form
     if (!name) {
-      this.setState({ errors: { store: 'store is required' } });
+      this.setState({ errors: { integration: 'integration is required' } });
     } else if (!channel) {
       this.setState({ errors: { channel: 'channel is required' } });
     } else {
       this.setState({ loadingState: true });
       API.post('/integrations', { data: { name, channel } }).then(() => {
-        enqueueSnackbar('Store created successfully', {
+        enqueueSnackbar('Integration created successfully', {
           variant: 'success'
         });
         history.goBack();
@@ -96,7 +96,7 @@ class AddIntegrationForm extends Component {
   render() {
     const { classes, history } = this.props;
     const {
-      store, channel, channels, authorized, errors, loadingState
+      integration, channel, channels, authorized, errors, loadingState
     } = this.state;
 
     return (
@@ -107,16 +107,16 @@ class AddIntegrationForm extends Component {
             <TextField
               required
               id="name"
-              label="Store"
-              value={store}
-              name="store"
-              placeholder="mystore.lazada.sg"
+              label="Integration"
+              value={integration}
+              name="integration"
+              placeholder="myintegration.lazada.sg"
               onChange={this.onInputChange}
               margin="normal"
               variant="outlined"
               className={classes.inputWidth}
-              error={!!errors.store}
-              helperText={errors.store}
+              error={!errors.integration}
+              helperText={errors.integration}
             />
 
             <TextField
