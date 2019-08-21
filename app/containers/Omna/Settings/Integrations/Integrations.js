@@ -184,7 +184,9 @@ class Integrations extends Component {
 
   render() {
     const { classes } = this.props;
-    const { integrations, loading, alertDialog, limit, page } = this.state;
+    const {
+      integrations, loading, alertDialog, limit, page
+    } = this.state;
 
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
@@ -205,8 +207,8 @@ class Integrations extends Component {
           </div>
           <Divider variant="middle" />
           <div className={classes.cardList}>
-            {data &&
-              data.map(
+            {data
+              && data.map(
                 ({
                   id,
                   name,
@@ -221,11 +223,9 @@ class Integrations extends Component {
                     logo={logo}
                     authorized={authorized}
                     onIntegrationAuthorized={() => this.handleAuthorization(id)}
-                    onIntegrationUnauthorized={() =>
-                      this.handleUnAuthorization(id)
+                    onIntegrationUnauthorized={() => this.handleUnAuthorization(id)
                     }
-                    onIntegrationDeleted={() =>
-                      this.handleDeleteClick(id, name)
+                    onIntegrationDeleted={() => this.handleDeleteClick(id, name)
                     }
                     classes={classes}
                   />
