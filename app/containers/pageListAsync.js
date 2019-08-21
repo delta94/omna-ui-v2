@@ -60,6 +60,10 @@ export const HelpSupport = loadable(() =>
   });
 
 // OMNA
+export const Dashboard = loadable(() =>
+  import ('./Omna/Tasks/TaskList'), {
+    fallback: <Loading />,
+  });
 export const Tasks = loadable(() =>
   import ('./Omna/Tasks/TaskList'), {
     fallback: <Loading />,

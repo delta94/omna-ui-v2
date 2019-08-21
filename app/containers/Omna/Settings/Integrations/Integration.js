@@ -75,7 +75,7 @@ Integration.propTypes = {
   name: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
   channel: PropTypes.string.isRequired,
-  authorized: PropTypes.boolean.isRequired,
+  authorized: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
   onIntegrationAuthorized: PropTypes.func.isRequired,
   onIntegrationUnauthorized: PropTypes.func.isRequired,

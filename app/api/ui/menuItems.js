@@ -1,5 +1,11 @@
 module.exports = [
   {
+    key: 'dashboard',
+    name: 'Dashboard',
+    icon: 'md-analytics',
+    link: '/app/dashboard'
+  },
+  {
     key: 'data',
     name: 'Data',
     icon: 'ios-apps-outline',
@@ -28,6 +34,7 @@ module.exports = [
         name: 'Workflows',
         icon: 'ios-shuffle',
         link: '/app/settings/workflows'
+<<<<<<< HEAD
       },
       {
         key: 'webhooks',
@@ -35,6 +42,15 @@ module.exports = [
         icon: 'ios-globe',
         link: '/app/settings/webhooks-list'
       }
+=======
+      }
+      // {
+      //   key: 'webhooks',
+      //   name: 'Webhooks',
+      //   icon: 'ios-globe',
+      //   link: '/app/settings/webhooks-list'
+      // }
+>>>>>>> Add pagination to Flows view
     ]
   },
   {

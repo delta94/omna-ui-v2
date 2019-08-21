@@ -11,7 +11,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import StorageIcon from '@material-ui/icons/Storage';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SettingsIcon from '@material-ui/icons/Settings';
+<<<<<<< HEAD
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+=======
+import DashboardIcon from '@material-ui/icons/Dashboard';
+// import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+>>>>>>> Add pagination to Flows view
 import VerticalSplitIcon from '@material-ui/icons/VerticalSplit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -33,6 +38,7 @@ const styles = theme => ({
 });
 
 const DEFAULT_MENU_ITEMS = [
+<<<<<<< HEAD
     {
         text: "Data", icon: <StorageIcon />, link: "", expandableItem: true,
         subItems:
@@ -50,6 +56,38 @@ const DEFAULT_MENU_ITEMS = [
         text: "Notifications", icon: <NotificationsIcon />, link: "/notifications", expandableItem: false,
     }
 
+=======
+  {
+    text: 'Dashboard',
+    icon: <DashboardIcon />,
+    link: '/dashboard',
+    expandableItem: false
+  },
+  {
+    text: 'Data',
+    icon: <StorageIcon />,
+    link: '',
+    expandableItem: true,
+    subItems: [{ icon: <VerticalSplitIcon />, text: 'Orders', link: '/orders' }]
+  },
+  {
+    text: 'Settings',
+    icon: <SettingsIcon />,
+    link: '',
+    expandableItem: true,
+    subItems: [
+      { icon: <StoreIcon />, text: 'Stores', link: '/settings/stores' },
+      { icon: <SwapCallsIcon />, text: 'Workflows', link: '/settings/flows' },
+      { icon: <TasksIcon />, text: 'Tasks', link: '/settings/tasks' }
+    ]
+  },
+  {
+    text: 'Notifications',
+    icon: <NotificationsIcon />,
+    link: '/notifications',
+    expandableItem: false
+  }
+>>>>>>> Add pagination to Flows view
 ];
 
 const Item = ({ icon, text, link, classes, open, expandableItem, subItems = [], onClick }) => (

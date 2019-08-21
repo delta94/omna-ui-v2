@@ -219,8 +219,8 @@ class Integrations extends Component {
                   <Integration
                     key={id}
                     name={name}
-                    channel={channel}
                     logo={logo}
+                    channel={channel}
                     authorized={authorized}
                     onIntegrationAuthorized={() => this.handleAuthorization(id)}
                     onIntegrationUnauthorized={() => this.handleUnAuthorization(id)

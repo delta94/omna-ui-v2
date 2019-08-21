@@ -31,29 +31,47 @@ const filterList = ['Integration'];
 
 const headColumns = [
   {
-    id: 'number', first: true, last: false, label: 'Number'
+    id: 'number',
+    first: true,
+    last: false,
+    label: 'Number'
   },
   {
-    id: 'date', first: false, last: false, label: 'Date'
+    id: 'date',
+    first: false,
+    last: false,
+    label: 'Date'
   },
   {
-    id: 'status', first: false, last: false, label: 'Status'
+    id: 'status',
+    first: false,
+    last: false,
+    label: 'Status'
   },
   {
-    id: 'total', first: false, last: false, label: 'Total'
+    id: 'total',
+    first: false,
+    last: false,
+    label: 'Total'
   },
   {
-    id: 'store', first: false, last: false, label: 'Integration'
+    id: 'store',
+    first: false,
+    last: false,
+    label: 'Integration'
   },
   {
-    id: 'action', first: false, last: false, label: 'Action'
-  },
+    id: 'action',
+    first: false,
+    last: false,
+    label: 'Action'
+  }
 ];
 
 const styles = () => ({
   table: {
-    minWidth: 700,
-  },
+    minWidth: 700
+  }
 });
 
 /* ======= Principal Class ======= */
@@ -65,7 +83,7 @@ class OrderList extends React.Component {
     page: 0,
     success: true,
     messageError: '',
-    selectedRow: -1,
+    selectedRow: -1
   };
 
   componentDidMount() {
@@ -73,16 +91,21 @@ class OrderList extends React.Component {
   }
 
   getAPIorders(params) {
-    this.setState({ loading: true });
-    API.get('/orders', { params }).then(response => {
-      this.setState({ orders: get(response, 'data', { data: [], pagination: {} }), limit: get(response, 'data.pagination.limit', 0) });
-    }).catch((error) => {
-      // handle error
-      console.log(error);
-      this.setState({ success: false, messageError: error.message });
-    }).finally(() => {
-      this.setState({ loading: false });
-    });
+    API.get('/orders', { params })
+      .then(response => {
+        this.setState({
+          orders: get(response, 'data', { data: [], pagination: {} }),
+          limit: get(response, 'data.pagination.limit', 0)
+        });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+        this.setState({ success: false, messageError: error.message });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
   }
 
   callAPI = () => {
@@ -99,14 +122,21 @@ class OrderList extends React.Component {
     this.setState({ page }, this.callAPI);
   };
 
-  handleChangeRowsPerPage = (event) => {
+  handleChangeRowsPerPage = event => {
     this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
   };
 
-  handleDetailsViewClick = (order) => () => {
+  handleDetailsViewClick = order => () => {
     const { history } = this.props;
-    history.push(`/app/orders-list/${get(order, 'integration.id', 0)}/${get(order, 'number', 0)}/order-details`, { order: { data: order } });
-  }
+    history.push(
+      `/app/orders-list/${get(order, 'integration.id', 0)}/${get(
+        order,
+        'number',
+        0
+      )}/order-details`,
+      { order: { data: order } }
+    );
+  };
 
   handleSearchClick = (currentTerm, filters) => {
     const { limit, page } = this.state;
@@ -114,7 +144,7 @@ class OrderList extends React.Component {
       offset: page * limit,
       limit,
       term: currentTerm,
-      integration_id: filters.Integration,
+      integration_id: filters.Integration
     };
 
     this.setState({ loading: true });
@@ -123,8 +153,11 @@ class OrderList extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { pagination, data } = get(this.state, 'orders', { data: [], pagination: {} });
-    const { loading, limit, page } = this.state;
+    const { pagination, data } = get(this.state, 'orders', {
+      data: [],
+      pagination: {}
+    });
+    const { loading, limit, page, success, messageError } = this.state;
 
     const count = get(pagination, 'total', 0);
 
@@ -144,33 +177,42 @@ class OrderList extends React.Component {
               headColumns={headColumns}
             />
             <TableBody>
-              {data && data.map(row => (
-                <TableRow
-                  hover
-                  key={get(row, 'order_id', 0)}
-                >
-                  <TableCell align="left" component="th" scope="row">
-                    {get(row, 'number', 0)}
-                  </TableCell>
-                  <TableCell align="center">
-                    {
-                      get(row, 'updated_date', null) != null
-                        ? (moment(row.updated_date).format('Y-MM-DD H:mm:ss')
-                        ) : (
-                          '--'
-                        )
-                    }
-                  </TableCell>
-                  <TableCell align="center">{get(row, 'status', null)}</TableCell>
-                  <TableCell align="center">{get(row, 'total_price', null)}</TableCell>
-                  <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
-                  <TableCell align="center">
-                    <Button variant="text" size="small" color="primary" onClick={this.handleDetailsViewClick(row)} className={classes.button}>
-                      <Ionicon icon={variantIcon.view} className={classes.rightIcon} />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {data &&
+                data.map(row => (
+                  <TableRow hover key={get(row, 'order_id', 0)}>
+                    <TableCell align="left" component="th" scope="row">
+                      {get(row, 'number', 0)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {get(row, 'updated_date', null) != null
+                        ? moment(row.updated_date).format('Y-MM-DD H:mm:ss')
+                        : '--'}
+                    </TableCell>
+                    <TableCell align="center">
+                      {get(row, 'status', null)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {get(row, 'total_price', null)}
+                    </TableCell>
+                    <TableCell align="center">
+                      {get(row, 'integration.name', null)}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="text"
+                        size="small"
+                        color="primary"
+                        onClick={this.handleDetailsViewClick(row)}
+                        className={classes.button}
+                      >
+                        <Ionicon
+                          icon={variantIcon.view}
+                          className={classes.rightIcon}
+                        />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
             <TableFooter>
               <TableRow>
@@ -181,7 +223,7 @@ class OrderList extends React.Component {
                   rowsPerPage={limit}
                   page={page}
                   SelectProps={{
-                    native: true,
+                    native: true
                   }}
                   onChangePage={this.handleChangePage}
                   onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -198,8 +240,8 @@ class OrderList extends React.Component {
 OrderList.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
+    push: PropTypes.func
+  }).isRequired
 };
 
 export default withStyles(styles)(OrderList);
