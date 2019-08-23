@@ -61,17 +61,6 @@ const styles = theme => ({
   }
 });
 
-<<<<<<< HEAD
-function Flows(props) {
-  const [loading, setLoading] = useState(true);
-  const [flows, setFlows] = useState([]);
-  const [alertDialog, setAlertDialog] = useState({
-    open: false,
-    objectId: '',
-    objectName: '',
-    message: ''
-  });
-=======
 const headColumns = [
   {
     id: 'title',
@@ -104,7 +93,6 @@ const headColumns = [
     label: 'Actions'
   }
 ];
->>>>>>> Add pagination to Flows view
 
 class Flows extends Component {
   state = {
@@ -122,7 +110,7 @@ class Flows extends Component {
   };
 
   componentDidMount() {
-    this.fetchFlows();
+    this.initializeDataTable();
   }
 
   fetchFlows = async params => {
@@ -138,35 +126,20 @@ class Flows extends Component {
         variant: 'error'
       });
     }
-
-<<<<<<< HEAD
-  async function initializeDataTable() {
-    setLoading(true);
-    await fetchFlows();
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    initializeDataTable();
-  }, []);
-
-  const handleDeleteFlow = async () => {
-    const { enqueueSnackbar } = props;
-=======
-    this.setState({ loading: false });
   };
 
-  // useEffect(() => {
-  //   fetchFlows();
-  // }, []);
+  initializeDataTable = async () => {
+    this.setState({ loading: true });
+    await this.fetchFlows();
+    this.setState({ loading: false });
+  };
 
   handleDeleteFlow = async () => {
     const { enqueueSnackbar } = this.props;
     const { alertDialog } = this.state;
 
->>>>>>> Add pagination to Flows view
     try {
-      setLoading(true);
+      this.setState({ loading: true });
       await API.delete(`flows/${alertDialog.objectId}`);
       enqueueSnackbar('Workflow deleted successfully', {
         variant: 'success'
@@ -177,24 +150,17 @@ class Flows extends Component {
         variant: 'error'
       });
     }
-    setLoading(false);
+
+    this.setState({ loading: false });
   };
 
-<<<<<<< HEAD
-  const handleOnClickDeleteFlow = (id, title, integration) => {
-    setAlertDialog({
-      open: true,
-      objectId: id,
-      message: `Are you sure you want to remove "${title}: ${integration}" workflow?`
-=======
-  handleOnClickDeleteFlow = (id, title) => {
+  handleOnClickDeleteFlow = (id, title, integration) => {
     this.setState({
       alertDialog: {
         open: true,
         objectId: id,
-        message: `Are you sure you want to remove "${title}"  workflow?`
+        message: `Are you sure you want to remove "${title}: ${integration}" workflow?`
       }
->>>>>>> Add pagination to Flows view
     });
   };
 
@@ -234,7 +200,7 @@ class Flows extends Component {
   handleToggleScheduler = async id => {
     const { enqueueSnackbar } = this.props;
     try {
-      setLoading(true);
+      this.setState({ loading: true });
       await API.get(`flows/${id}/toggle/scheduler/status`);
       this.fetchFlows();
       enqueueSnackbar('Scheduler toggled successfully', {
@@ -245,7 +211,8 @@ class Flows extends Component {
         variant: 'error'
       });
     }
-    setLoading(false);
+
+    this.setState({ loading: false });
   };
 
   handleChangePage = (e, page) => {
@@ -349,7 +316,7 @@ class Flows extends Component {
                                   onClick={() => this.handleOnClickDeleteFlow(id, title)
                                   }
                                 >
-                                  <DeleteIcon />
+                                  <Ionicon icon="md-delete" />
                                 </IconButton>
                               </Tooltip>
                               <Tooltip
@@ -402,74 +369,13 @@ class Flows extends Component {
         <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}
-          handleCancel={this.handleDialogCancel}
-          handleConfirm={this.handleDialogConfirm}
+          handleCancel={this.handleDialogCancel()}
+          handleConfirm={this.handleDialogConfirm()}
         />
-<<<<<<< HEAD
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>title</TableCell>
-              <TableCell align="center">integration</TableCell>
-              <TableCell align="center">Created at</TableCell>
-              <TableCell align="center">Updated at</TableCell>
-              <TableCell align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {flows.map(({
-              id, title, createdAt, updatedAt, integration, task
-            }) => (
-              <TableRow key={id}>
-                <TableCell component="th" scope="row">{title}</TableCell>
-                <TableCell align="center">{integration.name}</TableCell>
-                <TableCell align="center">{moment(createdAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                <TableCell align="center">{moment(updatedAt).format('Y-MM-DD H:mm:ss')}</TableCell>
-                <TableCell align="center">
-                  <Tooltip title="edit">
-                    <IconButton aria-label="edit" onClick={() => handleEditFlow(id)}>
-                      <Ionicon icon="md-create" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="start">
-                    <IconButton aria-label="start" onClick={() => handleStartFlow(id)}>
-                      <Ionicon icon="md-play" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="delete">
-                    <IconButton aria-label="delete" onClick={() => handleOnClickDeleteFlow(id, title, integration.name)}>
-                      <Ionicon icon="md-trash" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={task.scheduler && task.scheduler.active ? 'disable scheduler' : 'enable scheduler'}>
-                    <IconButton aria-label="start" onClick={() => handleToggleScheduler(id)}>
-                      {task.scheduler && task.scheduler.active ? <Ionicon icon="ios-close" />
-                        : <Ionicon icon="ios-timer" />
-                      }
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))
-            }
-          </TableBody>
-        </Table>
-      </Paper>
-
-      <AlertDialog
-        open={alertDialog.open}
-        message={alertDialog.message}
-        handleCancel={handleDialogCancel}
-        handleConfirm={handleDialogConfirm}
-      />
-      {loading && <Loading />}
-    </div>
-  );
-=======
+        {loading && <Loading />}
       </div>
     );
   }
->>>>>>> Add pagination to Flows view
 }
 
 Flows.propTypes = {

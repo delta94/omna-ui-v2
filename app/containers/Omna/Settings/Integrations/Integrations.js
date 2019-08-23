@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
+import Loading from 'dan-components/Loading';
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
@@ -13,7 +14,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import LoadingState from '../../Common/LoadingState';
 import AlertDialog from '../../Common/AlertDialog';
 import Utils from '../../Common/Utils';
 import GenericTablePagination from '../../Common/GenericTablePagination';
