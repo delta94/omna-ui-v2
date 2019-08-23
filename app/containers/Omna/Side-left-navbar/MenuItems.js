@@ -97,7 +97,36 @@ class MenuItems extends Component {
             this.setState({ openItems: { ...openItems } });
         }
 
+<<<<<<< HEAD
     }
+=======
+    return (
+      <div>
+        <List>
+          {DEFAULT_MENU_ITEMS
+            && DEFAULT_MENU_ITEMS.map(
+              ({
+                text, icon, link, expandableItem, subItems
+              }, index) => (
+                <Item
+                  key={index}
+                  icon={icon}
+                  text={text}
+                  link={link}
+                  classes={classes}
+                  subItems={subItems}
+                  expandableItem={expandableItem}
+                  open={openItems[index]}
+                  onClick={this.handleExpandItem(index, expandableItem)}
+                />
+              )
+            )}
+        </List>
+      </div>
+    );
+  }
+}
+>>>>>>> Separate Integration item on a separate component
 
     render() {
         const { classes } = this.props;

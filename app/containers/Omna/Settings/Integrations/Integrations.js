@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import { withSnackbar } from 'notistack';
+import get from 'lodash/get';
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
@@ -11,25 +13,12 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
-import BlockIcon from '@material-ui/icons/Block';
-//
-import Loading from 'dan-components/Loading';
-//
-import { withSnackbar } from 'notistack';
-import get from 'lodash/get';
-//
+import LoadingState from '../../Common/LoadingState';
 import AlertDialog from '../../Common/AlertDialog';
 import Utils from '../../Common/Utils';
 import GenericTablePagination from '../../Common/GenericTablePagination';
 import API from '../../Utils/api';
+import Integration from './Integration';
 
 const styles = theme => ({
   cardList: {
@@ -195,9 +184,7 @@ class Integrations extends Component {
 
   render() {
     const { classes } = this.props;
-    const {
-      integrations, loading, alertDialog, limit, page
-    } = this.state;
+    const { integrations, loading, alertDialog, limit, page } = this.state;
 
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
@@ -218,8 +205,8 @@ class Integrations extends Component {
           </div>
           <Divider variant="middle" />
           <div className={classes.cardList}>
-            {data
-              && data.map(
+            {data &&
+              data.map(
                 ({
                   id,
                   name,
@@ -227,51 +214,21 @@ class Integrations extends Component {
                   logo = Utils.urlLogo(channel),
                   authorized
                 }) => (
-                  <Card className={classes.card} key={name}>
-                    <CardHeader
-                      avatar={
-                        logo ? (
-                          <Avatar
-                            src={logo}
-                            alt="logo"
-                            aria-label="Recipe"
-                            className={classes.avatar}
-                          />
-                        ) : null
-                      }
-                      title={name}
-                      subheader={Utils.fullChannelName(channel)}
-                    />
-                    <CardActions className={classes.actions}>
-                      {authorized ? (
-                        <Tooltip title="unauthorize">
-                          <IconButton
-                            aria-label="unauthorize"
-                            onClick={() => this.handleUnAuthorization(id)}
-                          >
-                            <BlockIcon />
-                          </IconButton>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="authorize">
-                          <IconButton
-                            aria-label="authorize"
-                            onClick={() => this.handleAuthorization(id)}
-                          >
-                            <VerifiedUserIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      <Tooltip title="delete">
-                        <IconButton
-                          aria-label="delete"
-                          onClick={() => this.handleDeleteClick(id, name)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </CardActions>
-                  </Card>
+                  <Integration
+                    key={id}
+                    name={name}
+                    channel={channel}
+                    logo={logo}
+                    authorized={authorized}
+                    onIntegrationAuthorized={() => this.handleAuthorization(id)}
+                    onIntegrationUnauthorized={() =>
+                      this.handleUnAuthorization(id)
+                    }
+                    onIntegrationDeleted={() =>
+                      this.handleDeleteClick(id, name)
+                    }
+                    classes={classes}
+                  />
                 )
               )}
           </div>
