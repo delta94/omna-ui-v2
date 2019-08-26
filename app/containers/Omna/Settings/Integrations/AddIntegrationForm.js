@@ -90,7 +90,7 @@ class AddIntegrationForm extends Component {
 
   handleAuthorization = (id) => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAutorization(path);
+    Utils.handleAuthorization(path);
   }
 
   render() {

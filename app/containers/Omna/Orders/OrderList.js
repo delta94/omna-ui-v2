@@ -74,7 +74,6 @@ const styles = () => ({
   }
 });
 
-/* ======= Principal Class ======= */
 class OrderList extends React.Component {
   state = {
     loading: true,
@@ -157,7 +156,7 @@ class OrderList extends React.Component {
       data: [],
       pagination: {}
     });
-    const { loading, limit, page, success, messageError } = this.state;
+    const { loading, limit, page } = this.state;
 
     const count = get(pagination, 'total', 0);
 
@@ -177,8 +176,8 @@ class OrderList extends React.Component {
               headColumns={headColumns}
             />
             <TableBody>
-              {data &&
-                data.map(row => (
+              {data
+                && data.map(row => (
                   <TableRow hover key={get(row, 'order_id', 0)}>
                     <TableCell align="left" component="th" scope="row">
                       {get(row, 'number', 0)}
@@ -217,7 +216,6 @@ class OrderList extends React.Component {
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  colSpan={5}
                   rowsPerPageOptions={[5, 10, 25, 50]}
                   count={count}
                   rowsPerPage={limit}

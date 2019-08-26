@@ -58,9 +58,8 @@ class Integrations extends Component {
     page: 0
   };
 
-
   async componentDidMount() {
-    this.initializeDatatable();
+    this.initializeDataTable();
   }
 
   getIntegrations = async (params) => {
@@ -93,7 +92,7 @@ class Integrations extends Component {
 
   handleAuthorization = (id) => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAutorization(path);
+    Utils.handleAuthorization(path);
   }
 
   handleUnAuthorization = id => {
@@ -176,7 +175,7 @@ class Integrations extends Component {
     );
   };
 
-  async initializeDatatable() {
+  async initializeDataTable() {
     this.setState({ loading: true });
     await this.getIntegrations();
     this.setState({ loading: false });
@@ -236,7 +235,6 @@ class Integrations extends Component {
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  colSpan={5}
                   rowsPerPageOptions={[5, 10, 25, 50]}
                   count={count}
                   rowsPerPage={limit}

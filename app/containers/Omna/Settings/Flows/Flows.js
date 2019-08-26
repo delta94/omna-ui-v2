@@ -313,8 +313,7 @@ class Flows extends Component {
                               <Tooltip title="delete">
                                 <IconButton
                                   aria-label="delete"
-                                  onClick={() => this.handleOnClickDeleteFlow(id, title)
-                                  }
+                                  onClick={() => this.handleOnClickDeleteFlow(id, title)}
                                 >
                                   <Ionicon icon="md-delete" />
                                 </IconButton>
@@ -345,7 +344,6 @@ class Flows extends Component {
                     <TableFooter>
                       <TableRow>
                         <TablePagination
-                          colSpan={5}
                           rowsPerPageOptions={[5, 10, 25, 50]}
                           count={count}
                           rowsPerPage={limit}

@@ -1,4 +1,5 @@
 import { sha256 } from 'js-sha256';
+
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
@@ -74,7 +75,7 @@ class Utils {
     return queryString;
   }
 
-  static handleAutorization(path) {
+  static handleAuthorization(path) {
     window.location.replace(`${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(path)}`);
   }
 
