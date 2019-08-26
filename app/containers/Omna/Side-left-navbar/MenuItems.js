@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
@@ -83,8 +84,8 @@ const Item = ({
     )}
 
     <Collapse in={open} timeout="auto" unmountOnExit>
-      {subItems
-        && subItems.map(({ subItemIcon, subItemText, subItemLink }, key) => (
+      {subItems &&
+        subItems.map(({ subItemIcon, subItemText, subItemLink }, key) => (
           <List key={key} component="div" disablePadding>
             <ListItem
               button
@@ -121,11 +122,9 @@ class MenuItems extends Component {
     return (
       <div>
         <List>
-          {DEFAULT_MENU_ITEMS
-            && DEFAULT_MENU_ITEMS.map(
-              ({
-                text, icon, link, expandableItem, subItems
-              }, index) => (
+          {DEFAULT_MENU_ITEMS &&
+            DEFAULT_MENU_ITEMS.map(
+              ({ text, icon, link, expandableItem, subItems }, index) => (
                 <Item
                   key={index}
                   icon={icon}
