@@ -1,11 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import brand from 'dan-api/dummy/brand';
 import { Route } from 'react-router-dom';
 import { ErrorWrap } from 'dan-components';
 
-const title = brand.name + ' - Aplication Error';
-const description = brand.desc;
+const title = 'brand.name - Application Error';
+const description = 'brand.desc';
 
 const Error = () => (
   <Route

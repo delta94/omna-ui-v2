@@ -40,14 +40,10 @@ export const HelpSupport = loadable(() => import('./Pages/HelpSupport'), {
   fallback: <Loading />
 });
 
-export const LockScreen = loadable(() => import('./Pages/Users/LockScreen'), {
-  fallback: <Loading />
-});
-
 // OMNA
-export const Dashboard = loadable(() => import('./Omna/Tasks/TaskList'), {
-  fallback: <Loading />
-});
+// export const Dashboard = loadable(() => import('./Omna/Tasks/TaskList'), {
+//   fallback: <Loading />
+// });
 
 export const Tasks = loadable(() => import('./Omna/Tasks/TaskList'), {
   fallback: <Loading />

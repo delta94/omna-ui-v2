@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
-import styles1 from 'dan-components/Widget/widget-jss';
+// import styles1 from 'dan-components/Widget/widget-jss';
 import classNames from 'classnames';
 import messageStyles from 'dan-styles/Messages.scss';
 import Ionicon from 'react-ionicons';
@@ -497,4 +497,4 @@ TaskList.propTypes = {
   }).isRequired,
 };
 
-export default withSnackbar(withStyles(styles, styles1, { withTheme: true })(TaskList));
+export default withSnackbar(withStyles(styles, { withTheme: true })(TaskList));

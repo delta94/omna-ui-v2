@@ -30,26 +30,41 @@ const selectOption = 'checkbox';
 
 const headColumns = [
   {
-    id: 'id', first: true, last: false, label: 'ID'
+    id: 'id',
+    first: true,
+    last: false,
+    label: 'ID'
   },
   {
-    id: 'topic', first: false, last: false, label: 'Topic'
+    id: 'topic',
+    first: false,
+    last: false,
+    label: 'Topic'
   },
   {
-    id: 'date', first: false, last: false, label: 'Date'
+    id: 'date',
+    first: false,
+    last: false,
+    label: 'Date'
   },
   {
-    id: 'address', first: false, last: false, label: 'Address'
+    id: 'address',
+    first: false,
+    last: false,
+    label: 'Address'
   },
   {
-    id: 'store', first: false, last: false, label: 'Integration'
-  },
+    id: 'store',
+    first: false,
+    last: false,
+    label: 'Integration'
+  }
 ];
 
 const styles = () => ({
   table: {
-    minWidth: 700,
-  },
+    minWidth: 700
+  }
 });
 
 /* ======= Principal Class ======= */
@@ -61,7 +76,7 @@ class WebhookList extends React.Component {
     page: 0,
     success: true,
     messageError: '',
-    selected: [],
+    selected: []
   };
 
   componentDidMount() {
@@ -69,15 +84,21 @@ class WebhookList extends React.Component {
   }
 
   getAPIwebhooks(params) {
-    API.get('/webhooks', { params }).then(response => {
-      this.setState({ webhooks: get(response, 'data', { data: [], pagination: {} }), limit: get(response, 'data.pagination.limit', 0) });
-    }).catch((error) => {
-      // handle error
-      console.log(error);
-      this.setState({ success: false, messageError: error.message });
-    }).finally(() => {
-      this.setState({ loading: false });
-    });
+    API.get('/webhooks', { params })
+      .then(response => {
+        this.setState({
+          webhooks: get(response, 'data', { data: [], pagination: {} }),
+          limit: get(response, 'data.pagination.limit', 0)
+        });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+        this.setState({ success: false, messageError: error.message });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
   }
 
   callAPI = () => {
@@ -90,35 +111,35 @@ class WebhookList extends React.Component {
     this.getAPIwebhooks(params);
   };
 
-  deleteAPIwebhook = (id) => {
+  deleteAPIwebhook = id => {
     const { enqueueSnackbar } = this.props;
-    API.get(`/webhooks/${id}/destroy`).then(() => {
-      enqueueSnackbar('Webhook deleted successfully', { variant: 'success' });
-      this.callAPI();
-    }).catch((error) => {
-      enqueueSnackbar(error, { variant: 'error' });
-    });
-  }
+    API.get(`/webhooks/${id}/destroy`)
+      .then(() => {
+        enqueueSnackbar('Webhook deleted successfully', { variant: 'success' });
+        this.callAPI();
+      })
+      .catch(error => {
+        enqueueSnackbar(error, { variant: 'error' });
+      });
+  };
 
-  handleDeleteBlock = (Ids) => () => {
-    Ids.map(id => (
-      this.deleteAPIwebhook(id)
-    ));
+  handleDeleteBlock = Ids => () => {
+    Ids.map(id => this.deleteAPIwebhook(id));
     this.setState({ selected: [] });
-  }
+  };
 
   handleChangePage = (event, page) => {
     this.setState({ page }, this.callAPI);
   };
 
-  handleChangeRowsPerPage = (event) => {
+  handleChangeRowsPerPage = event => {
     this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
   };
 
   handleAddWebhookClick = () => {
     const { history } = this.props;
     history.push('/app/settings/webhooks-list/create-webhook');
-  }
+  };
 
   handleSearchClick = (currentTerm, filters) => {
     const { limit, page } = this.state;
@@ -127,7 +148,7 @@ class WebhookList extends React.Component {
       limit,
       term: currentTerm,
       integration_id: filters.Integration,
-      topic: filters.Topic,
+      topic: filters.Topic
     };
 
     this.setState({ loading: true });
@@ -169,22 +190,25 @@ class WebhookList extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { pagination, data } = get(this.state, 'webhooks', { data: [], pagination: {} });
+    const { pagination, data } = get(this.state, 'webhooks', {
+      data: [],
+      pagination: {}
+    });
     const {
       loading,
       limit,
       page,
       success,
       messageError,
-      selected,
+      selected
     } = this.state;
 
     const count = get(pagination, 'total', 0);
 
     return (
       <Paper>
-        <div className="item-padding">
-          {loading ? <LoadingState loading={loading} /> : null}
+        <div>
+          {loading ? <LoadingState className="item-padding" loading={loading} /> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
@@ -209,53 +233,59 @@ class WebhookList extends React.Component {
                     selectOption={selectOption}
                   />
                   <TableBody>
-                    {data && data.map(row => {
-                      const isSelected = this.isSelected(get(row, 'id', -1));
-                      return (
-                        <TableRow
-                          hover
-                          key={get(row, 'id', 0)}
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          tabIndex={-1}
-                          selected={isSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isSelected}
-                              onClick={event => this.handleClick(event, get(row, 'id', null))}
-                            />
-                          </TableCell>
-                          <TableCell align="left" component="th" scope="row">
-                            {get(row, 'id', 0)}
-                          </TableCell>
-                          <TableCell align="center">{get(row, 'topic', null)}</TableCell>
-                          <TableCell align="center">
-                            {
-                              get(row, 'updated_at', null) != null
-                                ? (moment(row.updated_at).format('Y-MM-DD H:mm:ss')
-                                ) : (
-                                  '--'
-                                )
-                            }
-                          </TableCell>
-                          <TableCell align="center">{get(row, 'address', null)}</TableCell>
-                          <TableCell align="center">{get(row, 'integration.name', null)}</TableCell>
-                        </TableRow>
-                      );
-                    })}
+                    {data &&
+                      data.map(row => {
+                        const isSelected = this.isSelected(get(row, 'id', -1));
+                        return (
+                          <TableRow
+                            hover
+                            key={get(row, 'id', 0)}
+                            role="checkbox"
+                            aria-checked={isSelected}
+                            tabIndex={-1}
+                            selected={isSelected}
+                          >
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                color="primary"
+                                checked={isSelected}
+                                onClick={event =>
+                                  this.handleClick(event, get(row, 'id', null))
+                                }
+                              />
+                            </TableCell>
+                            <TableCell align="left" component="th" scope="row">
+                              {get(row, 'id', 0)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {get(row, 'topic', null)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {get(row, 'updated_at', null) != null
+                                ? moment(row.updated_at).format(
+                                    'Y-MM-DD H:mm:ss'
+                                  )
+                                : '--'}
+                            </TableCell>
+                            <TableCell align="center">
+                              {get(row, 'address', null)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {get(row, 'integration.name', null)}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                   </TableBody>
                   <TableFooter>
                     <TableRow>
                       <TablePagination
-                        colSpan={5}
                         rowsPerPageOptions={[5, 10, 25, 50]}
                         count={count}
                         rowsPerPage={limit}
                         page={page}
                         SelectProps={{
-                          native: true,
+                          native: true
                         }}
                         onChangePage={this.handleChangePage}
                         onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -266,8 +296,7 @@ class WebhookList extends React.Component {
                 </Table>
               </div>
             </Fragment>
-          )
-          }
+          )}
         </div>
       </Paper>
     );
@@ -277,8 +306,8 @@ WebhookList.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
+    push: PropTypes.func
+  }).isRequired
 };
 
 export default withSnackbar(withStyles(styles)(WebhookList));

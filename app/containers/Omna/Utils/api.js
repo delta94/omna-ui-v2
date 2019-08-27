@@ -10,8 +10,13 @@ function setParams(config) {
     data.token = currentTenant.token;
     data.timestamp = Date.now();
 
-    const msg = config.url + JSON.stringify(data).replace(/["']/g, '').split('').sort()
-      .join('');
+    const msg =
+      config.url +
+      JSON.stringify(data)
+        .replace(/["']/g, '')
+        .split('')
+        .sort()
+        .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     data.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
@@ -22,9 +27,14 @@ function setParams(config) {
 
   // Join the service path and the ordered sequence of characters, excluding the quotes,
   // corresponding to the JSON of the parameters that will be sent.
-  const msg = config.url + JSON.stringify(params).replace(/["']/g, '').split('').sort()
-    .join('');
-
+  const msg =
+    config.url +
+    JSON.stringify(params)
+      .replace(/["']/g, '')
+      .split('')
+      .sort()
+      .join('');
+  console.log(`Message -> ${msg}`);
   // Generate the corresponding hmac using the js-sha256 or similar library.
   params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
 
@@ -32,7 +42,7 @@ function setParams(config) {
 }
 
 const API = axios.create({
-  baseURL: 'https://cenit.io/app/ecapi-v1',
+  baseURL: 'https://cenit.io/app/ecapi-v1'
 });
 
 API.interceptors.request.use(setParams, Promise.reject);

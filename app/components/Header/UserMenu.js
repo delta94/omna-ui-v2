@@ -3,24 +3,23 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
-import Avatar from '@material-ui/core/Avatar';
+// import Avatar from '@material-ui/core/Avatar';
 // import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Info from '@material-ui/icons/Info';
-import Warning from '@material-ui/icons/Warning';
-import Check from '@material-ui/icons/CheckCircle';
-import Error from '@material-ui/icons/RemoveCircle';
+// import Button from '@material-ui/core/Button';
+// import Info from '@material-ui/icons/Info';
+// import Warning from '@material-ui/icons/Warning';
+// import Check from '@material-ui/icons/CheckCircle';
+// import Error from '@material-ui/icons/RemoveCircle';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Badge from '@material-ui/core/Badge';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+// import ListItemText from '@material-ui/core/ListItemText';
 // import Ionicon from 'react-ionicons';
-import dummy from 'dan-api/dummy/dummyContents';
-import messageStyles from 'dan-styles/Messages.scss';
-import avatarApi from 'dan-api/images/avatars';
+// import messageStyles from 'dan-styles/Messages.scss';
+// import avatarApi from 'dan-api/images/avatars';
 import link from 'dan-api/ui/link';
 import styles from './header-jss';
 
@@ -60,7 +59,7 @@ class UserMenu extends React.Component {
             <Ionicon icon="ios-notifications-outline" />
           </Badge>
         </IconButton> */}
-        <Menu
+        {/* <Menu
           id="menu-notification"
           anchorEl={anchorEl}
           anchorOrigin={{
@@ -141,10 +140,10 @@ class UserMenu extends React.Component {
               />
             </div>
           </MenuItem>
-        </Menu>
-        <Button onClick={this.handleMenu('user-setting')}>
+        </Menu> */}
+        {/* <Button onClick={this.handleMenu('user-setting')}>
           <Avatar alt={dummy.user.name} src={dummy.user.avatar} />
-        </Button>
+        </Button> */}
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
@@ -190,7 +189,7 @@ class UserMenu extends React.Component {
             <ListItemIcon>
               <ExitToApp />
             </ListItemIcon>
-            Log Out
+            Log Out!!!
           </MenuItem>
         </Menu>
       </div>

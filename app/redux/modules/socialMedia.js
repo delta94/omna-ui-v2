@@ -1,6 +1,5 @@
 import { fromJS, List, Map } from 'immutable';
 import notif from 'dan-api/ui/notifMessage';
-import dummy from 'dan-api/dummy/dummyContents';
 import {
   FETCH_TIMELINE_DATA,
   POST,
@@ -37,7 +36,7 @@ const buildTimeline = (text, image, privacy) => {
     date: getDate(),
     time: getTime(),
     icon: icon(privacy),
-    avatar: dummy.user.avatar,
+    avatar: '',
     image: imageSrc,
     content: text,
     liked: false,
@@ -50,7 +49,7 @@ const buildComment = (message, curData) => {
   const newData = Map({
     id,
     from: 'John Doe',
-    avatar: dummy.user.avatar,
+    avatar: '',
     date: getDate(),
     message,
   });

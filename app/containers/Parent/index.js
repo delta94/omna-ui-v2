@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Helmet } from 'react-helmet';
-import brand from 'dan-api/dummy/brand';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -23,8 +22,8 @@ const styles = {
 
 class Parent extends React.Component {
   render() {
-    const title = brand.name;
-    const description = brand.desc;
+    const title = 'name';
+    const description = 'desc';
     const { classes, history } = this.props;
     // Get Path Location
     let parts = history.location.pathname.split('/');

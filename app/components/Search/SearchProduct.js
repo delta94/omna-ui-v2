@@ -13,7 +13,6 @@ import ViewList from '@material-ui/icons/ViewList';
 import GridOn from '@material-ui/icons/GridOn';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Cart from '../Cart/Cart';
 import styles from './search-jss';
 
 class SearchProduct extends React.Component {
@@ -97,14 +96,14 @@ class SearchProduct extends React.Component {
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-              <Cart
+              {/* <Cart
                 anchorEl={anchorEl}
                 dataCart={dataCart}
                 close={this.handleClose}
                 removeItem={removeItem}
                 checkout={checkout}
                 totalPrice={totalPrice}
-              />
+              /> */}
             </div>
           </Toolbar>
         </AppBar>

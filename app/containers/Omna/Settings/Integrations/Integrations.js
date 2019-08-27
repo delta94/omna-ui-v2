@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-import Loading from 'dan-components/Loading';
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
@@ -14,9 +13,11 @@ import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 
+import LoadingState from '../../Common/LoadingState';
 import AlertDialog from '../../Common/AlertDialog';
 import Utils from '../../Common/Utils';
 import GenericTablePagination from '../../Common/GenericTablePagination';
+import GenericErrorMessage from '../../Common/GenericErrorMessage';
 import API from '../../Utils/api';
 import Integration from './Integration';
 
@@ -54,6 +55,8 @@ class Integrations extends Component {
       integrationName: '',
       message: ''
     },
+    success: true,
+    messageError: '',
     limit: 5,
     page: 0
   };
@@ -62,7 +65,7 @@ class Integrations extends Component {
     this.initializeDataTable();
   }
 
-  getIntegrations = async (params) => {
+  getIntegrations = async params => {
     const { enqueueSnackbar } = this.props;
     let reqParams = params;
     if (typeof reqParams !== 'undefined') {
@@ -78,32 +81,36 @@ class Integrations extends Component {
         limit: get(response, 'data.pagination.limit', 0)
       });
     } catch (error) {
+      this.setState({ success: false, messageError: error.message });
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
     // this.setState({ loading: false });
-  }
+  };
 
   handleAddIntegrationClick = () => {
     const { history } = this.props;
     history.push('/app/settings/integrations/add-integration');
   };
 
-  handleAuthorization = (id) => {
+  handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
     Utils.handleAuthorization(path);
-  }
+  };
 
   handleUnAuthorization = id => {
     const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
-    API.delete(`/integrations/${id}/authorize`, { data: { data: { integration_id: id } } }).then(response => {
-      console.log(response);
-      enqueueSnackbar('Integration unauthorized successfully', {
-        variant: 'success'
-      });
+    API.delete(`/integrations/${id}/authorize`, {
+      data: { data: { integration_id: id } }
     })
+      .then(response => {
+        console.log(response);
+        enqueueSnackbar('Integration unauthorized successfully', {
+          variant: 'success'
+        });
+      })
       .catch(error => {
         enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
           variant: 'error'
@@ -123,7 +130,9 @@ class Integrations extends Component {
     const { enqueueSnackbar } = this.props;
     try {
       const { alertDialog } = this.state;
-      const response = await API.delete(`/integrations/${alertDialog.integrationId}`);
+      const response = await API.delete(
+        `/integrations/${alertDialog.integrationId}`
+      );
       if (response && response.data.success) {
         enqueueSnackbar('Integration deleted successfully', {
           variant: 'success'
@@ -135,7 +144,7 @@ class Integrations extends Component {
         variant: 'error'
       });
     }
-  }
+  };
 
   handleDialogConfirm = async () => {
     this.handleDeleteIntegration();
@@ -184,7 +193,13 @@ class Integrations extends Component {
   render() {
     const { classes } = this.props;
     const {
-      integrations, loading, alertDialog, limit, page
+      integrations,
+      loading,
+      alertDialog,
+      success,
+      messageError,
+      limit,
+      page
     } = this.state;
 
     const { pagination, data } = integrations;
@@ -192,64 +207,73 @@ class Integrations extends Component {
 
     return (
       <div>
-        {loading && <Loading />}
         <Paper>
-          <div className="display-flex flex-direction-row-inverse">
-            <Button
-              variant="outlined"
-              color="primary"
-              style={{ margin: '10px' }}
-              onClick={this.handleAddIntegrationClick}
-            >
-              Add Integration
-            </Button>
-          </div>
-          <Divider variant="middle" />
-          <div className={classes.cardList}>
-            {data
-              && data.map(
-                ({
-                  id,
-                  name,
-                  channel,
-                  logo = Utils.urlLogo(channel),
-                  authorized
-                }) => (
-                  <Integration
-                    key={id}
-                    name={name}
-                    logo={logo}
-                    channel={channel}
-                    authorized={authorized}
-                    onIntegrationAuthorized={() => this.handleAuthorization(id)}
-                    onIntegrationUnauthorized={() => this.handleUnAuthorization(id)
-                    }
-                    onIntegrationDeleted={() => this.handleDeleteClick(id, name)
-                    }
-                    classes={classes}
-                  />
-                )
-              )}
-          </div>
-          <Table>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50]}
-                  count={count}
-                  rowsPerPage={limit}
-                  page={page}
-                  SelectProps={{
-                    native: true
-                  }}
-                  onChangePage={this.handleChangePage}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  ActionsComponent={GenericTablePagination}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
+          {loading ? <div className="item-padding"><LoadingState loading={loading} /></div> : null}
+          {loading ? null : !success ? (
+            <GenericErrorMessage messageError={messageError} />
+          ) : (
+            <div>
+              <div className="display-flex flex-direction-row-inverse">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  style={{ margin: '10px' }}
+                  onClick={this.handleAddIntegrationClick}
+                >
+                  Add Integration
+                </Button>
+              </div>
+              <Divider variant="middle" />
+              <div className={classes.cardList}>
+                {data &&
+                  data.map(
+                    ({
+                      id,
+                      name,
+                      channel,
+                      logo = Utils.urlLogo(channel),
+                      authorized
+                    }) => (
+                      <Integration
+                        key={id}
+                        name={name}
+                        logo={logo}
+                        channel={channel}
+                        authorized={authorized}
+                        onIntegrationAuthorized={() =>
+                          this.handleAuthorization(id)
+                        }
+                        onIntegrationUnauthorized={() =>
+                          this.handleUnAuthorization(id)
+                        }
+                        onIntegrationDeleted={() => this.handleDeleteClick(id, name)}
+                        classes={classes}
+                      />
+                    )
+                  )}
+              </div>
+              <Table>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25, 50]}
+                      count={count}
+                      rowsPerPage={limit}
+                      page={page}
+                      SelectProps={{
+                        native: true
+                      }}
+                      onChangePage={this.handleChangePage}
+                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                      ActionsComponent={GenericTablePagination}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </div>
+          )}
         </Paper>
+
         <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}

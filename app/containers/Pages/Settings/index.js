@@ -1,7 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Helmet } from 'react-helmet';
-import brand from 'dan-api/dummy/brand';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -12,8 +11,7 @@ import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 import settingList from 'dan-api/ui/settingList';
 import Paper from '@material-ui/core/Paper';
-import Avatar from '@material-ui/core/Avatar';
-import dummy from 'dan-api/dummy/dummyContents';
+// import Avatar from '@material-ui/core/Avatar';
 import DetailSettings from './DetailSettings';
 import styles from './settings-jss';
 
@@ -37,17 +35,17 @@ class Settings extends React.Component {
     }
 
     this.setState({
-      checked: newChecked,
+      checked: newChecked
     });
   };
 
   handleChange = name => event => {
     this.setState({
-      [name]: event.target.value,
+      [name]: event.target.value
     });
   };
 
-  handleClickOpen = (title) => {
+  handleClickOpen = title => {
     this.setState({ open: true, settingTitle: title });
   };
 
@@ -57,11 +55,11 @@ class Settings extends React.Component {
 
   handleSearch = event => {
     this.setState({ keyword: event.target.value.toLowerCase() });
-  }
+  };
 
   render() {
-    const title = brand.name;
-    const description = brand.desc;
+    const title = 'brand.name';
+    const description = 'brand.desc';
     const { classes } = this.props;
     const { keyword, open, settingTitle } = this.state;
     return (
@@ -77,7 +75,7 @@ class Settings extends React.Component {
         <Paper className={classes.paperStyled} elevation={0}>
           <Grid container spacing={16}>
             <Grid item sm={4} xs={12}>
-              <div className={classes.profile}>
+              {/* <div className={classes.profile}>
                 <Avatar
                   alt={dummy.user.name}
                   src={dummy.user.avatar}
@@ -87,7 +85,7 @@ class Settings extends React.Component {
                   <h4>{dummy.user.name}</h4>
                   {dummy.user.title}
                 </div>
-              </div>
+              </div> */}
             </Grid>
             <Grid item sm={8} xs={12}>
               <div className={classes.quickAccess}>
@@ -112,14 +110,22 @@ class Settings extends React.Component {
           </Grid>
         </Paper>
         <Paper className={classes.root} elevation={4}>
-          <AppBar position="static" color="inherit" className={classes.searchSettings}>
+          <AppBar
+            position="static"
+            color="inherit"
+            className={classes.searchSettings}
+          >
             <Toolbar>
               <div className={classes.flex}>
                 <div className={classes.wrapper}>
                   <div className={classes.search}>
                     <SearchIcon />
                   </div>
-                  <input className={classes.input} placeholder="Find a settings" onChange={(event) => this.handleSearch(event)} />
+                  <input
+                    className={classes.input}
+                    placeholder="Find a settings"
+                    onChange={event => this.handleSearch(event)}
+                  />
                 </div>
               </div>
             </Toolbar>
@@ -133,7 +139,11 @@ class Settings extends React.Component {
                 }
                 return (
                   <Grid item key={index.toString()} sm={4} xs={12}>
-                    <Button onClick={() => this.handleClickOpen(menu.name)} color="secondary" className={classes.button}>
+                    <Button
+                      onClick={() => this.handleClickOpen(menu.name)}
+                      color="secondary"
+                      className={classes.button}
+                    >
                       <Icon className={classes.icon}>{menu.icon}</Icon>
                       <span className={classes.text}>
                         {menu.name}
@@ -148,14 +158,18 @@ class Settings extends React.Component {
             </Grid>
           </section>
         </Paper>
-        <DetailSettings open={open} handleClose={this.handleClose} title={settingTitle} />
+        <DetailSettings
+          open={open}
+          handleClose={this.handleClose}
+          title={settingTitle}
+        />
       </div>
     );
   }
 }
 
 Settings.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Settings);
