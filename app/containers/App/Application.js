@@ -19,9 +19,8 @@ import {
   AddIntegrationForm,
   Workflows,
   AddWorkflow,
-  EditWorkflow,
-  Webhooks,
-  CreateWebhook
+  EditWorkflow
+  // Webhooks, CreateWebhook
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -77,16 +76,8 @@ class Application extends React.Component {
               path="/app/settings/Workflows/edit-workflow/:id"
               component={EditWorkflow}
             />
-            <AuthGuardRoute
-              exact
-              path="/app/settings/webhooks-list"
-              component={Webhooks}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/settings/webhooks-list/create-webhook"
-              component={CreateWebhook}
-            />
+            {/* <AuthGuardRoute exact path="/app/settings/webhooks-list" component={Webhooks} /> */}
+            {/* <AuthGuardRoute exact path="/app/settings/webhooks-list/create-webhook" component={CreateWebhook} /> */}
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={Analytics} />
             <AuthGuardRoute exact path="/" component={Analytics} />

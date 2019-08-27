@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
+
+/* material-ui */
+// core
 import Paper from '@material-ui/core/Paper';
 
-class ProductList extends Component {
+class ProductList extends React.Component {
   render() {
     return (
       <div>
-        <Paper>Products.</Paper>
+        <Paper>
+            Products.
+        </Paper>
       </div>
     );
   }

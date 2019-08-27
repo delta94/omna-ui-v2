@@ -189,13 +189,11 @@ class GenericFilterTool extends React.Component {
     );
   }
 }
-
 GenericFilterTool.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   onSearchFilterClick: PropTypes.func,
   filterList: PropTypes.array.isRequired,
 };
-
 GenericFilterTool.defaultProps = {
   onSearchFilterClick: () => {},
 };

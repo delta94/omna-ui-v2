@@ -34,13 +34,13 @@ module.exports = [
         name: 'Workflows',
         icon: 'ios-shuffle',
         link: '/app/settings/workflows'
-      },
-      {
-        key: 'webhooks',
-        name: 'Webhooks',
-        icon: 'ios-globe',
-        link: '/app/settings/webhooks-list'
       }
+      // {
+      //   key: 'webhooks',
+      //   name: 'Webhooks',
+      //   icon: 'ios-globe',
+      //   link: '/app/settings/webhooks-list'
+      // }
     ]
   },
   {

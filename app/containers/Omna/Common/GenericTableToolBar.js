@@ -24,15 +24,17 @@ const toolbarStyles = theme => ({
     paddingRight: theme.spacing.unit
   },
   highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0)
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+    theme.palette.type === 'light' ? (
+      {
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0)
+      }
+    ) : (
+      {
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      }
+    ),
   spacer: {
     flex: '1 1 100%'
   },
@@ -51,13 +53,13 @@ class GenericTableToolbar extends React.Component {
         <Ionicon icon={Icon} />
       </IconButton>
     </Tooltip>
-  );
+  )
 
   handleSearchClick = (currentTerm, filters) => {
     const { onSearchFilterClick } = this.props;
 
     onSearchFilterClick(currentTerm, filters);
-  };
+  }
 
   render() {
     const {
@@ -68,93 +70,86 @@ class GenericTableToolbar extends React.Component {
       onAdd, // Add onClick function
       onDelete, // Delete onClick function
       actionList, // List of actions to be considered
-      filterList // Filter item label list
+      filterList, // Filter item label list
     } = this.props;
 
     // Array with the details of the registered actions
     const detailedArrayActions = {
       Delete: { onclickfunc: onDelete, icon: variantIcon.delete },
       Add: { onclickfunc: onAdd, icon: variantIcon.add },
-      Filter: { onclickfunc: this.handleSearchClick, icon: variantIcon.filter }
+      Filter: { onclickfunc: this.handleSearchClick, icon: variantIcon.filter },
     };
 
     return (
-      <Toolbar
-        color="primary"
-        className={classNames(classes.root, {
-          [classes.highlight]: numSelected > 0
-        })}
-      >
+      <Toolbar color="primary" className={classNames(classes.root, { [classes.highlight]: numSelected > 0 })}>
         <div className={classes.title}>
           {numSelected > 0 ? (
             <Typography color="primary" variant="subtitle1">
-              {numSelected} selected.
-              {numSelected === rowCount
-                ? ' All items on this page are selected.'
-                : null}
+              {numSelected}
+              {' '}
+              selected.
+              {
+                numSelected === rowCount ? (
+                  ' All items on this page are selected.'
+                ) : (
+                  null
+                )
+              }
             </Typography>
-          ) : initialText !== '' ? (
-            <Typography color="primary" variant="subtitle1">
-              {initialText}
-            </Typography>
-          ) : null}
+          ) : (
+            initialText !== ''
+              ? (
+                <Typography color="primary" variant="subtitle1">
+                  {initialText}
+                </Typography>
+              ) : (
+                null
+              )
+          )}
         </div>
         <div className={classes.spacer} />
         <div className={classes.actions}>
           {numSelected > 0 ? (
             <div className="display-flex justify-content-space-between">
-              {actionList &&
-                actionList.map(act => (
+              {
+                actionList && actionList.map(act => (
                   <div key={act}>
-                    {act !== 'Add' &&
-                    act !== 'Filter' &&
-                    get(detailedArrayActions, `${act}`, null) !== null
-                      ? this.printBottom(
-                          act,
-                          get(
-                            detailedArrayActions,
-                            `${act}.onclickfunc`,
-                            () => {}
-                          ),
-                          get(
-                            detailedArrayActions,
-                            `${act}.icon`,
-                            variantIcon.delete
-                          )
-                        )
-                      : null}
+                    {act !== 'Add' && act !== 'Filter' && get(detailedArrayActions, `${act}`, null) !== null ? (
+                      this.printBottom(act, get(detailedArrayActions, `${act}.onclickfunc`, () => {}), get(detailedArrayActions, `${act}.icon`, variantIcon.delete))
+                    ) : (
+                      null
+                    )}
                   </div>
-                ))}
+                ))
+              }
             </div>
           ) : (
             <div className="display-flex justify-content-flex-end">
-              {actionList &&
-                actionList.map(act => (
+              {
+                actionList && actionList.map(act => (
                   <div key={act}>
-                    {act === 'Filter' ? (
-                      <GenericFilterTool
-                        onSearchFilterClick={this.handleSearchClick}
-                        filterList={filterList}
-                      />
-                    ) : act === 'Add' ? (
-                      this.printBottom(
-                        act,
-                        get(
-                          detailedArrayActions,
-                          `${act}.onclickfunc`,
-                          () => {}
-                        ),
-                        get(
-                          detailedArrayActions,
-                          `${act}.icon`,
-                          variantIcon.delete
+                    {
+                      act === 'Filter'
+                        ? (
+                          <GenericFilterTool
+                            onSearchFilterClick={this.handleSearchClick}
+                            filterList={filterList}
+                          />
+                        ) : (
+                          act === 'Add'
+                            ? (
+                              this.printBottom(act, get(detailedArrayActions, `${act}.onclickfunc`, () => {}), get(detailedArrayActions, `${act}.icon`, variantIcon.delete))
+                            ) : (
+                              null
+                            )
                         )
-                      )
-                    ) : null}
+                    }
                   </div>
-                ))}
+                ))
+              }
             </div>
-          )}
+          )
+          }
         </div>
       </Toolbar>
     );
@@ -170,16 +165,15 @@ GenericTableToolbar.propTypes = {
   onAdd: PropTypes.func,
   initialText: PropTypes.string,
   onSearchFilterClick: PropTypes.func,
-  filterList: PropTypes.array
+  filterList: PropTypes.array,
 };
-
 GenericTableToolbar.defaultProps = {
   onDelete: () => {},
   onAdd: () => {},
   onSearchFilterClick: () => {},
   initialText: '',
   filterList: [],
-  numSelected: 0
+  numSelected: 0,
 };
 
 export default withSnackbar(withStyles(toolbarStyles)(GenericTableToolbar));
