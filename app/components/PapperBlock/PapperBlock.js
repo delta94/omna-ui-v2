@@ -24,25 +24,19 @@ class PapperBlock extends React.Component {
     return (
       <div>
         <Paper className={classNames(classes.root, noMargin && classes.noMargin, colorMode && classes.colorMode)} elevation={0}>
-          {icon || title ?
           <div className={classes.descBlock}>
-            {icon ? 
-                <span className={classes.iconTitle}>
-                  <Ionicon icon={icon} />
-                </span> : 
-            null}
-            {title ?  
-              <div className={classes.titleText}>
-                <Typography variant="h6" component="h2" className={classes.title}>
-                  {title}
-                </Typography>
-                <Typography component="p" className={classes.description}>
-                  {desc}
-                </Typography>
-              </div> : null
-            }
-          </div> : null
-          }
+            <span className={classes.iconTitle}>
+              <Ionicon icon={icon} />
+            </span>
+            <div className={classes.titleText}>
+              <Typography variant="h6" component="h2" className={classes.title}>
+                {title}
+              </Typography>
+              <Typography component="p" className={classes.description}>
+                {desc}
+              </Typography>
+            </div>
+          </div>
           <section className={classNames(classes.content, whiteBg && classes.whiteBg, overflowX && classes.overflowX)}>
             {children}
           </section>
@@ -54,9 +48,9 @@ class PapperBlock extends React.Component {
 
 PapperBlock.propTypes = {
   classes: PropTypes.object.isRequired,
-  //title: PropTypes.string.isRequired,
-  //desc: PropTypes.string.isRequired,
-  //icon: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  desc: PropTypes.string.isRequired,
+  icon: PropTypes.string,
   children: PropTypes.node.isRequired,
   whiteBg: PropTypes.bool,
   colorMode: PropTypes.bool,

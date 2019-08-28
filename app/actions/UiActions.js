@@ -10,9 +10,6 @@ export const changeThemeAction = theme => ({
   type: types.CHANGE_THEME,
   theme
 });
-export const changeRandomThemeAction = {
-  type: types.CHANGE_RANDOM_THEME,
-};
 export const changeModeAction = mode => ({
   type: types.CHANGE_MODE,
   mode

@@ -9,7 +9,7 @@ import {
   Sidebar,
   BreadCrumb,
 } from 'dan-components';
-import dataMenuItems from 'dan-api/ui/menuItems';
+import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 
@@ -45,12 +45,11 @@ class LeftSidebarLayout extends React.Component {
           history={history}
           openGuide={handleOpenGuide}
         />
-
         <Sidebar
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}
           loadTransition={loadTransition}
-          dataMenu={dataMenuItems}
+          dataMenu={dataMenu}
           leftSidebar
         />
         <main className={classNames(classes.content, !sidebarOpen ? classes.contentPaddingLeft : '')} id="mainContent">
@@ -68,7 +67,7 @@ class LeftSidebarLayout extends React.Component {
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
             )}
-            {!pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />)}
+            { !pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />) }
             <Fade
               in={pageLoaded}
               mountOnEnter
@@ -77,7 +76,7 @@ class LeftSidebarLayout extends React.Component {
             >
               <div className={!pageLoaded ? classes.hideApp : ''}>
                 {/* Application content will load here */}
-                {children}
+                { children }
               </div>
             </Fade>
           </section>

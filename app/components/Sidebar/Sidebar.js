@@ -5,12 +5,13 @@ import classNames from 'classnames';
 import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import dummy from 'dan-api/dummy/dummyContents';
 import styles from './sidebar-jss';
 import SidebarContent from './SidebarContent';
 
 class Sidebar extends React.Component {
   state = {
-    status: {},
+    status: dummy.user.status,
     anchorEl: null,
     turnDarker: false
   };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import brand from 'dan-api/dummy/brand';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -31,7 +32,7 @@ const styles = theme => ({
     width: '90%',
     [theme.breakpoints.up('sm')]: {
       width: 600,
-      height: 300
+      height: 300,
     },
     textAlign: 'center'
   },
@@ -43,23 +44,20 @@ const styles = theme => ({
   icon: {
     margin: '10px 20px',
     background: 'rgba(255,255,255,0.6)',
-    color:
-      theme.palette.type === 'dark'
-        ? theme.palette.primary.dark
-        : theme.palette.primary.main,
+    color: theme.palette.type === 'dark' ? theme.palette.primary.dark : theme.palette.primary.main,
     width: 100,
     height: 100,
     boxShadow: theme.shadows[4],
     '& svg': {
-      fontSize: 64
-    }
-  }
+      fontSize: 64,
+    },
+  },
 });
 
 class Maintenance extends React.Component {
   render() {
-    const title = 'brand.name - Maintenance';
-    const description = 'brand.desc';
+    const title = brand.name + ' - Maintenance';
+    const description = brand.desc;
     const { classes } = this.props;
     return (
       <div className={classes.root}>
@@ -73,23 +71,15 @@ class Maintenance extends React.Component {
         </Helmet>
         <div className={classes.container}>
           <div className={classes.artwork}>
-            <Avatar className={classes.icon}>
-              <Build />
-            </Avatar>
+            <Avatar className={classes.icon}><Build /></Avatar>
             <Hidden xsDown>
-              <Avatar className={classes.icon}>
-                <Warning />
-              </Avatar>
+              <Avatar className={classes.icon}><Warning /></Avatar>
             </Hidden>
             <Hidden xsDown>
-              <Avatar className={classes.icon}>
-                <Settings />
-              </Avatar>
+              <Avatar className={classes.icon}><Settings /></Avatar>
             </Hidden>
           </div>
-          <Typography variant="h4" className={classes.title} gutterBottom>
-            Under maintenance
-          </Typography>
+          <Typography variant="h4" className={classes.title} gutterBottom>Under maintenance</Typography>
           <Typography variant="subtitle1" className={classes.subtitle}>
             Our website is under maintenance. We will be back shortly
           </Typography>
@@ -100,7 +90,7 @@ class Maintenance extends React.Component {
 }
 
 Maintenance.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Maintenance);

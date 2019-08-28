@@ -5,7 +5,6 @@ import {
   OPEN_SUBMENU,
   CLOSE_ALL_SUBMENU,
   CHANGE_THEME,
-  CHANGE_RANDOM_THEME,
   CHANGE_MODE,
   CHANGE_GRADIENT,
   CHANGE_DECO,
@@ -16,7 +15,7 @@ import {
 
 const initialState = {
   /* Settings for Themes and layout */
-  theme: 'skyBlueTheme',
+  theme: 'blueCyanTheme',
   type: 'light', // light or dark
   gradient: true, // true or false
   decoration: true, // true or false
@@ -103,12 +102,6 @@ export default function reducer(state = initialImmutableState, action = {}) {
     case CLOSE_ALL_SUBMENU:
       return state.withMutations((mutableState) => {
         mutableState.set('subMenuOpen', List([]));
-      });
-    case CHANGE_RANDOM_THEME:
-      return state.withMutations((mutableState) => {
-        const paletteArray = state.get('palette').toJS();
-        const random = paletteArray[Math.floor(Math.random() * paletteArray.length)];
-        mutableState.set('theme', random.value);
       });
     case CHANGE_THEME:
       return state.withMutations((mutableState) => {

@@ -4,10 +4,12 @@ import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Omna/Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
-
 import {
-  Analytics,
   Parent,
+  DashboardPage,
+  BlankPage,
+  Form,
+  Table,
   Error,
   NotFound,
   Tasks,
@@ -19,8 +21,9 @@ import {
   AddIntegrationForm,
   Workflows,
   AddWorkflow,
-  EditWorkflow
-  // Webhooks, CreateWebhook
+  EditWorkflow,
+  Webhooks,
+  CreateWebhook
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -33,7 +36,7 @@ class Application extends React.Component {
       >
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
-            <AuthGuardRoute exact path="/app/dashboard" component={Analytics} />
+            {/* <AuthGuardRoute exact path="/app/dashboard" component={Analytics} /> */}
             <AuthGuardRoute exact path="/app/orders-list" component={Orders} />
             <AuthGuardRoute
               exact
@@ -76,16 +79,24 @@ class Application extends React.Component {
               path="/app/settings/Workflows/edit-workflow/:id"
               component={EditWorkflow}
             />
-            {/* <AuthGuardRoute exact path="/app/settings/webhooks-list" component={Webhooks} /> */}
-            {/* <AuthGuardRoute exact path="/app/settings/webhooks-list/create-webhook" component={CreateWebhook} /> */}
-            {/* Home */}
-            <AuthGuardRoute exact path="/app" component={Analytics} />
-            <AuthGuardRoute exact path="/" component={Analytics} />
             <AuthGuardRoute
+              exact
+              path="/app/settings/webhooks-list"
+              component={Webhooks}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/settings/webhooks-list/create-webhook"
+              component={CreateWebhook}
+            />
+            {/* Home */}
+            {/* <AuthGuardRoute exact path="/app" component={Analytics} />
+            <AuthGuardRoute exact path="/" component={Analytics} /> */}
+            {/* <AuthGuardRoute
               exact
               path="/app/widgets/analytics"
               component={Analytics}
-            />
+            /> */}
             {/* Pages */}
             <AuthGuardRoute exact path="/app/pages" component={Parent} />
             <Route path="/app/pages/not-found" component={NotFound} />
