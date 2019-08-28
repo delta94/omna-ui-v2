@@ -74,7 +74,6 @@ class Integrations extends Component {
       reqParams = { with_details: true };
     }
     try {
-      // this.setState({ loading: true });
       const response = await API.get('/integrations', { params: reqParams });
       this.setState({
         integrations: get(response, 'data', { data: [], pagination: {} }),
@@ -86,7 +85,6 @@ class Integrations extends Component {
         variant: 'error'
       });
     }
-    // this.setState({ loading: false });
   };
 
   handleAddIntegrationClick = () => {

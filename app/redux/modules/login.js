@@ -8,6 +8,7 @@ const initialState = {
     remember: false
   })
 };
+
 const initialImmutableState = fromJS(initialState);
 export default function reducer(state = initialImmutableState, action = {}) {
   switch (action.type) {

@@ -33,7 +33,7 @@ function LoadingState(props) {
   return (
     <div className={classes.root}>
       <Fade in={loading} unmountOnExit>
-        <Fragment className={classes.loadingContainer}>
+        <Fragment>
           <CircularProgress className={classes.spinner} />
           {text ? (
             <Typography className={classes.loadingText}>

@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+// import { connect } from 'react-redux';
 
 // material-ui
 import { withSnackbar } from 'notistack';
@@ -18,7 +19,6 @@ import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
 import moment from 'moment';
-import Loading from 'dan-components/Loading';
 //
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
@@ -27,6 +27,7 @@ import GenericTablePagination from '../../Common/GenericTablePagination';
 import LoadingState from '../../Common/LoadingState';
 import GenericTableHead from '../../Common/GenericTableHead';
 import GenericErrorMessage from '../../Common/GenericErrorMessage';
+// import { getFlows } from '../../../../actions/flowActions';
 
 const styles = theme => ({
   inputWidth: {
@@ -105,15 +106,16 @@ class Flows extends Component {
       objectName: '',
       message: ''
     },
+    success: true,
     limit: 5,
     page: 0
   };
 
   componentDidMount() {
-    this.initializeDataTable();
+    this.fillDataTable();
   }
 
-  fetchFlows = async params => {
+  getFlows = async params => {
     const { enqueueSnackbar } = this.props;
     try {
       const response = await API.get('/flows', { params });
@@ -122,15 +124,16 @@ class Flows extends Component {
         limit: get(response, 'data.pagination.limit', 0)
       });
     } catch (error) {
+      this.setState({ success: false, messageError: error.message });
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
   };
 
-  initializeDataTable = async () => {
+  fillDataTable = async () => {
     this.setState({ loading: true });
-    await this.fetchFlows();
+    await this.getFlows();
     this.setState({ loading: false });
   };
 
@@ -144,7 +147,7 @@ class Flows extends Component {
       enqueueSnackbar('Workflow deleted successfully', {
         variant: 'success'
       });
-      await this.fetchFlows();
+      await this.getFlows();
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -202,7 +205,7 @@ class Flows extends Component {
     try {
       this.setState({ loading: true });
       await API.get(`flows/${id}/toggle/scheduler/status`);
-      this.fetchFlows();
+      this.getFlows();
       enqueueSnackbar('Scheduler toggled successfully', {
         variant: 'success'
       });
@@ -226,7 +229,7 @@ class Flows extends Component {
       limit
     };
 
-    this.fetchFlows(params);
+    this.getFlows(params);
   };
 
   handleChangeRowsPerPage = event => {
@@ -246,140 +249,152 @@ class Flows extends Component {
       limit,
       page
     } = this.state;
-
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
 
     return (
       <div>
-        <Paper className={classes.tableRoot}>
+        <Paper>
           <div className="item-padding">
-            {loading ? <LoadingState loading={loading} /> : null}
-            {loading ? null : count === 0 ? (
-              <GenericErrorMessage messageError={messageError} />
-            ) : (
-              <Fragment>
-                <div className={classes.rootTable}>
-                  <GenericTableToolBar
-                    actionList={['Add']}
+            {loading ? <LoadingState loading={loading} text="Loading" /> : null}
+          </div>
+          {loading ? null : count === 0 ? (
+            <GenericErrorMessage messageError={messageError} />
+          ) : (
+            <Fragment>
+              <div className={classes.rootTable}>
+                <GenericTableToolBar
+                  actionList={['Add']}
+                  rowCount={count > limit ? limit : count}
+                  onAdd={this.handleAddAction}
+                />
+                <Table>
+                  <GenericTableHead
                     rowCount={count > limit ? limit : count}
-                    onAdd={this.handleAddAction}
+                    headColumns={headColumns}
                   />
-                  <Table>
-                    <GenericTableHead
-                      rowCount={count > limit ? limit : count}
-                      headColumns={headColumns}
-                    />
-                    <TableBody>
-                      {data.map(
-                        ({
-                          id,
-                          title,
-                          createdAt,
-                          updatedAt,
-                          integration,
-                          task
-                        }) => (
-                          <TableRow key={id}>
-                            <TableCell component="th" scope="row">
-                              {title}
-                            </TableCell>
-                            <TableCell align="center">
-                              {integration.name}
-                            </TableCell>
-                            <TableCell align="center">
-                              {moment(createdAt).format('Y-MM-DD H:mm:ss')}
-                            </TableCell>
-                            <TableCell align="center">
-                              {moment(updatedAt).format('Y-MM-DD H:mm:ss')}
-                            </TableCell>
-                            <TableCell align="center">
-                              <Tooltip title="edit">
-                                <IconButton
-                                  aria-label="edit"
-                                  onClick={() => this.handleEditFlow(id)}
-                                >
-                                  <Ionicon icon="md-create" />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="start">
-                                <IconButton
-                                  aria-label="start"
-                                  onClick={() => this.handleStartFlow(id)}
-                                >
-                                  <Ionicon icon="md-play" />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="delete">
-                                <IconButton
-                                  aria-label="delete"
-                                  onClick={() => this.handleOnClickDeleteFlow(id, title)}
-                                >
-                                  <Ionicon icon="md-delete" />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip
-                                title={
-                                  task.scheduler && task.scheduler.active
-                                    ? 'disable scheduler'
-                                    : 'enable scheduler'
+                  <TableBody>
+                    {data.map(
+                      ({
+                        id,
+                        title,
+                        createdAt,
+                        updatedAt,
+                        integration,
+                        task
+                      }) => (
+                        <TableRow key={id}>
+                          <TableCell component="th" scope="row">
+                            {title}
+                          </TableCell>
+                          <TableCell align="center">
+                            {integration.name}
+                          </TableCell>
+                          <TableCell align="center">
+                            {moment(createdAt).format('Y-MM-DD H:mm:ss')}
+                          </TableCell>
+                          <TableCell align="center">
+                            {moment(updatedAt).format('Y-MM-DD H:mm:ss')}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Tooltip title="edit">
+                              <IconButton
+                                aria-label="edit"
+                                onClick={() => this.handleEditFlow(id)}
+                              >
+                                <Ionicon icon="md-create" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="start">
+                              <IconButton
+                                aria-label="start"
+                                onClick={() => this.handleStartFlow(id)}
+                              >
+                                <Ionicon icon="md-play" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="delete">
+                              <IconButton
+                                aria-label="delete"
+                                onClick={() =>
+                                  this.handleOnClickDeleteFlow(id, title)
                                 }
                               >
-                                <IconButton
-                                  aria-label="start"
-                                  onClick={() => this.handleToggleScheduler(id)}
-                                >
-                                  {task.scheduler && task.scheduler.active ? (
-                                    <Ionicon icon="ios-close" />
-                                  ) : (
-                                    <Ionicon icon="ios-timer" />
-                                  )}
-                                </IconButton>
-                              </Tooltip>
-                            </TableCell>
-                          </TableRow>
-                        )
-                      )}
-                    </TableBody>
-                    <TableFooter>
-                      <TableRow>
-                        <TablePagination
-                          rowsPerPageOptions={[5, 10, 25, 50]}
-                          count={count}
-                          rowsPerPage={limit}
-                          page={page}
-                          SelectProps={{
-                            native: true
-                          }}
-                          onChangePage={this.handleChangePage}
-                          onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                          ActionsComponent={GenericTablePagination}
-                        />
-                      </TableRow>
-                    </TableFooter>
-                  </Table>
-                </div>
-              </Fragment>
-            )}
-          </div>
+                                <Ionicon icon="md-trash" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                              title={
+                                task.scheduler && task.scheduler.active
+                                  ? 'disable scheduler'
+                                  : 'enable scheduler'
+                              }
+                            >
+                              <IconButton
+                                aria-label="start"
+                                onClick={() => this.handleToggleScheduler(id)}
+                              >
+                                {task.scheduler && task.scheduler.active ? (
+                                  <Ionicon icon="ios-close-circle" />
+                                ) : (
+                                  <Ionicon icon="ios-timer" />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 25, 50]}
+                        count={count}
+                        rowsPerPage={limit}
+                        page={page}
+                        SelectProps={{
+                          native: true
+                        }}
+                        onChangePage={this.handleChangePage}
+                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        ActionsComponent={GenericTablePagination}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </div>
+            </Fragment>
+          )}
         </Paper>
 
-        <AlertDialog
+        {/* <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}
           handleCancel={this.handleDialogCancel()}
           handleConfirm={this.handleDialogConfirm()}
-        />
-        {loading && <Loading />}
+        /> */}
       </div>
     );
   }
 }
 
 Flows.propTypes = {
+  // flows: PropTypes.array.isRequired,
+  // getFlows: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
+// const mapStateToProps = state => ({
+//   flows: state.flows.flows
+// });
+
+// export default withSnackbar(
+//   connect(
+//     mapStateToProps,
+//     { getFlows }
+//   )(withStyles(styles)(Flows))
+// );
 export default withSnackbar(withStyles(styles)(Flows));
