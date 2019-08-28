@@ -1,7 +1,7 @@
 module.exports = {
-  name: 'Dandelion Pro',
-  desc: 'Dandelion Pro - React Website Template',
-  prefix: 'dandelion',
-  footerText: 'Dandelion Pro All Rights Reserved 2018',
-  logoText: 'Dandelion Pro',
+  name: 'Omna LTS',
+  desc: 'Omna - Frontend app',
+  prefix: 'omna',
+  footerText: 'Omna LTS All Rights Reserved 2018',
+  logoText: 'Omna',
 };

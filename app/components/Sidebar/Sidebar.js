@@ -5,13 +5,13 @@ import classNames from 'classnames';
 import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import dummy from 'dan-api/dummy/dummyContents';
+// import dummy from 'dan-api/dummy/dummyContents';
 import styles from './sidebar-jss';
 import SidebarContent from './SidebarContent';
 
 class Sidebar extends React.Component {
   state = {
-    status: dummy.user.status,
+    // status: dummy.user.status,
     anchorEl: null,
     turnDarker: false
   };
@@ -45,10 +45,10 @@ class Sidebar extends React.Component {
     this.setState({ anchorEl: null });
   };
 
-  handleChangeStatus = status => {
-    this.setState({ status });
-    this.handleClose();
-  }
+  // handleChangeStatus = status => {
+  //   this.setState({ status });
+  //   this.handleClose();
+  // }
 
   render() {
     const {
@@ -76,7 +76,7 @@ class Sidebar extends React.Component {
                 toggleDrawerOpen={toggleDrawerOpen}
                 loadTransition={loadTransition}
                 dataMenu={dataMenu}
-                status={status}
+                // status={status}
                 anchorEl={anchorEl}
                 openMenuStatus={this.handleOpen}
                 closeMenuStatus={this.handleClose}

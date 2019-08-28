@@ -7,7 +7,7 @@
     "npm": ">=5",
     "node": ">=8.15.1"
   },
-  "author": "OMNA and Dandelion Pro Team",
+  "author": "Cenit",
   "license": "Envato Regular License",
   "scripts": {
     "analyze:clean": "rimraf stats.json",
