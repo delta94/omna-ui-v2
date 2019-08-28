@@ -3,12 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { NavLink } from 'react-router-dom';
-// import Button from '@material-ui/core/Button';
-// import Menu from '@material-ui/core/Menu';
-// import MenuItem from '@material-ui/core/MenuItem';
-// import Avatar from '@material-ui/core/Avatar';
-// import brand from 'dan-api/dummy/brand';
-// import dummy from 'dan-api/dummy/dummyContents';
 import logo from 'dan-images/omna.svg';
 import logoSmall from 'dan-images/omna_min.svg';
 import MainMenu from './MainMenu';
@@ -45,7 +39,7 @@ class SidebarContent extends React.Component {
       toggleDrawerOpen,
       loadTransition,
       leftSidebar,
-      dataMenu,
+      dataMenu
       // status,
       // anchorEl,
       // openMenuStatus,
@@ -70,7 +64,11 @@ class SidebarContent extends React.Component {
             }}
           >
             <NavLink to="/app">
-              <img src={drawerPaper ? logo : logoSmall} alt="OMNA LTS" />
+              <img
+                src={drawerPaper ? logo : logoSmall}
+                alt="OMNA LTS"
+                className={drawerPaper ? classes.logo : classes.logoSmall}
+              />
             </NavLink>
           </div>
         </div>
@@ -100,7 +98,7 @@ SidebarContent.propTypes = {
   toggleDrawerOpen: PropTypes.func,
   loadTransition: PropTypes.func,
   leftSidebar: PropTypes.bool.isRequired,
-  dataMenu: PropTypes.array.isRequired,
+  dataMenu: PropTypes.array.isRequired
   // status: PropTypes.string.isRequired,
   // anchorEl: PropTypes.object,
   // openMenuStatus: PropTypes.func.isRequired,

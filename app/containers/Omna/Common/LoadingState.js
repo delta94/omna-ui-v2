@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import Fade from '@material-ui/core/Fade';
@@ -13,6 +13,17 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     height: 40
+  },
+  loadingContainer: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '600'
+  },
+  spinner: {
+    margin: 16
   }
 });
 
@@ -22,9 +33,13 @@ function LoadingState(props) {
   return (
     <div className={classes.root}>
       <Fade in={loading} unmountOnExit>
-        <Fragment>
-          {text ? <Typography variant="h6">{`${text}...`}</Typography> : null}
-          <CircularProgress />
+        <Fragment className={classes.loadingContainer}>
+          <CircularProgress className={classes.spinner} />
+          {text ? (
+            <Typography className={classes.loadingText}>
+              {`${text}...`}
+            </Typography>
+          ) : null}
         </Fragment>
       </Fade>
     </div>

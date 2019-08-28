@@ -19,15 +19,15 @@ const styles = theme => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   swipeDrawerPaper: {
-    width: drawerWidth,
+    width: drawerWidth
   },
   opened: {
     '& $primary, & $icon': {
-      color: theme.palette.primary.main,
+      color: theme.palette.primary.main
     },
     '&:before': {
       content: '""',
@@ -46,14 +46,14 @@ const styles = theme => ({
     background: theme.palette.background.paper,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      duration: theme.transitions.duration.leavingScreen
     }),
     '& $user': {
       justifyContent: 'flex-start'
     },
     '& $bigAvatar': {
       width: 40,
-      height: 40,
+      height: 40
     },
     '& nav': {
       display: 'none'
@@ -70,9 +70,8 @@ const styles = theme => ({
     },
     '& $profile': {
       flexDirection: 'row',
-      top: theme.spacing.unit * 6,
+      top: theme.spacing.unit * 4,
       padding: theme.spacing.unit / 2,
-      textAlign: 'left',
       '& button': {
         width: 'auto'
       }
@@ -83,7 +82,7 @@ const styles = theme => ({
     '& $menuContainer': {
       '&$menuContainer': {
         paddingTop: theme.spacing.unit * 10,
-        paddingBottom: 0,
+        paddingBottom: 0
       }
     }
   },
@@ -91,22 +90,28 @@ const styles = theme => ({
     // Make the items inside not wrap when transitioning:
     height: '100%',
     position: 'fixed',
-    backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.background.paper, 0.75) : fade(theme.palette.background.paper, 0.95),
-    boxShadow: theme.shade.light,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? fade(theme.palette.background.paper, 0.75)
+        : fade(theme.palette.background.paper, 0.95),
+    boxShadow: theme.shade.light
   },
   drawerInnerMobile: {
     // Make the items inside not wrap when transitioning:
     height: '100%',
-    backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.background.paper, 0.75) : fade(theme.palette.background.paper, 0.95),
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? fade(theme.palette.background.paper, 0.75)
+        : fade(theme.palette.background.paper, 0.95)
   },
   drawerHeader: {
     padding: '0',
     zIndex: 1,
     position: 'relative',
-    ...theme.mixins.toolbar,
+    ...theme.mixins.toolbar
   },
   avatar: {
-    margin: 10,
+    margin: 10
   },
   bigAvatar: {
     width: 80,
@@ -116,17 +121,17 @@ const styles = theme => ({
   brandBar: {
     transition: theme.transitions.create(['width', 'margin', 'background'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.enteringScreen
     }),
     '&:after': {
       transition: theme.transitions.create(['box-shadow'], {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+        duration: theme.transitions.duration.enteringScreen
+      })
     }
   },
   darker: {
-    background: 'none',
+    background: 'none'
   },
   nested: {
     paddingTop: theme.spacing.unit,
@@ -138,7 +143,7 @@ const styles = theme => ({
   },
   child: {
     '& a': {
-      paddingLeft: theme.spacing.unit * 6,
+      paddingLeft: theme.spacing.unit * 6
     }
   },
   title: {
@@ -161,26 +166,38 @@ const styles = theme => ({
     }
   },
   active: {
-    backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.primary.main, 0.24) : theme.palette.primary.light,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? fade(theme.palette.primary.main, 0.24)
+        : theme.palette.primary.light,
     '& $primary': {
-      color: theme.palette.type === 'dark' ? theme.palette.common.white : theme.palette.primary.dark,
+      color:
+        theme.palette.type === 'dark'
+          ? theme.palette.common.white
+          : theme.palette.primary.dark
     },
     '& $icon svg': {
-      fill: theme.palette.primary.dark,
+      fill: theme.palette.primary.dark
     },
     '&:hover, &:focus': {
-      backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.primary.main, 0.24) : theme.palette.primary.light,
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? fade(theme.palette.primary.main, 0.24)
+          : theme.palette.primary.light
     }
   },
   nolist: {
-    listStyle: 'none',
+    listStyle: 'none'
   },
   primary: {
     whiteSpace: 'nowrap'
   },
   icon: {
     marginRight: theme.spacing.unit / 2,
-    fill: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
+    fill:
+      theme.palette.type === 'dark'
+        ? theme.palette.primary.light
+        : theme.palette.primary.dark
   },
   iconed: {},
   head: {
@@ -189,15 +206,16 @@ const styles = theme => ({
     borderRadius: `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px 0`,
     paddingLeft: theme.spacing.unit * 3,
     '&$iconed': {
-      paddingLeft: theme.spacing.unit * 3,
+      paddingLeft: theme.spacing.unit * 3
     },
     '& svg[class^="MuiSvgIcon"]': {
       left: -10,
       position: 'relative'
-    },
+    }
   },
   headCapital: {
-    padding: `${theme.spacing.unit}px 0 ${theme.spacing.unit}px ${theme.spacing.unit * 9}px`,
+    padding: `${theme.spacing.unit}px 0 ${theme.spacing.unit}px ${theme.spacing
+      .unit * 9}px`,
     left: theme.spacing.unit * -2,
     position: 'relative',
     textTransform: 'uppercase',
@@ -214,11 +232,11 @@ const styles = theme => ({
     position: 'fixed',
     [theme.breakpoints.up('lg')]: {
       background: 'none',
-      position: 'absolute',
+      position: 'absolute'
     },
     bottom: 0,
     left: theme.spacing.unit * 3,
-    lineHeight: '24px',
+    lineHeight: '24px'
   },
   brand: {
     display: 'flex',
@@ -234,8 +252,8 @@ const styles = theme => ({
     color: theme.palette.text.primary,
     '& img': {
       width: 30,
-      marginRight: 10,
-    },
+      marginRight: 10
+    }
   },
   brandBig: {
     paddingTop: theme.spacing.unit * 4,
@@ -248,7 +266,7 @@ const styles = theme => ({
       fontSize: 18,
       marginTop: theme.spacing.unit * 2,
       fontWeight: 500,
-      color: theme.palette.text.primary,
+      color: theme.palette.text.primary
     }
   },
   profile: {
@@ -261,7 +279,6 @@ const styles = theme => ({
     textAlign: 'center',
     alignItems: 'center',
     position: 'absolute',
-    margin: `${theme.spacing.unit * 2}px 0`,
     zIndex: 0,
     '& h4': {
       fontSize: 18,
@@ -281,7 +298,7 @@ const styles = theme => ({
       textTransform: 'capitalize',
       padding: 0,
       minHeight: 20,
-      marginTop: 4,
+      marginTop: 4
     }
   },
   statusMenu: {
@@ -333,7 +350,7 @@ const styles = theme => ({
     '&$rounded': {
       paddingRight: theme.spacing.unit * 1.5,
       '& a': {
-        borderRadius: `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px 0`,
+        borderRadius: `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px 0`
       },
       '& $opened': {
         '&:before': {
@@ -342,16 +359,16 @@ const styles = theme => ({
       }
     },
     '&::-webkit-scrollbar': {
-      width: 8,
+      width: 8
     },
     '&::-webkit-scrollbar-thumb': {
       borderRadius: 12,
-      backgroundColor: 'rgba(0,0,0,0)',
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     '&:hover': {
       '&::-webkit-scrollbar-thumb': {
         backgroundColor: 'rgba(0,0,0,0.3)',
-        border: '1px solid rgba(255,255,255,0.4)',
+        border: '1px solid rgba(255,255,255,0.4)'
       }
     }
   },
@@ -360,6 +377,9 @@ const styles = theme => ({
   },
   badge: {
     height: 'auto'
+  },
+  logo: {
+    width: 190
   }
 });
 

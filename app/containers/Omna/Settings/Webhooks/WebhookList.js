@@ -67,7 +67,6 @@ const styles = () => ({
   }
 });
 
-/* ======= Principal Class ======= */
 class WebhookList extends React.Component {
   state = {
     loading: true,
@@ -208,7 +207,7 @@ class WebhookList extends React.Component {
     return (
       <Paper>
         <div>
-          {loading ? <LoadingState className="item-padding" loading={loading} /> : null}
+          {loading ? <LoadingState loading={loading} text="Loading" /> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (

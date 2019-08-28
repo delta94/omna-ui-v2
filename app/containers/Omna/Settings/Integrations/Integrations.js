@@ -208,7 +208,7 @@ class Integrations extends Component {
     return (
       <div>
         <Paper>
-          {loading ? <div className="item-padding"><LoadingState loading={loading} /></div> : null}
+          {loading ? <LoadingState loading={loading} text="Loading" /> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
@@ -246,7 +246,9 @@ class Integrations extends Component {
                         onIntegrationUnauthorized={() =>
                           this.handleUnAuthorization(id)
                         }
-                        onIntegrationDeleted={() => this.handleDeleteClick(id, name)}
+                        onIntegrationDeleted={() =>
+                          this.handleDeleteClick(id, name)
+                        }
                         classes={classes}
                       />
                     )

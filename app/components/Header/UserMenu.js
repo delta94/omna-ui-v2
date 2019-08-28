@@ -4,23 +4,23 @@ import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import Info from '@material-ui/icons/Info';
-import Warning from '@material-ui/icons/Warning';
-import Check from '@material-ui/icons/CheckCircle';
-import Error from '@material-ui/icons/RemoveCircle';
+// import Info from '@material-ui/icons/Info';
+// import Warning from '@material-ui/icons/Warning';
+// import Check from '@material-ui/icons/CheckCircle';
+// import Error from '@material-ui/icons/RemoveCircle';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import Badge from '@material-ui/core/Badge';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Ionicon from 'react-ionicons';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import Ionicon from 'react-ionicons';
 import dummy from 'dan-api/dummy/dummyContents';
-import messageStyles from 'dan-styles/Messages.scss';
-import avatarApi from 'dan-api/images/avatars';
+// import messageStyles from 'dan-styles/Messages.scss';
+// import avatarApi from 'dan-api/images/avatars';
 import link from 'dan-api/ui/link';
 import styles from './header-jss';
 
@@ -43,11 +43,11 @@ class UserMenu extends React.Component {
   };
 
   render() {
-    const { classes, dark } = this.props;
+    const { classes } = this.props;
     const { anchorEl, openMenu } = this.state;
     return (
       <div>
-        <IconButton
+        {/* <IconButton
           aria-haspopup="true"
           onClick={this.handleMenu('notification')}
           color="inherit"
@@ -56,8 +56,8 @@ class UserMenu extends React.Component {
           <Badge className={classes.badge} badgeContent={4} color="secondary">
             <Ionicon icon="ios-notifications-outline" />
           </Badge>
-        </IconButton>
-        <Menu
+        </IconButton> */}
+        {/* <Menu
           id="menu-notification"
           anchorEl={anchorEl}
           anchorOrigin={{
@@ -119,7 +119,7 @@ class UserMenu extends React.Component {
               <ListItemText primary="Suspendisse pharetra pulvinar sollicitudin. Aenean ut orci eu odio cursus lobortis eget tempus velit. " className={classes.textNotif} secondary="Jan 9, 2016" />
             </div>
           </MenuItem>
-        </Menu>
+        </Menu> */}
         <Button onClick={this.handleMenu('user-setting')}>
           <Avatar
             alt={dummy.user.name}
@@ -163,7 +163,7 @@ class UserMenu extends React.Component {
 
 UserMenu.propTypes = {
   classes: PropTypes.object.isRequired,
-  dark: PropTypes.bool,
+  // dark: PropTypes.bool,
 };
 
 UserMenu.defaultProps = {
