@@ -5,12 +5,6 @@ import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Omna/Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 import {
-  Parent,
-  DashboardPage,
-  BlankPage,
-  Form,
-  Table,
-  Error,
   NotFound,
   Tasks,
   TaskDetails,
@@ -97,10 +91,6 @@ class Application extends React.Component {
               path="/app/widgets/analytics"
               component={Analytics}
             /> */}
-            {/* Pages */}
-            <AuthGuardRoute exact path="/app/pages" component={Parent} />
-            <Route path="/app/pages/not-found" component={NotFound} />
-            <AuthGuardRoute path="/app/pages/error" component={Error} />
             {/* Default */}
             <Route component={NotFound} />
           </Switch>

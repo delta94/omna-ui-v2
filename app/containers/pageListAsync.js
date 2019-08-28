@@ -11,7 +11,7 @@ export const DashboardPage = loadable(() => import('./Pages/Dashboard'), {
 export const Form = loadable(() => import('./Pages/Forms/ReduxForm'), {
   fallback: <Loading />
 });
-export const Table = loadable(() => import('./Pages/Table/BasicTable'), {
+export const NotFound = loadable(() => import('./NotFound/NotFound'), {
   fallback: <Loading />
 });
 export const Login = loadable(() => import('./Pages/Users/Login'), {

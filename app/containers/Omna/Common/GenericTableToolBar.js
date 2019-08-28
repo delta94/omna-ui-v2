@@ -26,13 +26,13 @@ const toolbarStyles = theme => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   spacer: {
     flex: '1 1 100%'
   },
@@ -88,7 +88,9 @@ class GenericTableToolbar extends React.Component {
         <div className={classes.title}>
           {numSelected > 0 ? (
             <Typography color="primary" variant="subtitle1">
-              {numSelected} selected.
+              {numSelected}
+              {' '}
+selected.
               {numSelected === rowCount
                 ? ' All items on this page are selected.'
                 : null}
@@ -103,33 +105,33 @@ class GenericTableToolbar extends React.Component {
         <div className={classes.actions}>
           {numSelected > 0 ? (
             <div className="display-flex justify-content-space-between">
-              {actionList &&
-                actionList.map(act => (
+              {actionList
+                && actionList.map(act => (
                   <div key={act}>
-                    {act !== 'Add' &&
-                    act !== 'Filter' &&
-                    get(detailedArrayActions, `${act}`, null) !== null
+                    {act !== 'Add'
+                    && act !== 'Filter'
+                    && get(detailedArrayActions, `${act}`, null) !== null
                       ? this.printBottom(
-                          act,
-                          get(
-                            detailedArrayActions,
-                            `${act}.onclickfunc`,
-                            () => {}
-                          ),
-                          get(
-                            detailedArrayActions,
-                            `${act}.icon`,
-                            variantIcon.delete
-                          )
+                        act,
+                        get(
+                          detailedArrayActions,
+                          `${act}.onclickfunc`,
+                          () => {}
+                        ),
+                        get(
+                          detailedArrayActions,
+                          `${act}.icon`,
+                          variantIcon.delete
                         )
+                      )
                       : null}
                   </div>
                 ))}
             </div>
           ) : (
             <div className="display-flex justify-content-flex-end">
-              {actionList &&
-                actionList.map(act => (
+              {actionList
+                && actionList.map(act => (
                   <div key={act}>
                     {act === 'Filter' ? (
                       <GenericFilterTool
