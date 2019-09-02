@@ -255,9 +255,11 @@ class Flows extends Component {
     return (
       <div>
         <Paper>
-          <div className="item-padding">
-            {loading ? <LoadingState loading={loading} text="Loading" /> : null}
-          </div>
+          {loading ? (
+            <div className="item-padding">
+              <LoadingState loading={loading} text="Loading" />
+            </div>
+          ) : null}
           {loading ? null : count === 0 ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (

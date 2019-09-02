@@ -17,7 +17,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 // our
-import API from '../../Utils/api';
+import API from '../Utils/api';
 import GenericTabsHead from '../Common/GenericTabsHead';
 import LoadingState from '../Common/LoadingState';
 import AlertDialog from '../Common/AlertDialog';

@@ -2,7 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
-import AuthGuardRoute from '../Omna/Common/AuthGuardRoute';
+import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 import {
   NotFound,

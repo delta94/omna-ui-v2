@@ -1,5 +1,5 @@
 import { GET_FLOWS } from './actionConstants';
-import api from '../containers/Omna/Utils/api';
+import api from '../containers/Utils/api';
 
 export const getFlows = () => async (dispatch, params) => {
   try {

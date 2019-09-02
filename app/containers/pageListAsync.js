@@ -27,74 +27,74 @@ export const LockScreen = loadable(() => import('./Pages/Users/LockScreen'), {
   fallback: <Loading />
 });
 // OMNA
-export const Dashboard = loadable(() => import('./Omna/Tasks/TaskList'), {
+export const Dashboard = loadable(() => import('./Tasks/TaskList'), {
   fallback: <Loading />
 });
 
-export const Tasks = loadable(() => import('./Omna/Tasks/TaskList'), {
+export const Tasks = loadable(() => import('./Tasks/TaskList'), {
   fallback: <Loading />
 });
 
-export const TaskDetails = loadable(() => import('./Omna/Tasks/TaskDetails'), {
+export const TaskDetails = loadable(() => import('./Tasks/TaskDetails'), {
   fallback: <Loading />
 });
 
-export const Orders = loadable(() => import('./Omna/Orders/OrderList'), {
+export const Orders = loadable(() => import('./Orders/OrderList'), {
   fallback: <Loading />
 });
 
 export const OrderDetails = loadable(
-  () => import('./Omna/Orders/OrderDetails'),
+  () => import('./Orders/OrderDetails'),
   {
     fallback: <Loading />
   }
 );
 
 export const Webhooks = loadable(
-  () => import('./Omna/Settings/Webhooks/WebhookList'),
+  () => import('./Settings/Webhooks/WebhookList'),
   {
     fallback: <Loading />
   }
 );
 
 export const CreateWebhook = loadable(
-  () => import('./Omna/Settings/Webhooks/CreateWebhook'),
+  () => import('./Settings/Webhooks/CreateWebhook'),
   {
     fallback: <Loading />
   }
 );
 
-export const Products = loadable(() => import('./Omna/Products/ProductList'), {
+export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
 export const Integrations = loadable(
-  () => import('./Omna/Settings/Integrations/Integrations'),
+  () => import('./Settings/Integrations/Integrations'),
   {
     fallback: <Loading />
   }
 );
 
 export const AddIntegrationForm = loadable(
-  () => import('./Omna/Settings/Integrations/AddIntegrationForm'),
+  () => import('./Settings/Integrations/AddIntegrationForm'),
   {
     fallback: <Loading />
   }
 );
 
-export const Workflows = loadable(() => import('./Omna/Settings/Flows/Flows'), {
+export const Workflows = loadable(() => import('./Settings/Flows/Flows'), {
   fallback: <Loading />
 });
 
 export const AddWorkflow = loadable(
-  () => import('./Omna/Settings/Flows/AddFlowForm'),
+  () => import('./Settings/Flows/AddFlowForm'),
   {
     fallback: <Loading />
   }
 );
 
 export const EditWorkflow = loadable(
-  () => import('./Omna/Settings/Flows/EditFlowForm'),
+  () => import('./Settings/Flows/EditFlowForm'),
   {
     fallback: <Loading />
   }
