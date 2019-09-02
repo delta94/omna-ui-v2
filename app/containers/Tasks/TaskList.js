@@ -4,8 +4,8 @@ import get from 'lodash/get';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
 // import styles1 from 'dan-components/Widget/widget-jss';
-import classNames from 'classnames';
-import messageStyles from 'dan-styles/Messages.scss';
+// import classNames from 'classnames';
+// import messageStyles from 'dan-styles/Messages.scss';
 import Ionicon from 'react-ionicons';
 import MUIDataTable from 'mui-datatables';
 /* material-ui */
@@ -27,7 +27,7 @@ import Paper from '@material-ui/core/Paper';
 // import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import Chip from '@material-ui/core/Chip';
+// import Chip from '@material-ui/core/Chip';
 //
 // import Loading from 'dan-components/Loading';
 import LoadingState from '../Common/LoadingState';
@@ -38,6 +38,7 @@ import API from '../Utils/api';
 // import GenericTableHead from '../Common/GenericTableHead';
 import AlertDialog from '../Common/AlertDialog';
 import Utils from '../Common/Utils';
+import Status from './Status';
 
 const variantIcon = Utils.iconVariants();
 
@@ -45,7 +46,7 @@ const variantIcon = Utils.iconVariants();
 // const filterList = ['Status'];
 // const selectOption = 'checkbox';
 
-function NotificationBottom(type) {
+const NotificationBottom = type => {
   const not = get(type, 'type', null);
   const Icon =
     not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
@@ -58,7 +59,7 @@ function NotificationBottom(type) {
       </IconButton>
     </Tooltip>
   );
-}
+};
 NotificationBottom.prototypes = {
   type: PropTypes.string.isRequired
 };
@@ -246,42 +247,25 @@ class TaskList extends React.Component {
   };
 
   handleDetailsViewClick = task => {
-    console.log(task);
     const { history } = this.props;
     history.push(`/app/tasks-list/${task.id}/task-details`, {
       task: { data: task }
     });
   };
 
-  getStatus = status => {
-    switch (status) {
-      case 'failed':
-        return messageStyles.bgError;
-      case 'broken':
-        return messageStyles.bgError;
-      case 'pending':
-        return messageStyles.bgWarning;
-      case 'completed':
-        return messageStyles.bgSuccess;
-      default:
-        return messageStyles.bgInfo;
-      // running, pending, completed, failed, broken, unscheduled
-    }
-  };
+  // handleMoreClick = id => event => {
+  //   this.setState({
+  //     anchorEl: event.currentTarget,
+  //     popover: id
+  //   });
+  // };
 
-  handleMoreClick = id => event => {
-    this.setState({
-      anchorEl: event.currentTarget,
-      popover: id
-    });
-  };
-
-  handleMoreClose = () => {
-    this.setState({
-      anchorEl: null,
-      popover: null
-    });
-  };
+  // handleMoreClose = () => {
+  //   this.setState({
+  //     anchorEl: null,
+  //     popover: null
+  //   });
+  // };
 
   handleSearchClick = (currentTerm, filters) => {
     const { limit, page } = this.state;
@@ -300,12 +284,11 @@ class TaskList extends React.Component {
     const { classes } = this.props;
     const {
       isLoading,
-      limit,
       page,
-      selected,
+      // selected,
       tasks,
-      alertDialog,
-      anchorEl
+      alertDialog
+      // anchorEl
     } = this.state;
     const { pagination, data } = tasks;
 
@@ -316,16 +299,27 @@ class TaskList extends React.Component {
         name: 'description',
         label: 'Description',
         options: {
+          filter: false
+        }
+      },
+      {
+        name: 'updated_at',
+        label: 'Updated at',
+        options: {
           filter: false,
-          sort: true
+          customBodyRender: value => (
+            <div>{moment(value).format('Y-MM-DD H:mm:ss')}</div>
+          )
         }
       },
       {
         name: 'status',
         label: 'Status',
         options: {
-          filter: true,
-          sort: false
+          sort: false,
+          customBodyRender: (value, tableMeta) => {
+            return <Status value={value} classes={classes} />;
+          }
         }
       }
     ];
@@ -333,11 +327,12 @@ class TaskList extends React.Component {
     const options = {
       filterType: 'checkbox',
       responsive: 'stacked',
+      download: false,
+      print: false,
       serverSide: true,
       count,
       page,
       onTableChange: (action, tableState) => {
-        console.log(action, tableState);
         switch (action) {
           case 'changePage':
             this.handleChangePage(tableState.page);

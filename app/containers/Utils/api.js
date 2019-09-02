@@ -34,7 +34,7 @@ function setParams(config) {
       .split('')
       .sort()
       .join('');
-  console.log(`Message -> ${msg}`);
+
   // Generate the corresponding hmac using the js-sha256 or similar library.
   params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
 

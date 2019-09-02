@@ -2,71 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
-import classNames from 'classnames';
-import Ionicon from 'react-ionicons';
+// import classNames from 'classnames';
+// import Ionicon from 'react-ionicons';
 import moment from 'moment';
 
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
-//
-import Loading from 'dan-components/Loading';
-//
+
+import MUIDataTable from 'mui-datatables';
 import API from '../Utils/api';
-import GenericTablePagination from '../Common/GenericTablePagination';
-import GenericTableHead from '../Common/GenericTableHead';
-import GenericTableToolBar from '../Common/GenericTableToolBar';
-import Utils from '../Common/Utils';
-
-const variantIcon = Utils.iconVariants();
-
-const actionList = ['Filter'];
-const filterList = ['Integration'];
-
-const headColumns = [
-  {
-    id: 'number',
-    first: true,
-    last: false,
-    label: 'Number'
-  },
-  {
-    id: 'date',
-    first: false,
-    last: false,
-    label: 'Date'
-  },
-  {
-    id: 'status',
-    first: false,
-    last: false,
-    label: 'Status'
-  },
-  {
-    id: 'total',
-    first: false,
-    last: false,
-    label: 'Total'
-  },
-  {
-    id: 'store',
-    first: false,
-    last: false,
-    label: 'Integration'
-  },
-  {
-    id: 'action',
-    first: false,
-    last: false,
-    label: 'Action'
-  }
-];
+// import Utils from '../Common/Utils';
+import LoadingState from '../Common/LoadingState';
+// const variantIcon = Utils.iconVariants();
 
 const styles = () => ({
   table: {
@@ -76,20 +23,20 @@ const styles = () => ({
 
 class OrderList extends React.Component {
   state = {
-    loading: true,
+    isLoading: true,
     orders: { data: [], pagination: {} },
-    limit: 5,
+    limit: 10,
     page: 0,
     success: true,
     messageError: '',
-    selectedRow: -1
+    // selectedRow: -1
   };
 
   componentDidMount() {
     this.callAPI();
   }
 
-  getAPIorders(params) {
+  getOrders(params) {
     API.get('/orders', { params })
       .then(response => {
         this.setState({
@@ -103,7 +50,7 @@ class OrderList extends React.Component {
         this.setState({ success: false, messageError: error.message });
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ isLoading: false });
       });
   }
 
@@ -114,18 +61,18 @@ class OrderList extends React.Component {
       limit
     };
 
-    this.getAPIorders(params);
+    this.getOrders(params);
   };
 
-  handleChangePage = (event, page) => {
+  handleChangePage = page => {
     this.setState({ page }, this.callAPI);
   };
 
-  handleChangeRowsPerPage = event => {
-    this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
+  handleChangeRowsPerPage = rowsPerPage => {
+    this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  handleDetailsViewClick = order => () => {
+  handleDetailsViewClick = order => {
     const { history } = this.props;
     history.push(
       `/app/orders-list/${get(order, 'integration.id', 0)}/${get(
@@ -146,95 +93,106 @@ class OrderList extends React.Component {
       integration_id: filters.Integration
     };
 
-    this.setState({ loading: true });
-    this.getAPIorders(params);
+    this.setState({ isLoading: true });
+    this.getOrders(params);
   };
 
   render() {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     const { pagination, data } = get(this.state, 'orders', {
       data: [],
       pagination: {}
     });
-    const { loading, limit, page } = this.state;
-
+    const { isLoading, page } = this.state;
+    console.log(data);
     const count = get(pagination, 'total', 0);
+
+    const columns = [
+      {
+        name: 'number',
+        label: 'Number',
+        options: {
+          filter: false
+        }
+      },
+      {
+        name: 'updated_date',
+        label: 'Date',
+        options: {
+          filter: false,
+          customBodyRender: value => (
+            <div>{moment(value).format('Y-MM-DD H:mm:ss')}</div>
+          )
+        }
+      },
+      {
+        name: 'status',
+        label: 'Status',
+        options: {
+          sort: false
+        }
+      },
+      {
+        name: 'total_price',
+        label: 'Total',
+        options: {
+          filter: false
+        }
+      },
+      {
+        name: 'integration',
+        label: 'Integration',
+        options: {
+          filter: false,
+          customBodyRender: value => <div>{value.name}</div>
+        }
+      }
+    ];
+
+    const options = {
+      selectableRows: 'none',
+      responsive: 'stacked',
+      download: false,
+      print: false,
+      serverSide: true,
+      count,
+      page,
+      onTableChange: (action, tableState) => {
+        console.log(action, tableState);
+        switch (action) {
+          case 'changePage':
+            this.handleChangePage(tableState.page);
+            break;
+          case 'changeRowsPerPage':
+            this.handleChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          default:
+            break;
+        }
+      },
+      onRowClick: (rowData, { dataIndex }) => {
+        const order = data[dataIndex];
+        console.log(order);
+        this.handleDetailsViewClick(order);
+      }
+    };
 
     return (
       <div>
-        {loading && <Loading />}
-        <Paper className={classes.rootTable}>
-          <GenericTableToolBar
-            rowCount={count > limit ? limit : count}
-            actionList={actionList}
-            onSearchFilterClick={this.handleSearchClick}
-            filterList={filterList}
-          />
-          <Table className={classNames(classes.table, classes.hover)}>
-            <GenericTableHead
-              rowCount={count > limit ? limit : count}
-              headColumns={headColumns}
-            />
-            <TableBody>
-              {data
-                && data.map(row => (
-                  <TableRow hover key={get(row, 'order_id', 0)}>
-                    <TableCell align="left" component="th" scope="row">
-                      {get(row, 'number', 0)}
-                    </TableCell>
-                    <TableCell align="center">
-                      {get(row, 'updated_date', null) != null
-                        ? moment(row.updated_date).format('Y-MM-DD H:mm:ss')
-                        : '--'}
-                    </TableCell>
-                    <TableCell align="center">
-                      {get(row, 'status', null)}
-                    </TableCell>
-                    <TableCell align="center">
-                      {get(row, 'total_price', null)}
-                    </TableCell>
-                    <TableCell align="center">
-                      {get(row, 'integration.name', null)}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="text"
-                        size="small"
-                        color="primary"
-                        onClick={this.handleDetailsViewClick(row)}
-                        className={classes.button}
-                      >
-                        <Ionicon
-                          icon={variantIcon.view}
-                          className={classes.rightIcon}
-                        />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50]}
-                  count={count}
-                  rowsPerPage={limit}
-                  page={page}
-                  SelectProps={{
-                    native: true
-                  }}
-                  onChangePage={this.handleChangePage}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  ActionsComponent={GenericTablePagination}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </Paper>
+        {isLoading ? (
+          <Paper>
+            <div className="item-padding">
+              <LoadingState loading={isLoading} text="Loading" />
+            </div>
+          </Paper>
+        ) : (
+          <MUIDataTable data={data} columns={columns} options={options} />
+        )}
       </div>
     );
   }
 }
+
 OrderList.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({
