@@ -17,7 +17,8 @@ import {
   AddWorkflow,
   EditWorkflow,
   Webhooks,
-  CreateWebhook
+  CreateWebhook,
+  DashboardPage
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -30,7 +31,11 @@ class Application extends React.Component {
       >
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
-            {/* <AuthGuardRoute exact path="/app/dashboard" component={Analytics} /> */}
+            <AuthGuardRoute
+              exact
+              path="/app/dashboard"
+              component={DashboardPage}
+            />
             <AuthGuardRoute exact path="/app/orders-list" component={Orders} />
             <AuthGuardRoute
               exact
@@ -84,8 +89,8 @@ class Application extends React.Component {
               component={CreateWebhook}
             />
             {/* Home */}
-            {/* <AuthGuardRoute exact path="/app" component={Analytics} />
-            <AuthGuardRoute exact path="/" component={Analytics} /> */}
+            {/* <AuthGuardRoute exact path="/app" component={Analytics} /> */}
+            <AuthGuardRoute exact path="/" component={DashboardPage} />
             {/* <AuthGuardRoute
               exact
               path="/app/widgets/analytics"

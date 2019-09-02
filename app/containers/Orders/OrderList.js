@@ -158,7 +158,6 @@ class OrderList extends React.Component {
       count,
       page,
       onTableChange: (action, tableState) => {
-        console.log(action, tableState);
         switch (action) {
           case 'changePage':
             this.handleChangePage(tableState.page);
@@ -172,7 +171,6 @@ class OrderList extends React.Component {
       },
       onRowClick: (rowData, { dataIndex }) => {
         const order = data[dataIndex];
-        console.log(order);
         this.handleDetailsViewClick(order);
       }
     };

@@ -238,6 +238,11 @@ const applicationTheme = (color, mode) => ({
         borderRadius: 8
       }
     },
+    MuiTable: {
+      root: {
+        margin: 0
+      }
+    },
     MuiTableCell: {
       root: {
         borderBottom:
@@ -274,6 +279,11 @@ const applicationTheme = (color, mode) => ({
       },
       selectIcon: {
         top: 4
+      }
+    },
+    MuiTableRow: {
+      footer: {
+        borderBottom: 0
       }
     },
     MuiPickersToolbar: {
