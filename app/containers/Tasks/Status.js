@@ -24,13 +24,13 @@ const getStatus = status => {
 };
 
 const Status = props => {
-  const { value, classes } = props;
+  const { status, progress, classes } = props;
 
   return (
     <Tooltip title="Status">
       <Chip
-        label={`${value} %`}
-        className={classNames(classes.chip, getStatus(value))}
+        label={`${status} ${progress}%`}
+        className={classNames(classes.chip, getStatus(status))}
       />
     </Tooltip>
   );
