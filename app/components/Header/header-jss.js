@@ -1,5 +1,8 @@
 import { fade, darken } from '@material-ui/core/styles/colorManipulator';
-import { gradientBgLight, gradientBgDark } from 'containers/Templates/appStyles-jss';
+import {
+  gradientBgLight,
+  gradientBgDark
+} from 'containers/Templates/appStyles-jss';
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -8,28 +11,31 @@ const styles = theme => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin', 'background'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      duration: theme.transitions.duration.leavingScreen
     }),
     '& $menuButton': {
-      color: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.main,
+      color:
+        theme.palette.type === 'dark'
+          ? theme.palette.primary.light
+          : theme.palette.primary.main,
       backgroundColor: 'transparent',
       boxShadow: 'none',
-      zIndex: 10,
+      zIndex: 10
     },
     '&$left': {
       '& $menuButton': {
-        marginLeft: 13,
+        marginLeft: 13
       },
       '& $headerTitle': {
-        left: theme.spacing.unit * 2,
+        left: theme.spacing.unit * 2
       }
     },
     '&$right': {
       '& $menuButton': {
-        marginRight: 13,
+        marginRight: 13
       },
       '& $headerTitle': {
-        right: theme.spacing.unit * 2,
+        right: theme.spacing.unit * 2
       },
       '& > div': {
         flexDirection: 'row-reverse'
@@ -37,7 +43,7 @@ const styles = theme => ({
       '& $flex': {
         textAlign: 'left'
       }
-    },
+    }
   },
   attachedbar: {
     position: 'relative',
@@ -47,7 +53,7 @@ const styles = theme => ({
     '& $wrapper': {
       [theme.breakpoints.down('lg')]: {
         border: `1px solid ${theme.palette.divider}`
-      },
+      }
     }
   },
   floatingBar: {
@@ -60,10 +66,10 @@ const styles = theme => ({
     background: theme.palette.background.paper,
     boxShadow: theme.shadows[3],
     [theme.breakpoints.down('md')]: {
-      padding: `${theme.spacing.unit / 2}px 0`,
+      padding: `${theme.spacing.unit / 2}px 0`
     },
     [theme.breakpoints.up('lg')]: {
-      background: fade(theme.palette.background.paper, 0.8),
+      background: fade(theme.palette.background.paper, 0.8)
     },
     color: theme.palette.text.primary
   },
@@ -80,7 +86,7 @@ const styles = theme => ({
   appBarShift: {
     transition: theme.transitions.create(['width', 'margin', 'background'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.enteringScreen
     }),
     '&$left': {
       '& $menuButton': {
@@ -90,8 +96,8 @@ const styles = theme => ({
       },
       [theme.breakpoints.up('lg')]: {
         marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-      },
+        width: `calc(100% - ${drawerWidth}px)`
+      }
     },
     '&$right': {
       '& $menuButton': {
@@ -101,34 +107,40 @@ const styles = theme => ({
       },
       [theme.breakpoints.up('lg')]: {
         marginRight: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-      },
+        width: `calc(100% - ${drawerWidth}px)`
+      }
     },
     '& $menuButton': {
-      backgroundColor: theme.palette.type === 'dark' ? theme.palette.primary.main : theme.palette.primary.light,
-      boxShadow: theme.glow.medium,
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? theme.palette.primary.main
+          : theme.palette.primary.contrastText,
+      boxShadow: theme.glow.light
     },
     '& $headerAction': {
       marginLeft: theme.spacing.unit
     },
     '&$darker': {
       '& $menuButton': {
-        color: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.main,
+        color:
+          theme.palette.type === 'dark'
+            ? theme.palette.primary.light
+            : theme.palette.primary.main
       }
     }
   },
   menuButton: {},
   hide: {
-    display: 'none',
+    display: 'none'
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200,
+    width: 200
   },
   container: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   dark: {},
   light: {},
@@ -140,31 +152,35 @@ const styles = theme => ({
     borderRadius: 22,
     display: 'inline-block',
     '&:hover': {
-      background: fade(theme.palette.common.white, 0.25),
+      background: fade(theme.palette.common.white, 0.25)
     },
     '&$light': {
-      background: fade(theme.palette.common.white, 0.2),
+      background: fade(theme.palette.common.white, 0.2)
     },
     '&$dark': {
-      background: theme.palette.type === 'dark' ? theme.palette.grey[700] : fade(theme.palette.common.white, 0.8),
+      background:
+        theme.palette.type === 'dark'
+          ? theme.palette.grey[700]
+          : fade(theme.palette.common.white, 0.8),
       boxShadow: theme.shade.light,
       '& input': {
-        color: theme.palette.grey[700],
+        color: theme.palette.grey[700]
       },
       '& input::placeholder': {
         color: theme.palette.grey[400],
         opacity: 1 /* Firefox */
       },
       '& input:-ms-input-placeholder': {
-        color: theme.palette.grey[400],
+        color: theme.palette.grey[400]
       },
-      '& input::-ms-input-placeholder': { /* Internet Explorer 10-11 */
-        color: theme.palette.grey[400],
+      '& input::-ms-input-placeholder': {
+        /* Internet Explorer 10-11 */
+        color: theme.palette.grey[400]
       }
     },
     '& $miniInput': {
       width: 70
-    },
+    }
   },
   searchWrapper: {
     [theme.breakpoints.down('md')]: {
@@ -182,7 +198,7 @@ const styles = theme => ({
     justifyContent: 'center',
     [theme.breakpoints.down('xs')]: {
       display: 'none'
-    },
+    }
   },
   miniInput: {
     paddingLeft: 0,
@@ -194,10 +210,16 @@ const styles = theme => ({
     backgroundAttachment: 'fixed',
     boxShadow: theme.shadows[3],
     '&$gradientBg': {
-      backgroundImage: theme.palette.type === 'dark' ? gradientBgDark(theme) : gradientBgLight(theme),
+      backgroundImage:
+        theme.palette.type === 'dark'
+          ? gradientBgDark(theme)
+          : gradientBgLight(theme)
     },
     '&$solidBg': {
-      backgroundColor: theme.palette.type === 'dark' ? darken(theme.palette.primary.main, 0.4) : theme.palette.primary.main
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? darken(theme.palette.primary.main, 0.4)
+          : theme.palette.primary.main
     },
     '& $menuButton': {
       color: theme.palette.common.white
@@ -208,7 +230,7 @@ const styles = theme => ({
     left: 0,
     top: 0,
     [theme.breakpoints.up('lg')]: {
-      top: theme.spacing.unit * -8,
+      top: theme.spacing.unit * -8
     },
     '& nav': {
       padding: '16px 0'
@@ -246,18 +268,18 @@ const styles = theme => ({
   notifIcon: {
     '& svg': {
       width: 28,
-      height: 28,
+      height: 28
     },
     '&$dark': {
       '& svg': {
-        fill: theme.palette.text.primary,
+        fill: theme.palette.text.primary
       }
     },
     '&$light': {
       '& svg': {
-        fill: theme.palette.common.white,
+        fill: theme.palette.common.white
       }
-    },
+    }
   },
   brand: {
     display: 'flex',
@@ -275,7 +297,7 @@ const styles = theme => ({
     '& img': {
       marginRight: 10,
       width: 30
-    },
+    }
   },
   mainMenu: {
     backgroundColor: theme.palette.background.paper,
@@ -290,7 +312,8 @@ const styles = theme => ({
   },
   headMenu: {
     fontSize: 12,
-    padding: `${theme.spacing.unit / 2}px ${theme.spacing.unit}px ${theme.spacing.unit / 2}px ${theme.spacing.unit * 2}px`,
+    padding: `${theme.spacing.unit / 2}px ${theme.spacing.unit}px ${theme
+      .spacing.unit / 2}px ${theme.spacing.unit * 2}px`,
     minHeight: 'auto',
     margin: `0 ${theme.spacing.unit / 2}px`
   },
@@ -298,7 +321,7 @@ const styles = theme => ({
     color: theme.palette.primary.main,
     boxShadow: `inset 0 0 0 1px ${theme.palette.primary.main}`,
     '& svg': {
-      fill: theme.palette.primary.main,
+      fill: theme.palette.primary.main
     }
   },
   rightIcon: {
@@ -309,10 +332,10 @@ const styles = theme => ({
     background: theme.palette.primary.main,
     color: theme.palette.primary.light,
     '&:hover': {
-      background: theme.palette.primary.main,
+      background: theme.palette.primary.main
     },
     '& svg': {
-      fill: theme.palette.primary.light,
+      fill: theme.palette.primary.light
     },
     '& $rightIcon': {
       opacity: 0.7
@@ -345,16 +368,22 @@ const styles = theme => ({
   active: {},
   menuItem: {
     '& span': {
-      fontSize: 14,
+      fontSize: 14
     },
     '&$active': {
       borderLeft: `5px solid ${theme.palette.primary.main}`,
-      backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.secondary.main, 0.24) : theme.palette.secondary.light,
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? fade(theme.palette.secondary.main, 0.24)
+          : theme.palette.secondary.light,
       '& span': {
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.main
       },
       '&:hover': {
-        backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.secondary.main, 0.24) : theme.palette.secondary.light,
+        backgroundColor:
+          theme.palette.type === 'dark'
+            ? fade(theme.palette.secondary.main, 0.24)
+            : theme.palette.secondary.light
       }
     }
   },
@@ -371,19 +400,25 @@ const styles = theme => ({
     borderRadius: theme.rounded.big,
     padding: `${theme.spacing.unit / 4}px ${theme.spacing.unit}px`,
     '& span': {
-      fontSize: 14,
+      fontSize: 14
     },
     '& div': {
       padding: 0
     },
     '&$active': {
       border: `1px solid ${theme.palette.primary.main}`,
-      backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.secondary.main, 0.24) : theme.palette.secondary.light,
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? fade(theme.palette.secondary.main, 0.24)
+          : theme.palette.secondary.light,
       '& span': {
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.main
       },
       '&:hover': {
-        backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.secondary.main, 0.24) : theme.palette.secondary.light,
+        backgroundColor:
+          theme.palette.type === 'dark'
+            ? fade(theme.palette.secondary.main, 0.24)
+            : theme.palette.secondary.light
       }
     }
   },
@@ -421,12 +456,12 @@ const styles = theme => ({
       }
     },
     '&$fadeOut': {
-      opacity: 0,
+      opacity: 0
     },
     '&$invert': {
       '& $button': {
         '& svg': {
-          fill: fade(theme.palette.text.primary, 0.5),
+          fill: fade(theme.palette.text.primary, 0.5)
         }
       }
     }
@@ -447,7 +482,7 @@ const styles = theme => ({
     }
   },
   swipeDrawerPaper: {
-    width: drawerWidth,
+    width: drawerWidth
   },
   searchHeaderMenu: {
     flex: 1,

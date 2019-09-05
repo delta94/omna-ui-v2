@@ -24,15 +24,13 @@ import Integration from './Integration';
 const styles = theme => ({
   cardList: {
     display: 'flex',
-    flexWrap: 'wrap',
-    minWidth: '275px'
+    flexFlow: 'wrap',
+    minWidth: 275
   },
   card: {
-    minWidth: 275,
+    minWidth: 196,
+    maxWidth: 256,
     margin: 5
-  },
-  actions: {
-    justifyContent: 'center'
   },
   title: {
     fontSize: 14
@@ -206,12 +204,16 @@ class Integrations extends Component {
     return (
       <div>
         <Paper>
-          {loading ? <LoadingState loading={loading} text="Loading" /> : null}
+          {loading ? (
+            <div className="item-padding">
+              <LoadingState loading={loading} text="Loading" />
+            </div>
+          ) : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
             <div>
-              <div className="display-flex flex-direction-row-inverse">
+              <div className="display-flex justify-content-space-between">
                 <Button
                   variant="outlined"
                   color="primary"

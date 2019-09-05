@@ -92,8 +92,8 @@ const styles = theme => ({
     position: 'fixed',
     backgroundColor:
       theme.palette.type === 'dark'
-        ? fade(theme.palette.background.paper, 0.75)
-        : fade(theme.palette.background.paper, 0.95),
+        ? theme.palette.background.paper
+        : theme.palette.background.paper,
     boxShadow: theme.shade.light
   },
   drawerInnerMobile: {
@@ -379,7 +379,7 @@ const styles = theme => ({
     height: 'auto'
   },
   logo: {
-    width: 190
+    width: 188
   }
 });
 

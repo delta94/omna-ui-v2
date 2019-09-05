@@ -26,7 +26,7 @@ const Integration = props => {
   } = props;
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} style={{ flex: '1 1 auto' }}>
       <CardHeader
         avatar={
           logo ? (
