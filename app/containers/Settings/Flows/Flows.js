@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-// import { connect } from 'react-redux';
+import { connect } from 'react-redux';
 
 // material-ui
 import { withSnackbar } from 'notistack';
@@ -27,7 +27,7 @@ import GenericTablePagination from '../../Common/GenericTablePagination';
 import LoadingState from '../../Common/LoadingState';
 import GenericTableHead from '../../Common/GenericTableHead';
 import GenericErrorMessage from '../../Common/GenericErrorMessage';
-// import { getFlows } from '../../../../actions/flowActions';
+// import { getFlows } from '../../../actions/flowActions';
 
 const styles = theme => ({
   inputWidth: {
@@ -112,10 +112,12 @@ class Flows extends Component {
   };
 
   componentDidMount() {
+    console.log('componentDidMount');
     this.fillDataTable();
   }
 
   getFlows = async params => {
+    // this.props.onGetFlows(params);
     const { enqueueSnackbar } = this.props;
     try {
       const response = await API.get('/flows', { params });
@@ -134,6 +136,7 @@ class Flows extends Component {
   fillDataTable = async () => {
     this.setState({ loading: true });
     await this.getFlows();
+    // this.props.onGetFlows();
     this.setState({ loading: false });
   };
 
@@ -318,8 +321,7 @@ class Flows extends Component {
                             <Tooltip title="delete">
                               <IconButton
                                 aria-label="delete"
-                                onClick={() =>
-                                  this.handleOnClickDeleteFlow(id, title)
+                                onClick={() => this.handleOnClickDeleteFlow(id, title)
                                 }
                               >
                                 <Ionicon icon="md-trash" />
@@ -370,33 +372,35 @@ class Flows extends Component {
           )}
         </Paper>
 
-        {/* <AlertDialog
+        <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}
-          handleCancel={this.handleDialogCancel()}
-          handleConfirm={this.handleDialogConfirm()}
-        /> */}
+          handleCancel={this.handleDialogCancel}
+          handleConfirm={this.handleDialogConfirm}
+        />
       </div>
     );
   }
 }
 
 Flows.propTypes = {
-  // flows: PropTypes.array.isRequired,
-  // getFlows: PropTypes.func.isRequired,
+  // flows: PropTypes.object.isRequired,
+  // onGetFlows: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-// const mapStateToProps = state => ({
-//   flows: state.flows.flows
+// const mapStateToProps = state => ({ flows: state.flows.flows });
+
+// const mapDispatchToProps = dispatch => ({
+//   onGetFlows: params => dispatch(getFlows(params))
 // });
 
 // export default withSnackbar(
 //   connect(
 //     mapStateToProps,
-//     { getFlows }
-//   )(withStyles(styles)(Flows))
+//     mapDispatchToProps
+//   )(Flows)
 // );
 export default withSnackbar(withStyles(styles)(Flows));

@@ -39,7 +39,8 @@
     "lint:js": "npm run lint:eslint -- . ",
     "lint:staged": "lint-staged",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "prettify": "prettier --write"
+    "prettify": "prettier --write",
+    "test": "jest"
   },
   "browserslist": [
     "last 2 versions",
@@ -241,6 +242,7 @@
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
     "imports-loader": "0.8.0",
+    "jest": "^24.9.0",
     "lint-staged": "8.1.5",
     "ngrok": "3.1.1",
     "node-plop": "0.18.0",

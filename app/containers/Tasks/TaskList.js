@@ -151,27 +151,6 @@ class TaskList extends React.Component {
     this.setState({ selected: [] });
   };
 
-  handleClick = (event, id) => {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    this.setState({ selected: newSelected });
-  };
-
   handleChangePage = page => {
     this.setState({ page }, this.callAPI);
   };
@@ -242,10 +221,8 @@ class TaskList extends React.Component {
     const {
       isLoading,
       page,
-      // selected,
       tasks,
       alertDialog
-      // anchorEl
     } = this.state;
     const { pagination, data } = tasks;
 
@@ -296,7 +273,7 @@ class TaskList extends React.Component {
                     </div>
                     <div className="item-margin-left">
                       {scheduler ? (
-                        <Tooltip title="This Task has a Schedule">
+                        <Tooltip title="This task has a schedule">
                           <IconButton aria-label="Schedule">
                             <Ionicon icon={variantIcon.schedule} />
                           </IconButton>

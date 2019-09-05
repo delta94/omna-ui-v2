@@ -37,7 +37,8 @@ const Status = props => {
 };
 
 Status.propTypes = {
-  value: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  progress: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 

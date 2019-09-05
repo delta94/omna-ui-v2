@@ -89,7 +89,7 @@ class Application extends React.Component {
               component={CreateWebhook}
             />
             {/* Home */}
-            {/* <AuthGuardRoute exact path="/app" component={Analytics} /> */}
+            <AuthGuardRoute exact path="/app" component={DashboardPage} />
             <AuthGuardRoute exact path="/" component={DashboardPage} />
             {/* <AuthGuardRoute
               exact

@@ -1,8 +1,11 @@
+import { fromJS } from 'immutable';
 import { GET_FLOWS } from '../../actions/actionConstants';
 
 const initialState = { flows: { data: [], pagination: {} } };
 
-const reducer = (state = initialState, action) => {
+const initialImmutableState = fromJS(initialState);
+
+const reducer = (state = initialImmutableState, action = {}) => {
   switch (action.type) {
     case GET_FLOWS:
       return {
