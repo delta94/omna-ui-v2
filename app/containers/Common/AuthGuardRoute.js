@@ -12,7 +12,8 @@ const AuthGuardRoute = ({ component: Component, ...rest }) => {
     const searchParams = new URLSearchParams(url.search);
     const token = searchParams.get('token');
     const secret = searchParams.get('secret');
-    const currentTenant = { secret, token };
+    const user = searchParams.get('user');
+    const currentTenant = { secret, token, user };
     sessionStorage.setItem('currentTenant', JSON.stringify(currentTenant));
   }
   return (

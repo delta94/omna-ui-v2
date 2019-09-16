@@ -91,14 +91,10 @@ class CompossedLineBarArea extends Component {
       month: moment(x.updated_date).format('MMM')
     }));
 
-    console.log(collection);
-
     const mapDayToMonth = collection.map(x => ({
       ...x,
       day: new Date(x.updated_date).getMonth()
     }));
-
-    console.log(mapDayToMonth);
 
     const sumPerMonth = mapDayToMonth.reduce((acc, cur) => {
       const obj = {};

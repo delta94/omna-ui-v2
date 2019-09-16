@@ -45,6 +45,10 @@ class UserMenu extends React.Component {
   render() {
     const { classes } = this.props;
     const { anchorEl, openMenu } = this.state;
+
+    const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
+    const { user } = currentTenant;
+
     return (
       <div>
         {/* <IconButton
@@ -121,7 +125,8 @@ class UserMenu extends React.Component {
           </MenuItem>
         </Menu> */}
         <Button onClick={this.handleMenu('user-setting')}>
-          <Avatar alt={dummy.user.name} src={dummy.user.avatar} />
+          <Avatar alt={user} src={dummy.user.avatar} />
+          <div style={{ color: 'white', marginLeft: 8 }}>{user}</div>
         </Button>
         <Menu
           id="menu-appbar"
