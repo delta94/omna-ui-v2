@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 // import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
@@ -30,7 +30,7 @@ class UserMenu extends React.Component {
     openMenu: null
   };
 
-  handleMenu = menu => (event) => {
+  handleMenu = menu => event => {
     const { openMenu } = this.state;
     this.setState({
       openMenu: openMenu === menu ? null : menu,
@@ -121,39 +121,51 @@ class UserMenu extends React.Component {
           </MenuItem>
         </Menu> */}
         <Button onClick={this.handleMenu('user-setting')}>
-          <Avatar
-            alt={dummy.user.name}
-            src={dummy.user.avatar}
-          />
+          <Avatar alt={dummy.user.name} src={dummy.user.avatar} />
         </Button>
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: 'top',
-            horizontal: 'right',
+            horizontal: 'right'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'right',
+            horizontal: 'right'
           }}
           open={openMenu === 'user-setting'}
           onClose={this.handleClose}
         >
-          <MenuItem onClick={this.handleClose} component={Link} to={link.profile}>My Profile</MenuItem>
-          <MenuItem onClick={this.handleClose} component={Link} to={link.calendar}>My Calendar</MenuItem>
+          <MenuItem
+            onClick={this.handleClose}
+            component={Link}
+            to={link.profile}
+          >
+            My Profile
+          </MenuItem>
+          <MenuItem
+            onClick={this.handleClose}
+            component={Link}
+            to={link.calendar}
+          >
+            My Calendar
+          </MenuItem>
           <MenuItem onClick={this.handleClose} component={Link} to={link.email}>
             My Inbox
             <ListItemIcon>
-              <Badge className={classNames(classes.badge, classes.badgeMenu)} badgeContent={2} color="secondary">&nbsp;</Badge>
+              <Badge
+                className={classNames(classes.badge, classes.badgeMenu)}
+                badgeContent={2}
+                color="secondary"
+              >
+                &nbsp;
+              </Badge>
             </ListItemIcon>
           </MenuItem>
           <Divider />
-          <MenuItem onClick={this.handleClose} component={Link} to="/">
-            <ListItemIcon>
-              <ExitToApp />
-            </ListItemIcon>
-            Log Out
+          <MenuItem onClick={this.handleClose} component={Link} to="/logout">
+            Log out
           </MenuItem>
         </Menu>
       </div>
@@ -162,7 +174,7 @@ class UserMenu extends React.Component {
 }
 
 UserMenu.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
   // dark: PropTypes.bool,
 };
 

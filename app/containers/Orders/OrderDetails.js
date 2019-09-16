@@ -6,7 +6,6 @@ import get from 'lodash/get';
 import moment from 'moment';
 import Ionicon from 'react-ionicons';
 import Tooltip from '@material-ui/core/Tooltip';
-
 // material-ui
 // core
 import { withStyles } from '@material-ui/core/styles';
@@ -61,7 +60,7 @@ const styles = theme => ({
 class OrderDetails extends Component {
   state = {
     loading: true,
-    order: { data: {} },
+    order: {},
     success: true,
     messageError: ''
   };
@@ -72,9 +71,9 @@ class OrderDetails extends Component {
 
     const order = get(this.props, 'location.state.order', null);
     if (
-      order !== null
-      && storeId === get(order, 'data.integration.id', null)
-      && number === get(order, 'data.number', null)
+      order !== null &&
+      storeId === get(order, 'data.integration.id', null) &&
+      number === get(order, 'data.number', null)
     ) {
       this.setState({ order, loading: false });
     } else {
@@ -82,10 +81,10 @@ class OrderDetails extends Component {
     }
   }
 
-  getOrder(params) {
+  getOrder = params => {
     API.get(`/integrations/${params.store_id}/orders/${params.number}`)
       .then(response => {
-        this.setState({ order: get(response, 'data', { data: {} }) });
+        this.setState({ order: get(response, 'data', {}) });
       })
       .catch(error => {
         // handle error
@@ -95,7 +94,7 @@ class OrderDetails extends Component {
       .finally(() => {
         this.setState({ loading: false });
       });
-  }
+  };
 
   callAPI = (StoreId, number) => {
     const params = {
@@ -112,9 +111,7 @@ class OrderDetails extends Component {
 
   render() {
     const { classes } = this.props;
-    const {
-      order, loading, success, messageError
-    } = this.state;
+    const { order, loading, success, messageError } = this.state;
     console.log(order);
 
     return (
@@ -126,9 +123,6 @@ class OrderDetails extends Component {
           ) : (
             <div>
               <Paper>
-                {
-                  // ******** BUTTONS *********
-                }
                 <div className="display-flex justify-content-space-between">
                   <Button
                     variant="text"
@@ -182,8 +176,8 @@ class OrderDetails extends Component {
                     <strong>
                       {get(order, 'data.updated_date', null) != null
                         ? moment(order.data.updated_date).format(
-                          'Y-MM-DD H:mm:ss'
-                        )
+                            'Y-MM-DD H:mm:ss'
+                          )
                         : '--'}
                     </strong>
                   </Typography>
@@ -191,10 +185,17 @@ class OrderDetails extends Component {
               </Paper>
               <div className="orderDetailContainer">
                 <div className="display-flex" style={{ flexFlow: 'row wrap' }}>
-                  <OrderIntegration
-                    classes={classes}
-                    integration={get(order, 'data.integration', null)}
-                  />
+                  <div className="orderDetailContainer">
+                    <OrderIntegration
+                      classes={classes}
+                      integration={get(order, 'data.integration', null)}
+                    />
+                    <OrderPayment
+                      classes={classes}
+                      totalPrice={get(order, 'data.total_price', null)}
+                      status={get(order, 'data.status', null)}
+                    />
+                  </div>
                   <OrderCustomer
                     classes={classes}
                     customerFirstName={get(
@@ -202,16 +203,11 @@ class OrderDetails extends Component {
                       'data.customer.first_name',
                       null
                     )}
-                    shipAddress={get(order, 'data.ship_address', null)}
-                    billAddress={get(order, 'data.bill_address', null)}
+                    shipAddress={order.data.ship_address}
+                    billAddress={order.data.bill_address}
                   />
                 </div>
                 <div>
-                  <OrderPayment
-                    classes={classes}
-                    totalPrice={get(order, 'data.total_price', null)}
-                    status={get(order, 'data.status', null)}
-                  />
                   <OrderItems classes={classes} order={order} />
                 </div>
               </div>

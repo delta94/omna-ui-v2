@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 // import classNames from 'classnames';
 // import Ionicon from 'react-ionicons';
 import moment from 'moment';
+// import { connect } from 'react-redux';
 
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
@@ -14,6 +15,7 @@ import API from '../Utils/api';
 // import Utils from '../Common/Utils';
 import LoadingState from '../Common/LoadingState';
 // const variantIcon = Utils.iconVariants();
+// import { getOrders } from '../../actions/orderActions';
 
 const styles = () => ({
   table: {
@@ -28,7 +30,7 @@ class OrderList extends React.Component {
     limit: 10,
     page: 0,
     success: true,
-    messageError: '',
+    messageError: ''
     // selectedRow: -1
   };
 
@@ -62,6 +64,7 @@ class OrderList extends React.Component {
     };
 
     this.getOrders(params);
+    // this.props.onGetOrders(params);
   };
 
   handleChangePage = page => {
@@ -98,12 +101,10 @@ class OrderList extends React.Component {
   };
 
   render() {
-    // const { classes } = this.props;
-    const { pagination, data } = get(this.state, 'orders', {
-      data: [],
-      pagination: {}
-    });
-    const { isLoading, page } = this.state;
+    // const { classes, orders } = this.props;
+    const { isLoading, page, orders } = this.state;
+    const { pagination, data } = orders;
+
     console.log(data);
     const count = get(pagination, 'total', 0);
 
@@ -152,6 +153,7 @@ class OrderList extends React.Component {
     const options = {
       selectableRows: 'none',
       responsive: 'stacked',
+      fixedHeader: true,
       download: false,
       print: false,
       serverSide: true,
@@ -184,7 +186,7 @@ class OrderList extends React.Component {
             </div>
           </Paper>
         ) : (
-          <MUIDataTable data={data} columns={columns} options={options} />
+          <MUIDataTable columns={columns} data={data} options={options} />
         )}
       </div>
     );
@@ -192,10 +194,25 @@ class OrderList extends React.Component {
 }
 
 OrderList.propTypes = {
+  // orders: PropTypes.array.isRequired,
+  // onGetOrders: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({
     push: PropTypes.func
   }).isRequired
 };
+
+// const mapStateToProps = state => ({
+//   orders: state.orders.orders
+// });
+
+// const mapDispatchToProps = dispatch => ({
+//   onGetOrders: (params) => dispatch(getOrders(params))
+// });
+
+// const OrderListMapped = connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(OrderList);
 
 export default withStyles(styles)(OrderList);

@@ -14,3 +14,7 @@ export const INIT = 'INIT';
 export const CLEAR = 'CLEAR';
 // Flows
 export const GET_FLOWS = 'GET_FLOWS';
+// Orders
+export const GET_ORDERS = 'GET_ORDERS';
+
+export const AUTH_LOGOUT = 'AUTH_LOGOUT';

@@ -26,6 +26,10 @@ export const LoginDedicated = loadable(
 export const LockScreen = loadable(() => import('./Pages/Users/LockScreen'), {
   fallback: <Loading />
 });
+export const Logout = loadable(() => import('./Auth/Logout'), {
+  fallback: <Loading />
+});
+
 // OMNA
 export const Dashboard = loadable(() => import('./Tasks/TaskList'), {
   fallback: <Loading />

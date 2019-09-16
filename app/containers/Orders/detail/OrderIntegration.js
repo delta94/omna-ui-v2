@@ -43,7 +43,7 @@ class OrderIntegration extends Component {
             <Typography variant="subtitle2">Name:</Typography>
             <ListItemText primary={integration.name} />
           </ListItem>
-          <ListItem>
+          {/* <ListItem>
             <Typography variant="subtitle2">Authorized:</Typography>
             <ListItemText primary={integration.authorized} />
           </ListItem>
@@ -60,7 +60,7 @@ class OrderIntegration extends Component {
                   : '--'
               }
             />
-          </ListItem>
+          </ListItem> */}
           <ListItem>
             <Typography variant="subtitle2">Created at:</Typography>
             <ListItemText
