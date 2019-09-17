@@ -47,7 +47,8 @@ class UserMenu extends React.Component {
     const { anchorEl, openMenu } = this.state;
 
     const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
-    const { user } = currentTenant;
+    let user;
+    if (currentTenant) user = currentTenant.user;
 
     return (
       <div>

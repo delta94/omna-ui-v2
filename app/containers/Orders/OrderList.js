@@ -113,7 +113,7 @@ class OrderList extends React.Component {
         name: 'number',
         label: 'Number',
         options: {
-          filter: false
+          filter: true
         }
       },
       {
@@ -151,12 +151,12 @@ class OrderList extends React.Component {
     ];
 
     const options = {
+      filter: true,
+      filterType: 'textField',
       selectableRows: 'none',
       responsive: 'stacked',
-      fixedHeader: true,
       download: false,
       print: false,
-      serverSide: true,
       count,
       page,
       onTableChange: (action, tableState) => {
@@ -186,7 +186,12 @@ class OrderList extends React.Component {
             </div>
           </Paper>
         ) : (
-          <MUIDataTable columns={columns} data={data} options={options} />
+          <MUIDataTable
+            title="Orders"
+            columns={columns}
+            data={data}
+            options={options}
+          />
         )}
       </div>
     );

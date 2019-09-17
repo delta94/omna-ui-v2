@@ -56,7 +56,7 @@ class OrderItems extends Component {
     ];
 
     const options = {
-      filter: false,
+      filter: 'false',
       responsive: 'stacked',
       viewColumns: false,
       download: false,
