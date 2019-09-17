@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { LockForm } from 'dan-components';
+import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 
 class LockScreen extends React.Component {
-  submitForm() {
+  componentWillMount() {
     const { location } = this.props;
     const { redirect } = location.state;
     window.location.replace(redirect);
@@ -15,11 +15,7 @@ class LockScreen extends React.Component {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
-        <div className={classes.container}>
-          <div className={classes.userFormWrap}>
-            <LockForm onSubmit={() => this.submitForm()} />
-          </div>
-        </div>
+        <Loading />
       </div>
     );
   }
