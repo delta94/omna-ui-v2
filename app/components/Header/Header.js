@@ -23,7 +23,7 @@ class Header extends React.Component {
     open: false,
     fullScreen: false,
     turnDarker: false,
-    showTitle: false
+    showTitle: false,
   };
 
   // Initial header style

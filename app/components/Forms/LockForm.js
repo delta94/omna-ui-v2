@@ -41,8 +41,8 @@ class LockForm extends React.Component {
 
 LockForm.propTypes = {
   classes: PropTypes.object.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  submitting: PropTypes.bool.isRequired
+  submitting: PropTypes.bool.isRequired,
+  handleSubmit: PropTypes.func.isRequired
 };
 
 const LockFormReduxed = reduxForm({

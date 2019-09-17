@@ -75,6 +75,13 @@ class Utils {
     return queryString;
   }
 
+  static logout() {
+    if (sessionStorage.getItem('currentTenant')) {
+      sessionStorage.removeItem('currentTenant');
+    }
+    window.location.replace(`${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`);
+  }
+
   static handleAuthorization(path) {
     window.location.replace(`${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(path)}`);
   }
@@ -89,6 +96,13 @@ class Utils {
 
   static baseAppUrl() {
     return new Utils().getURL();
+  }
+
+  static getUser() {
+    if (sessionStorage.getItem('currentTenant')) {
+      return JSON.parse(sessionStorage.getItem('currentTenant')).user;
+    }
+    return null;
   }
 
   static isAuthenticated() {
