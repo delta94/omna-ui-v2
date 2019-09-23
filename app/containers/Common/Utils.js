@@ -105,6 +105,10 @@ class Utils {
     return null;
   }
 
+  static setUser(user) {
+    sessionStorage.setItem('currentTenant', JSON.stringify(user));
+  }
+
   static isAuthenticated() {
     if (sessionStorage.getItem('currentTenant')) {
       return true;

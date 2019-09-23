@@ -8,20 +8,17 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import SearchIcon from '@material-ui/icons/Search';
 import Fab from '@material-ui/core/Fab';
-import Ionicon from 'react-ionicons';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import UserMenu from './UserMenu';
+import TenantMenu from './TenantMenu';
 import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
 
-const elem = document.documentElement;
+// const elem = document.documentElement;
 
 class Header extends React.Component {
   state = {
     open: false,
-    fullScreen: false,
     turnDarker: false,
     showTitle: false,
   };
@@ -54,31 +51,31 @@ class Header extends React.Component {
     }
   }
 
-  openFullScreen = () => {
-    this.setState({ fullScreen: true });
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { /* Firefox */
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
-      elem.msRequestFullscreen();
-    }
-  };
+  /*   openFullScreen = () => {
+      this.setState({ fullScreen: true });
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) { // Firefox
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) { // Chrome, Safari & Opera
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+      }
+    }; */
 
-  closeFullScreen = () => {
-    this.setState({ fullScreen: false });
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    }
-  };
+  /*   closeFullScreen = () => {
+      this.setState({ fullScreen: false });
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }; */
 
   turnMode = mode => {
     const { changeMode } = this.props;
@@ -96,13 +93,10 @@ class Header extends React.Component {
       margin,
       position,
       gradient,
-      mode,
       title,
-      openGuide,
       history
     } = this.props;
     const {
-      fullScreen,
       open,
       turnDarker,
       showTitle
@@ -129,6 +123,8 @@ class Header extends React.Component {
         }
       >
         <Toolbar disableGutters={!open}>
+
+          {/* disable button to open menu if tenant is not ready to use */}
           <Fab
             size="small"
             className={classes.menuButton}
@@ -139,36 +135,13 @@ class Header extends React.Component {
           </Fab>
           <Hidden smDown>
             <div className={classes.headerProperties}>
-              <div className={classNames(classes.headerAction, showTitle && classes.fadeOut)}>
-                {fullScreen ? (
-                  <Tooltip title="Exit Full Screen" placement="bottom">
-                    <IconButton className={classes.button} onClick={this.closeFullScreen}>
-                      <Ionicon icon="ios-qr-scanner" />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="Full Screen" placement="bottom">
-                    <IconButton className={classes.button} onClick={this.openFullScreen}>
-                      <Ionicon icon="ios-qr-scanner" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-                <Tooltip title="Turn Dark/Light" placement="bottom">
-                  <IconButton className={classes.button} onClick={() => this.turnMode(mode)}>
-                    <Ionicon icon="ios-bulb-outline" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Show Guide" placement="bottom">
-                  <IconButton className={classes.button} onClick={openGuide}>
-                    <Ionicon icon="ios-help-circle-outline" />
-                  </IconButton>
-                </Tooltip>
-              </div>
               <Typography component="h2" className={classNames(classes.headerTitle, showTitle && classes.show)}>
                 {title}
               </Typography>
             </div>
           </Hidden>
+
+          {/* disable searchbox if tenant is not ready to use */}
           <div className={classes.searchWrapper}>
             <div className={classNames(classes.wrapper, classes.light)}>
               <div className={classes.search}>
@@ -177,6 +150,7 @@ class Header extends React.Component {
               <SearchUi history={history} />
             </div>
           </div>
+          <TenantMenu />
           <Hidden xsDown>
             <span className={classes.separatorV} />
           </Hidden>
@@ -193,10 +167,8 @@ Header.propTypes = {
   margin: PropTypes.bool.isRequired,
   gradient: PropTypes.bool.isRequired,
   position: PropTypes.string.isRequired,
-  mode: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
-  openGuide: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
 };
 

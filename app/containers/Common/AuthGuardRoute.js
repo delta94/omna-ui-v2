@@ -3,25 +3,23 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import Utils from './Utils';
 
-
 const AuthGuardRoute = ({ component: Component, ...rest }) => {
   const { location } = window;
   const uri = location.href;
-  if (uri.includes('token')) {
+  let code = null;
+  let pathname = null;
+  if (uri.includes('code') && !Utils.isAuthenticated()) {
     const url = new URL(uri);
     const searchParams = new URLSearchParams(url.search);
-    const token = searchParams.get('token');
-    const secret = searchParams.get('secret');
-    const user = searchParams.get('user');
-    const currentTenant = { secret, token, user };
-    sessionStorage.setItem('currentTenant', JSON.stringify(currentTenant));
+    ({ pathname } = url.pathname);
+    code = searchParams.get('code');
   }
   return (
     <Route
       {...rest}
       render={props => (
         Utils.isAuthenticated() ? <Component {...props} />
-          : <Redirect to={{ pathname: '/lock-screen', state: { redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${location.pathname}` } }} />
+          : <Redirect to={{ pathname: '/lock-screen', state: { redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${location.pathname}`, code, pathname } }} />
       )}
     />
   );

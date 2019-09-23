@@ -9,6 +9,7 @@ import history from 'utils/history';
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
 import login from './modules/login';
 import uiReducer from './modules/ui';
+import tenantReducer from './modules/tenant';
 import initval from './modules/initForm';
 import auth from './modules/auth';
 import flowsReducer from './modules/flows';
@@ -24,6 +25,7 @@ export default function createReducer(injectedReducers = {}) {
     form,
     login,
     ui: uiReducer,
+    tenant: tenantReducer,
     initval,
     language: languageProviderReducer,
     router: connectRouter(history),

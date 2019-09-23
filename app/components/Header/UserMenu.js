@@ -29,7 +29,6 @@ class UserMenu extends React.Component {
   handleLogout = () => {
     this.setState({ anchorEl: null, openMenu: null });
     Utils.logout();
-    console.log('logout');
   };
 
   render() {

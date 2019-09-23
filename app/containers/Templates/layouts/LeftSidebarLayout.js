@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { PropTypes } from 'prop-types';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import Fade from '@material-ui/core/Fade';
 import Typography from '@material-ui/core/Typography';
@@ -12,6 +13,7 @@ import {
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
+import { GET_TENANT } from '../../../actions/actionConstants';
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -30,8 +32,10 @@ class LeftSidebarLayout extends React.Component {
       changeMode,
       place,
       titleException,
-      handleOpenGuide
+      handleOpenGuide,
+      isReadyToOmna
     } = this.props;
+
     return (
       <Fragment>
         <Header
@@ -45,13 +49,17 @@ class LeftSidebarLayout extends React.Component {
           history={history}
           openGuide={handleOpenGuide}
         />
-        <Sidebar
-          open={sidebarOpen}
-          toggleDrawerOpen={toggleDrawer}
-          loadTransition={loadTransition}
-          dataMenu={dataMenu}
-          leftSidebar
-        />
+        {
+          isReadyToOmna && (
+            <Sidebar
+              open={sidebarOpen}
+              toggleDrawerOpen={toggleDrawer}
+              loadTransition={loadTransition}
+              dataMenu={dataMenu}
+              leftSidebar
+            />
+          )
+        }
         <main className={classNames(classes.content, !sidebarOpen ? classes.contentPaddingLeft : '')} id="mainContent">
           <Decoration
             mode={mode}
@@ -67,7 +75,7 @@ class LeftSidebarLayout extends React.Component {
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
             )}
-            { !pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />) }
+            {!pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />)}
             <Fade
               in={pageLoaded}
               mountOnEnter
@@ -76,7 +84,7 @@ class LeftSidebarLayout extends React.Component {
             >
               <div className={!pageLoaded ? classes.hideApp : ''}>
                 {/* Application content will load here */}
-                { children }
+                {children}
               </div>
             </Fade>
           </section>
@@ -101,7 +109,26 @@ LeftSidebarLayout.propTypes = {
   bgPosition: PropTypes.string.isRequired,
   place: PropTypes.string.isRequired,
   titleException: PropTypes.array.isRequired,
-  handleOpenGuide: PropTypes.func.isRequired
+  handleOpenGuide: PropTypes.func.isRequired,
+  isReadyToOmna: PropTypes.bool
 };
 
-export default (withStyles(styles)(LeftSidebarLayout));
+LeftSidebarLayout.defaultProps = {
+  isReadyToOmna: true
+};
+
+const mapStateToProps = (state) => ({
+  tenant: state.getIn(['tenant', 'isReadyToOmna']),
+  ...state,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getTenant: () => dispatch({ type: GET_TENANT })
+});
+
+const LeftSidebarLayoutMaped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LeftSidebarLayout);
+
+export default withStyles(styles)(LeftSidebarLayoutMaped);
