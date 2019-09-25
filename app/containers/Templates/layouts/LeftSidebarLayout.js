@@ -48,6 +48,8 @@ class LeftSidebarLayout extends React.Component {
           title={place}
           history={history}
           openGuide={handleOpenGuide}
+          disableToggleButton={isReadyToOmna}
+          disableSearchBox={isReadyToOmna}
         />
         {
           isReadyToOmna && (
@@ -119,7 +121,6 @@ LeftSidebarLayout.defaultProps = {
 
 const mapStateToProps = (state) => ({
   isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
-  token: state.getIn(['tenant', 'token']),
   ...state,
 });
 

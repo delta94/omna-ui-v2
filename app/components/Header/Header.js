@@ -94,7 +94,9 @@ class Header extends React.Component {
       position,
       gradient,
       title,
-      history
+      history,
+      disableToggleButton,
+      disableSearchBox
     } = this.props;
     const {
       open,
@@ -123,16 +125,16 @@ class Header extends React.Component {
         }
       >
         <Toolbar disableGutters={!open}>
-
-          {/* disable button to open menu if tenant is not ready to use */}
-          <Fab
-            size="small"
-            className={classes.menuButton}
-            aria-label="Menu"
-            onClick={toggleDrawerOpen}
-          >
-            <MenuIcon />
-          </Fab>
+          {disableToggleButton && (
+            <Fab
+              size="small"
+              className={classes.menuButton}
+              aria-label="Menu"
+              onClick={toggleDrawerOpen}
+            >
+              <MenuIcon />
+            </Fab>
+          )}
           <Hidden smDown>
             <div className={classes.headerProperties}>
               <Typography component="h2" className={classNames(classes.headerTitle, showTitle && classes.show)}>
@@ -141,15 +143,17 @@ class Header extends React.Component {
             </div>
           </Hidden>
 
-          {/* disable searchbox if tenant is not ready to use */}
-          <div className={classes.searchWrapper}>
-            <div className={classNames(classes.wrapper, classes.light)}>
-              <div className={classes.search}>
-                <SearchIcon />
+
+          {disableSearchBox && (
+            <div className={classes.searchWrapper}>
+              <div className={classNames(classes.wrapper, classes.light)}>
+                <div className={classes.search}>
+                  <SearchIcon />
+                </div>
+                <SearchUi history={history} />
               </div>
-              <SearchUi history={history} />
             </div>
-          </div>
+          )}
           <TenantMenu />
           <Hidden xsDown>
             <span className={classes.separatorV} />
@@ -170,6 +174,13 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
+  disableToggleButton: PropTypes.bool,
+  disableSearchBox: PropTypes.bool
+};
+
+Header.defaultProps = {
+  disableToggleButton: true,
+  disableSearchBox: true
 };
 
 export default withStyles(styles)(Header);

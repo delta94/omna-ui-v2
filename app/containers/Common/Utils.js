@@ -100,7 +100,7 @@ class Utils {
 
   static getUser() {
     if (sessionStorage.getItem('currentTenant')) {
-      return JSON.parse(sessionStorage.getItem('currentTenant')).user;
+      return JSON.parse(sessionStorage.getItem('currentTenant'));
     }
     return null;
   }

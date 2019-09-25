@@ -7,20 +7,27 @@ import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
-import { setTenantStatus } from '../../../actions/TenantActions';
+import { setTenantStatus, setTenantId } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
   componentDidMount() {
-    const { history, location, changeTenantStatus } = this.props;
+    const {
+      history, location, changeTenantStatus, changeTenantId
+    } = this.props;
     const { redirect, code, pathname } = location.state;
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
         const currentTenant = {
-          secret: data.secret, token: data.token, user: data.user.name, isReadyToOmna: data.isReadyToOmna
+          secret: data.secret,
+          token: data.token,
+          user: data.user.name,
+          isReadyToOmna: data.is_ready_to_omna,
+          tenantId: data.id
         };
         Utils.setUser(currentTenant);
         changeTenantStatus(data.isReadyToOmna);
+        changeTenantId(data.id);
         pathname ? history.push(pathname) : history.push('/');
       });
     } else {
@@ -42,17 +49,19 @@ LockScreen.propTypes = {
   classes: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  changeTenantStatus: PropTypes.func.isRequired
+  changeTenantStatus: PropTypes.func.isRequired,
+  changeTenantId: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
   isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
-  token: state.getIn(['tenant', 'token']),
+  tenantId: state.getIn(['tenant', 'tenantId']),
   ...state,
 });
 
 const dispatchToProps = dispatch => ({
-  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch)
+  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
+  changeTenantId: bindActionCreators(setTenantId, dispatch)
 });
 
 const LockScreenMapped = connect(

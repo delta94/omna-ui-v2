@@ -21,3 +21,5 @@ export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
 export const GET_TENANT = 'GET_TENANT';
 export const SET_TENANT_STATUS = 'SET_TENANT_STATUS';
+export const GET_TENANT_ID = 'GET_TENANT_ID';
+export const SET_TENANT_ID = 'SET_TENANT_ID';
