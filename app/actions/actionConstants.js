@@ -20,3 +20,4 @@ export const GET_ORDERS = 'GET_ORDERS';
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
 export const GET_TENANT = 'GET_TENANT';
+export const SET_TENANT_STATUS = 'SET_TENANT_STATUS';

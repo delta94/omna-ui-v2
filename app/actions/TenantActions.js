@@ -4,7 +4,7 @@ export const getTenant = () => ({
   type: types.GET_TENANT
 });
 
-export const getTenantAction = tenant => ({
-  type: types.GET_TENANT,
-  tenant
+export const setTenantStatus = (isReadyToOmna) => ({
+  type: types.SET_TENANT_STATUS,
+  isReadyToOmna
 });

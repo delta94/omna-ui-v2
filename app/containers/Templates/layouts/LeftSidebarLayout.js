@@ -33,7 +33,7 @@ class LeftSidebarLayout extends React.Component {
       place,
       titleException,
       handleOpenGuide,
-      isReadyToOmna
+      isReadyToOmna,
     } = this.props;
 
     return (
@@ -118,7 +118,8 @@ LeftSidebarLayout.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  tenant: state.getIn(['tenant', 'isReadyToOmna']),
+  isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
+  token: state.getIn(['tenant', 'token']),
   ...state,
 });
 

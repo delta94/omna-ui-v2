@@ -7,11 +7,10 @@ const AuthGuardRoute = ({ component: Component, ...rest }) => {
   const { location } = window;
   const uri = location.href;
   let code = null;
-  let pathname = null;
+  const pathname = location.pathname ? location.pathname : '/';
   if (uri.includes('code') && !Utils.isAuthenticated()) {
     const url = new URL(uri);
     const searchParams = new URLSearchParams(url.search);
-    ({ pathname } = url.pathname);
     code = searchParams.get('code');
   }
   return (
