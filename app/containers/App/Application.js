@@ -18,7 +18,8 @@ import {
   EditWorkflow,
   Webhooks,
   CreateWebhook,
-  DashboardPage
+  DashboardPage,
+  Maintenance
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -91,6 +92,7 @@ class Application extends React.Component {
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={DashboardPage} />
             <AuthGuardRoute exact path="/" component={DashboardPage} />
+            <AuthGuardRoute exact path="/app/pages/maintenance" component={Maintenance} />
             {/* <AuthGuardRoute
               exact
               path="/app/widgets/analytics"

@@ -46,7 +46,7 @@ function TenantMenu(props) {
   }, []);
 
   const handleTenantChange = async (e) => {
-    const { changeTenantStatus } = props;
+    const { changeTenantStatus, history } = props;
     setTenant(e.target.value);
     const response = await API.get(`tenants/${e.target.value}`);
     const { data } = response.data;
@@ -57,6 +57,11 @@ function TenantMenu(props) {
     user.tenantId = data.id;
     Utils.setUser(user);
     changeTenantStatus(data.is_ready_to_omna);
+    if (!data.is_ready_to_omna) {
+      history.push('/app/pages/maintenance');
+    } else {
+      history.push('/app');
+    }
   };
 
   return (
@@ -91,6 +96,7 @@ function TenantMenu(props) {
 
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   changeTenantStatus: PropTypes.func.isRequired
 };
 

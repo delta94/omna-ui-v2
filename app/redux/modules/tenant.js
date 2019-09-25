@@ -4,7 +4,7 @@ import Utils from '../../containers/Common/Utils';
 
 const initialState = fromJS({
   isReadyToOmna: Utils.getUser() ? Utils.getUser().isReadyToOmna : false,
-  tenantId: ''
+  tenantId: Utils.getUser() ? Utils.getUser().tenantId : ''
 });
 
 export default function tenantReducer(state = initialState, action) {

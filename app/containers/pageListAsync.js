@@ -30,6 +30,10 @@ export const Logout = loadable(() => import('./Auth/Logout'), {
   fallback: <Loading />
 });
 
+export const Maintenance = loadable(() => import('./Pages/Maintenance'), {
+  fallback: <Loading />,
+});
+
 // OMNA
 export const Dashboard = loadable(() => import('./Tasks/TaskList'), {
   fallback: <Loading />

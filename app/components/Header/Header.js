@@ -154,7 +154,7 @@ class Header extends React.Component {
               </div>
             </div>
           )}
-          <TenantMenu />
+          <TenantMenu history={history} />
           <Hidden xsDown>
             <span className={classes.separatorV} />
           </Hidden>

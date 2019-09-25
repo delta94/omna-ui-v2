@@ -79,9 +79,9 @@ class Maintenance extends React.Component {
               <Avatar className={classes.icon}><Settings /></Avatar>
             </Hidden>
           </div>
-          <Typography variant="h4" className={classes.title} gutterBottom>Under maintenance</Typography>
-          <Typography variant="subtitle1" className={classes.subtitle}>
-            Our website is under maintenance. We will be back shortly
+          <Typography variant="h4" gutterBottom>Under maintenance</Typography>
+          <Typography variant="subtitle1">
+            The current tenant is not ready to use with OMNA application.
           </Typography>
         </div>
       </div>
