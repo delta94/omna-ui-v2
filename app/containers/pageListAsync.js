@@ -30,7 +30,7 @@ export const Logout = loadable(() => import('./Auth/Logout'), {
   fallback: <Loading />
 });
 
-export const Maintenance = loadable(() => import('./Pages/Maintenance'), {
+export const TenantConfiguration = loadable(() => import('./Pages/TenantConfiguration'), {
   fallback: <Loading />,
 });
 

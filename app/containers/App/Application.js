@@ -19,7 +19,7 @@ import {
   Webhooks,
   CreateWebhook,
   DashboardPage,
-  Maintenance
+  TenantConfiguration
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -92,12 +92,7 @@ class Application extends React.Component {
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={DashboardPage} />
             <AuthGuardRoute exact path="/" component={DashboardPage} />
-            <AuthGuardRoute exact path="/app/pages/maintenance" component={Maintenance} />
-            {/* <AuthGuardRoute
-              exact
-              path="/app/widgets/analytics"
-              component={Analytics}
-            /> */}
+            <AuthGuardRoute exact path="/app/tenant-configuration" component={TenantConfiguration} />
             {/* Default */}
             <Route component={NotFound} />
           </Switch>

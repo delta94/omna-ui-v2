@@ -11,11 +11,11 @@ import classNames from 'classnames';
 import API from '../../containers/Utils/api';
 import Utils from '../../containers/Common/Utils';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
-import { setTenantStatus } from '../../actions/TenantActions';
+import { setTenantStatus, setTenantId } from '../../actions/TenantActions';
 
 const styles = () => ({
   inputWidth: {
-    width: '100px',
+    minWidth: '105px',
   },
   margin: {
     margin: '10px'
@@ -32,7 +32,9 @@ function TenantMenu(props) {
     async function getTenants() {
       const { enqueueSnackbar, tenantId } = props;
       try {
-        const response = await API.get('tenants');
+        // TO DO: adjust total of elements to show in combobox
+        const params = { limit: 100, offset: 0 };
+        const response = await API.get('tenants', { params });
         const { data } = response.data;
         setTenantList(data);
         setTenant(tenantId);
@@ -46,28 +48,36 @@ function TenantMenu(props) {
   }, []);
 
   const handleTenantChange = async (e) => {
-    const { changeTenantStatus, history } = props;
-    setTenant(e.target.value);
-    const response = await API.get(`tenants/${e.target.value}`);
-    const { data } = response.data;
-    const user = Utils.getUser();
-    user.token = data.token;
-    user.secret = data.secret;
-    user.isReadyToOmna = data.is_ready_to_omna;
-    user.tenantId = data.id;
-    Utils.setUser(user);
-    changeTenantStatus(data.is_ready_to_omna);
-    if (!data.is_ready_to_omna) {
-      history.push('/app/pages/maintenance');
-    } else {
-      history.push('/app');
+    const {
+      enqueueSnackbar, changeTenantStatus, changeTenantId, history
+    } = props;
+    try {
+      setTenant(e.target.value);
+      const response = await API.get(`tenants/${e.target.value}`);
+      const { data } = response.data;
+      const user = Utils.getUser();
+      user.token = data.token;
+      user.secret = data.secret;
+      user.isReadyToOmna = data.is_ready_to_omna;
+      user.tenantId = data.id;
+      Utils.setUser(user);
+      changeTenantStatus(data.is_ready_to_omna);
+      changeTenantId(data.id);
+      if (!data.is_ready_to_omna) {
+        history.push('/app/tenant-configuration');
+      } else {
+        history.push('/app');
+      }
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
   };
 
   return (
     <div>
       <TextField
-        required
         id="tenants"
         select
         label="tenants"
@@ -97,7 +107,9 @@ function TenantMenu(props) {
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  changeTenantStatus: PropTypes.func.isRequired
+  changeTenantStatus: PropTypes.func.isRequired,
+  changeTenantId: PropTypes.func.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -107,7 +119,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   getTenantId: () => dispatch({ type: GET_TENANT_ID }),
-  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch)
+  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
+  changeTenantId: bindActionCreators(setTenantId, dispatch)
 });
 
 const TenantMenuMaped = connect(
