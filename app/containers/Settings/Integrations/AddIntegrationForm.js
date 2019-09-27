@@ -68,13 +68,14 @@ class AddIntegrationForm extends Component {
       this.setState({ errors: { channel: 'channel is required' } });
     } else {
       this.setState({ loadingState: true });
-      API.post('/integrations', { data: { name, channel } }).then(() => {
+      API.post('/integrations', { data: { name, channel } }).then((response) => {
         enqueueSnackbar('Integration created successfully', {
           variant: 'success'
         });
+        const { data } = response.data;
         history.goBack();
-        if (authorized) {
-          this.handleAuthorization(name);
+        if (authorized && data.id) {
+          this.handleAuthorization(data.id);
         }
       }).catch((error) => {
         if (error && error.response.data.message) {
