@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 
 // material-ui
 import { withSnackbar } from 'notistack';
@@ -250,7 +249,8 @@ class Flows extends Component {
       messageError,
       alertDialog,
       limit,
-      page
+      page,
+      success
     } = this.state;
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
@@ -263,7 +263,7 @@ class Flows extends Component {
               <LoadingState loading={loading} text="Loading" />
             </div>
           ) : null}
-          {loading ? null : count === 0 ? (
+          {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
             <Fragment>
