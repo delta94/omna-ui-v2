@@ -4,9 +4,14 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import ExitToApp from '@material-ui/icons/ExitToApp';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { Divider } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import dummy from 'dan-api/dummy/dummyContents';
 import styles from './header-jss';
 import Utils from '../../containers/Common/Utils';
+
 
 class UserMenu extends React.Component {
   state = {
@@ -24,6 +29,11 @@ class UserMenu extends React.Component {
 
   handleClose = () => {
     this.setState({ anchorEl: null, openMenu: null });
+  };
+
+  handleLogout = () => {
+    this.setState({ anchorEl: null, openMenu: null });
+    Utils.logout();
   };
 
   handleLogout = () => {
@@ -55,7 +65,12 @@ class UserMenu extends React.Component {
           open={openMenu === 'user-setting'}
           onClose={this.handleClose}
         >
+          <MenuItem onClick={this.handleClose} component={Link} to="/app/settings/add-tenant">Create Tenant</MenuItem>
+          <Divider />
           <MenuItem onClick={this.handleLogout}>
+            <ListItemIcon>
+              <ExitToApp />
+            </ListItemIcon>
             Log out
           </MenuItem>
         </Menu>

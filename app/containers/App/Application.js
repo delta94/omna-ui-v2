@@ -19,7 +19,8 @@ import {
   Webhooks,
   CreateWebhook,
   DashboardPage,
-  TenantConfiguration
+  TenantConfiguration,
+  AddTenant
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -78,6 +79,11 @@ class Application extends React.Component {
               exact
               path="/app/settings/Workflows/edit-workflow/:id"
               component={EditWorkflow}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/settings/add-tenant"
+              component={AddTenant}
             />
             <AuthGuardRoute
               exact
