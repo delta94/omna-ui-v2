@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import { withSnackbar } from 'notistack';
+//
 import get from 'lodash/get';
+import Loading from 'dan-components/Loading';
 import TenantForm from './TenantForm';
 import API from '../../Utils/api';
 
 
 function AddTenant(props) {
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const { history } = props;
 
@@ -19,6 +22,7 @@ function AddTenant(props) {
   const onSubmitForm = async () => {
     const { enqueueSnackbar } = props;
     try {
+      setLoading(true);
       await API.post('tenants', { data: { name } });
       enqueueSnackbar('Tenant created successfuly', {
         variant: 'success'
@@ -29,15 +33,19 @@ function AddTenant(props) {
         variant: 'error'
       });
     }
+    setLoading(false);
   };
 
   return (
-    <TenantForm
-      name={name}
-      handleNameChange={onHandleNameChange}
-      submitForm={onSubmitForm}
-      history={history}
-    />
+    <Fragment>
+      {loading && <Loading />}
+      <TenantForm
+        name={name}
+        handleNameChange={onHandleNameChange}
+        history={history}
+        submitForm={onSubmitForm}
+      />
+    </Fragment>
   );
 }
 

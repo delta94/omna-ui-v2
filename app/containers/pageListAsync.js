@@ -109,7 +109,7 @@ export const EditWorkflow = loadable(
 );
 
 export const AddTenant = loadable(
-  () => import('./Settings/Tenant/AddTenant'),
+  () => import('./Settings/Tenants/AddTenant'),
   {
     fallback: <Loading />
   }
