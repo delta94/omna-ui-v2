@@ -1,5 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 // material-ui
 import { withSnackbar } from 'notistack';
 //
@@ -7,6 +9,7 @@ import get from 'lodash/get';
 import Loading from 'dan-components/Loading';
 import TenantForm from './TenantForm';
 import API from '../../Utils/api';
+import { setReloadTenants } from '../../../actions/TenantActions';
 
 
 function AddTenant(props) {
@@ -20,10 +23,11 @@ function AddTenant(props) {
   };
 
   const onSubmitForm = async () => {
-    const { enqueueSnackbar } = props;
+    const { enqueueSnackbar, changeReloadTenants } = props;
     try {
       setLoading(true);
       await API.post('tenants', { data: { name } });
+      changeReloadTenants(true);
       enqueueSnackbar('Tenant created successfuly', {
         variant: 'success'
       });
@@ -51,7 +55,23 @@ function AddTenant(props) {
 
 AddTenant.propTypes = {
   history: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  changeReloadTenants: PropTypes.func.isRequired
 };
 
-export default withSnackbar(AddTenant);
+const mapStateToProps = (state) => ({
+  reloadTenants: state.getIn(['tenant', 'reloadTenants']),
+  ...state,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  changeReloadTenants: bindActionCreators(setReloadTenants, dispatch)
+});
+
+const AddTenantMaped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddTenant);
+
+
+export default withSnackbar(AddTenantMaped);

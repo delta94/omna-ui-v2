@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import API from '../../containers/Utils/api';
 import Utils from '../../containers/Common/Utils';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
-import { setTenantStatus, setTenantId } from '../../actions/TenantActions';
+import { setTenantStatus, setTenantId, setReloadTenants } from '../../actions/TenantActions';
 
 const styles = () => ({
   inputWidth: {
@@ -23,10 +23,26 @@ const styles = () => ({
 });
 
 function TenantMenu(props) {
-  const { classes } = props;
+  const { classes, reloadTenants } = props;
   const [tenant, setTenant] = useState('');
   const [tenantlist, setTenantList] = useState([]);
 
+  useEffect(() => {
+    const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
+    if (reloadTenants) {
+      const params = { limit: 100, offset: 0 };
+      API.get('tenants', { params }).then(response => {
+        const { data } = response.data;
+        changeReloadTenants(false);
+        setTenantList(data);
+        setTenant(tenantId);
+      }).catch((error) => {
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
+      });
+    }
+  }, [reloadTenants]);
 
   useEffect(() => {
     async function getTenants() {
@@ -107,6 +123,7 @@ function TenantMenu(props) {
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  reloadTenants: PropTypes.bool.isRequired,
   changeTenantStatus: PropTypes.func.isRequired,
   changeTenantId: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
@@ -114,13 +131,15 @@ TenantMenu.propTypes = {
 
 const mapStateToProps = (state) => ({
   tenantId: state.getIn(['tenant', 'tenantId']),
+  reloadTenants: state.getIn(['tenant', 'reloadTenants']),
   ...state,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
-  changeTenantId: bindActionCreators(setTenantId, dispatch)
+  changeTenantId: bindActionCreators(setTenantId, dispatch),
+  changeReloadTenants: bindActionCreators(setReloadTenants, dispatch)
 });
 
 const TenantMenuMaped = connect(
