@@ -1,5 +1,11 @@
 module.exports = [
   {
+    key: 'dashboard',
+    name: 'Dashboard',
+    icon: 'ios-stats-outline',
+    link: '/app/dashboard'
+  },
+  {
     key: 'data',
     name: 'Data',
     icon: 'ios-apps-outline',

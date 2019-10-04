@@ -10,7 +10,7 @@ const reducer = (state = initialImmutableState, action = {}) => {
     case GET_ORDERS:
       return {
         ...state,
-        flows: action.payload
+        orders: action.payload
       };
     default:
       return state;

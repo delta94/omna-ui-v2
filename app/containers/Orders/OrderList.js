@@ -212,7 +212,7 @@ OrderList.propTypes = {
 // });
 
 // const mapDispatchToProps = dispatch => ({
-//   onGetOrders: (params) => dispatch(getOrders(params))
+//   onGetOrders: params => dispatch(getOrders(params))
 // });
 
 // const OrderListMapped = connect(

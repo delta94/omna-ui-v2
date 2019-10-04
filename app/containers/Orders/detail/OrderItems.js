@@ -47,8 +47,6 @@ class OrderItems extends Component {
         options: {
           filter: false,
           customBodyRender: (value, tableMeta) => {
-            console.log(value);
-            console.log(tableMeta);
             return <div>{tableMeta.rowData[3] * tableMeta.rowData[4]}</div>;
           }
         }

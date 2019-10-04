@@ -22,6 +22,7 @@ import OrderPayment from './detail/OrderPayment';
 import OrderCustomer from './detail/OrderCustomer';
 import OrderIntegration from './detail/OrderIntegration';
 import OrderItems from './detail/OrderItems';
+import DocumentTypesDialog from './DocumentTypesDialog';
 
 const variantIcon = Utils.iconVariants();
 
@@ -62,7 +63,10 @@ class OrderDetails extends Component {
     loading: true,
     order: {},
     success: true,
-    messageError: ''
+    messageError: '',
+    openDialog: false,
+    selectedDocumentType: {},
+    documentTypes: []
   };
 
   componentDidMount() {
@@ -76,23 +80,23 @@ class OrderDetails extends Component {
       number === get(order, 'data.number', null)
     ) {
       this.setState({ order, loading: false });
+      this.callAPI(storeId, number);
     } else {
       this.callAPI(storeId, number);
     }
   }
 
-  getOrder = params => {
-    API.get(`/integrations/${params.store_id}/orders/${params.number}`)
+  getOrderDocumentTypes = params => {
+    API.get(
+      `/integrations/${params.store_id}/orders/${params.number}/doc/types`
+    )
       .then(response => {
-        this.setState({ order: get(response, 'data', {}) });
+        this.setState({ documentTypes: response.data.data });
       })
       .catch(error => {
         // handle error
         console.log(error);
         this.setState({ success: false, messageError: error.message });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
       });
   };
 
@@ -102,17 +106,40 @@ class OrderDetails extends Component {
       number
     };
 
-    this.getOrder(params);
+    this.getOrderDocumentTypes(params);
   };
 
   onClickGetAPIorder = (StoreId, number) => () => {
     this.callAPI(StoreId, number);
   };
 
+  onPrintHandler = (integrationId, dataNumber) => {
+    this.handleClickOpen();
+  };
+
+  handleClickOpen = () => {
+    this.setState({ openDialog: true });
+  };
+
+  handleClose = value => {
+    this.setState({ openDialog: false });
+    this.setState({ selectedDocumentType: value });
+  };
+
   render() {
     const { classes } = this.props;
-    const { order, loading, success, messageError } = this.state;
-    console.log(order);
+    const {
+      order,
+      loading,
+      success,
+      messageError,
+      openDialog,
+      selectedDocumentType,
+      documentTypes
+    } = this.state;
+
+    const integrationId = get(order, 'data.integration.id', null);
+    const dataNumber = get(order, 'data.number', null);
 
     return (
       <div>
@@ -143,15 +170,20 @@ class OrderDetails extends Component {
                   <Tooltip title="Reload information">
                     <Button
                       onClick={this.onClickGetAPIorder(
-                        get(order, 'data.integration.id', null),
-                        get(order, 'data.number', null)
+                        integrationId,
+                        dataNumber
                       )}
                     >
                       <Ionicon icon={variantIcon.refresh} />
                     </Button>
                   </Tooltip>
                   <Tooltip title="Print order">
-                    <Button size="small">
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        this.onPrintHandler(integrationId, dataNumber)
+                      }
+                    >
                       <Ionicon icon={variantIcon.print} />
                     </Button>
                   </Tooltip>
@@ -211,6 +243,15 @@ class OrderDetails extends Component {
                   <OrderItems classes={classes} order={order} />
                 </div>
               </div>
+
+                <DocumentTypesDialog
+                  integrationId={integrationId}
+                  orderNumber={dataNumber}
+                  types={documentTypes}
+                  selectedValue={selectedDocumentType}
+                  open={openDialog}
+                  onClose={this.handleClose}
+                />
             </div>
           )}
         </div>
