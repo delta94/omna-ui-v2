@@ -26,7 +26,7 @@ class LockScreen extends React.Component {
           tenantId: data.id
         };
         Utils.setUser(currentTenant);
-        changeTenantStatus(data.isReadyToOmna);
+        changeTenantStatus(currentTenant.isReadyToOmna);
         changeTenantId(data.id);
         pathname ? history.push(pathname) : history.push('/');
       });
