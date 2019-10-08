@@ -13,6 +13,15 @@ export const setReloadTenants = (reloadTenants) => ({
   reloadTenants
 });
 
+export const getReloadLandingPage = () => ({
+  type: types.GET_RELOAD_LANDING_PAGE
+});
+
+export const setReloadLandingPage = (reloadLandingPage) => ({
+  type: types.SET_RELOAD_LANDING_PAGE,
+  reloadLandingPage
+});
+
 export const getTenantList = () => ({
   type: types.GET_TENANT_LIST
 });

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import get from 'lodash/get';
 import { createMuiTheme, withStyles } from '@material-ui/core/styles';
 import ThemePallete from 'dan-api/palette/themePalette';
@@ -19,6 +21,7 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import api from '../../Utils/api';
+import { setReloadLandingPage } from '../../../actions/TenantActions';
 
 const styles = {
   chartFluid: {
@@ -47,9 +50,16 @@ class CompossedLineBarArea extends Component {
     this.callAPI();
   }
 
+  componentDidUpdate(prevProps) {
+    const { reloadLandingPage, changeReloadLandingPage } = this.props;
+    if (reloadLandingPage && reloadLandingPage === prevProps.reloadLandingPage) {
+      changeReloadLandingPage(false);
+      this.callAPI();
+    }
+  }
+
   getOrders(params) {
-    api
-      .get('/orders', { params })
+    api.get('/orders', { params })
       .then(response => {
         this.setState({
           orders: get(response, 'data', { data: [], pagination: {} }),
@@ -57,13 +67,8 @@ class CompossedLineBarArea extends Component {
         });
       })
       .catch(error => {
-        // handle error
         console.log(error);
-        // this.setState({ success: false, messageError: error.message });
       });
-    // .finally(() => {
-    //   this.setState({ isLoading: false });
-    // });
   }
 
   callAPI = () => {
@@ -74,7 +79,6 @@ class CompossedLineBarArea extends Component {
     };
 
     this.getOrders(params);
-    // this.props.onGetOrders(params);
   };
 
   render() {
@@ -152,7 +156,23 @@ class CompossedLineBarArea extends Component {
 }
 
 CompossedLineBarArea.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  reloadLandingPage: PropTypes.bool.isRequired,
+  changeReloadLandingPage: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(CompossedLineBarArea);
+const mapStateToProps = (state) => ({
+  reloadLandingPage: state.getIn(['tenant', 'reloadLandingPage']),
+  ...state,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch)
+});
+
+const CompossedLineBarAreaMaped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CompossedLineBarArea);
+
+export default withStyles(styles)(CompossedLineBarAreaMaped);

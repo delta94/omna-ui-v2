@@ -24,11 +24,6 @@ class BasicTable extends Component {
             <CompossedLineBarArea />
           </div>
         </PapperBlock>
-        {/* <PapperBlock title="Table" whiteBg icon="ios-menu-outline" desc="UI Table when no data to be shown">
-          <div>
-            <StrippedTable />
-          </div>
-        </PapperBlock> */}
       </div>
     );
   }

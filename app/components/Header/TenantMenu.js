@@ -11,7 +11,9 @@ import classNames from 'classnames';
 import API from '../../containers/Utils/api';
 import Utils from '../../containers/Common/Utils';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
-import { setTenantStatus, setTenantId, setReloadTenants } from '../../actions/TenantActions';
+import {
+  setTenantStatus, setTenantId, setReloadTenants, setReloadLandingPage
+} from '../../actions/TenantActions';
 
 const styles = () => ({
   inputWidth: {
@@ -65,7 +67,7 @@ function TenantMenu(props) {
 
   const handleTenantChange = async (e) => {
     const {
-      enqueueSnackbar, changeTenantStatus, changeTenantId, history
+      enqueueSnackbar, changeTenantStatus, changeReloadLandingPage, changeTenantId, history
     } = props;
     try {
       setTenant(e.target.value);
@@ -82,6 +84,7 @@ function TenantMenu(props) {
       if (!data.is_ready_to_omna) {
         history.push('/app/tenant-configuration');
       } else {
+        changeReloadLandingPage(true);
         history.push('/app');
       }
     } catch (error) {
@@ -125,6 +128,7 @@ TenantMenu.propTypes = {
   history: PropTypes.object.isRequired,
   reloadTenants: PropTypes.bool.isRequired,
   changeTenantStatus: PropTypes.func.isRequired,
+  changeReloadLandingPage: PropTypes.func.isRequired,
   changeTenantId: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
@@ -139,7 +143,8 @@ const mapDispatchToProps = (dispatch) => ({
   getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
-  changeReloadTenants: bindActionCreators(setReloadTenants, dispatch)
+  changeReloadTenants: bindActionCreators(setReloadTenants, dispatch),
+  changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch)
 });
 
 const TenantMenuMaped = connect(
