@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -6,6 +6,7 @@ import get from 'lodash/get';
 import { createMuiTheme, withStyles } from '@material-ui/core/styles';
 import ThemePallete from 'dan-api/palette/themePalette';
 import blue from '@material-ui/core/colors/blue';
+import Loading from 'dan-components/Loading';
 import {
   ComposedChart,
   // Line,
@@ -43,7 +44,8 @@ class CompossedLineBarArea extends Component {
   state = {
     orders: { data: [], pagination: {} },
     limit: 100,
-    page: 0
+    page: 0,
+    loading: false
   };
 
   componentDidMount() {
@@ -59,6 +61,7 @@ class CompossedLineBarArea extends Component {
   }
 
   getOrders(params) {
+    this.setState({ loading: true });
     api.get('/orders', { params })
       .then(response => {
         this.setState({
@@ -68,6 +71,8 @@ class CompossedLineBarArea extends Component {
       })
       .catch(error => {
         console.log(error);
+      }).then(() => {
+        this.setState({ loading: false });
       });
   }
 
@@ -83,7 +88,7 @@ class CompossedLineBarArea extends Component {
 
   render() {
     const { classes } = this.props;
-    const { orders } = this.state;
+    const { orders, loading } = this.state;
     const { data } = orders;
 
     const collection = data.map(x => ({
@@ -115,42 +120,45 @@ class CompossedLineBarArea extends Component {
     }, []);
 
     return (
-      <div className={classes.chartFluid}>
-        <ResponsiveContainer>
-          <ComposedChart
-            width={800}
-            height={450}
-            data={sumPerMonth}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5
-            }}
-          >
-            <XAxis dataKey="month" tickLine={false} />
-            <YAxis
-              axisLine={false}
-              tickSize={3}
-              tickLine={false}
-              tick={{ stroke: 'none' }}
-            />
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <CartesianAxis vertical={false} />
-            <Tooltip />
-            <Legend />
-            <Area
-              type="monotone"
-              dataKey="total_price"
-              fillOpacity="0.8"
-              fill={color.main}
-              stroke="none"
-            />
-            {/* <Bar dataKey="pv" barSize={60} fillOpacity="0.8" fill={color.secondary} />
+      <Fragment>
+        {loading && <Loading />}
+        <div className={classes.chartFluid}>
+          <ResponsiveContainer>
+            <ComposedChart
+              width={800}
+              height={450}
+              data={sumPerMonth}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5
+              }}
+            >
+              <XAxis dataKey="month" tickLine={false} />
+              <YAxis
+                axisLine={false}
+                tickSize={3}
+                tickLine={false}
+                tick={{ stroke: 'none' }}
+              />
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <CartesianAxis vertical={false} />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="total_price"
+                fillOpacity="0.8"
+                fill={color.main}
+                stroke="none"
+              />
+              {/* <Bar dataKey="pv" barSize={60} fillOpacity="0.8" fill={color.secondary} />
           <Line type="monotone" dataKey="uv" strokeWidth={4} stroke={color.third} /> */}
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </Fragment>
     );
   }
 }
