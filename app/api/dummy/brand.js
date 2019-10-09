@@ -1,7 +1,7 @@
 module.exports = {
-  name: 'Omna LTS',
-  desc: 'Omna - Frontend app',
+  name: 'Omna App',
+  desc: 'Omna',
   prefix: 'omna',
-  footerText: 'Omna LTS All Rights Reserved 2018',
+  footerText: 'Omna App All Rights Reserved 2018',
   logoText: 'Omna',
 };
