@@ -130,7 +130,8 @@ class OrderList extends React.Component {
         name: 'status',
         label: 'Status',
         options: {
-          sort: false
+          sort: false,
+          customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
       {
@@ -145,6 +146,7 @@ class OrderList extends React.Component {
         label: 'Integration',
         options: {
           filter: false,
+          sort: true,
           customBodyRender: value => <div>{value.name}</div>
         }
       }
@@ -174,6 +176,18 @@ class OrderList extends React.Component {
       onRowClick: (rowData, { dataIndex }) => {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
+      },
+      customSort: (data, colIndex, order) => {
+         return data.sort((a, b) => {
+           switch(colIndex)  { 
+            case 3:
+              return (parseFloat(a.data[colIndex]) < parseFloat(b.data[colIndex]) ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+            case 4:
+              return (a.data[colIndex].name.toLowerCase() < b.data[colIndex].name.toLowerCase() ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+             default:
+                return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+            }
+        });
       }
     };
 
