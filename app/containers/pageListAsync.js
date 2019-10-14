@@ -65,8 +65,8 @@ export const Webhooks = loadable(
   }
 );
 
-export const CreateWebhook = loadable(
-  () => import('./Settings/Webhooks/CreateWebhook'),
+export const AddWebhook = loadable(
+  () => import('./Settings/Webhooks/AddWebhook'),
   {
     fallback: <Loading />
   }

@@ -35,7 +35,7 @@ module.exports = [
       {
         key: 'webhooks',
         name: 'Webhooks',
-        link: '/app/settings/webhooks-list'
+        link: '/app/settings/webhook-list'
       }
     ]
   },

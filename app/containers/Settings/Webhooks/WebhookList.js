@@ -137,7 +137,7 @@ class WebhookList extends React.Component {
 
   handleAddWebhookClick = () => {
     const { history } = this.props;
-    history.push('/app/settings/webhooks-list/create-webhook');
+    history.push('/app/settings/webhook-list/add-webhook');
   };
 
   handleSearchClick = (currentTerm, filters) => {
@@ -232,8 +232,8 @@ class WebhookList extends React.Component {
                     selectOption={selectOption}
                   />
                   <TableBody>
-                    {data &&
-                      data.map(row => {
+                    {data
+                      && data.map(row => {
                         const isSelected = this.isSelected(get(row, 'id', -1));
                         return (
                           <TableRow
@@ -248,8 +248,7 @@ class WebhookList extends React.Component {
                               <Checkbox
                                 color="primary"
                                 checked={isSelected}
-                                onClick={event =>
-                                  this.handleClick(event, get(row, 'id', null))
+                                onClick={event => this.handleClick(event, get(row, 'id', null))
                                 }
                               />
                             </TableCell>
@@ -262,8 +261,8 @@ class WebhookList extends React.Component {
                             <TableCell align="center">
                               {get(row, 'updated_at', null) != null
                                 ? moment(row.updated_at).format(
-                                    'Y-MM-DD H:mm:ss'
-                                  )
+                                  'Y-MM-DD H:mm:ss'
+                                )
                                 : '--'}
                             </TableCell>
                             <TableCell align="center">
