@@ -3,7 +3,7 @@ import { sha256 } from 'js-sha256';
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
-    this.URL_PROD = 'http://omna-v2.s3-website-us-west-2.amazonaws.com';
+    this.URL_PROD = 'https://master.d3g24x24cbz9j0.amplifyapp.com';
   }
 
   static fullChannelName(channel) {
