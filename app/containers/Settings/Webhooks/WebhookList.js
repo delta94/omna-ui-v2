@@ -207,7 +207,7 @@ class WebhookList extends React.Component {
     return (
       <Paper>
         <div>
-          {loading ? <LoadingState loading={loading} text="Loading" /> : null}
+          {loading ? <div className="item-padding"><LoadingState loading={loading} text="Loading" /></div> : null}
           {loading ? null : !success ? (
             <GenericErrorMessage messageError={messageError} />
           ) : (
