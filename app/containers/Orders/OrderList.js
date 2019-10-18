@@ -177,16 +177,30 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (data, colIndex, order) => {
-         return data.sort((a, b) => {
-           switch(colIndex)  { 
+      customSort: (customSortData, colIndex, order) => {
+        return customSortData.sort((a, b) => {
+          switch (colIndex) {
             case 3:
-              return (parseFloat(a.data[colIndex]) < parseFloat(b.data[colIndex]) ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
+              return (
+                (parseFloat(a.customSortData[colIndex]) <
+                parseFloat(b.customSortData[colIndex])
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
             case 4:
-              return (a.data[colIndex].name.toLowerCase() < b.data[colIndex].name.toLowerCase() ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
-             default:
-                return (a.data[colIndex] < b.data[colIndex] ? -1: 1 ) * (order === 'desc' ? 1 : -1); 
-            }
+              return (
+                (a.customSortData[colIndex].name.toLowerCase() <
+                b.customSortData[colIndex].name.toLowerCase()
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            default:
+              return (
+                (a.customSortData[colIndex] < b.customSortData[colIndex]
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+          }
         });
       }
     };

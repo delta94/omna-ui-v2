@@ -12,15 +12,37 @@ import API from '../../containers/Utils/api';
 import Utils from '../../containers/Common/Utils';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
-  setTenantStatus, setTenantId, setReloadTenants, setReloadLandingPage
+  setTenantStatus,
+  setTenantId,
+  setReloadTenants,
+  setReloadLandingPage
 } from '../../actions/TenantActions';
 
 const styles = () => ({
+  root: {
+    '& label.Mui-focused': {
+      color: 'green'
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'green'
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'red'
+      },
+      '&:hover fieldset': {
+        borderColor: 'yellow'
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'green'
+      }
+    }
+  },
   inputWidth: {
-    minWidth: '105px',
+    // minWidth: '105px',
   },
   margin: {
-    margin: '10px'
+    // margin: '10px'
   }
 });
 
@@ -33,16 +55,21 @@ function TenantMenu(props) {
     const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
     if (reloadTenants) {
       const params = { limit: 100, offset: 0 };
-      API.get('tenants', { params }).then(response => {
-        const { data } = response.data;
-        changeReloadTenants(false);
-        setTenantList(data);
-        setTenant(tenantId);
-      }).catch((error) => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
+      API.get('tenants', { params })
+        .then(response => {
+          const { data } = response.data;
+          changeReloadTenants(false);
+          setTenantList(data);
+          setTenant(tenantId);
+        })
+        .catch(error => {
+          enqueueSnackbar(
+            get(error, 'response.data.message', 'Unknown error'),
+            {
+              variant: 'error'
+            }
+          );
         });
-      });
     }
   }, [reloadTenants]);
 
@@ -65,9 +92,13 @@ function TenantMenu(props) {
     getTenants();
   }, []);
 
-  const handleTenantChange = async (e) => {
+  const handleTenantChange = async e => {
     const {
-      enqueueSnackbar, changeTenantStatus, changeReloadLandingPage, changeTenantId, history
+      enqueueSnackbar,
+      changeTenantStatus,
+      changeReloadLandingPage,
+      changeTenantId,
+      history
     } = props;
     try {
       setTenant(e.target.value);
@@ -99,18 +130,18 @@ function TenantMenu(props) {
       <TextField
         id="tenants"
         select
-        label="tenants"
+        label="Tenants"
         value={tenant}
         name="tenants"
         onChange={handleTenantChange}
-        SelectProps={{
-          MenuProps: {
-            className: classes.inputWidth
-          },
-        }}
-        margin="normal"
+        // SelectProps={{
+        //   MenuProps: {
+        //     className: classes.inputWidth
+        //   }
+        // }}
         variant="outlined"
-        className={classNames(classes.inputWidth, classes.margin)}
+        margin="dense"
+        // className={classNames(classes.tenantSelect)}
       >
         {tenantlist.map(option => (
           <MenuItem key={option.id} value={option.id}>
@@ -118,7 +149,6 @@ function TenantMenu(props) {
           </MenuItem>
         ))}
       </TextField>
-
     </div>
   );
 }
@@ -133,13 +163,13 @@ TenantMenu.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   tenantId: state.getIn(['tenant', 'tenantId']),
   reloadTenants: state.getIn(['tenant', 'reloadTenants']),
-  ...state,
+  ...state
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
@@ -147,9 +177,9 @@ const mapDispatchToProps = (dispatch) => ({
   changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch)
 });
 
-const TenantMenuMaped = connect(
+const TenantMenuMapped = withSnackbar(withStyles(styles)(TenantMenu));
+
+export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TenantMenu);
-
-export default withSnackbar(withStyles(styles)(TenantMenuMaped));
+)(TenantMenuMapped);
