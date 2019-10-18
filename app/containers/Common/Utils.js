@@ -3,7 +3,7 @@ import { sha256 } from 'js-sha256';
 class Utils {
   constructor() {
     this.URL_DEV = 'http://127.0.0.1:4000';
-    this.URL_PROD = 'app.omna.io';
+    this.URL_PROD = 'https://app.omna.io';
   }
 
   static fullChannelName(channel) {
