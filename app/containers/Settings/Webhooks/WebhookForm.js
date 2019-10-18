@@ -40,8 +40,8 @@ function WebhookForm(props) {
         <TextField
           required
           id="address"
-          label="address"
-          placeholder="www.url.com"
+          label="URL"
+          placeholder="The webhook's url"
           value={address}
           name="address"
           onChange={onAddressChange}
