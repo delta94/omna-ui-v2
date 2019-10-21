@@ -2,7 +2,8 @@ import { sha256 } from 'js-sha256';
 
 class Utils {
   constructor() {
-    this.URL_DEV = 'http://127.0.0.1:4000';
+    this.URL_LOCAL = 'http://127.0.0.1:4000';
+    this.URL_DEV = 'https://develop.d19tdb0x4s4txh.amplifyapp.com';
     this.URL_PROD = 'https://app.omna.io';
   }
 
@@ -48,10 +49,13 @@ class Utils {
 
   getURL() {
     const url = window.location.href;
-    if (url.includes('127.0.0.1') || url.includes('localhost')) {
+    if (url.includes('app.omna.io')) {
+      return this.URL_PROD;
+    }
+    if (url.includes('https://develop.d19tdb0x4s4txh.amplifyapp.com')) {
       return this.URL_DEV;
     }
-    return this.URL_PROD;
+    return this.URL_LOCAL;
   }
 
   static getHeaders(url) {
