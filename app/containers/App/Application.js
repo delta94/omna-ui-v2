@@ -18,6 +18,7 @@ import {
   EditWorkflow,
   Webhooks,
   AddWebhook,
+  EditWebhook,
   DashboardPage,
   TenantConfiguration,
   AddTenant
@@ -94,6 +95,11 @@ class Application extends React.Component {
               exact
               path="/app/settings/webhook-list/add-webhook"
               component={AddWebhook}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/settings/webhook-list/edit-webhook/:id"
+              component={EditWebhook}
             />
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={DashboardPage} />
