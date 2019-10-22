@@ -42,8 +42,10 @@ class Utils {
         return '/images/qoo10_logo.png';
       case 'Shopee':
         return '/images/shopee_logo.png';
+      case 'MercadoLibre':
+        return '/images/mercadolibre_logo.png';
       default:
-        return '/images/lazada_logo.png';
+        return '/images/marketplace_placeholder.jpg';
     }
   }
 
@@ -67,14 +69,21 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg = url + JSON.stringify(params).replace(/["']/g, '').split('').sort()
-      .join('');
+    const msg =
+      url +
+      JSON.stringify(params)
+        .replace(/["']/g, '')
+        .split('')
+        .sort()
+        .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
 
     // const queryParams = `&token=${params.token}&timestamp=${Date.now()}&hmac=${params.hmac}`;
-    const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+    const queryString = Object.keys(params)
+      .map(key => key + '=' + params[key])
+      .join('&');
 
     return queryString;
   }
@@ -83,11 +92,17 @@ class Utils {
     if (sessionStorage.getItem('currentTenant')) {
       sessionStorage.removeItem('currentTenant');
     }
-    window.location.replace(`${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`);
+    window.location.replace(
+      `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
+    );
   }
 
   static handleAuthorization(path) {
-    window.location.replace(`${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(path)}`);
+    window.location.replace(
+      `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
+        path
+      )}`
+    );
   }
 
   static returnAfterAuthorization() {
@@ -134,7 +149,7 @@ class Utils {
       play: 'md-play',
       filter: 'md-funnel',
       print: 'md-print',
-      view: 'md-eye',
+      view: 'md-eye'
     };
 
     return variantIcon;

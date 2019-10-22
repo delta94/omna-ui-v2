@@ -349,7 +349,7 @@ class TaskList extends React.Component {
       download: false,
       print: false,
       serverSide: true,
-      selectableRows: false,
+      selectableRows: 'none',
       count,
       page,
       onTableChange: (action, tableState) => {
