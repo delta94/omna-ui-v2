@@ -4,6 +4,7 @@ import MUIDataTable from 'mui-datatables';
 import Paper from '@material-ui/core/Paper';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 /* material-ui */
 // core
@@ -14,7 +15,6 @@ import { withStyles } from '@material-ui/core/styles';
 //
 import API from '../../Utils/api';
 import LoadingState from '../../Common/LoadingState';
-import GenericErrorMessage from '../../Common/GenericErrorMessage';
 
 const styles = () => ({
   table: {
@@ -27,10 +27,10 @@ class WebhookList extends React.Component {
     loading: true,
     data: [],
     pagination: {},
-    limit: 5,
+    limit: 10,
     page: 0,
-    success: true,
-    messageError: ''
+    // success: true,
+    // messageError: ''
   };
 
   componentDidMount() {
@@ -38,6 +38,7 @@ class WebhookList extends React.Component {
   }
 
   getAPIwebhooks(params) {
+    this.setState({ loading: true });
     API.get('/webhooks', { params })
       .then(response => {
         const { data, pagination } = response.data;
@@ -50,7 +51,7 @@ class WebhookList extends React.Component {
       .catch(error => {
         // handle error
         console.log(error);
-        this.setState({ success: false, messageError: error.message });
+        // this.setState({ success: false, messageError: error.message });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -63,7 +64,6 @@ class WebhookList extends React.Component {
       offset: page * limit,
       limit
     };
-
     this.getAPIwebhooks(params);
   };
 
@@ -79,12 +79,12 @@ class WebhookList extends React.Component {
       });
   };
 
-  handleChangePage = (event, page) => {
+  handleChangePage = page => {
     this.setState({ page }, this.callAPI);
   };
 
   handleChangeRowsPerPage = event => {
-    this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
+    this.setState({ limit: parseInt(event, 10) }, this.callAPI);
   };
 
   handleAddWebhookClick = () => {
@@ -98,14 +98,12 @@ class WebhookList extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
     const {
       data,
       pagination,
       loading,
       page,
-      success,
-      messageError,
+      limit,
     } = this.state;
 
     const count = pagination.total;
@@ -180,6 +178,8 @@ class WebhookList extends React.Component {
       responsive: 'stacked',
       download: false,
       print: false,
+      serverSide: true,
+      rowsPerPage: limit,
       count,
       page,
       onTableChange: (action, tableState) => {
@@ -217,31 +217,34 @@ class WebhookList extends React.Component {
                 : 1) * (order === 'desc' ? 1 : -1)
             );
         }
-      })
+      }),
+      customToolbar: () => (
+        <Tooltip title="add">
+          <IconButton
+            aria-label="add"
+            component={Link}
+            to="/app/settings/webhook-list/add-webhook"
+          >
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      )
     };
 
     return (
-      <Paper>
-        <div>
-          {loading ? <div className="item-padding"><LoadingState loading={loading} text="Loading" /></div> : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
-          ) : (
-            <div className={classes.rootTable}>
-              <MUIDataTable
-                data={data}
-                columns={columns}
-                options={options}
-              />
-            </div>
-          )}
-        </div>
-      </Paper>
+      <div>
+        {loading ? <Paper><div className="item-padding"><LoadingState loading={loading} text="Loading" /></div></Paper> : (
+          <MUIDataTable
+            data={data}
+            columns={columns}
+            options={options}
+          />
+        )}
+      </div>
     );
   }
 }
 WebhookList.propTypes = {
-  classes: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
