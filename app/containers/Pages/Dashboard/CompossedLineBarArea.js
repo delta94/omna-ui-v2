@@ -4,14 +4,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import get from 'lodash/get';
 import { createMuiTheme, withStyles } from '@material-ui/core/styles';
+import { Paper } from '@material-ui/core';
 import ThemePallete from 'dan-api/palette/themePalette';
 import blue from '@material-ui/core/colors/blue';
-import Loading from 'dan-components/Loading';
 import {
   ComposedChart,
-  // Line,
   Area,
-  // Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -21,6 +19,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import moment from 'moment';
+import LoadingState from '../../Common/LoadingState';
 import api from '../../Utils/api';
 import { setReloadLandingPage } from '../../../actions/TenantActions';
 
@@ -45,7 +44,8 @@ class CompossedLineBarArea extends Component {
     orders: { data: [], pagination: {} },
     limit: 100,
     page: 0,
-    loading: false
+    loading: false,
+    error: ''
   };
 
   componentDidMount() {
@@ -54,27 +54,31 @@ class CompossedLineBarArea extends Component {
 
   componentDidUpdate(prevProps) {
     const { reloadLandingPage, changeReloadLandingPage } = this.props;
-    if (reloadLandingPage && reloadLandingPage === prevProps.reloadLandingPage) {
+    if (
+      reloadLandingPage &&
+      reloadLandingPage === prevProps.reloadLandingPage
+    ) {
       changeReloadLandingPage(false);
       this.callAPI();
     }
   }
 
-  getOrders(params) {
+  getOrders = params => {
     this.setState({ loading: true });
-    api.get('/orders', { params })
+    api
+      .get('/orders', { params })
       .then(response => {
         this.setState({
-          orders: get(response, 'data', { data: [], pagination: {} }),
-          limit: get(response, 'data.pagination.limit', 0)
+          orders: get(response, 'data', { data: [], pagination: {} })
         });
       })
       .catch(error => {
-        console.log(error);
-      }).then(() => {
+        this.setState({ error });
+      })
+      .finally(() => {
         this.setState({ loading: false });
       });
-  }
+  };
 
   callAPI = () => {
     const { limit, page } = this.state;
@@ -91,13 +95,13 @@ class CompossedLineBarArea extends Component {
     const { orders, loading } = this.state;
     const { data } = orders;
 
-    const collection = data.map(x => ({
-      ...x,
-      day: x.updated_date
+    const collection = data.map(item => ({
+      ...item,
+      day: item.updated_date
         .split('-')
         .reverse()
         .join('-'),
-      month: moment(x.updated_date).format('MMM')
+      month: moment(item.updated_date).format('MMM')
     }));
 
     const mapDayToMonth = collection.map(x => ({
@@ -119,45 +123,55 @@ class CompossedLineBarArea extends Component {
       });
     }, []);
 
+    for (let i = 0; i < 12; i += 1) {
+      const month = moment(i + 1, 'M').format('MMM');
+      if (sumPerMonth[i] == null) {
+        sumPerMonth[i] = { month, total_price: 0 };
+      }
+    }
+
     return (
       <Fragment>
-        {loading && <Loading />}
-        <div className={classes.chartFluid}>
-          <ResponsiveContainer>
-            <ComposedChart
-              width={800}
-              height={450}
-              data={sumPerMonth}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5
-              }}
-            >
-              <XAxis dataKey="month" tickLine={false} />
-              <YAxis
-                axisLine={false}
-                tickSize={3}
-                tickLine={false}
-                tick={{ stroke: 'none' }}
-              />
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <CartesianAxis vertical={false} />
-              <Tooltip />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="total_price"
-                fillOpacity="0.8"
-                fill={color.main}
-                stroke="none"
-              />
-              {/* <Bar dataKey="pv" barSize={60} fillOpacity="0.8" fill={color.secondary} />
-          <Line type="monotone" dataKey="uv" strokeWidth={4} stroke={color.third} /> */}
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+        {loading ? (
+          <div className="item-padding">
+            <LoadingState loading={loading} text="Loading" />
+          </div>
+        ) : data.length === 0 ? null : (
+          <div className={classes.chartFluid}>
+            <ResponsiveContainer>
+              <ComposedChart
+                width={800}
+                height={450}
+                data={sumPerMonth}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5
+                }}
+              >
+                <XAxis dataKey="month" tickLine={false} />
+                <YAxis
+                  axisLine={false}
+                  tickSize={3}
+                  tickLine={false}
+                  tick={{ stroke: 'none' }}
+                />
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <CartesianAxis vertical={false} />
+                <Tooltip />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="total_price"
+                  fillOpacity="0.8"
+                  fill={color.main}
+                  stroke="none"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </Fragment>
     );
   }
@@ -169,12 +183,12 @@ CompossedLineBarArea.propTypes = {
   changeReloadLandingPage: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   reloadLandingPage: state.getIn(['tenant', 'reloadLandingPage']),
-  ...state,
+  ...state
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch)
 });
 

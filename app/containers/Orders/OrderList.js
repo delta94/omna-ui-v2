@@ -29,6 +29,8 @@ class OrderList extends React.Component {
     orders: { data: [], pagination: {} },
     limit: 10,
     page: 0,
+    currentTerm: '',
+    serverSideFilterList: [],
     success: true,
     messageError: ''
     // selectedRow: -1
@@ -57,18 +59,20 @@ class OrderList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page } = this.state;
+    const { currentTerm, limit, page } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      term: currentTerm
     };
 
+    this.setState({ isLoading: true });
     this.getOrders(params);
     // this.props.onGetOrders(params);
   };
 
-  handleChangePage = page => {
-    this.setState({ page }, this.callAPI);
+  handleChangePage = (page, currentTerm) => {
+    this.setState({ page, currentTerm }, this.callAPI);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
@@ -100,12 +104,18 @@ class OrderList extends React.Component {
     this.getOrders(params);
   };
 
+  handleFilterSubmit = filterList => () => {
+    console.log('Submitting filters: ', filterList);
+
+    this.setState({ isLoading: true, serverSideFilterList: filterList });
+    this.setState({ currentTerm: filterList }, this.callAPI);
+  };
+
   render() {
     // const { classes, orders } = this.props;
-    const { isLoading, page, orders } = this.state;
+    const { isLoading, page, orders, serverSideFilterList } = this.state;
     const { pagination, data } = orders;
 
-    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -155,12 +165,21 @@ class OrderList extends React.Component {
     const options = {
       filter: true,
       filterType: 'textField',
+      serverSideFilterList: serverSideFilterList,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
+      serverSide: true,
       count,
       page,
+      onFilterChange: (column, filterList, type) => {
+        // debugger;
+        // if (type === 'chip') {
+        //   console.log('updating filters via chip');
+        this.handleFilterSubmit(filterList)();
+        // }
+      },
       onTableChange: (action, tableState) => {
         switch (action) {
           case 'changePage':

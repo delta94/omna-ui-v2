@@ -10,7 +10,10 @@ export default class OrderPayment extends Component {
     const { classes, totalPrice, status } = this.props;
 
     return (
-      <Card className={classes.subRoot} style={{ flex: '1 1 auto' }}>
+      <Card
+        className={classes.subRoot}
+        style={{ flex: '1 1 auto', paddingBottom: '8px' }}
+      >
         <CardHeader title="Payment" />
         <div className="display-flex justify-content-space-between">
           <div className={classes.marginLeft2u}>
