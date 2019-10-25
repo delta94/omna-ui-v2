@@ -18,6 +18,41 @@ import {
   setReloadLandingPage
 } from '../../actions/TenantActions';
 
+// const styles = () => ({
+//   root: {
+//     '& label.Mui-focused': {
+//       color: 'green'
+//     },
+//     '& .MuiInput-underline:after': {
+//       borderBottomColor: 'green'
+//     },
+//     '& .MuiOutlinedInput-root': {
+//       '& fieldset': {
+//         borderColor: 'red'
+//       },
+//       '&:hover fieldset': {
+//         borderColor: 'yellow'
+//       },
+//       '&.Mui-focused fieldset': {
+//         borderColor: 'green'
+//       }
+//     }
+//   },
+//   inputWidth: {
+//     // minWidth: '105px',
+//   },
+//   margin: {
+//     // margin: '10px'
+//   },
+//   tenantSelect: {
+//     '& .MuiOutlinedInput-root': {
+//       '& fieldset': {
+//         borderColor: 'red'
+//       }
+//     }
+//   }
+// });
+
 const styles = () => ({
   root: {
     '& label.Mui-focused': {
@@ -38,11 +73,16 @@ const styles = () => ({
       }
     }
   },
-  inputWidth: {
-    // minWidth: '105px',
+  tenantSelect: {
+    color: 'white'
   },
-  margin: {
-    // margin: '10px'
+  notchedOutline: {
+    borderColor: '#FFFFFF',
+    borderWidth: 1,
+    '&:hover': {
+      borderColor: '#FFFFFF',
+      borderWidth: 2
+    }
   }
 });
 
@@ -126,7 +166,7 @@ function TenantMenu(props) {
   };
 
   return (
-    <div>
+    <div className={classes.root}>
       <TextField
         id="tenants"
         select
@@ -141,7 +181,17 @@ function TenantMenu(props) {
         // }}
         variant="outlined"
         margin="dense"
-        // className={classNames(classes.tenantSelect)}
+        InputLabelProps={{
+          classes: {
+            root: classes.tenantSelect
+          }
+        }}
+        InputProps={{
+          classes: {
+            input: classes.tenantSelect,
+            notchedOutline: classes.notchedOutline
+          }
+        }}
       >
         {tenantlist.map(option => (
           <MenuItem key={option.id} value={option.id}>
