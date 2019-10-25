@@ -293,7 +293,7 @@ class Flows extends Component {
                             {title}
                           </TableCell>
                           <TableCell align="center">
-                            {integration.name}
+                            {integration ? integration.name : ''}
                           </TableCell>
                           <TableCell align="center">
                             {moment(createdAt).format('Y-MM-DD H:mm:ss')}
