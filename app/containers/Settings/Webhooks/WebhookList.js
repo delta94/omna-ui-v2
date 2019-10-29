@@ -93,7 +93,7 @@ class WebhookList extends React.Component {
       const timer = setTimeout(() => {
         this.setState({ searchTerm }, this.callAPI);
         clearTimeout(timer);
-      }, 4000);
+      }, 2000);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
