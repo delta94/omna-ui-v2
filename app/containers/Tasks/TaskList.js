@@ -218,12 +218,7 @@ class TaskList extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const {
-      isLoading,
-      page,
-      tasks,
-      alertDialog
-    } = this.state;
+    const { isLoading, page, tasks, alertDialog } = this.state;
     const { pagination, data } = tasks;
 
     const count = get(pagination, 'total', 0);
@@ -258,52 +253,50 @@ class TaskList extends React.Component {
                 : null;
 
             return (
-              <div>
-                <div className="display-flex justify-content-space-between align-items-center">
+              <div className="display-flex justify-content-space-between align-items-center">
+                <div
+                  className="display-flex justify-content-flex-start"
+                  style={{ 'flex-direction': 'column' }}
+                >
                   <Typography variant="subtitle2" color="primary">
                     <strong>{description}</strong>
                   </Typography>
-                  <div className="display-flex justify-content-flex-end align-items-center">
-                    <div className="item-margin-left">
-                      {notifications === 'error' ||
-                      notifications === 'warning' ||
-                      notifications === 'info' ? (
-                        <NotificationBottom type={notifications} />
-                      ) : null}
-                    </div>
-                    <div className="item-margin-left">
-                      {scheduler ? (
-                        <Tooltip title="This task has a schedule">
-                          <IconButton aria-label="Schedule">
-                            <Ionicon icon={variantIcon.schedule} />
-                          </IconButton>
-                        </Tooltip>
-                      ) : null}
-                    </div>
-                    <div className={classes.marginLeft2u}>
-                      <Status
-                        status={status}
-                        progress={progress}
-                        classes={classes}
-                      />
-                    </div>
+                  <div className="display-flex justify-content-flex-start">
+                    <Typography variant="caption" color="inherit">
+                      {id}
+                    </Typography>
+                    <Typography variant="caption">
+                      <strong>Updated at:</strong>{' '}
+                      {updatedAt != null
+                        ? moment(updatedAt).format('Y-MM-DD H:mm:ss')
+                        : '--'}
+                    </Typography>
                   </div>
                 </div>
-                <div className="display-flex justify-content-space-between align-items-center">
-                  <div className="display-flex justify-content-flex-start">
-                    <div className={classes.marginLeft}>
-                      <Typography variant="caption" color="inherit">
-                        {id}
-                      </Typography>
-                    </div>
-                    <div className={classes.marginLeft2u}>
-                      <Typography variant="caption">
-                        <strong>Updated at:</strong>{' '}
-                        {updatedAt != null
-                          ? moment(updatedAt).format('Y-MM-DD H:mm:ss')
-                          : '--'}
-                      </Typography>
-                    </div>
+                <div
+                  className="display-flex justify-content-flex-end align-items-end"
+                  style={{ 'flex-direction': 'column' }}
+                >
+                  <div className="item-margin-left">
+                    {notifications === 'error' ||
+                    notifications === 'warning' ||
+                    notifications === 'info' ? (
+                      <NotificationBottom type={notifications} />
+                    ) : null}
+                    {scheduler ? (
+                      <Tooltip title="This task has a schedule">
+                        <IconButton aria-label="Schedule">
+                          <Ionicon icon={variantIcon.schedule} />
+                        </IconButton>
+                      </Tooltip>
+                    ) : null}
+                  </div>
+                  <div className={classes.marginLeft2u}>
+                    <Status
+                      status={status}
+                      progress={progress}
+                      classes={classes}
+                    />
                   </div>
                 </div>
               </div>
@@ -356,6 +349,7 @@ class TaskList extends React.Component {
       download: false,
       print: false,
       serverSide: true,
+      selectableRows: 'none',
       count,
       page,
       onTableChange: (action, tableState) => {

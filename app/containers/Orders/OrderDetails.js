@@ -188,9 +188,6 @@ class OrderDetails extends Component {
                     </Button>
                   </Tooltip>
                 </div>
-                {
-                  // ********* SUB-HEAD *********
-                }
                 <div className="display-flex align-items-baseline">
                   <Typography
                     variant="h6"
@@ -198,7 +195,7 @@ class OrderDetails extends Component {
                     gutterBottom
                     className={classes.marginLeft2u}
                   >
-                    <strong>{get(order, 'data.order_id', null)}</strong>
+                    <strong>{get(order, 'data.number', null)}</strong>
                   </Typography>
                   <Typography
                     variant="caption"
@@ -244,14 +241,14 @@ class OrderDetails extends Component {
                 </div>
               </div>
 
-                <DocumentTypesDialog
-                  integrationId={integrationId}
-                  orderNumber={dataNumber}
-                  types={documentTypes}
-                  selectedValue={selectedDocumentType}
-                  open={openDialog}
-                  onClose={this.handleClose}
-                />
+              <DocumentTypesDialog
+                integrationId={integrationId}
+                orderNumber={dataNumber}
+                types={documentTypes}
+                selectedValue={selectedDocumentType}
+                open={openDialog}
+                onClose={this.handleClose}
+              />
             </div>
           )}
         </div>

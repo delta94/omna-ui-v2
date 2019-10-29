@@ -72,6 +72,13 @@ export const AddWebhook = loadable(
   }
 );
 
+export const EditWebhook = loadable(
+  () => import('./Settings/Webhooks/EditWebhook'),
+  {
+    fallback: <Loading />
+  }
+);
+
 export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });

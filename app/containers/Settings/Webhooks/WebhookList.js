@@ -1,65 +1,20 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
+import MUIDataTable from 'mui-datatables';
 import Paper from '@material-ui/core/Paper';
-import classNames from 'classnames';
 import moment from 'moment';
 import { withSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 /* material-ui */
 // core
+import Tooltip from '@material-ui/core/Tooltip';
+import Ionicon from 'react-ionicons';
+import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import Checkbox from '@material-ui/core/Checkbox';
-// our
+//
 import API from '../../Utils/api';
 import LoadingState from '../../Common/LoadingState';
-import GenericTablePagination from '../../Common/GenericTablePagination';
-import GenericTableHead from '../../Common/GenericTableHead';
-import GenericErrorMessage from '../../Common/GenericErrorMessage';
-import GenericTableToolBar from '../../Common/GenericTableToolBar';
-
-const actionList = ['Filter', 'Add', 'Delete'];
-const filterList = ['Integration', 'Topic'];
-const selectOption = 'checkbox';
-
-const headColumns = [
-  {
-    id: 'id',
-    first: true,
-    last: false,
-    label: 'ID'
-  },
-  {
-    id: 'topic',
-    first: false,
-    last: false,
-    label: 'Topic'
-  },
-  {
-    id: 'date',
-    first: false,
-    last: false,
-    label: 'Date'
-  },
-  {
-    id: 'address',
-    first: false,
-    last: false,
-    label: 'Address'
-  },
-  {
-    id: 'store',
-    first: false,
-    last: false,
-    label: 'Integration'
-  }
-];
 
 const styles = () => ({
   table: {
@@ -70,12 +25,13 @@ const styles = () => ({
 class WebhookList extends React.Component {
   state = {
     loading: true,
-    webhooks: { data: [], pagination: {} },
-    limit: 5,
+    data: [],
+    pagination: {},
+    limit: 10,
     page: 0,
-    success: true,
-    messageError: '',
-    selected: []
+    searchTerm: ''
+    // success: true,
+    // messageError: ''
   };
 
   componentDidMount() {
@@ -83,17 +39,19 @@ class WebhookList extends React.Component {
   }
 
   getAPIwebhooks(params) {
+    this.setState({ loading: true });
     API.get('/webhooks', { params })
       .then(response => {
+        const { data, pagination } = response.data;
         this.setState({
-          webhooks: get(response, 'data', { data: [], pagination: {} }),
-          limit: get(response, 'data.pagination.limit', 0)
+          data,
+          pagination,
+          limit: pagination ? pagination.limit : 0
         });
       })
       .catch(error => {
         // handle error
         console.log(error);
-        this.setState({ success: false, messageError: error.message });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -101,10 +59,11 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page } = this.state;
+    const { limit, page, searchTerm } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      term: searchTerm || ''
     };
 
     this.getAPIwebhooks(params);
@@ -122,17 +81,30 @@ class WebhookList extends React.Component {
       });
   };
 
-  handleDeleteBlock = Ids => () => {
-    Ids.map(id => this.deleteAPIwebhook(id));
-    this.setState({ selected: [] });
-  };
-
-  handleChangePage = (event, page) => {
+  handleChangePage = page => {
     this.setState({ page }, this.callAPI);
   };
 
   handleChangeRowsPerPage = event => {
-    this.setState({ limit: parseInt(event.target.value, 10) }, this.callAPI);
+    this.setState({ limit: parseInt(event, 10) }, this.callAPI);
+  };
+
+  handleSearch = searchTerm => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        this.setState({ searchTerm }, this.callAPI);
+        clearTimeout(timer);
+      }, 2000);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    } else {
+      this.setState({ searchTerm: '' }, this.callAPI);
+    }
+  }
+
+  onHandleCloseSearch = () => {
+    this.setState({ searchTerm: '' }, this.callAPI);
   };
 
   handleAddWebhookClick = () => {
@@ -140,172 +112,165 @@ class WebhookList extends React.Component {
     history.push('/app/settings/webhook-list/add-webhook');
   };
 
-  handleSearchClick = (currentTerm, filters) => {
-    const { limit, page } = this.state;
-    const params = {
-      offset: page * limit,
-      limit,
-      term: currentTerm,
-      integration_id: filters.Integration,
-      topic: filters.Topic
-    };
-
-    this.setState({ loading: true });
-    this.getAPIwebhooks(params);
-  };
-
-  isSelected = id => get(this.state, 'selected', []).includes(id);
-
-  handleClick = (event, id) => {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    this.setState({ selected: newSelected });
-  };
-
-  handleSelectAllClick = event => {
-    if (event.target.checked) {
-      this.setState(state => ({
-        selected: get(state, 'webhooks.data', []).map(row => row.id)
-      }));
-      return;
-    }
-    this.setState({ selected: [] });
+  handleEdit = (id) => {
+    const { history } = this.props;
+    history.push(`/app/settings/webhook-list/edit-webhook/${id}`);
   };
 
   render() {
-    const { classes } = this.props;
-    const { pagination, data } = get(this.state, 'webhooks', {
-      data: [],
-      pagination: {}
-    });
     const {
+      data,
+      pagination,
       loading,
-      limit,
       page,
-      success,
-      messageError,
-      selected
+      limit,
+      searchTerm,
     } = this.state;
 
-    const count = get(pagination, 'total', 0);
+    const count = pagination.total;
+
+    const columns = [
+      {
+        name: 'id',
+        label: 'ID',
+        options: {
+          filter: false
+        }
+      },
+      {
+        name: 'address',
+        label: 'Address',
+        options: {
+          filter: false,
+          sort: false
+        }
+      },
+      {
+        name: 'topic',
+        label: 'Topic',
+        options: {
+          filter: false
+        }
+      },
+      {
+        name: 'integration',
+        label: 'Integration',
+        options: {
+          filter: false,
+          sort: true,
+          customBodyRender: value => <div>{value ? value.name : null}</div>
+        }
+      },
+      {
+        name: 'updated_at',
+        label: 'Updated at',
+        options: {
+          filter: false,
+          customBodyRender: value => (
+            <div>{moment(value).format('Y-MM-DD H:mm:ss')}</div>
+          )
+        }
+      },
+      {
+        name: 'Actions',
+        options: {
+          filter: false,
+          sort: false,
+          empty: true,
+          customBodyRender: (value, tableMeta) => (
+            <div>
+              <Tooltip title="edit">
+                <IconButton
+                  aria-label="edit"
+                  onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)}
+                >
+                  <Ionicon icon="md-create" />
+                </IconButton>
+              </Tooltip>
+            </div>
+          )
+        }
+      },
+    ];
+
+    const options = {
+      selectableRows: 'none',
+      responsive: 'stacked',
+      download: false,
+      print: false,
+      serverSide: true,
+      searchText: searchTerm,
+      rowsPerPage: limit,
+      count,
+      page,
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case 'changePage':
+            this.handleChangePage(tableState.page);
+            break;
+          case 'changeRowsPerPage':
+            this.handleChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'search':
+            this.handleSearch(tableState.searchText);
+            break;
+          default:
+            break;
+        }
+      },
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      }),
+      customToolbar: () => (
+        <Tooltip title="add">
+          <IconButton
+            aria-label="add"
+            component={Link}
+            to="/app/settings/webhook-list/add-webhook"
+          >
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      )
+    };
 
     return (
-      <Paper>
-        <div>
-          {loading ? <div className="item-padding"><LoadingState loading={loading} text="Loading" /></div> : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
-          ) : (
-            <Fragment>
-              <div className={classes.rootTable}>
-                <GenericTableToolBar
-                  numSelected={selected.length}
-                  rowCount={count > limit ? limit : count}
-                  actionList={actionList}
-                  onSearchFilterClick={this.handleSearchClick}
-                  filterList={filterList}
-                  onAdd={this.handleAddWebhookClick}
-                  initialText="Showing the created webhooks."
-                  onDelete={this.handleDeleteBlock(selected)}
-                />
-                <Table className={classNames(classes.table, classes.hover)}>
-                  <GenericTableHead
-                    rowCount={count > limit ? limit : count}
-                    headColumns={headColumns}
-                    numSelected={selected.length}
-                    handleClick={this.handleSelectAllClick}
-                    selectOption={selectOption}
-                  />
-                  <TableBody>
-                    {data
-                      && data.map(row => {
-                        const isSelected = this.isSelected(get(row, 'id', -1));
-                        return (
-                          <TableRow
-                            hover
-                            key={get(row, 'id', 0)}
-                            role="checkbox"
-                            aria-checked={isSelected}
-                            tabIndex={-1}
-                            selected={isSelected}
-                          >
-                            <TableCell padding="checkbox">
-                              <Checkbox
-                                color="primary"
-                                checked={isSelected}
-                                onClick={event => this.handleClick(event, get(row, 'id', null))
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="left" component="th" scope="row">
-                              {get(row, 'id', 0)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {get(row, 'topic', null)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {get(row, 'updated_at', null) != null
-                                ? moment(row.updated_at).format(
-                                  'Y-MM-DD H:mm:ss'
-                                )
-                                : '--'}
-                            </TableCell>
-                            <TableCell align="center">
-                              {get(row, 'address', null)}
-                            </TableCell>
-                            <TableCell align="center">
-                              {get(row, 'integration.name', null)}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 25, 50]}
-                        count={count}
-                        rowsPerPage={limit}
-                        page={page}
-                        SelectProps={{
-                          native: true
-                        }}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                        ActionsComponent={GenericTablePagination}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </Fragment>
-          )}
-        </div>
-      </Paper>
+      <div>
+        {loading ? <Paper><div className="item-padding"><LoadingState loading={loading} text="Loading" /></div></Paper> : (
+          <MUIDataTable
+            data={data}
+            columns={columns}
+            options={options}
+          />
+        )}
+      </div>
     );
   }
 }
 WebhookList.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func
-  }).isRequired
+  history: PropTypes.object.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(WebhookList));

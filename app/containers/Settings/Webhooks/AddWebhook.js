@@ -36,7 +36,7 @@ function AddWebhook(props) {
 
   useEffect(() => {
     const { enqueueSnackbar } = props;
-    API.get('integrations').then(response => {
+    API.get('integrations', { params: { limit: 100, offset: 0 } }).then(response => {
       const { data } = response.data;
       setIntegrationOptions(data);
     }).catch((error) => {

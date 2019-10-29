@@ -2,7 +2,8 @@ import { sha256 } from 'js-sha256';
 
 class Utils {
   constructor() {
-    this.URL_DEV = 'http://127.0.0.1:4000';
+    this.URL_LOCAL = 'http://127.0.0.1:4000';
+    this.URL_DEV = 'https://develop.d19tdb0x4s4txh.amplifyapp.com';
     this.URL_PROD = 'https://app.omna.io';
   }
 
@@ -41,17 +42,22 @@ class Utils {
         return '/images/qoo10_logo.png';
       case 'Shopee':
         return '/images/shopee_logo.png';
+      case 'MercadoLibre':
+        return '/images/mercadolibre_logo.png';
       default:
-        return '/images/lazada_logo.png';
+        return '/images/marketplace_placeholder.jpg';
     }
   }
 
   getURL() {
     const url = window.location.href;
-    if (url.includes('127.0.0.1') || url.includes('localhost')) {
+    if (url.includes('app.omna.io')) {
+      return this.URL_PROD;
+    }
+    if (url.includes('https://develop.d19tdb0x4s4txh.amplifyapp.com')) {
       return this.URL_DEV;
     }
-    return this.URL_PROD;
+    return this.URL_LOCAL;
   }
 
   static getHeaders(url) {
@@ -63,14 +69,21 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg = url + JSON.stringify(params).replace(/["']/g, '').split('').sort()
-      .join('');
+    const msg =
+      url +
+      JSON.stringify(params)
+        .replace(/["']/g, '')
+        .split('')
+        .sort()
+        .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
 
     // const queryParams = `&token=${params.token}&timestamp=${Date.now()}&hmac=${params.hmac}`;
-    const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+    const queryString = Object.keys(params)
+      .map(key => key + '=' + params[key])
+      .join('&');
 
     return queryString;
   }
@@ -79,11 +92,17 @@ class Utils {
     if (sessionStorage.getItem('currentTenant')) {
       sessionStorage.removeItem('currentTenant');
     }
-    window.location.replace(`${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`);
+    window.location.replace(
+      `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
+    );
   }
 
   static handleAuthorization(path) {
-    window.location.replace(`${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(path)}`);
+    window.location.replace(
+      `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
+        path
+      )}`
+    );
   }
 
   static returnAfterAuthorization() {
@@ -130,7 +149,7 @@ class Utils {
       play: 'md-play',
       filter: 'md-funnel',
       print: 'md-print',
-      view: 'md-eye',
+      view: 'md-eye'
     };
 
     return variantIcon;
