@@ -256,7 +256,7 @@ class TaskList extends React.Component {
               <div className="display-flex justify-content-space-between align-items-center">
                 <div
                   className="display-flex justify-content-flex-start"
-                  style={{ 'flex-direction': 'column' }}
+                  style={{ flexDirection: 'column' }}
                 >
                   <Typography variant="subtitle2" color="primary">
                     <strong>{description}</strong>
@@ -275,7 +275,7 @@ class TaskList extends React.Component {
                 </div>
                 <div
                   className="display-flex justify-content-flex-end align-items-end"
-                  style={{ 'flex-direction': 'column' }}
+                  style={{ flexDirection: 'column' }}
                 >
                   <div className="item-margin-left">
                     {notifications === 'error' ||

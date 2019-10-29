@@ -11,7 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import MenuIcon from '@material-ui/icons/Menu';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
-import SearchUi from '../Search/SearchUi';
+// import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
 
 // const elem = document.documentElement;
@@ -143,8 +143,7 @@ class Header extends React.Component {
             </div>
           </Hidden>
 
-
-          {disableSearchBox && (
+          {/* {disableSearchBox && (
             <div className={classes.searchWrapper}>
               <div className={classNames(classes.wrapper, classes.light)}>
                 <div className={classes.search}>
@@ -153,7 +152,8 @@ class Header extends React.Component {
                 <SearchUi history={history} />
               </div>
             </div>
-          )}
+          )} */}
+
           <TenantMenu history={history} />
           <Hidden xsDown>
             <span className={classes.separatorV} />
