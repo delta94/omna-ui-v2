@@ -29,6 +29,7 @@ class WebhookList extends React.Component {
     pagination: {},
     limit: 10,
     page: 0,
+    searchTerm: ''
     // success: true,
     // messageError: ''
   };
@@ -51,7 +52,6 @@ class WebhookList extends React.Component {
       .catch(error => {
         // handle error
         console.log(error);
-        // this.setState({ success: false, messageError: error.message });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -59,10 +59,11 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page } = this.state;
+    const { limit, page, searchTerm } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      term: searchTerm || ''
     };
     this.getAPIwebhooks(params);
   };
@@ -87,6 +88,24 @@ class WebhookList extends React.Component {
     this.setState({ limit: parseInt(event, 10) }, this.callAPI);
   };
 
+  handleSearch = searchTerm => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        this.setState({ searchTerm }, this.callAPI);
+        clearTimeout(timer);
+      }, 2000);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    } else {
+      this.setState({ searchTerm: '' }, this.callAPI);
+    }
+  }
+
+  onHandleCloseSearch = () => {
+    this.setState({ searchTerm: '' }, this.callAPI);
+  };
+
   handleAddWebhookClick = () => {
     const { history } = this.props;
     history.push('/app/settings/webhook-list/add-webhook');
@@ -104,6 +123,7 @@ class WebhookList extends React.Component {
       loading,
       page,
       limit,
+      searchTerm,
     } = this.state;
 
     const count = pagination.total;
@@ -113,13 +133,14 @@ class WebhookList extends React.Component {
         name: 'id',
         label: 'ID',
         options: {
-          filter: true
+          filter: false
         }
       },
       {
         name: 'address',
         label: 'Address',
         options: {
+          filter: false,
           sort: false
         }
       },
@@ -136,7 +157,7 @@ class WebhookList extends React.Component {
         options: {
           filter: false,
           sort: true,
-          customBodyRender: value => <div>{value.name}</div>
+          customBodyRender: value => <div>{value ? value.name : null}</div>
         }
       },
       {
@@ -172,13 +193,12 @@ class WebhookList extends React.Component {
     ];
 
     const options = {
-      filter: true,
-      filterType: 'textField',
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
+      searchText: searchTerm,
       rowsPerPage: limit,
       count,
       page,
@@ -189,6 +209,9 @@ class WebhookList extends React.Component {
             break;
           case 'changeRowsPerPage':
             this.handleChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'search':
+            this.handleSearch(tableState.searchText);
             break;
           default:
             break;
