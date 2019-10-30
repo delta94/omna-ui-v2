@@ -5,9 +5,16 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import classNames from 'classnames';
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem
+} from '@material-ui/core';
+import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import HomeIcon from '@material-ui/icons/Home';
 import API from '../../containers/Utils/api';
 import Utils from '../../containers/Common/Utils';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
@@ -18,99 +25,55 @@ import {
   setReloadLandingPage
 } from '../../actions/TenantActions';
 
-// const styles = () => ({
-//   root: {
-//     '& label.Mui-focused': {
-//       color: 'green'
-//     },
-//     '& .MuiInput-underline:after': {
-//       borderBottomColor: 'green'
-//     },
-//     '& .MuiOutlinedInput-root': {
-//       '& fieldset': {
-//         borderColor: 'red'
-//       },
-//       '&:hover fieldset': {
-//         borderColor: 'yellow'
-//       },
-//       '&.Mui-focused fieldset': {
-//         borderColor: 'green'
-//       }
-//     }
-//   },
-//   inputWidth: {
-//     // minWidth: '105px',
-//   },
-//   margin: {
-//     // margin: '10px'
-//   },
-//   tenantSelect: {
-//     '& .MuiOutlinedInput-root': {
-//       '& fieldset': {
-//         borderColor: 'red'
-//       }
-//     }
-//   }
-// });
-
 const styles = () => ({
   root: {
-    '& label.Mui-focused': {
-      color: 'green'
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: 'green'
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'red'
-      },
-      '&:hover fieldset': {
-        borderColor: 'yellow'
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'green'
-      }
-    }
+    backgroundColor: 'rgba(255,255,255, .1)',
+    borderRadius: 4,
+    paddingTop: 0
   },
-  tenantSelect: {
-    color: 'white'
+  icon: {
+    color: 'white',
+    margin: 0
   },
-  notchedOutline: {
-    borderColor: '#FFFFFF',
-    borderWidth: 1,
-    '&:hover': {
-      borderColor: '#FFFFFF',
-      borderWidth: 2
+  selectedTenant: {
+    '& > span': {
+      color: 'white'
     }
   }
 });
 
 function TenantMenu(props) {
   const { classes, reloadTenants } = props;
-  const [tenant, setTenant] = useState('');
-  const [tenantlist, setTenantList] = useState([]);
+  const [tenantName, setTenantName] = useState('');
+  const [tenantList, setTenantList] = useState([]);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   useEffect(() => {
-    const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
-    if (reloadTenants) {
-      const params = { limit: 100, offset: 0 };
-      API.get('tenants', { params })
-        .then(response => {
+    async function changeTenant() {
+      const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
+      if (reloadTenants) {
+        try {
+          const params = { limit: 100, offset: 0 };
+          const response = await API.get('tenants', { params });
           const { data } = response.data;
           changeReloadTenants(false);
+          data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
-          setTenant(tenantId);
-        })
-        .catch(error => {
+          const found = data.find(element => element.id === tenantId);
+          setTenantName(found.name);
+        } catch (error) {
           enqueueSnackbar(
             get(error, 'response.data.message', 'Unknown error'),
             {
               variant: 'error'
             }
           );
-        });
+        }
+      }
     }
+    changeTenant();
   }, [reloadTenants]);
 
   useEffect(() => {
@@ -121,8 +84,10 @@ function TenantMenu(props) {
         const params = { limit: 100, offset: 0 };
         const response = await API.get('tenants', { params });
         const { data } = response.data;
+        data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
-        setTenant(tenantId);
+        const found = data.find(element => element.id === tenantId);
+        setTenantName(found.name);
       } catch (error) {
         enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
           variant: 'error'
@@ -132,7 +97,7 @@ function TenantMenu(props) {
     getTenants();
   }, []);
 
-  const handleTenantChange = async e => {
+  const handleTenantChange = async (e, tenantId, name, index) => {
     const {
       enqueueSnackbar,
       changeTenantStatus,
@@ -141,8 +106,10 @@ function TenantMenu(props) {
       history
     } = props;
     try {
-      setTenant(e.target.value);
-      const response = await API.get(`tenants/${e.target.value}`);
+      setTenantName(name);
+      setSelectedIndex(index);
+      setAnchorEl(null);
+      const response = await API.get(`tenants/${tenantId}`);
       const { data } = response.data;
       const user = Utils.getUser();
       user.token = data.token;
@@ -165,40 +132,57 @@ function TenantMenu(props) {
     }
   };
 
+  const handleClickListItem = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div className={classes.root}>
-      <TextField
-        id="tenants"
-        select
-        label="Tenants"
-        value={tenant}
-        name="tenants"
-        onChange={handleTenantChange}
-        // SelectProps={{
-        //   MenuProps: {
-        //     className: classes.inputWidth
-        //   }
-        // }}
-        variant="outlined"
-        margin="dense"
-        InputLabelProps={{
-          classes: {
-            root: classes.tenantSelect
-          }
-        }}
-        InputProps={{
-          classes: {
-            input: classes.tenantSelect,
-            notchedOutline: classes.notchedOutline
-          }
-        }}
+      <List component="nav" aria-label="Tenants" style={{ padding: 0 }}>
+        <ListItem
+          button
+          aria-haspopup="true"
+          aria-controls="lock-menu"
+          aria-label="tenant"
+          onClick={handleClickListItem}
+        >
+          <ListItemIcon style={{ margin: 0 }}>
+            <HomeIcon className={classes.icon} />
+          </ListItemIcon>
+          <ListItemText
+            primary={tenantName}
+            className={classes.selectedTenant}
+          />
+          <ListItemIcon style={{ margin: 0 }}>
+            <ArrowDownIcon className={classes.icon} />
+          </ListItemIcon>
+        </ListItem>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
       >
-        {tenantlist.map(option => (
-          <MenuItem key={option.id} value={option.id}>
+        {tenantList.map((option, index) => (
+          <MenuItem
+            key={option.id}
+            value={option.id}
+            disabled={index === 0}
+            // selected={index === selectedIndex}
+            onClick={event =>
+              handleTenantChange(event, option.id, option.name, index)
+            }
+          >
             {option.name}
           </MenuItem>
         ))}
-      </TextField>
+      </Menu>
     </div>
   );
 }
