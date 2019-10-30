@@ -29,10 +29,10 @@ class OrderList extends React.Component {
     orders: { data: [], pagination: {} },
     limit: 10,
     page: 0,
-    currentTerm: '',
     serverSideFilterList: [],
     success: true,
-    messageError: ''
+    messageError: '',
+    searchTerm: ''
     // selectedRow: -1
   };
 
@@ -59,11 +59,11 @@ class OrderList extends React.Component {
   }
 
   callAPI = () => {
-    const { currentTerm, limit, page } = this.state;
+    const { searchTerm, limit, page } = this.state;
     const params = {
       offset: page * limit,
       limit,
-      term: currentTerm
+      term: searchTerm || ''
     };
 
     this.setState({ isLoading: true });
@@ -71,8 +71,8 @@ class OrderList extends React.Component {
     // this.props.onGetOrders(params);
   };
 
-  handleChangePage = (page, currentTerm) => {
-    this.setState({ page, currentTerm }, this.callAPI);
+  handleChangePage = (page, searchTerm) => {
+    this.setState({ page, searchTerm }, this.callAPI);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
@@ -108,12 +108,36 @@ class OrderList extends React.Component {
     console.log('Submitting filters: ', filterList);
 
     this.setState({ isLoading: true, serverSideFilterList: filterList });
-    this.setState({ currentTerm: filterList }, this.callAPI);
+    // this.setState({ currentTerm: filterList }, this.callAPI);
+  };
+
+  handleSearch = searchTerm => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        this.setState({ searchTerm }, this.callAPI);
+        clearTimeout(timer);
+      }, 2000);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    } else {
+      this.setState({ searchTerm: '' }, this.callAPI);
+    }
+  };
+
+  onHandleCloseSearch = () => {
+    this.setState({ searchTerm: '' }, this.callAPI);
   };
 
   render() {
     // const { classes, orders } = this.props;
-    const { isLoading, page, orders, serverSideFilterList } = this.state;
+    const {
+      isLoading,
+      page,
+      orders,
+      serverSideFilterList,
+      searchTerm
+    } = this.state;
     const { pagination, data } = orders;
 
     const count = get(pagination, 'total', 0);
@@ -165,7 +189,8 @@ class OrderList extends React.Component {
     const options = {
       filter: true,
       filterType: 'textField',
-      serverSideFilterList: serverSideFilterList,
+      serverSideFilterList,
+      searchText: searchTerm,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
@@ -187,6 +212,9 @@ class OrderList extends React.Component {
             break;
           case 'changeRowsPerPage':
             this.handleChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'search':
+            this.handleSearch(tableState.searchText);
             break;
           default:
             break;
