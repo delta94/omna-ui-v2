@@ -1,21 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
-import Paper from '@material-ui/core/Paper';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
-import get from 'lodash/get';
 
 /* material-ui */
-// core
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 //
+import Loading from 'dan-components/Loading';
+import moment from 'moment';
+import get from 'lodash/get';
+//
 import API from '../../Utils/api';
-import LoadingState from '../../Common/LoadingState';
+// import LoadingState from '../../Common/LoadingState';
 
 const styles = () => ({
   table: {
@@ -27,6 +27,7 @@ class WebhookList extends React.Component {
   state = {
     loading: true,
     data: [],
+    topicFilterOptions: [],
     pagination: {},
     limit: 10,
     page: 0,
@@ -35,25 +36,22 @@ class WebhookList extends React.Component {
   };
 
   componentDidMount() {
-    // this.getTopics();
+    this.getTopics();
     this.callAPI();
   }
 
-  /*  getTopics() {
+  getTopics() {
     API.get('/webhooks/topics')
       .then(response => {
         const { data } = response.data;
-        const topicFilterList = data.map((item) => {
-          return item.topic;
-        });
-        debugger;
-        this.setState({ topics: topicFilterList });
+        const topics = data.map(item => item.topic);
+        this.setState({ topicFilterOptions: topics });
       })
       .catch(error => {
         // handle error
         console.log(error);
       });
-  } */
+  }
 
   getAPIwebhooks(params) {
     const { enqueueSnackbar } = this.props;
@@ -115,7 +113,7 @@ class WebhookList extends React.Component {
       const timer = setTimeout(() => {
         this.setState({ searchTerm }, this.callAPI);
         clearTimeout(timer);
-      }, 1500);
+      }, 1000);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
@@ -140,6 +138,13 @@ class WebhookList extends React.Component {
     }
   };
 
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  }
+
   handleAddWebhookClick = () => {
     const { history } = this.props;
     history.push('/app/settings/webhook-list/add-webhook');
@@ -158,7 +163,8 @@ class WebhookList extends React.Component {
       page,
       limit,
       searchTerm,
-      serverSideFilterList
+      serverSideFilterList,
+      topicFilterOptions
     } = this.state;
 
     const count = pagination.total;
@@ -168,6 +174,7 @@ class WebhookList extends React.Component {
         name: 'id',
         label: 'ID',
         options: {
+          display: 'excluded',
           filter: false
         }
       },
@@ -187,8 +194,7 @@ class WebhookList extends React.Component {
           filterType: 'dropdown',
           filterList: serverSideFilterList[2],
           filterOptions: {
-            names: ['order/registered', 'order/updated'
-            ]
+            names: topicFilterOptions
           }
         }
       },
@@ -260,6 +266,9 @@ class WebhookList extends React.Component {
           case 'filterChange':
             this.handleFilterChange(tableState.filterList);
             break;
+          case 'resetFilters':
+            this.handleResetFilters();
+            break;
           default:
             break;
         }
@@ -303,13 +312,12 @@ class WebhookList extends React.Component {
 
     return (
       <div>
-        {loading ? <Paper><div className="item-padding"><LoadingState loading={loading} text="Loading" /></div></Paper> : (
-          <MUIDataTable
-            data={data}
-            columns={columns}
-            options={options}
-          />
-        )}
+        {loading ? <Loading /> : null}
+        <MUIDataTable
+          data={data}
+          columns={columns}
+          options={options}
+        />
       </div>
     );
   }
