@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 const styles = {
   circularProgress: {
+    zIndex: 1500,
     position: 'fixed',
     top: 'calc(50% - 45px)',
     left: 'calc(50% - 45px)',
