@@ -15,7 +15,6 @@ import moment from 'moment';
 import get from 'lodash/get';
 //
 import API from '../../Utils/api';
-// import LoadingState from '../../Common/LoadingState';
 
 const styles = () => ({
   table: {
@@ -28,6 +27,7 @@ class WebhookList extends React.Component {
     loading: true,
     data: [],
     topicFilterOptions: [],
+    integrationFilterOptions: [],
     pagination: {},
     limit: 10,
     page: 0,
@@ -37,15 +37,29 @@ class WebhookList extends React.Component {
 
   componentDidMount() {
     this.getTopics();
+    this.getIntegrations();
     this.callAPI();
   }
 
   getTopics() {
-    API.get('/webhooks/topics')
+    API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
       .then(response => {
         const { data } = response.data;
         const topics = data.map(item => item.topic);
         this.setState({ topicFilterOptions: topics });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
       })
       .catch(error => {
         // handle error
@@ -77,13 +91,14 @@ class WebhookList extends React.Component {
 
   callAPI = () => {
     const {
-      limit, page, searchTerm, serverSideFilterList
+      limit, page, searchTerm, serverSideFilterList,
     } = this.state;
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
       topic: serverSideFilterList[2] ? serverSideFilterList[2][0] : '',
+      integration_id: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
     };
     this.getAPIwebhooks(params);
   };
@@ -126,13 +141,8 @@ class WebhookList extends React.Component {
   }
 
   handleFilterChange = (filterList) => {
-    const { serverSideFilterList } = this.state;
-    const oldFilterValue = serverSideFilterList[2] ? serverSideFilterList[2][0] : null;
-    const newFilterValue = filterList[2] ? filterList[2][0] : null;
-    if (newFilterValue) {
-      if (newFilterValue !== oldFilterValue) {
-        this.setState({ serverSideFilterList: filterList }, this.callAPI);
-      }
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
     } else {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -164,7 +174,8 @@ class WebhookList extends React.Component {
       limit,
       searchTerm,
       serverSideFilterList,
-      topicFilterOptions
+      topicFilterOptions,
+      integrationFilterOptions
     } = this.state;
 
     const count = pagination.total;
@@ -202,8 +213,13 @@ class WebhookList extends React.Component {
         name: 'integration',
         label: 'Integration',
         options: {
-          filter: false,
+          filter: true,
           sort: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          filterOptions: {
+            names: integrationFilterOptions
+          },
           customBodyRender: value => <div>{value ? value.name : null}</div>
         }
       },
