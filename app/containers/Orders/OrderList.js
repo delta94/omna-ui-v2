@@ -129,6 +129,23 @@ class OrderList extends React.Component {
     this.setState({ searchTerm: '' }, this.callAPI);
   };
 
+  getCurrencySymbol = currency => {
+    switch (currency) {
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      case 'CNY':
+        return '¥';
+      case 'RUB':
+        return '₽';
+      case 'JPY':
+        return '¥';
+      default:
+        return '$';
+    }
+  };
+
   render() {
     // const { classes, orders } = this.props;
     const {
@@ -140,6 +157,7 @@ class OrderList extends React.Component {
     } = this.state;
     const { pagination, data } = orders;
 
+    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -172,7 +190,11 @@ class OrderList extends React.Component {
         name: 'total_price',
         label: 'Total',
         options: {
-          filter: false
+          filter: false,
+          customBodyRender: (value, tableMeta) => {
+            const { currency } = tableMeta.rowData;
+            return <div>{this.getCurrencySymbol(currency) + value}</div>;
+          }
         }
       },
       {
@@ -182,6 +204,13 @@ class OrderList extends React.Component {
           filter: false,
           sort: true,
           customBodyRender: value => <div>{value.name}</div>
+        }
+      },
+      {
+        name: 'currency',
+        options: {
+          filter: false,
+          display: false
         }
       }
     ];
