@@ -14,6 +14,7 @@ import Loading from 'dan-components/Loading';
 import moment from 'moment';
 import get from 'lodash/get';
 //
+import AlertDialog from '../../Common/AlertDialog';
 import API from '../../Utils/api';
 
 const styles = () => ({
@@ -32,7 +33,13 @@ class WebhookList extends React.Component {
     limit: 10,
     page: 0,
     searchTerm: '',
-    serverSideFilterList: []
+    serverSideFilterList: [],
+    alertDialog: {
+      open: false,
+      objectId: '',
+      objectName: '',
+      message: ''
+    },
   };
 
   componentDidMount() {
@@ -165,6 +172,43 @@ class WebhookList extends React.Component {
     history.push(`/app/settings/webhook-list/edit-webhook/${id}`);
   };
 
+  handleOnClickDelete = (id, address, topic) => {
+    this.setState({
+      alertDialog: {
+        open: true,
+        objectId: id,
+        message: `Are you sure you want to remove the webhook with topic: "${topic}" on address: "${address}"?`
+      }
+    });
+  };
+
+  handleDialogConfirm = () => {
+    this.handleDelete();
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDialogCancel = () => {
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDelete = async () => {
+    const { enqueueSnackbar } = this.props;
+    const { alertDialog } = this.state;
+    this.setState({ loading: true });
+    API.delete(`webhooks/${alertDialog.objectId}`).then(() => {
+      enqueueSnackbar('webhook deleted successfully', {
+        variant: 'success'
+      });
+      this.callAPI();
+    }).catch(error => {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }).then(() => {
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
     const {
       data,
@@ -175,7 +219,8 @@ class WebhookList extends React.Component {
       searchTerm,
       serverSideFilterList,
       topicFilterOptions,
-      integrationFilterOptions
+      integrationFilterOptions,
+      alertDialog
     } = this.state;
 
     const count = pagination.total;
@@ -247,6 +292,15 @@ class WebhookList extends React.Component {
                   onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)}
                 >
                   <Ionicon icon="md-create" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="delete">
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => this.handleOnClickDelete(tableMeta ? tableMeta.rowData[0] : null, tableMeta.rowData[1], tableMeta.rowData[2])
+                  }
+                >
+                  <Ionicon icon="md-trash" />
                 </IconButton>
               </Tooltip>
             </div>
@@ -334,6 +388,12 @@ class WebhookList extends React.Component {
           data={data}
           columns={columns}
           options={options}
+        />
+        <AlertDialog
+          open={alertDialog.open}
+          message={alertDialog.message}
+          handleCancel={this.handleDialogCancel}
+          handleConfirm={this.handleDialogConfirm}
         />
       </div>
     );
