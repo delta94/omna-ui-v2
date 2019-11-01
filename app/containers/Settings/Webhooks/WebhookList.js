@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
-import Paper from '@material-ui/core/Paper';
-import moment from 'moment';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
 /* material-ui */
-// core
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 //
+import Loading from 'dan-components/Loading';
+import moment from 'moment';
+import get from 'lodash/get';
+//
 import API from '../../Utils/api';
-import LoadingState from '../../Common/LoadingState';
 
 const styles = () => ({
   table: {
@@ -26,19 +26,49 @@ class WebhookList extends React.Component {
   state = {
     loading: true,
     data: [],
+    topicFilterOptions: [],
+    integrationFilterOptions: [],
     pagination: {},
     limit: 10,
     page: 0,
-    searchTerm: ''
-    // success: true,
-    // messageError: ''
+    searchTerm: '',
+    serverSideFilterList: []
   };
 
   componentDidMount() {
+    this.getTopics();
+    this.getIntegrations();
     this.callAPI();
   }
 
+  getTopics() {
+    API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const topics = data.map(item => item.topic);
+        this.setState({ topicFilterOptions: topics });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
+  }
+
   getAPIwebhooks(params) {
+    const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
     API.get('/webhooks', { params })
       .then(response => {
@@ -50,8 +80,9 @@ class WebhookList extends React.Component {
         });
       })
       .catch(error => {
-        // handle error
-        console.log(error);
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -59,11 +90,15 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page, searchTerm } = this.state;
+    const {
+      limit, page, searchTerm, serverSideFilterList,
+    } = this.state;
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm || ''
+      term: searchTerm || '',
+      topic: serverSideFilterList[2] ? serverSideFilterList[2][0] : '',
+      integration_id: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
     };
     this.getAPIwebhooks(params);
   };
@@ -93,18 +128,32 @@ class WebhookList extends React.Component {
       const timer = setTimeout(() => {
         this.setState({ searchTerm }, this.callAPI);
         clearTimeout(timer);
-      }, 2000);
+      }, 1000);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
     } else {
-      this.setState({ searchTerm: '' }, this.callAPI);
+      const { searchTerm: _searchTerm } = this.state;
+      if (_searchTerm) {
+        this.setState({ searchTerm: '' }, this.callAPI);
+      }
     }
   }
 
-  onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
+  handleFilterChange = (filterList) => {
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+    } else {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
   };
+
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  }
 
   handleAddWebhookClick = () => {
     const { history } = this.props;
@@ -124,6 +173,9 @@ class WebhookList extends React.Component {
       page,
       limit,
       searchTerm,
+      serverSideFilterList,
+      topicFilterOptions,
+      integrationFilterOptions
     } = this.state;
 
     const count = pagination.total;
@@ -133,6 +185,7 @@ class WebhookList extends React.Component {
         name: 'id',
         label: 'ID',
         options: {
+          display: 'excluded',
           filter: false
         }
       },
@@ -148,15 +201,25 @@ class WebhookList extends React.Component {
         name: 'topic',
         label: 'Topic',
         options: {
-          filter: false
+          filter: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[2],
+          filterOptions: {
+            names: topicFilterOptions
+          }
         }
       },
       {
         name: 'integration',
         label: 'Integration',
         options: {
-          filter: false,
+          filter: true,
           sort: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          filterOptions: {
+            names: integrationFilterOptions
+          },
           customBodyRender: value => <div>{value ? value.name : null}</div>
         }
       },
@@ -193,12 +256,15 @@ class WebhookList extends React.Component {
     ];
 
     const options = {
+      filter: true,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
       searchText: searchTerm,
+      serverSideFilterList,
+      searchPlaceholder: 'Search by address & topic',
       rowsPerPage: limit,
       count,
       page,
@@ -212,6 +278,12 @@ class WebhookList extends React.Component {
             break;
           case 'search':
             this.handleSearch(tableState.searchText);
+            break;
+          case 'filterChange':
+            this.handleFilterChange(tableState.filterList);
+            break;
+          case 'resetFilters':
+            this.handleResetFilters();
             break;
           default:
             break;
@@ -256,20 +328,19 @@ class WebhookList extends React.Component {
 
     return (
       <div>
-        {loading ? <Paper><div className="item-padding"><LoadingState loading={loading} text="Loading" /></div></Paper> : (
-          <MUIDataTable
-            data={data}
-            columns={columns}
-            options={options}
-          />
-        )}
+        {loading ? <Loading /> : null}
+        <MUIDataTable
+          data={data}
+          columns={columns}
+          options={options}
+        />
       </div>
     );
   }
 }
 WebhookList.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(WebhookList));
