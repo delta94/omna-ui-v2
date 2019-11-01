@@ -214,7 +214,7 @@ class WebhookList extends React.Component {
         label: 'Integration',
         options: {
           filter: true,
-          sort: true,
+          sort: false,
           filterType: 'dropdown',
           filterList: serverSideFilterList[3],
           filterOptions: {
@@ -257,6 +257,7 @@ class WebhookList extends React.Component {
 
     const options = {
       filter: true,
+      sort: false,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
@@ -289,7 +290,7 @@ class WebhookList extends React.Component {
             break;
         }
       },
-      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+      /*  customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
         switch (colIndex) {
           case 3:
             return (
@@ -312,7 +313,7 @@ class WebhookList extends React.Component {
                 : 1) * (order === 'desc' ? 1 : -1)
             );
         }
-      }),
+      }), */
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton
