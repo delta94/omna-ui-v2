@@ -8,17 +8,30 @@ import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 //
 import Loading from 'dan-components/Loading';
 import moment from 'moment';
 import get from 'lodash/get';
 //
+import AlertDialog from '../../Common/AlertDialog';
 import API from '../../Utils/api';
 
-const styles = () => ({
+const styles = (theme) => ({
   table: {
-    minWidth: 700
+    '& > div': {
+      overflow: 'auto'
+    },
+    '& table': {
+      minWidth: 500,
+      [theme.breakpoints.down('md')]: {
+        '& td': {
+          height: 40
+        }
+      }
+    }
   }
 });
 
@@ -32,7 +45,13 @@ class WebhookList extends React.Component {
     limit: 10,
     page: 0,
     searchTerm: '',
-    serverSideFilterList: []
+    serverSideFilterList: [],
+    alertDialog: {
+      open: false,
+      objectId: '',
+      objectName: '',
+      message: ''
+    },
   };
 
   componentDidMount() {
@@ -40,6 +59,16 @@ class WebhookList extends React.Component {
     this.getIntegrations();
     this.callAPI();
   }
+
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
+        }
+      }
+    }
+  });
 
   getTopics() {
     API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
@@ -165,7 +194,48 @@ class WebhookList extends React.Component {
     history.push(`/app/settings/webhook-list/edit-webhook/${id}`);
   };
 
+  handleOnClickDelete = (tableMeta) => {
+    const id = tableMeta ? tableMeta.rowData[0] : null;
+    const address = tableMeta ? tableMeta.rowData[1] : null;
+    const topic = tableMeta ? tableMeta.rowData[2] : null;
+    this.setState({
+      alertDialog: {
+        open: true,
+        objectId: id,
+        message: `Are you sure you want to remove the webhook with topic: "${topic}" on address: "${address}"?`
+      }
+    });
+  };
+
+  handleDialogConfirm = () => {
+    this.handleDelete();
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDialogCancel = () => {
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDelete = async () => {
+    const { enqueueSnackbar } = this.props;
+    const { alertDialog } = this.state;
+    this.setState({ loading: true });
+    API.delete(`webhooks/${alertDialog.objectId}`).then(() => {
+      enqueueSnackbar('webhook deleted successfully', {
+        variant: 'success'
+      });
+      this.callAPI();
+    }).catch(error => {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }).then(() => {
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
+    const { classes } = this.props;
     const {
       data,
       pagination,
@@ -175,7 +245,8 @@ class WebhookList extends React.Component {
       searchTerm,
       serverSideFilterList,
       topicFilterOptions,
-      integrationFilterOptions
+      integrationFilterOptions,
+      alertDialog,
     } = this.state;
 
     const count = pagination.total;
@@ -214,7 +285,7 @@ class WebhookList extends React.Component {
         label: 'Integration',
         options: {
           filter: true,
-          sort: true,
+          sort: false,
           filterType: 'dropdown',
           filterList: serverSideFilterList[3],
           filterOptions: {
@@ -242,12 +313,16 @@ class WebhookList extends React.Component {
           customBodyRender: (value, tableMeta) => (
             <div>
               <Tooltip title="edit">
-                <IconButton
-                  aria-label="edit"
+                <EditIcon
+                  color="action"
                   onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)}
-                >
-                  <Ionicon icon="md-create" />
-                </IconButton>
+                />
+              </Tooltip>
+              <Tooltip title="delete">
+                <DeleteIcon
+                  color="action"
+                  onClick={() => this.handleOnClickDelete(tableMeta)}
+                />
               </Tooltip>
             </div>
           )
@@ -257,6 +332,7 @@ class WebhookList extends React.Component {
 
     const options = {
       filter: true,
+      sort: false,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
@@ -289,30 +365,6 @@ class WebhookList extends React.Component {
             break;
         }
       },
-      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
-        switch (colIndex) {
-          case 3:
-            return (
-              (parseFloat(a.customSortData[colIndex])
-                < parseFloat(b.customSortData[colIndex])
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          case 4:
-            return (
-              (a.customSortData[colIndex].name.toLowerCase()
-                < b.customSortData[colIndex].name.toLowerCase()
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          default:
-            return (
-              (a.customSortData[colIndex] < b.customSortData[colIndex]
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-        }
-      }),
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton
@@ -323,22 +375,31 @@ class WebhookList extends React.Component {
             <Ionicon icon="md-add-circle" />
           </IconButton>
         </Tooltip>
-      )
+      ),
     };
 
     return (
-      <div>
+      <div className={classes.table}>
         {loading ? <Loading /> : null}
-        <MUIDataTable
-          data={data}
-          columns={columns}
-          options={options}
+        <MuiThemeProvider theme={this.getMuiTheme()}>
+          <MUIDataTable
+            data={data}
+            columns={columns}
+            options={options}
+          />
+        </MuiThemeProvider>
+        <AlertDialog
+          open={alertDialog.open}
+          message={alertDialog.message}
+          handleCancel={this.handleDialogCancel}
+          handleConfirm={this.handleDialogConfirm}
         />
       </div>
     );
   }
 }
 WebhookList.propTypes = {
+  classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
