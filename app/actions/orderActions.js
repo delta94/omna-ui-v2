@@ -10,25 +10,16 @@ export const getOrdersSuccess = orders => {
 };
 
 export const getOrders = params => {
-  api
-    .get('/orders', { params })
-    .then(response => {
-      // this.setState({
-      //   orders: get(response, 'data', { data: [], pagination: {} }),
-      //   limit: get(response, 'data.pagination.limit', 0)
-      // });
-      debugger;
-
-      return dispatch => {
+  return dispatch => {
+    api
+      .get('/orders', { params })
+      .then(response => {
         setTimeout(() => {
           dispatch(getOrdersSuccess(response.data));
         }, 1000);
-      };
-    })
-    .catch(error => {
-      // handle error
-      console.log(error);
-    });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 };
-
-export const addFlows = () => {};

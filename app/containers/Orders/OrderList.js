@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import Paper from '@material-ui/core/Paper';
 // import classNames from 'classnames';
-// import Ionicon from 'react-ionicons';
 import moment from 'moment';
 // import { connect } from 'react-redux';
+import { withSnackbar } from 'notistack';
 
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
@@ -14,7 +14,6 @@ import MUIDataTable from 'mui-datatables';
 import API from '../Utils/api';
 // import Utils from '../Common/Utils';
 import LoadingState from '../Common/LoadingState';
-// const variantIcon = Utils.iconVariants();
 // import { getOrders } from '../../actions/orderActions';
 
 const styles = () => ({
@@ -27,20 +26,21 @@ class OrderList extends React.Component {
   state = {
     isLoading: true,
     orders: { data: [], pagination: {} },
+    integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
     success: true,
-    messageError: '',
     searchTerm: ''
-    // selectedRow: -1
   };
 
   componentDidMount() {
+    this.getIntegrations();
     this.callAPI();
   }
 
   getOrders(params) {
+    const { enqueueSnackbar } = this.props;
     API.get('/orders', { params })
       .then(response => {
         this.setState({
@@ -49,12 +49,25 @@ class OrderList extends React.Component {
         });
       })
       .catch(error => {
-        // handle error
-        console.log(error);
-        this.setState({ success: false, messageError: error.message });
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       })
       .finally(() => {
         this.setState({ isLoading: false });
+      });
+  }
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
       });
   }
 
@@ -104,13 +117,6 @@ class OrderList extends React.Component {
     this.getOrders(params);
   };
 
-  handleFilterSubmit = filterList => () => {
-    console.log('Submitting filters: ', filterList);
-
-    this.setState({ isLoading: true, serverSideFilterList: filterList });
-    // this.setState({ currentTerm: filterList }, this.callAPI);
-  };
-
   handleSearch = searchTerm => {
     if (searchTerm) {
       const timer = setTimeout(() => {
@@ -127,6 +133,21 @@ class OrderList extends React.Component {
 
   onHandleCloseSearch = () => {
     this.setState({ searchTerm: '' }, this.callAPI);
+  };
+
+  handleFilterChange = filterList => {
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+    } else {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  };
+
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
   };
 
   getCurrencySymbol = currency => {
@@ -149,15 +170,16 @@ class OrderList extends React.Component {
   render() {
     // const { classes, orders } = this.props;
     const {
+      integrationFilterOptions,
       isLoading,
-      page,
+      limit,
       orders,
+      page,
       serverSideFilterList,
       searchTerm
     } = this.state;
     const { pagination, data } = orders;
 
-    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -182,7 +204,13 @@ class OrderList extends React.Component {
         name: 'status',
         label: 'Status',
         options: {
+          // filter: true,
           sort: false,
+          // filterType: 'dropdown',
+          // filterList: serverSideFilterList[3],
+          // filterOptions: {
+          //   names: integrationFilterOptions
+          // },
           customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
@@ -201,8 +229,12 @@ class OrderList extends React.Component {
         name: 'integration',
         label: 'Integration',
         options: {
-          filter: false,
           sort: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          filterOptions: {
+            names: integrationFilterOptions
+          },
           customBodyRender: value => <div>{value.name}</div>
         }
       },
@@ -217,23 +249,17 @@ class OrderList extends React.Component {
 
     const options = {
       filter: true,
-      filterType: 'textField',
       serverSideFilterList,
       searchText: searchTerm,
+      searchPlaceholder: 'Search by number & status',
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
+      rowsPerPage: limit,
       count,
       page,
-      onFilterChange: (column, filterList, type) => {
-        // debugger;
-        // if (type === 'chip') {
-        //   console.log('updating filters via chip');
-        this.handleFilterSubmit(filterList)();
-        // }
-      },
       onTableChange: (action, tableState) => {
         switch (action) {
           case 'changePage':
@@ -244,6 +270,12 @@ class OrderList extends React.Component {
             break;
           case 'search':
             this.handleSearch(tableState.searchText);
+            break;
+          case 'filterChange':
+            this.handleFilterChange(tableState.filterList);
+            break;
+          case 'resetFilters':
+            this.handleResetFilters();
             break;
           default:
             break;
@@ -306,6 +338,7 @@ OrderList.propTypes = {
   // orders: PropTypes.array.isRequired,
   // onGetOrders: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func
   }).isRequired
@@ -324,4 +357,4 @@ OrderList.propTypes = {
 //   mapDispatchToProps
 // )(OrderList);
 
-export default withStyles(styles)(OrderList);
+export default withSnackbar(withStyles(styles)(OrderList));
