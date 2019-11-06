@@ -35,7 +35,7 @@ class Utils {
   }
 
   static urlLogo(channel) {
-    switch (channel && channel.substring(0, channel.length - 2)) {
+    switch (channel && channel.replace(/[A-Z]{2}$/, '')) {
       case 'Lazada':
         return '/images/lazada_logo.png';
       case 'Qoo10':
@@ -69,9 +69,8 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg =
-      url +
-      JSON.stringify(params)
+    const msg = url
+      + JSON.stringify(params)
         .replace(/["']/g, '')
         .split('')
         .sort()
