@@ -23,6 +23,7 @@ import OrderCustomer from './detail/OrderCustomer';
 import OrderIntegration from './detail/OrderIntegration';
 import OrderItems from './detail/OrderItems';
 import DocumentTypesDialog from './DocumentTypesDialog';
+import PageHeader from '../Common/PageHeader';
 
 const variantIcon = Utils.iconVariants();
 
@@ -127,7 +128,7 @@ class OrderDetails extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       order,
       loading,
@@ -143,6 +144,7 @@ class OrderDetails extends Component {
 
     return (
       <div>
+        <PageHeader title="Order Details" history={history} />
         <div className="item-padding">
           {loading ? <LoadingState loading={loading} /> : null}
           {loading ? null : !success ? (
@@ -156,7 +158,7 @@ class OrderDetails extends Component {
                     size="small"
                     color="primary"
                     component={Link}
-                    to="/app/orders-list"
+                    to="/app/orders"
                   >
                     <Ionicon
                       icon={variantIcon.arrowBack}
@@ -258,7 +260,8 @@ class OrderDetails extends Component {
 }
 
 OrderDetails.propTypes = {
-  classes: PropTypes.shape({}).isRequired
+  classes: PropTypes.shape({}).isRequired,
+  history: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(OrderDetails);

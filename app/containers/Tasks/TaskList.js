@@ -17,6 +17,7 @@ import API from '../Utils/api';
 import AlertDialog from '../Common/AlertDialog';
 import Utils from '../Common/Utils';
 import Status from './Status';
+import PageHeader from '../Common/PageHeader';
 
 const variantIcon = Utils.iconVariants();
 
@@ -198,7 +199,7 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = task => {
     const { history } = this.props;
-    history.push(`/app/tasks-list/${task.id}/task-details`, {
+    history.push(`/app/tasks/${task.id}`, {
       task: { data: task }
     });
   };
@@ -217,8 +218,10 @@ class TaskList extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { isLoading, page, tasks, alertDialog } = this.state;
+    const { classes, history } = this.props;
+    const {
+      isLoading, page, tasks, alertDialog
+    } = this.state;
     const { pagination, data } = tasks;
 
     const count = get(pagination, 'total', 0);
@@ -372,6 +375,7 @@ class TaskList extends React.Component {
 
     return (
       <div>
+        <PageHeader title="Tasks" history={history} />
         {isLoading ? (
           <Paper>
             <div className="item-padding">

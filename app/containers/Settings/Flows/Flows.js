@@ -26,6 +26,7 @@ import GenericTablePagination from '../../Common/GenericTablePagination';
 import LoadingState from '../../Common/LoadingState';
 import GenericTableHead from '../../Common/GenericTableHead';
 import GenericErrorMessage from '../../Common/GenericErrorMessage';
+import PageHeader from '../../Common/PageHeader';
 // import { getFlows } from '../../../actions/flowActions';
 
 const styles = theme => ({
@@ -58,6 +59,28 @@ const styles = theme => ({
   },
   icon: {
     color: '#9e9e9e'
+  },
+  pageTitle: {
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit * 3,
+    [theme.breakpoints.up('lg')]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+    },
+    '& h4': {
+      fontWeight: 700,
+      textTransform: 'capitalize',
+      [theme.breakpoints.down('md')]: {
+        marginBottom: theme.spacing.unit * 3
+      }
+    },
+  },
+  darkTitle: {
+    color: theme.palette.type === 'dark' ? theme.palette.primary.main : theme.palette.primary.dark,
+  },
+  lightTitle: {
+    color: theme.palette.common.white,
   }
 });
 
@@ -180,7 +203,7 @@ class Flows extends Component {
 
   handleAddAction = () => {
     const { history } = this.props;
-    history.push('/app/settings/workflows/add-workflow');
+    history.push('/app/workflows/add-workflow');
   };
 
   handleStartFlow = async id => {
@@ -199,7 +222,7 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/app/settings/workflows/edit-workflow/${id}`);
+    history.push(`/app/workflows/${id}`);
   };
 
   handleToggleScheduler = async id => {
@@ -242,7 +265,7 @@ class Flows extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       flows,
       loading,
@@ -257,6 +280,7 @@ class Flows extends Component {
 
     return (
       <div>
+        <PageHeader title="Workflows" history={history} />
         <Paper>
           {loading ? (
             <div className="item-padding">

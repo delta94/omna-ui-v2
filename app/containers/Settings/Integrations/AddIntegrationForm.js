@@ -16,6 +16,7 @@ import Loading from 'dan-components/Loading';
 import FormActions from '../../Common/FormActions';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
+import PageHeader from '../../Common/PageHeader';
 
 
 const styles = () => ({
@@ -103,6 +104,7 @@ class AddIntegrationForm extends Component {
     return (
       <div>
         { loadingState && <Loading /> }
+        <PageHeader title="Add Integration" history={history} />
         <Paper className="display-flex justify-content-center">
           <form onSubmit={this.onSubmit} className="display-flex flex-direction-column" noValidate autoComplete="off">
             <TextField

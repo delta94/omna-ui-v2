@@ -14,6 +14,7 @@ import MUIDataTable from 'mui-datatables';
 import API from '../Utils/api';
 // import Utils from '../Common/Utils';
 import LoadingState from '../Common/LoadingState';
+import PageHeader from '../Common/PageHeader';
 // const variantIcon = Utils.iconVariants();
 // import { getOrders } from '../../actions/orderActions';
 
@@ -82,7 +83,7 @@ class OrderList extends React.Component {
   handleDetailsViewClick = order => {
     const { history } = this.props;
     history.push(
-      `/app/orders-list/${get(order, 'integration.id', 0)}/${get(
+      `/app/orders/${get(order, 'integration.id', 0)}/${get(
         order,
         'number',
         0
@@ -147,7 +148,7 @@ class OrderList extends React.Component {
   };
 
   render() {
-    // const { classes, orders } = this.props;
+    const { history } = this.props;
     const {
       isLoading,
       page,
@@ -283,6 +284,7 @@ class OrderList extends React.Component {
 
     return (
       <div>
+        <PageHeader title="Orders" history={history} />
         {isLoading ? (
           <Paper>
             <div className="item-padding">

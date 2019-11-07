@@ -39,66 +39,66 @@ class Application extends React.Component {
               path="/app/dashboard"
               component={DashboardPage}
             />
-            <AuthGuardRoute exact path="/app/orders-list" component={Orders} />
+            <AuthGuardRoute exact path="/app/orders" component={Orders} />
             <AuthGuardRoute
               exact
-              path="/app/orders-list/:store_id/:number/order-details"
+              path="/app/orders/:store_id/:number/order-details"
               component={OrderDetails}
             />
-            <AuthGuardRoute exact path="/app/tasks-list" component={Tasks} />
+            <AuthGuardRoute exact path="/app/tasks" component={Tasks} />
             <AuthGuardRoute
               exact
-              path="/app/tasks-list/:task_id/task-details"
+              path="/app/tasks/:id"
               component={TaskDetails}
             />
             <AuthGuardRoute
               exact
-              path="/app/products-list"
+              path="/app/products"
               component={Products}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/integrations"
+              path="/app/integrations"
               component={Integrations}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/integrations/add-integration"
+              path="/app/integrations/add-integration"
               component={AddIntegrationForm}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/Workflows"
+              path="/app/workflows"
               component={Workflows}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/Workflows/add-workflow"
+              path="/app/workflows/add-workflow"
               component={AddWorkflow}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/Workflows/edit-workflow/:id"
+              path="/app/workflows/:id"
               component={EditWorkflow}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/add-tenant"
+              path="/app/add-tenant"
               component={AddTenant}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/webhook-list"
+              path="/app/webhooks"
               component={Webhooks}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/webhook-list/add-webhook"
+              path="/app/webhooks/add-webhook"
               component={AddWebhook}
             />
             <AuthGuardRoute
               exact
-              path="/app/settings/webhook-list/edit-webhook/:id"
+              path="/app/webhooks/:id"
               component={EditWebhook}
             />
             {/* Home */}
