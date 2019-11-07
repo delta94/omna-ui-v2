@@ -254,32 +254,30 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) => {
-        return customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-          }
-        });
-      }
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      })
     };
 
     return (

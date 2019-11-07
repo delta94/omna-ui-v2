@@ -76,9 +76,9 @@ class OrderDetails extends Component {
 
     const order = get(this.props, 'location.state.order', null);
     if (
-      order !== null &&
-      storeId === get(order, 'data.integration.id', null) &&
-      number === get(order, 'data.number', null)
+      order !== null
+      && storeId === get(order, 'data.integration.id', null)
+      && number === get(order, 'data.number', null)
     ) {
       this.setState({ order, loading: false });
       this.callAPI(storeId, number);
@@ -182,8 +182,7 @@ class OrderDetails extends Component {
                   <Tooltip title="Print order">
                     <Button
                       size="small"
-                      onClick={() =>
-                        this.onPrintHandler(integrationId, dataNumber)
+                      onClick={() => this.onPrintHandler(integrationId, dataNumber)
                       }
                     >
                       <Ionicon icon={variantIcon.print} />
@@ -207,8 +206,8 @@ class OrderDetails extends Component {
                     <strong>
                       {get(order, 'data.updated_date', null) != null
                         ? moment(order.data.updated_date).format(
-                            'Y-MM-DD H:mm:ss'
-                          )
+                          'Y-MM-DD H:mm:ss'
+                        )
                         : '--'}
                     </strong>
                   </Typography>
