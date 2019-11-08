@@ -17,15 +17,15 @@ import API from '../Utils/api';
 import AlertDialog from '../Common/AlertDialog';
 import Utils from '../Common/Utils';
 import Status from './Status';
+import PageHeader from '../Common/PageHeader';
 
 const variantIcon = Utils.iconVariants();
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);
-  const Icon =
-    not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
-      ? variantIcon.info
-      : variantIcon[not];
+  const Icon = not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
+    ? variantIcon.info
+    : variantIcon[not];
   return (
     <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
@@ -159,15 +159,14 @@ class TaskList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  verifyNotifications = notifications =>
-    notifications.reduce((acc, item) => {
-      if (acc !== 'error') {
-        if (item.type === 'error') return 'error';
-        if (item.type === 'warning') return 'warning';
-        if (item.type === 'info' && acc !== 'warning') return 'info';
-      }
-      return acc;
-    }, '');
+  verifyNotifications = notifications => notifications.reduce((acc, item) => {
+    if (acc !== 'error') {
+      if (item.type === 'error') return 'error';
+      if (item.type === 'warning') return 'warning';
+      if (item.type === 'info' && acc !== 'warning') return 'info';
+    }
+    return acc;
+  }, '');
 
   isSelected = id => get(this.state, 'selected', []).includes(id);
 
@@ -198,7 +197,7 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = task => {
     const { history } = this.props;
-    history.push(`/app/tasks-list/${task.id}/task-details`, {
+    history.push(`/app/tasks/${task.id}`, {
       task: { data: task }
     });
   };
@@ -217,8 +216,10 @@ class TaskList extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { isLoading, page, tasks, alertDialog } = this.state;
+    const { classes, history } = this.props;
+    const {
+      isLoading, page, tasks, alertDialog
+    } = this.state;
     const { pagination, data } = tasks;
 
     const count = get(pagination, 'total', 0);
@@ -247,10 +248,9 @@ class TaskList extends React.Component {
               scheduler
             ] = tableMeta.rowData;
 
-            const notifications =
-              Array.isArray(notificationsArray) && notificationsArray.length > 0
-                ? this.verifyNotifications(notificationsArray)
-                : null;
+            const notifications = Array.isArray(notificationsArray) && notificationsArray.length > 0
+              ? this.verifyNotifications(notificationsArray)
+              : null;
 
             return (
               <div className="display-flex justify-content-space-between align-items-center">
@@ -266,7 +266,8 @@ class TaskList extends React.Component {
                       {id}
                     </Typography>
                     <Typography variant="caption">
-                      <strong>Updated at:</strong>{' '}
+                      <strong>Updated at:</strong>
+                      {' '}
                       {updatedAt != null
                         ? moment(updatedAt).format('Y-MM-DD H:mm:ss')
                         : '--'}
@@ -278,11 +279,11 @@ class TaskList extends React.Component {
                   style={{ flexDirection: 'column' }}
                 >
                   <div className="item-margin-left">
-                    {notifications === 'error' ||
-                    notifications === 'warning' ||
-                    notifications === 'info' ? (
+                    {notifications === 'error'
+                    || notifications === 'warning'
+                    || notifications === 'info' ? (
                       <NotificationBottom type={notifications} />
-                    ) : null}
+                      ) : null}
                     {scheduler ? (
                       <Tooltip title="This task has a schedule">
                         <IconButton aria-label="Schedule">
@@ -372,6 +373,7 @@ class TaskList extends React.Component {
 
     return (
       <div>
+        <PageHeader title="Tasks" history={history} />
         {isLoading ? (
           <Paper>
             <div className="item-padding">

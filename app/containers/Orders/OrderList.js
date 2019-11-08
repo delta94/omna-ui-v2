@@ -16,6 +16,9 @@ import {
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
+
+import PageHeader from '../Common/PageHeader';
+// const variantIcon = Utils.iconVariants();
 // import { getOrders } from '../../actions/orderActions';
 
 const styles = theme => ({
@@ -50,15 +53,16 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
+  getMuiTheme = () =>
+    createMuiTheme({
+      overrides: {
+        MUIDataTableToolbar: {
+          filterPaper: {
+            width: '50%'
+          }
         }
       }
-    }
-  });
+    });
 
   getOrders(params) {
     const { enqueueSnackbar } = this.props;
@@ -93,13 +97,8 @@ class OrderList extends React.Component {
   }
 
   callAPI = () => {
-    const {
-      searchTerm,
-      limit,
-      page,
-      serverSideFilterList
-    } = this.state;
-    
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+
     const params = {
       offset: page * limit,
       limit,
@@ -123,7 +122,7 @@ class OrderList extends React.Component {
   handleDetailsViewClick = order => {
     const { history } = this.props;
     history.push(
-      `/app/orders-list/${get(order, 'integration.id', 0)}/${get(
+      `/app/orders/${get(order, 'integration.id', 0)}/${get(
         order,
         'number',
         0
@@ -183,7 +182,7 @@ class OrderList extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       integrationFilterOptions,
       isLoading,
@@ -253,7 +252,7 @@ class OrderList extends React.Component {
         name: 'currency',
         options: {
           filter: false,
-          display: 'excluded',
+          display: 'excluded'
         }
       }
     ];
@@ -296,8 +295,8 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) => {
-        return customSortData.sort((a, b) => {
+      customSort: (customSortData, colIndex, order) =>
+        customSortData.sort((a, b) => {
           switch (colIndex) {
             case 3:
               return (
@@ -320,16 +319,18 @@ class OrderList extends React.Component {
                   : 1) * (order === 'desc' ? 1 : -1)
               );
           }
-        });
-      }
+        })
     };
 
     return (
-      <div className={classes.table}>
-        {isLoading ? <Loading /> : null}
-        <MuiThemeProvider theme={this.getMuiTheme()}>
-          <MUIDataTable columns={columns} data={data} options={options} />
-        </MuiThemeProvider>
+      <div>
+        <PageHeader title="Orders" history={history} />
+        <div className={classes.table}>
+          {isLoading ? <Loading /> : null}
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable columns={columns} data={data} options={options} />
+          </MuiThemeProvider>
+        </div>
       </div>
     );
   }

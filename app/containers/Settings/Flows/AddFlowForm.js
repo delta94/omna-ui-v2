@@ -11,6 +11,7 @@ import moment from 'moment';
 import API from '../../Utils/api';
 import FlowForm from './FlowForm';
 import withFetchOptions from './WithFetchOptions';
+import PageHeader from '../../Common/PageHeader';
 
 function AddFlowForm(props) {
   const [loading, setLoading] = useState(false);
@@ -78,6 +79,7 @@ function AddFlowForm(props) {
 
   return (
     <Fragment>
+      <PageHeader title="Add Workflow" history={history} />
       {loading && <Loading />}
       <FlowForm
         flowType={flowType}

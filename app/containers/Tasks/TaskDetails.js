@@ -23,6 +23,7 @@ import LoadingState from '../Common/LoadingState';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 import Utils from '../Common/Utils';
+import PageHeader from '../Common/PageHeader';
 
 const variantIcon = Utils.iconVariants();
 
@@ -163,7 +164,7 @@ class TaskDetails extends React.Component {
   };
 
   componentDidMount() {
-    const taskId = get(this.props, 'match.params.task_id', null);
+    const taskId = get(this.props, 'match.params.id', null);
     const task = get(this.props, 'location.state.task', null);
     if (task !== null && taskId === get(task, 'data.id', null)) {
       this.setState({ task, loading: false });
@@ -312,7 +313,7 @@ class TaskDetails extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       content,
       loading,
@@ -338,6 +339,7 @@ class TaskDetails extends React.Component {
 
     return (
       <div>
+        <PageHeader title="Task Details" history={history} />
         <Paper>
           <div className="item-padding">
             {loading ? <LoadingState loading={loading} /> : null}
@@ -354,7 +356,7 @@ class TaskDetails extends React.Component {
                     size="small"
                     color="primary"
                     component={Link}
-                    to="/app/tasks-list"
+                    to="/app/tasks"
                   >
                     <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
                     Tasks

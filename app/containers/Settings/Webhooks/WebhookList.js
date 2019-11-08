@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { withSnackbar } from 'notistack';
@@ -18,6 +18,7 @@ import get from 'lodash/get';
 //
 import AlertDialog from '../../Common/AlertDialog';
 import API from '../../Utils/api';
+import PageHeader from '../../Common/PageHeader';
 
 const styles = (theme) => ({
   table: {
@@ -184,14 +185,9 @@ class WebhookList extends React.Component {
     }
   }
 
-  handleAddWebhookClick = () => {
-    const { history } = this.props;
-    history.push('/app/settings/webhook-list/add-webhook');
-  };
-
   handleEdit = (id) => {
     const { history } = this.props;
-    history.push(`/app/settings/webhook-list/edit-webhook/${id}`);
+    history.push(`/app/webhooks/${id}`);
   };
 
   handleOnClickDelete = (tableMeta) => {
@@ -235,7 +231,7 @@ class WebhookList extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       data,
       pagination,
@@ -370,7 +366,7 @@ class WebhookList extends React.Component {
           <IconButton
             aria-label="add"
             component={Link}
-            to="/app/settings/webhook-list/add-webhook"
+            to="/app/webhooks/add-webhook"
           >
             <Ionicon icon="md-add-circle" />
           </IconButton>
@@ -379,22 +375,25 @@ class WebhookList extends React.Component {
     };
 
     return (
-      <div className={classes.table}>
-        {loading ? <Loading /> : null}
-        <MuiThemeProvider theme={this.getMuiTheme()}>
-          <MUIDataTable
-            data={data}
-            columns={columns}
-            options={options}
+      <Fragment>
+        <PageHeader title="Webhooks" history={history} />
+        <div className={classes.table}>
+          {loading ? <Loading /> : null}
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable
+              data={data}
+              columns={columns}
+              options={options}
+            />
+          </MuiThemeProvider>
+          <AlertDialog
+            open={alertDialog.open}
+            message={alertDialog.message}
+            handleCancel={this.handleDialogCancel}
+            handleConfirm={this.handleDialogConfirm}
           />
-        </MuiThemeProvider>
-        <AlertDialog
-          open={alertDialog.open}
-          message={alertDialog.message}
-          handleCancel={this.handleDialogCancel}
-          handleConfirm={this.handleDialogConfirm}
-        />
-      </div>
+        </div>
+      </Fragment>
     );
   }
 }

@@ -4,6 +4,7 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import WebhookForm from './WebhookForm';
 import API from '../../Utils/api';
+import PageHeader from '../../Common/PageHeader';
 
 function AddWebhook(props) {
   const { history } = props;
@@ -60,6 +61,7 @@ function AddWebhook(props) {
 
   return (
     <div>
+      <PageHeader title="Add Webhook" history={history} />
       <WebhookForm
         address={address}
         topic={topic}

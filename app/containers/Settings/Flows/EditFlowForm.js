@@ -11,6 +11,7 @@ import moment from 'moment';
 import API from '../../Utils/api';
 import FlowForm from './FlowForm';
 import withFetchOptions from './WithFetchOptions';
+import PageHeader from '../../Common/PageHeader';
 
 function EditFlowForm(props) {
   const {
@@ -111,6 +112,7 @@ function EditFlowForm(props) {
 
   return (
     <Fragment>
+      <PageHeader title="Edit Workflow" history={history} />
       <FlowForm
         flowType={flowType}
         flowsTypes={flowTypes}

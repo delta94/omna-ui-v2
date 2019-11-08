@@ -11,14 +11,6 @@ import { withSnackbar } from 'notistack';
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-
-// import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-// import TableCell from '@material-ui/core/TableCell';
-// import TableRow from '@material-ui/core/TableRow';
-// import TableFooter from '@material-ui/core/TableFooter';
-// import TablePagination from '@material-ui/core/TablePagination';
-// import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
 import moment from 'moment';
@@ -27,11 +19,8 @@ import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
-// import GenericTableToolBar from '../../Common/GenericTableToolBar';
-// import GenericTablePagination from '../../Common/GenericTablePagination';
-// import LoadingState from '../../Common/LoadingState';
-// import GenericTableHead from '../../Common/GenericTableHead';
-// import GenericErrorMessage from '../../Common/GenericErrorMessage';
+
+import PageHeader from '../../Common/PageHeader';
 // import { getFlows } from '../../../actions/flowActions';
 
 const styles = theme => ({
@@ -64,6 +53,31 @@ const styles = theme => ({
   },
   icon: {
     color: '#9e9e9e'
+  },
+  pageTitle: {
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit * 3,
+    [theme.breakpoints.up('lg')]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end'
+    },
+    '& h4': {
+      fontWeight: 700,
+      textTransform: 'capitalize',
+      [theme.breakpoints.down('md')]: {
+        marginBottom: theme.spacing.unit * 3
+      }
+    }
+  },
+  darkTitle: {
+    color:
+      theme.palette.type === 'dark'
+        ? theme.palette.primary.main
+        : theme.palette.primary.dark
+  },
+  lightTitle: {
+    color: theme.palette.common.white
   }
 });
 
@@ -102,19 +116,6 @@ class Flows extends Component {
       }
     });
 
-    getIntegrations() {
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      });
-  }
-  
   getIntegrations() {
     API.get('/integrations', { params: { limit: 100, offset: 0 } })
       .then(response => {
@@ -188,7 +189,7 @@ class Flows extends Component {
 
   handleAddAction = () => {
     const { history } = this.props;
-    history.push('/app/settings/workflows/add-workflow');
+    history.push('/app/workflows/add-workflow');
   };
 
   handleStartFlow = async id => {
@@ -207,7 +208,7 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/app/settings/workflows/edit-workflow/${id}`);
+    history.push(`/app/workflows/${id}`);
   };
 
   handleToggleScheduler = async id => {
@@ -229,13 +230,8 @@ class Flows extends Component {
   };
 
   callAPI = () => {
-    const {
-      searchTerm,
-      limit,
-      page,
-      serverSideFilterList
-    } = this.state;
-    
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+
     const params = {
       offset: page * limit,
       limit,
@@ -289,7 +285,7 @@ class Flows extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       flows,
       integrationFilterOptions,
@@ -310,14 +306,14 @@ class Flows extends Component {
         name: 'id',
         options: {
           filter: false,
-          display: 'excluded',
+          display: 'excluded'
         }
       },
       {
         name: 'title',
         label: 'Title',
         options: {
-          filter: false,
+          filter: false
         }
       },
       {
@@ -371,9 +367,7 @@ class Flows extends Component {
               id,
               title,
               integration,
-              task = { scheduler: '' },
-              created_at,
-              updated_at
+              task = { scheduler: '' }
             ] = tableMeta.rowData ? tableMeta.rowData : [];
 
             return (
@@ -436,7 +430,7 @@ class Flows extends Component {
       serverSide: true,
       searchText: searchTerm,
       serverSideFilterList,
-      searchPlaceholder: 'Search by address & topic',
+      searchPlaceholder: 'Search by type',
       rowsPerPage: limit,
       count,
       page,
@@ -490,11 +484,19 @@ class Flows extends Component {
               );
           }
         });
-      }
+      },
+      customToolbar: () => (
+        <Tooltip title="add">
+          <IconButton aria-label="add" onClick={this.handleAddAction}>
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      )
     };
 
     return (
       <div>
+        <PageHeader title="Workflows" history={history} />
         <div className={classes.table}>
           {isLoading ? <Loading /> : null}
           <MuiThemeProvider theme={this.getMuiTheme()}>
