@@ -228,7 +228,7 @@ class TaskList extends React.Component {
         name: 'id',
         options: {
           filter: false,
-          display: false
+          display: 'excluded',
         }
       },
       {

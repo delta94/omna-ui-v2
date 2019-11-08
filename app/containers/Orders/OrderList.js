@@ -1,24 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import Paper from '@material-ui/core/Paper';
 // import classNames from 'classnames';
 import moment from 'moment';
 // import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 
 // material-ui
-import { withStyles } from '@material-ui/core/styles';
+import {
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
+import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
-// import Utils from '../Common/Utils';
-import LoadingState from '../Common/LoadingState';
 // import { getOrders } from '../../actions/orderActions';
 
-const styles = () => ({
+const styles = theme => ({
   table: {
-    minWidth: 700
+    '& > div': {
+      overflow: 'auto'
+    },
+    '& table': {
+      minWidth: 300,
+      [theme.breakpoints.down('md')]: {
+        '& td': {
+          height: 40
+        }
+      }
+    }
   }
 });
 
@@ -30,7 +42,6 @@ class OrderList extends React.Component {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
-    success: true,
     searchTerm: ''
   };
 
@@ -38,6 +49,16 @@ class OrderList extends React.Component {
     this.getIntegrations();
     this.callAPI();
   }
+
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
+        }
+      }
+    }
+  });
 
   getOrders(params) {
     const { enqueueSnackbar } = this.props;
@@ -72,11 +93,18 @@ class OrderList extends React.Component {
   }
 
   callAPI = () => {
-    const { searchTerm, limit, page } = this.state;
+    const {
+      searchTerm,
+      limit,
+      page,
+      serverSideFilterList
+    } = this.state;
+    
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm || ''
+      term: searchTerm || '',
+      integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
 
     this.setState({ isLoading: true });
@@ -104,25 +132,12 @@ class OrderList extends React.Component {
     );
   };
 
-  handleSearchClick = (currentTerm, filters) => {
-    const { limit, page } = this.state;
-    const params = {
-      offset: page * limit,
-      limit,
-      term: currentTerm,
-      integration_id: filters.Integration
-    };
-
-    this.setState({ isLoading: true });
-    this.getOrders(params);
-  };
-
   handleSearch = searchTerm => {
     if (searchTerm) {
       const timer = setTimeout(() => {
         this.setState({ searchTerm }, this.callAPI);
         clearTimeout(timer);
-      }, 2000);
+      }, 800);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
@@ -168,7 +183,7 @@ class OrderList extends React.Component {
   };
 
   render() {
-    // const { classes, orders } = this.props;
+    const { classes } = this.props;
     const {
       integrationFilterOptions,
       isLoading,
@@ -180,6 +195,7 @@ class OrderList extends React.Component {
     } = this.state;
     const { pagination, data } = orders;
 
+    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -187,7 +203,7 @@ class OrderList extends React.Component {
         name: 'number',
         label: 'Number',
         options: {
-          filter: true
+          filter: false
         }
       },
       {
@@ -196,7 +212,7 @@ class OrderList extends React.Component {
         options: {
           filter: false,
           customBodyRender: value => (
-            <div>{moment(value).format('Y-MM-DD H:mm:ss')}</div>
+            <div>{moment(value).format('Y-MM-DD')}</div>
           )
         }
       },
@@ -204,13 +220,8 @@ class OrderList extends React.Component {
         name: 'status',
         label: 'Status',
         options: {
-          // filter: true,
+          filter: false,
           sort: false,
-          // filterType: 'dropdown',
-          // filterList: serverSideFilterList[3],
-          // filterOptions: {
-          //   names: integrationFilterOptions
-          // },
           customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
@@ -231,7 +242,7 @@ class OrderList extends React.Component {
         options: {
           sort: true,
           filterType: 'dropdown',
-          filterList: serverSideFilterList[3],
+          filterList: serverSideFilterList[4],
           filterOptions: {
             names: integrationFilterOptions
           },
@@ -242,21 +253,21 @@ class OrderList extends React.Component {
         name: 'currency',
         options: {
           filter: false,
-          display: false
+          display: 'excluded',
         }
       }
     ];
 
     const options = {
       filter: true,
-      serverSideFilterList,
-      searchText: searchTerm,
-      searchPlaceholder: 'Search by number & status',
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
+      searchText: searchTerm,
+      serverSideFilterList,
+      searchPlaceholder: 'Search by address & topic',
       rowsPerPage: limit,
       count,
       page,
@@ -314,21 +325,11 @@ class OrderList extends React.Component {
     };
 
     return (
-      <div>
-        {isLoading ? (
-          <Paper>
-            <div className="item-padding">
-              <LoadingState loading={isLoading} text="Loading" />
-            </div>
-          </Paper>
-        ) : (
-          <MUIDataTable
-            title="Orders"
-            columns={columns}
-            data={data}
-            options={options}
-          />
-        )}
+      <div className={classes.table}>
+        {isLoading ? <Loading /> : null}
+        <MuiThemeProvider theme={this.getMuiTheme()}>
+          <MUIDataTable columns={columns} data={data} options={options} />
+        </MuiThemeProvider>
       </div>
     );
   }
