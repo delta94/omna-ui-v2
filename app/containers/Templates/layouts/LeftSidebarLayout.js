@@ -12,6 +12,7 @@ import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
+import MySnackBar from '../../Common/SnackBar';
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -74,6 +75,14 @@ class LeftSidebarLayout extends React.Component {
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
             ) */}
+            <div>
+              <MySnackBar
+                variant="warning"
+                customStyle
+                open={!isReadyToOmna}
+                message="The current tenant is not ready to use with OMNA application. Please initialize or switch the current tenant. Also you can create a new one."
+              />
+            </div>
             {!pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />)}
             <Fade
               in={pageLoaded}

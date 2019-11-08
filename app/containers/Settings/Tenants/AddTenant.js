@@ -10,6 +10,7 @@ import Loading from 'dan-components/Loading';
 import TenantForm from './TenantForm';
 import API from '../../Utils/api';
 import { setReloadTenants } from '../../../actions/TenantActions';
+import PageHeader from '../../Common/PageHeader';
 
 
 function AddTenant(props) {
@@ -43,6 +44,7 @@ function AddTenant(props) {
   return (
     <Fragment>
       {loading && <Loading />}
+      <PageHeader title="Create Tenant" history={history} />
       <TenantForm
         name={name}
         handleNameChange={onHandleNameChange}

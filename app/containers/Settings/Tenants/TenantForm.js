@@ -33,7 +33,7 @@ function TenantForm(props) {
   return (
     <div>
       <form onSubmit={onSubmitForm} noValidate autoComplete="off">
-        <PapperBlock title="Tenant" icon="ios-add" desc="After tenant creation you can start adding integrations and creating flows">
+        <PapperBlock title="Tenant" icon="ios-add-circle-outline" desc="After tenant creation you can start adding integrations and creating flows">
           <TextField
             required
             id="name"
