@@ -254,6 +254,13 @@ class OrderList extends React.Component {
           filter: false,
           display: 'excluded'
         }
+      },
+      {
+        name: 'id',
+        options: {
+          filter: false,
+          display: 'excluded'
+        }
       }
     ];
 
