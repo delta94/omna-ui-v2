@@ -110,8 +110,8 @@ WebhookForm.propTypes = {
   integration: PropTypes.string.isRequired,
   topicOptions: PropTypes.array.isRequired,
   integrationOptions: PropTypes.array.isRequired,
-  onAddressChange: PropTypes.string.isRequired,
-  onTopicChange: PropTypes.string.isRequired,
+  onAddressChange: PropTypes.func.isRequired,
+  onTopicChange: PropTypes.func.isRequired,
   onIntegrationChange: PropTypes.func.isRequired,
   onSubmitForm: PropTypes.func.isRequired
 };

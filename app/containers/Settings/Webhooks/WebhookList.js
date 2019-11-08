@@ -1,24 +1,38 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
-import Paper from '@material-ui/core/Paper';
-import moment from 'moment';
 import { withSnackbar } from 'notistack';
 import { Link } from 'react-router-dom';
 
 /* material-ui */
-// core
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 //
+import Loading from 'dan-components/Loading';
+import moment from 'moment';
+import get from 'lodash/get';
+//
+import AlertDialog from '../../Common/AlertDialog';
 import API from '../../Utils/api';
-import LoadingState from '../../Common/LoadingState';
+import PageHeader from '../../Common/PageHeader';
 
-const styles = () => ({
+const styles = (theme) => ({
   table: {
-    minWidth: 700
+    '& > div': {
+      overflow: 'auto'
+    },
+    '& table': {
+      minWidth: 500,
+      [theme.breakpoints.down('md')]: {
+        '& td': {
+          height: 40
+        }
+      }
+    }
   }
 });
 
@@ -26,19 +40,65 @@ class WebhookList extends React.Component {
   state = {
     loading: true,
     data: [],
+    topicFilterOptions: [],
+    integrationFilterOptions: [],
     pagination: {},
     limit: 10,
     page: 0,
-    searchTerm: ''
-    // success: true,
-    // messageError: ''
+    searchTerm: '',
+    serverSideFilterList: [],
+    alertDialog: {
+      open: false,
+      objectId: '',
+      objectName: '',
+      message: ''
+    },
   };
 
   componentDidMount() {
+    this.getTopics();
+    this.getIntegrations();
     this.callAPI();
   }
 
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
+        }
+      }
+    }
+  });
+
+  getTopics() {
+    API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const topics = data.map(item => item.topic);
+        this.setState({ topicFilterOptions: topics });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
+  }
+
   getAPIwebhooks(params) {
+    const { enqueueSnackbar } = this.props;
     this.setState({ loading: true });
     API.get('/webhooks', { params })
       .then(response => {
@@ -50,8 +110,9 @@ class WebhookList extends React.Component {
         });
       })
       .catch(error => {
-        // handle error
-        console.log(error);
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -59,11 +120,15 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page, searchTerm } = this.state;
+    const {
+      limit, page, searchTerm, serverSideFilterList,
+    } = this.state;
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm || ''
+      term: searchTerm || '',
+      topic: serverSideFilterList[2] ? serverSideFilterList[2][0] : '',
+      integration_id: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
     };
 
     this.getAPIwebhooks(params);
@@ -94,30 +159,80 @@ class WebhookList extends React.Component {
       const timer = setTimeout(() => {
         this.setState({ searchTerm }, this.callAPI);
         clearTimeout(timer);
-      }, 2000);
+      }, 1000);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
     } else {
-      this.setState({ searchTerm: '' }, this.callAPI);
+      const { searchTerm: _searchTerm } = this.state;
+      if (_searchTerm) {
+        this.setState({ searchTerm: '' }, this.callAPI);
+      }
     }
   }
 
-  onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
+  handleFilterChange = (filterList) => {
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+    } else {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
   };
 
-  handleAddWebhookClick = () => {
-    const { history } = this.props;
-    history.push('/app/settings/webhook-list/add-webhook');
-  };
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  }
 
   handleEdit = (id) => {
     const { history } = this.props;
-    history.push(`/app/settings/webhook-list/edit-webhook/${id}`);
+    history.push(`/app/webhooks/${id}`);
   };
 
+  handleOnClickDelete = (tableMeta) => {
+    const id = tableMeta ? tableMeta.rowData[0] : null;
+    const address = tableMeta ? tableMeta.rowData[1] : null;
+    const topic = tableMeta ? tableMeta.rowData[2] : null;
+    this.setState({
+      alertDialog: {
+        open: true,
+        objectId: id,
+        message: `Are you sure you want to remove the webhook with topic: "${topic}" on address: "${address}"?`
+      }
+    });
+  };
+
+  handleDialogConfirm = () => {
+    this.handleDelete();
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDialogCancel = () => {
+    this.setState({ alertDialog: { open: false } });
+  };
+
+  handleDelete = async () => {
+    const { enqueueSnackbar } = this.props;
+    const { alertDialog } = this.state;
+    this.setState({ loading: true });
+    API.delete(`webhooks/${alertDialog.objectId}`).then(() => {
+      enqueueSnackbar('webhook deleted successfully', {
+        variant: 'success'
+      });
+      this.callAPI();
+    }).catch(error => {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }).then(() => {
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
+    const { classes, history } = this.props;
     const {
       data,
       pagination,
@@ -125,6 +240,10 @@ class WebhookList extends React.Component {
       page,
       limit,
       searchTerm,
+      serverSideFilterList,
+      topicFilterOptions,
+      integrationFilterOptions,
+      alertDialog,
     } = this.state;
 
     const count = pagination.total;
@@ -134,6 +253,7 @@ class WebhookList extends React.Component {
         name: 'id',
         label: 'ID',
         options: {
+          display: 'excluded',
           filter: false
         }
       },
@@ -149,15 +269,25 @@ class WebhookList extends React.Component {
         name: 'topic',
         label: 'Topic',
         options: {
-          filter: false
+          filter: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[2],
+          filterOptions: {
+            names: topicFilterOptions
+          }
         }
       },
       {
         name: 'integration',
         label: 'Integration',
         options: {
-          filter: false,
-          sort: true,
+          filter: true,
+          sort: false,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          filterOptions: {
+            names: integrationFilterOptions
+          },
           customBodyRender: value => <div>{value ? value.name : null}</div>
         }
       },
@@ -180,12 +310,16 @@ class WebhookList extends React.Component {
           customBodyRender: (value, tableMeta) => (
             <div>
               <Tooltip title="edit">
-                <IconButton
-                  aria-label="edit"
+                <EditIcon
+                  color="action"
                   onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)}
-                >
-                  <Ionicon icon="md-create" />
-                </IconButton>
+                />
+              </Tooltip>
+              <Tooltip title="delete">
+                <DeleteIcon
+                  color="action"
+                  onClick={() => this.handleOnClickDelete(tableMeta)}
+                />
               </Tooltip>
             </div>
           )
@@ -194,12 +328,16 @@ class WebhookList extends React.Component {
     ];
 
     const options = {
+      filter: true,
+      sort: false,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
       searchText: searchTerm,
+      serverSideFilterList,
+      searchPlaceholder: 'Search by address & topic',
       rowsPerPage: limit,
       count,
       page,
@@ -214,63 +352,56 @@ class WebhookList extends React.Component {
           case 'search':
             this.handleSearch(tableState.searchText);
             break;
+          case 'filterChange':
+            this.handleFilterChange(tableState.filterList);
+            break;
+          case 'resetFilters':
+            this.handleResetFilters();
+            break;
           default:
             break;
         }
       },
-      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
-        switch (colIndex) {
-          case 3:
-            return (
-              (parseFloat(a.customSortData[colIndex])
-                < parseFloat(b.customSortData[colIndex])
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          case 4:
-            return (
-              (a.customSortData[colIndex].name.toLowerCase()
-                < b.customSortData[colIndex].name.toLowerCase()
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          default:
-            return (
-              (a.customSortData[colIndex] < b.customSortData[colIndex]
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-        }
-      }),
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton
             aria-label="add"
             component={Link}
-            to="/app/settings/webhook-list/add-webhook"
+            to="/app/webhooks/add-webhook"
           >
             <Ionicon icon="md-add-circle" />
           </IconButton>
         </Tooltip>
-      )
+      ),
     };
 
     return (
-      <div>
-        {loading ? <Paper><div className="item-padding"><LoadingState loading={loading} text="Loading" /></div></Paper> : (
-          <MUIDataTable
-            data={data}
-            columns={columns}
-            options={options}
+      <Fragment>
+        <PageHeader title="Webhooks" history={history} />
+        <div className={classes.table}>
+          {loading ? <Loading /> : null}
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable
+              data={data}
+              columns={columns}
+              options={options}
+            />
+          </MuiThemeProvider>
+          <AlertDialog
+            open={alertDialog.open}
+            message={alertDialog.message}
+            handleCancel={this.handleDialogCancel}
+            handleConfirm={this.handleDialogConfirm}
           />
-        )}
-      </div>
+        </div>
+      </Fragment>
     );
   }
 }
 WebhookList.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(WebhookList));

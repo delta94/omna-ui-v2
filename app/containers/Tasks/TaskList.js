@@ -8,24 +8,23 @@ import MUIDataTable from 'mui-datatables';
 
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import LoadingState from '../Common/LoadingState';
+import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
 import AlertDialog from '../Common/AlertDialog';
 import Utils from '../Common/Utils';
 import Status from './Status';
+import PageHeader from '../Common/PageHeader';
 
 const variantIcon = Utils.iconVariants();
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);
-  const Icon =
-    not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
-      ? variantIcon.info
-      : variantIcon[not];
+  const Icon = not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
+    ? variantIcon.info
+    : variantIcon[not];
   return (
     <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
@@ -70,7 +69,9 @@ class TaskList extends React.Component {
       message: '',
       id: -1
     },
-    anchorEl: null
+    anchorEl: null,
+    serverSideFilterList: [],
+    searchTerm: ''
   };
 
   componentDidMount() {
@@ -97,13 +98,19 @@ class TaskList extends React.Component {
   };
 
   callAPI = () => {
-    const { limit, page } = this.state;
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
+
     const params = {
       offset: page * limit,
       limit,
-      with_details: true
+      term: searchTerm || '',
+      with_details: true,
+      status: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
     };
 
+    this.setState({ isLoading: true });
     this.getTasks(params);
   };
 
@@ -159,15 +166,14 @@ class TaskList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  verifyNotifications = notifications =>
-    notifications.reduce((acc, item) => {
-      if (acc !== 'error') {
-        if (item.type === 'error') return 'error';
-        if (item.type === 'warning') return 'warning';
-        if (item.type === 'info' && acc !== 'warning') return 'info';
-      }
-      return acc;
-    }, '');
+  verifyNotifications = notifications => notifications.reduce((acc, item) => {
+    if (acc !== 'error') {
+      if (item.type === 'error') return 'error';
+      if (item.type === 'warning') return 'warning';
+      if (item.type === 'info' && acc !== 'warning') return 'info';
+    }
+    return acc;
+  }, '');
 
   isSelected = id => get(this.state, 'selected', []).includes(id);
 
@@ -198,27 +204,53 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = task => {
     const { history } = this.props;
-    history.push(`/app/tasks-list/${task.id}/task-details`, {
+    history.push(`/app/tasks/${task.id}`, {
       task: { data: task }
     });
   };
 
-  handleSearchClick = (currentTerm, filters) => {
-    const { limit, page } = this.state;
-    const params = {
-      offset: page * limit,
-      limit,
-      term: currentTerm,
-      status: filters.Status
-    };
+  handleSearch = searchTerm => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        this.setState({ searchTerm }, this.callAPI);
+        clearTimeout(timer);
+      }, 800);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    } else {
+      this.setState({ searchTerm: '' }, this.callAPI);
+    }
+  };
 
-    this.setState({ isLoading: true });
-    this.getTasks(params);
+  onHandleCloseSearch = () => {
+    this.setState({ searchTerm: '' }, this.callAPI);
+  };
+
+  handleFilterChange = filterList => {
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+    } else {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  };
+
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
   };
 
   render() {
-    const { classes } = this.props;
-    const { isLoading, page, tasks, alertDialog } = this.state;
+    const { classes, history } = this.props;
+    const {
+      isLoading,
+      page,
+      tasks,
+      alertDialog,
+      serverSideFilterList
+    } = this.state;
     const { pagination, data } = tasks;
 
     const count = get(pagination, 'total', 0);
@@ -228,7 +260,7 @@ class TaskList extends React.Component {
         name: 'id',
         options: {
           filter: false,
-          display: false
+          display: 'excluded'
         }
       },
       {
@@ -247,16 +279,15 @@ class TaskList extends React.Component {
               scheduler
             ] = tableMeta.rowData;
 
-            const notifications =
-              Array.isArray(notificationsArray) && notificationsArray.length > 0
-                ? this.verifyNotifications(notificationsArray)
-                : null;
+            const notifications = Array.isArray(notificationsArray) && notificationsArray.length > 0
+              ? this.verifyNotifications(notificationsArray)
+              : null;
 
             return (
               <div className="display-flex justify-content-space-between align-items-center">
                 <div
                   className="display-flex justify-content-flex-start"
-                  style={{ 'flex-direction': 'column' }}
+                  style={{ flexDirection: 'column' }}
                 >
                   <Typography variant="subtitle2" color="primary">
                     <strong>{description}</strong>
@@ -266,7 +297,8 @@ class TaskList extends React.Component {
                       {id}
                     </Typography>
                     <Typography variant="caption">
-                      <strong>Updated at:</strong>{' '}
+                      <strong>Updated at:</strong>
+                      {' '}
                       {updatedAt != null
                         ? moment(updatedAt).format('Y-MM-DD H:mm:ss')
                         : '--'}
@@ -275,14 +307,14 @@ class TaskList extends React.Component {
                 </div>
                 <div
                   className="display-flex justify-content-flex-end align-items-end"
-                  style={{ 'flex-direction': 'column' }}
+                  style={{ flexDirection: 'column' }}
                 >
                   <div className="item-margin-left">
-                    {notifications === 'error' ||
-                    notifications === 'warning' ||
-                    notifications === 'info' ? (
-                      <NotificationBottom type={notifications} />
-                    ) : null}
+                    {notifications === 'error'
+                      || notifications === 'warning'
+                      || notifications === 'info' ? (
+                        <NotificationBottom type={notifications} />
+                      ) : null}
                     {scheduler ? (
                       <Tooltip title="This task has a schedule">
                         <IconButton aria-label="Schedule">
@@ -316,7 +348,12 @@ class TaskList extends React.Component {
         name: 'status',
         label: 'Status',
         options: {
-          display: false
+          display: false,
+          // filterType: 'dropdown',
+          filterList: serverSideFilterList[3]
+          // filterOptions: {
+          //   names: integrationFilterOptions
+          // },
         }
       },
       {
@@ -360,6 +397,15 @@ class TaskList extends React.Component {
           case 'changeRowsPerPage':
             this.handleChangeRowsPerPage(tableState.rowsPerPage);
             break;
+          case 'search':
+            this.handleSearch(tableState.searchText);
+            break;
+          case 'filterChange':
+            this.handleFilterChange(tableState.filterList);
+            break;
+          case 'resetFilters':
+            this.handleResetFilters();
+            break;
           default:
             break;
         }
@@ -372,15 +418,12 @@ class TaskList extends React.Component {
 
     return (
       <div>
-        {isLoading ? (
-          <Paper>
-            <div className="item-padding">
-              <LoadingState loading={isLoading} text="Loading" />
-            </div>
-          </Paper>
-        ) : (
+        <PageHeader title="Tasks" history={history} />
+        <div className={classes.table}>
+          {isLoading ? <Loading /> : null}
           <MUIDataTable data={data} columns={columns} options={options} />
-        )}
+        </div>
+
         <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}

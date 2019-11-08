@@ -13,8 +13,25 @@ module.exports = [
       {
         key: 'orders',
         name: 'Orders',
-        link: '/app/orders-list'
+        link: '/app/orders'
       }
+    ]
+  },
+  {
+    key: 'integrations',
+    name: 'Integrations',
+    icon: 'md-git-pull-request',
+    child: [
+      {
+        key: 'my-integrations',
+        name: 'My Integrations',
+        link: '/app/integrations'
+      },
+    /*   {
+        key: 'available-integrations',
+        name: 'Available Integrations',
+        link: '/app/integrations'
+      } */
     ]
   },
   {
@@ -23,19 +40,14 @@ module.exports = [
     icon: 'ios-settings',
     child: [
       {
-        key: 'integrations',
-        name: 'Integrations',
-        link: '/app/settings/integrations'
-      },
-      {
         key: 'workflows',
         name: 'Workflows',
-        link: '/app/settings/workflows'
+        link: '/app/workflows'
       },
       {
         key: 'webhooks',
         name: 'Webhooks',
-        link: '/app/settings/webhook-list'
+        link: '/app/webhooks'
       }
     ]
   },
@@ -43,7 +55,7 @@ module.exports = [
     key: 'tasks',
     name: 'Tasks',
     icon: 'ios-grid-outline',
-    link: '/app/tasks-list'
+    link: '/app/tasks'
   }
   // {
   //   key: 'pages',

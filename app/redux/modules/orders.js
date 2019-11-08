@@ -1,11 +1,11 @@
-import { fromJS } from 'immutable';
+// import { fromJS } from 'immutable';
 import { GET_ORDERS } from '../../actions/actionConstants';
 
 const initialState = { orders: { data: [], pagination: {} } };
 
-const initialImmutableState = fromJS(initialState);
+// const initialImmutableState = fromJS(initialState);
 
-const reducer = (state = initialImmutableState, action = {}) => {
+const reducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case GET_ORDERS:
       return {

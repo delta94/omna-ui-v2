@@ -3,17 +3,16 @@ import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import Fade from '@material-ui/core/Fade';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Header,
   Sidebar,
-  BreadCrumb,
 } from 'dan-components';
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
+import MySnackBar from '../../Common/SnackBar';
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -31,7 +30,6 @@ class LeftSidebarLayout extends React.Component {
       bgPosition,
       changeMode,
       place,
-      titleException,
       handleOpenGuide,
       isReadyToOmna,
     } = this.props;
@@ -71,12 +69,20 @@ class LeftSidebarLayout extends React.Component {
             horizontalMenu={false}
           />
           <section className={classNames(classes.mainWrap, classes.sidebarLayout)}>
-            {titleException.indexOf(history.location.pathname) < 0 && (
+            {/* titleException.indexOf(history.location.pathname) < 0 && (
               <div className={classes.pageTitle}>
                 <Typography component="h4" className={bgPosition === 'header' ? classes.darkTitle : classes.lightTitle} variant="h4">{place}</Typography>
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
-            )}
+            ) */}
+            <div>
+              <MySnackBar
+                variant="warning"
+                customStyle
+                open={!isReadyToOmna}
+                message="The current tenant is not ready to use with OMNA application. Please initialize or switch the current tenant. Also you can create a new one."
+              />
+            </div>
             {!pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />)}
             <Fade
               in={pageLoaded}

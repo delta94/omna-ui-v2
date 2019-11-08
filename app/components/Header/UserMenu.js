@@ -12,7 +12,6 @@ import dummy from 'dan-api/dummy/dummyContents';
 import styles from './header-jss';
 import Utils from '../../containers/Common/Utils';
 
-
 class UserMenu extends React.Component {
   state = {
     anchorEl: null,
@@ -48,7 +47,11 @@ class UserMenu extends React.Component {
     return (
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
-          <Avatar alt={user} src={dummy.user.avatar} />
+          <Avatar
+            alt={user}
+            src={dummy.user.avatar}
+            style={{ width: 32, height: 32 }}
+          />
           <div style={{ color: 'white', marginLeft: 8 }}>{user}</div>
         </Button>
         <Menu
@@ -65,7 +68,13 @@ class UserMenu extends React.Component {
           open={openMenu === 'user-setting'}
           onClose={this.handleClose}
         >
-          <MenuItem onClick={this.handleClose} component={Link} to="/app/settings/add-tenant">Create Tenant</MenuItem>
+          <MenuItem
+            onClick={this.handleClose}
+            component={Link}
+            to="/app/add-tenant"
+          >
+            Create Tenant
+          </MenuItem>
           <Divider />
           <MenuItem onClick={this.handleLogout}>
             <ListItemIcon>

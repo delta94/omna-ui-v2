@@ -5,6 +5,7 @@ import Loading from 'dan-components/Loading';
 import get from 'lodash/get';
 import WebhookForm from './WebhookForm';
 import API from '../../Utils/api';
+import PageHeader from '../../Common/PageHeader';
 
 function EditWebhook(props) {
   const { history, match } = props;
@@ -84,6 +85,7 @@ function EditWebhook(props) {
   return (
     <div>
       {loading && <Loading />}
+      <PageHeader title="Edit Webhook" history={history} />
       <WebhookForm
         address={address}
         topic={topic}

@@ -6,12 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import SearchIcon from '@material-ui/icons/Search';
 import Fab from '@material-ui/core/Fab';
 import MenuIcon from '@material-ui/icons/Menu';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
-import SearchUi from '../Search/SearchUi';
+// import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
 
 // const elem = document.documentElement;
@@ -95,8 +94,7 @@ class Header extends React.Component {
       gradient,
       title,
       history,
-      disableToggleButton,
-      disableSearchBox
+      disableToggleButton
     } = this.props;
     const {
       open,
@@ -143,8 +141,7 @@ class Header extends React.Component {
             </div>
           </Hidden>
 
-
-          {disableSearchBox && (
+          {/* {disableSearchBox && (
             <div className={classes.searchWrapper}>
               <div className={classNames(classes.wrapper, classes.light)}>
                 <div className={classes.search}>
@@ -153,7 +150,8 @@ class Header extends React.Component {
                 <SearchUi history={history} />
               </div>
             </div>
-          )}
+          )} */}
+
           <TenantMenu history={history} />
           <Hidden xsDown>
             <span className={classes.separatorV} />
@@ -174,13 +172,11 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  disableToggleButton: PropTypes.bool,
-  disableSearchBox: PropTypes.bool
+  disableToggleButton: PropTypes.bool
 };
 
 Header.defaultProps = {
-  disableToggleButton: true,
-  disableSearchBox: true
+  disableToggleButton: true
 };
 
 export default withStyles(styles)(Header);

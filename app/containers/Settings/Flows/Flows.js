@@ -1,31 +1,26 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 // material-ui
+import {
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
-import { withStyles } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import Paper from '@material-ui/core/Paper';
 //
 import get from 'lodash/get';
 import moment from 'moment';
 //
+import MUIDataTable from 'mui-datatables';
+import Loading from 'dan-components/Loading';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
-import GenericTableToolBar from '../../Common/GenericTableToolBar';
-import GenericTablePagination from '../../Common/GenericTablePagination';
-import LoadingState from '../../Common/LoadingState';
-import GenericTableHead from '../../Common/GenericTableHead';
-import GenericErrorMessage from '../../Common/GenericErrorMessage';
+
+import PageHeader from '../../Common/PageHeader';
 // import { getFlows } from '../../../actions/flowActions';
 
 const styles = theme => ({
@@ -58,61 +53,77 @@ const styles = theme => ({
   },
   icon: {
     color: '#9e9e9e'
+  },
+  pageTitle: {
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit * 3,
+    [theme.breakpoints.up('lg')]: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end'
+    },
+    '& h4': {
+      fontWeight: 700,
+      textTransform: 'capitalize',
+      [theme.breakpoints.down('md')]: {
+        marginBottom: theme.spacing.unit * 3
+      }
+    }
+  },
+  darkTitle: {
+    color:
+      theme.palette.type === 'dark'
+        ? theme.palette.primary.main
+        : theme.palette.primary.dark
+  },
+  lightTitle: {
+    color: theme.palette.common.white
   }
 });
 
-const headColumns = [
-  {
-    id: 'title',
-    first: true,
-    last: false,
-    label: 'Title'
-  },
-  {
-    id: 'integration',
-    first: false,
-    last: false,
-    label: 'Integration'
-  },
-  {
-    id: 'created_at',
-    first: false,
-    last: false,
-    label: 'Created at'
-  },
-  {
-    id: 'updated_at',
-    first: false,
-    last: false,
-    label: 'Updated at'
-  },
-  {
-    id: 'actions',
-    first: false,
-    last: false,
-    label: 'Actions'
-  }
-];
-
 class Flows extends Component {
   state = {
-    loading: true,
     flows: { data: [], pagination: {} },
-    messageError: '',
     alertDialog: {
       open: false,
       objectId: '',
       objectName: '',
       message: ''
     },
-    success: true,
-    limit: 5,
-    page: 0
+    isLoading: true,
+    integrationFilterOptions: [],
+    limit: 10,
+    page: 0,
+    serverSideFilterList: [],
+    searchTerm: ''
   };
 
   componentDidMount() {
-    console.log('componentDidMount');
-    this.fillDataTable();
+    this.getIntegrations();
+    this.callAPI();
+  }
+
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
+        }
+      }
+    }
+  });
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
   }
 
   getFlows = async params => {
@@ -125,18 +136,12 @@ class Flows extends Component {
         limit: get(response, 'data.pagination.limit', 0)
       });
     } catch (error) {
-      this.setState({ success: false, messageError: error.message });
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
     }
-  };
 
-  fillDataTable = async () => {
-    this.setState({ loading: true });
-    await this.getFlows();
-    // this.props.onGetFlows();
-    this.setState({ loading: false });
+    this.setState({ isLoading: false });
   };
 
   handleDeleteFlow = async () => {
@@ -144,7 +149,7 @@ class Flows extends Component {
     const { alertDialog } = this.state;
 
     try {
-      this.setState({ loading: true });
+      this.setState({ isLoading: true });
       await API.delete(`flows/${alertDialog.objectId}`);
       enqueueSnackbar('Workflow deleted successfully', {
         variant: 'success'
@@ -156,7 +161,7 @@ class Flows extends Component {
       });
     }
 
-    this.setState({ loading: false });
+    this.setState({ isLoading: false });
   };
 
   handleOnClickDeleteFlow = (id, title, integration) => {
@@ -180,7 +185,7 @@ class Flows extends Component {
 
   handleAddAction = () => {
     const { history } = this.props;
-    history.push('/app/settings/workflows/add-workflow');
+    history.push('/app/workflows/add-workflow');
   };
 
   handleStartFlow = async id => {
@@ -199,13 +204,13 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/app/settings/workflows/edit-workflow/${id}`);
+    history.push(`/app/workflows/${id}`);
   };
 
   handleToggleScheduler = async id => {
     const { enqueueSnackbar } = this.props;
     try {
-      this.setState({ loading: true });
+      this.setState({ isLoading: true });
       await API.get(`flows/${id}/toggle/scheduler/status`);
       this.getFlows();
       enqueueSnackbar('Scheduler toggled successfully', {
@@ -217,160 +222,280 @@ class Flows extends Component {
       });
     }
 
-    this.setState({ loading: false });
+    this.setState({ isLoading: false });
   };
 
-  handleChangePage = (e, page) => {
-    this.setState({ page }, this.makeRequest);
-  };
+  callAPI = () => {
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
 
-  makeRequest = () => {
-    const { limit, page } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      term: searchTerm || '',
+      integration_id: serverSideFilterList[2] ? serverSideFilterList[2][0] : ''
     };
 
+    this.setState({ isLoading: true });
     this.getFlows(params);
   };
 
-  handleChangeRowsPerPage = event => {
-    this.setState(
-      { limit: parseInt(event.target.value, 10) },
-      this.makeRequest
-    );
+  handleChangePage = (page, searchTerm) => {
+    this.setState({ page, searchTerm }, this.callAPI);
+  };
+
+  handleChangeRowsPerPage = rowsPerPage => {
+    this.setState({ limit: rowsPerPage }, this.callAPI);
+  };
+
+  handleSearch = searchTerm => {
+    if (searchTerm) {
+      const timer = setTimeout(() => {
+        this.setState({ searchTerm }, this.callAPI);
+        clearTimeout(timer);
+      }, 800);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    } else {
+      this.setState({ searchTerm: '' }, this.callAPI);
+    }
+  };
+
+  onHandleCloseSearch = () => {
+    this.setState({ searchTerm: '' }, this.callAPI);
+  };
+
+  handleFilterChange = filterList => {
+    if (filterList) {
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+    } else {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
+  };
+
+  handleResetFilters = () => {
+    const { serverSideFilterList } = this.state;
+    if (serverSideFilterList.length > 0) {
+      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    }
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       flows,
-      loading,
-      messageError,
+      integrationFilterOptions,
+      isLoading,
       alertDialog,
       limit,
       page,
-      success
+      searchTerm,
+      serverSideFilterList
     } = this.state;
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
 
+    const columns = [
+      {
+        name: 'id',
+        options: {
+          filter: false,
+          display: 'excluded'
+        }
+      },
+      {
+        name: 'title',
+        label: 'Title',
+        options: {
+          filter: false
+        }
+      },
+      {
+        name: 'integration',
+        label: 'Integration',
+        options: {
+          sort: true,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[2],
+          filterOptions: {
+            names: integrationFilterOptions
+          },
+          customBodyRender: value => <div>{value.name}</div>
+        }
+      },
+      {
+        name: 'task',
+        options: {
+          display: 'excluded',
+          filter: false
+        }
+      },
+      {
+        name: 'created_at',
+        label: 'Created at',
+        options: {
+          filter: false,
+          customBodyRender: value => (
+            <div>{moment(value).format('Y-MM-DD')}</div>
+          )
+        }
+      },
+      {
+        name: 'updated_at',
+        label: 'Updated at',
+        options: {
+          filter: false,
+          customBodyRender: value => (
+            <div>{moment(value).format('Y-MM-DD')}</div>
+          )
+        }
+      },
+      {
+        name: 'Actions',
+        options: {
+          filter: false,
+          sort: false,
+          empty: true,
+          customBodyRender: (value, tableMeta) => {
+            const [
+              id,
+              title,
+              task = { scheduler: '' }
+            ] = tableMeta.rowData ? tableMeta.rowData : [];
+
+            return (
+              <div>
+                <Tooltip title="edit">
+                  <IconButton
+                    aria-label="edit"
+                    onClick={() => this.handleEditFlow(id)}
+                  >
+                    <Ionicon icon="md-create" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="start">
+                  <IconButton
+                    aria-label="start"
+                    onClick={() => this.handleStartFlow(id)}
+                  >
+                    <Ionicon icon="md-play" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="delete">
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => this.handleOnClickDeleteFlow(id, title)}
+                  >
+                    <Ionicon icon="md-trash" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    task.scheduler && task.scheduler.active
+                      ? 'disable scheduler'
+                      : 'enable scheduler'
+                  }
+                >
+                  <IconButton
+                    aria-label="start"
+                    onClick={() => this.handleToggleScheduler(id)}
+                  >
+                    {task.scheduler && task.scheduler.active ? (
+                      <Ionicon icon="ios-close-circle" />
+                    ) : (
+                      <Ionicon icon="ios-timer" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </div>
+            );
+          }
+        }
+      }
+    ];
+
+    const options = {
+      filter: true,
+      selectableRows: 'none',
+      responsive: 'stacked',
+      download: false,
+      print: false,
+      serverSide: true,
+      searchText: searchTerm,
+      serverSideFilterList,
+      searchPlaceholder: 'Search by type',
+      rowsPerPage: limit,
+      count,
+      page,
+      onTableChange: (action, tableState) => {
+        switch (action) {
+          case 'changePage':
+            this.handleChangePage(tableState.page);
+            break;
+          case 'changeRowsPerPage':
+            this.handleChangeRowsPerPage(tableState.rowsPerPage);
+            break;
+          case 'search':
+            this.handleSearch(tableState.searchText);
+            break;
+          case 'filterChange':
+            this.handleFilterChange(tableState.filterList);
+            break;
+          case 'resetFilters':
+            this.handleResetFilters();
+            break;
+          default:
+            break;
+        }
+      },
+      onRowClick: (rowData, { dataIndex }) => {
+        const order = data[dataIndex];
+        this.handleDetailsViewClick(order);
+      },
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      }),
+      customToolbar: () => (
+        <Tooltip title="add">
+          <IconButton aria-label="add" onClick={this.handleAddAction}>
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      )
+    };
+
     return (
       <div>
-        <Paper>
-          {loading ? (
-            <div className="item-padding">
-              <LoadingState loading={loading} text="Loading" />
-            </div>
-          ) : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
-          ) : (
-            <Fragment>
-              <div className={classes.rootTable}>
-                <GenericTableToolBar
-                  actionList={['Add']}
-                  rowCount={count > limit ? limit : count}
-                  onAdd={this.handleAddAction}
-                />
-                <Table>
-                  <GenericTableHead
-                    rowCount={count > limit ? limit : count}
-                    headColumns={headColumns}
-                  />
-                  <TableBody>
-                    {data.map(
-                      ({
-                        id,
-                        title,
-                        createdAt,
-                        updatedAt,
-                        integration,
-                        task
-                      }) => (
-                        <TableRow key={id}>
-                          <TableCell component="th" scope="row">
-                            {title}
-                          </TableCell>
-                          <TableCell align="center">
-                            {integration ? integration.name : ''}
-                          </TableCell>
-                          <TableCell align="center">
-                            {moment(createdAt).format('Y-MM-DD H:mm:ss')}
-                          </TableCell>
-                          <TableCell align="center">
-                            {moment(updatedAt).format('Y-MM-DD H:mm:ss')}
-                          </TableCell>
-                          <TableCell align="center">
-                            <Tooltip title="edit">
-                              <IconButton
-                                aria-label="edit"
-                                onClick={() => this.handleEditFlow(id)}
-                              >
-                                <Ionicon icon="md-create" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="start">
-                              <IconButton
-                                aria-label="start"
-                                onClick={() => this.handleStartFlow(id)}
-                              >
-                                <Ionicon icon="md-play" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="delete">
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => this.handleOnClickDeleteFlow(id, title)
-                                }
-                              >
-                                <Ionicon icon="md-trash" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip
-                              title={
-                                task.scheduler && task.scheduler.active
-                                  ? 'disable scheduler'
-                                  : 'enable scheduler'
-                              }
-                            >
-                              <IconButton
-                                aria-label="start"
-                                onClick={() => this.handleToggleScheduler(id)}
-                              >
-                                {task.scheduler && task.scheduler.active ? (
-                                  <Ionicon icon="ios-close-circle" />
-                                ) : (
-                                  <Ionicon icon="ios-timer" />
-                                )}
-                              </IconButton>
-                            </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    )}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 25, 50]}
-                        count={count}
-                        rowsPerPage={limit}
-                        page={page}
-                        SelectProps={{
-                          native: true
-                        }}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                        ActionsComponent={GenericTablePagination}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-            </Fragment>
-          )}
-        </Paper>
+        <PageHeader title="Workflows" history={history} />
+        <div className={classes.table}>
+          {isLoading ? <Loading /> : null}
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable columns={columns} data={data} options={options} />
+          </MuiThemeProvider>
+        </div>
 
         <AlertDialog
           open={alertDialog.open}

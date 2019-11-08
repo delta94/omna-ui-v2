@@ -20,6 +20,7 @@ import GenericTablePagination from '../../Common/GenericTablePagination';
 import GenericErrorMessage from '../../Common/GenericErrorMessage';
 import API from '../../Utils/api';
 import Integration from './Integration';
+import PageHeader from '../../Common/PageHeader';
 
 const styles = theme => ({
   cardList: {
@@ -87,7 +88,7 @@ class Integrations extends Component {
 
   handleAddIntegrationClick = () => {
     const { history } = this.props;
-    history.push('/app/settings/integrations/add-integration');
+    history.push('/app/integrations/add-integration');
   };
 
   handleAuthorization = id => {
@@ -187,7 +188,7 @@ class Integrations extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, history } = this.props;
     const {
       integrations,
       loading,
@@ -203,6 +204,7 @@ class Integrations extends Component {
 
     return (
       <div>
+        <PageHeader title="My integrations" history={history} />
         <Paper>
           {loading ? (
             <div className="item-padding">
@@ -225,8 +227,8 @@ class Integrations extends Component {
               </div>
               <Divider variant="middle" />
               <div className={classes.cardList}>
-                {data &&
-                  data.map(
+                {data
+                  && data.map(
                     ({
                       id,
                       name,
@@ -240,15 +242,9 @@ class Integrations extends Component {
                         logo={logo}
                         channel={channel}
                         authorized={authorized}
-                        onIntegrationAuthorized={() =>
-                          this.handleAuthorization(id)
-                        }
-                        onIntegrationUnauthorized={() =>
-                          this.handleUnAuthorization(id)
-                        }
-                        onIntegrationDeleted={() =>
-                          this.handleDeleteClick(id, name)
-                        }
+                        onIntegrationAuthorized={() => this.handleAuthorization(id)}
+                        onIntegrationUnauthorized={() => this.handleUnAuthorization(id)}
+                        onIntegrationDeleted={() => this.handleDeleteClick(id, name)}
                         classes={classes}
                       />
                     )
