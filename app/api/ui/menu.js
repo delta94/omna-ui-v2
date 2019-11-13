@@ -14,6 +14,11 @@ module.exports = [
         key: 'orders',
         name: 'Orders',
         link: '/app/orders'
+      },
+      {
+        key: 'products',
+        name: 'Products',
+        link: '/app/products'
       }
     ]
   },
