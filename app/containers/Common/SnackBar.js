@@ -82,7 +82,7 @@ const styles = theme => ({
 
 function MySnackBar(props) {
   const {
-    classes, className, message, variant, customStyle, open
+    classes, message, variant, customStyle, open
   } = props;
   const Icon = variantIcon[variant];
   const customColor = customColors[variant];
@@ -92,7 +92,7 @@ function MySnackBar(props) {
       {open && (
         <div className={classes.box}>
           <SnackbarContent
-            className={classNames(classes.customStyle, customStyle ? messageStyles[customColor] : classes[variant], className)}
+            className={classNames(classes.customStyle, customStyle ? messageStyles[customColor] : classes[variant])}
             message={(
               <span id="client-snackbar" className={classes.message}>
                 <Icon className={classNames(classes.icon, classes.iconVariant)} />
@@ -109,7 +109,6 @@ function MySnackBar(props) {
 
 MySnackBar.propTypes = {
   classes: PropTypes.object.isRequired,
-  className: PropTypes.object.isRequired,
   message: PropTypes.string.isRequired,
   variant: PropTypes.string.isRequired,
   customStyle: PropTypes.bool.isRequired,

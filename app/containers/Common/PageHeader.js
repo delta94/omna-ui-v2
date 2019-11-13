@@ -44,5 +44,5 @@ export default withStyles(styles)(PageHeader);
 PageHeader.propTypes = {
   title: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
-  history: PropTypes.func.isRequired
+  history: PropTypes.object.isRequired
 };
