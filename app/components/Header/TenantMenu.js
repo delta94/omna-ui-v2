@@ -48,7 +48,7 @@ function TenantMenu(props) {
   const [tenantList, setTenantList] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [setSelectedIndex] = React.useState(1);
 
   useEffect(() => {
     async function changeTenant() {
@@ -175,8 +175,7 @@ function TenantMenu(props) {
             value={option.id}
             disabled={index === 0}
             // selected={index === selectedIndex}
-            onClick={event =>
-              handleTenantChange(event, option.id, option.name, index)
+            onClick={event => handleTenantChange(event, option.id, option.name, index)
             }
           >
             {option.name}

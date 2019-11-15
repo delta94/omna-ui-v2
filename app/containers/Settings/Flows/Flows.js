@@ -84,14 +84,12 @@ const styles = theme => ({
 class Flows extends Component {
   state = {
     flows: { data: [], pagination: {} },
-    messageError: '',
     alertDialog: {
       open: false,
       objectId: '',
       objectName: '',
       message: ''
     },
-    success: true,
     isLoading: true,
     integrationFilterOptions: [],
     limit: 10,
@@ -105,16 +103,15 @@ class Flows extends Component {
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
         }
       }
-    });
+    }
+  });
 
   getIntegrations() {
     API.get('/integrations', { params: { limit: 100, offset: 0 } })
@@ -139,7 +136,6 @@ class Flows extends Component {
         limit: get(response, 'data.pagination.limit', 0)
       });
     } catch (error) {
-      this.setState({ success: false, messageError: error.message });
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
@@ -230,7 +226,9 @@ class Flows extends Component {
   };
 
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
 
     const params = {
       offset: page * limit,
@@ -293,13 +291,11 @@ class Flows extends Component {
       flows,
       integrationFilterOptions,
       isLoading,
-      messageError,
       alertDialog,
       limit,
       page,
       searchTerm,
-      serverSideFilterList,
-      success
+      serverSideFilterList
     } = this.state;
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
@@ -369,7 +365,6 @@ class Flows extends Component {
             const [
               id,
               title,
-              integration,
               task = { scheduler: '' }
             ] = tableMeta.rowData ? tableMeta.rowData : [];
 
@@ -462,32 +457,30 @@ class Flows extends Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) => {
-        return customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-          }
-        });
-      },
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      }),
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton aria-label="add" onClick={this.handleAddAction}>

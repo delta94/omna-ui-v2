@@ -7,8 +7,8 @@ const styles = {
     zIndex: 1400,
     width: '100%',
     height: '100%',
-   top: 0,
-   left: 0,
+    top: 0,
+    left: 0,
     position: 'fixed',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },

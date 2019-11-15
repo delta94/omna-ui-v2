@@ -53,16 +53,15 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
         }
       }
-    });
+    }
+  });
 
   getOrders(params) {
     const { enqueueSnackbar } = this.props;
@@ -97,7 +96,9 @@ class OrderList extends React.Component {
   }
 
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
 
     const params = {
       offset: page * limit,
@@ -305,31 +306,30 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) =>
-        customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-          }
-        })
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      })
     };
 
     return (

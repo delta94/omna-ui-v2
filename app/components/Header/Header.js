@@ -94,8 +94,7 @@ class Header extends React.Component {
       gradient,
       title,
       history,
-      disableToggleButton,
-      disableSearchBox
+      disableToggleButton
     } = this.props;
     const {
       open,
@@ -173,13 +172,11 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  disableToggleButton: PropTypes.bool,
-  disableSearchBox: PropTypes.bool
+  disableToggleButton: PropTypes.bool
 };
 
 Header.defaultProps = {
-  disableToggleButton: true,
-  disableSearchBox: true
+  disableToggleButton: true
 };
 
 export default withStyles(styles)(Header);

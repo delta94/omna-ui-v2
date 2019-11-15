@@ -114,7 +114,7 @@ class OrderDetails extends Component {
     this.callAPI(StoreId, number);
   };
 
-  onPrintHandler = (integrationId, dataNumber) => {
+  onPrintHandler = () => {
     this.handleClickOpen();
   };
 

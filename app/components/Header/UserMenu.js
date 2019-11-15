@@ -71,7 +71,7 @@ class UserMenu extends React.Component {
           <MenuItem
             onClick={this.handleClose}
             component={Link}
-            to="/app/settings/add-tenant"
+            to="/app/add-tenant"
           >
             Create Tenant
           </MenuItem>

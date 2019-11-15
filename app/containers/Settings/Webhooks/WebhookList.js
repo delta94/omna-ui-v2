@@ -130,6 +130,7 @@ class WebhookList extends React.Component {
       topic: serverSideFilterList[2] ? serverSideFilterList[2][0] : '',
       integration_id: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
     };
+
     this.getAPIwebhooks(params);
   };
 

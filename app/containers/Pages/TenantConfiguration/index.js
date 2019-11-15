@@ -86,19 +86,16 @@ class TenantConfiguration extends React.Component {
           variant: 'success'
         });
       }
-      const { location } = history;
       const intervalObj = setInterval(async () => {
-        if (location.pathname.includes('/app/tenant-configuration')) {
-          const resp = await API.get(`tenants/${tenantId}`);
-          const { data } = resp.data;
-          if (data.is_ready_to_omna) {
-            this.updateTenant(data.is_ready_to_omna);
-            enqueueSnackbar(`${data.name} tenant is ready to use with Omna`, {
-              variant: 'success'
-            });
-            clearInterval(intervalObj);
-            history.push('/');
-          }
+        const resp = await API.get(`tenants/${tenantId}`);
+        const { data } = resp.data;
+        if (data.is_ready_to_omna && data.id === tenantId) {
+          this.updateTenant(data.is_ready_to_omna);
+          enqueueSnackbar(`${data.name} tenant is ready to use with Omna`, {
+            variant: 'success'
+          });
+          clearInterval(intervalObj);
+          history.push('/');
         } else {
           clearInterval(intervalObj);
         }
@@ -136,8 +133,8 @@ class TenantConfiguration extends React.Component {
             </Hidden>
           </div>
           <Typography variant="h4" gutterBottom>Configuration</Typography>
-          <Typography variant="subtitle1">
-            The current tenant is not ready to use with OMNA application.
+          <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '10px' }}>
+            Get your tenant ready to use OMNA application.
           </Typography>
           {loading && (
             <Typography variant="subtitle1">
