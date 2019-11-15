@@ -8,6 +8,10 @@ import { withSnackbar } from 'notistack';
 
 // material-ui
 import {
+  Avatar,
+  Typography
+} from '@material-ui/core';
+import {
   withStyles,
   createMuiTheme,
   MuiThemeProvider
@@ -41,7 +45,6 @@ class OrderList extends React.Component {
   state = {
     isLoading: true,
     products: { data: [], pagination: {} },
-    integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -49,7 +52,7 @@ class OrderList extends React.Component {
   };
 
   componentDidMount() {
-    this.getIntegrations();
+    // this.getIntegrations();
     this.callAPI();
   }
 
@@ -83,18 +86,18 @@ class OrderList extends React.Component {
       });
   }
 
-  getIntegrations() {
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      });
-  }
+  // getIntegrations() {
+  //   API.get('/integrations', { params: { limit: 100, offset: 0 } })
+  //     .then(response => {
+  //       const { data } = response.data;
+  //       const integrations = data.map(item => item.id);
+  //       this.setState({ integrationFilterOptions: integrations });
+  //     })
+  //     .catch(error => {
+  //       // handle error
+  //       console.log(error);
+  //     });
+  // }
 
   callAPI = () => {
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
@@ -187,7 +190,6 @@ class OrderList extends React.Component {
   render() {
     const { classes, history } = this.props;
     const {
-      integrationFilterOptions,
       isLoading,
       limit,
       products,
@@ -202,10 +204,31 @@ class OrderList extends React.Component {
 
     const columns = [
       {
-        name: 'name',
-        label: 'Name',
+        name: 'images',
+        label: ' ',
         options: {
-          filter: false
+          filter: false,
+          display: 'excluded',
+        }
+      },
+      {
+        name: 'name',
+        label: 'Product',
+        options: {
+          filter: false,
+          customBodyRender: (value, tableMeta) => {
+            const [
+              images,
+              name
+            ] = tableMeta.rowData;
+            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            return (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar src={imgSrc} style={{ height: 72, width: 72, marginRight: 16 }} alt="product" />
+                <Typography variant="body" component="p">{name}</Typography>
+              </div>
+            );
+          }
         }
       },
       {
