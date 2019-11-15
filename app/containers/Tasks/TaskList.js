@@ -89,8 +89,6 @@ class TaskList extends React.Component {
         });
       })
       .catch(error => {
-        // handle error
-        console.log(error);
         this.setState({ success: false, messageError: error.message });
       })
       .finally(() => {
@@ -219,7 +217,10 @@ class TaskList extends React.Component {
         clearTimeout(timer);
       });
     } else {
-      this.setState({ searchTerm: '' }, this.callAPI);
+      const { searchTerm: _searchTerm } = this.state;
+      if (_searchTerm) {
+        this.setState({ searchTerm: '' }, this.callAPI);
+      }
     }
   };
 

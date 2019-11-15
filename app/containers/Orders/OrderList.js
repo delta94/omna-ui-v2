@@ -141,7 +141,10 @@ class OrderList extends React.Component {
         clearTimeout(timer);
       });
     } else {
-      this.setState({ searchTerm: '' }, this.callAPI);
+      const { searchTerm: _searchTerm } = this.state;
+      if (_searchTerm) {
+        this.setState({ searchTerm: '' }, this.callAPI);
+      }
     }
   };
 
