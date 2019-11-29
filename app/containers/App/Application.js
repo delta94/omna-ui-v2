@@ -42,7 +42,7 @@ class Application extends React.Component {
             <AuthGuardRoute exact path="/app/orders" component={Orders} />
             <AuthGuardRoute
               exact
-              path="/app/orders/:store_id/:number/order-details"
+              path="/app/orders/:number"
               component={OrderDetails}
             />
             <AuthGuardRoute exact path="/app/tasks" component={Tasks} />

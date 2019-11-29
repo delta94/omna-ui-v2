@@ -71,13 +71,12 @@ class OrderDetails extends Component {
   };
 
   componentDidMount() {
-    const storeId = get(this.props, 'match.params.store_id', null);
+    const order = get(this.props, 'location.state.order', null);
+    const storeId = get(order, 'data.integration.id', null)
     const number = get(this.props, 'match.params.number', null);
 
-    const order = get(this.props, 'location.state.order', null);
     if (
       order !== null
-      && storeId === get(order, 'data.integration.id', null)
       && number === get(order, 'data.number', null)
     ) {
       this.setState({ order, loading: false });

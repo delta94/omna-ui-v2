@@ -123,11 +123,11 @@ class OrderList extends React.Component {
   handleDetailsViewClick = order => {
     const { history } = this.props;
     history.push(
-      `/app/orders/${get(order, 'integration.id', 0)}/${get(
+      `/app/orders/${get(
         order,
         'number',
         0
-      )}/order-details`,
+      )}`,
       { order: { data: order } }
     );
   };
@@ -277,7 +277,7 @@ class OrderList extends React.Component {
       serverSide: true,
       searchText: searchTerm,
       serverSideFilterList,
-      searchPlaceholder: 'Search by address & topic',
+      searchPlaceholder: 'Search by number or status',
       rowsPerPage: limit,
       count,
       page,

@@ -7,10 +7,7 @@ import moment from 'moment';
 import { withSnackbar } from 'notistack';
 
 // material-ui
-import {
-  Avatar,
-  Typography
-} from '@material-ui/core';
+import { Avatar, Typography } from '@material-ui/core';
 import {
   withStyles,
   createMuiTheme,
@@ -23,7 +20,7 @@ import API from '../Utils/api';
 
 import PageHeader from '../Common/PageHeader';
 // const variantIcon = Utils.iconVariants();
-// import { getOrders } from '../../actions/orderActions';
+// import { getProducts } from '../../actions/orderActions';
 
 const styles = theme => ({
   table: {
@@ -52,7 +49,6 @@ class OrderList extends React.Component {
   };
 
   componentDidMount() {
-    // this.getIntegrations();
     this.callAPI();
   }
 
@@ -67,7 +63,7 @@ class OrderList extends React.Component {
       }
     });
 
-  getOrders(params) {
+  getProducts = params => {
     const { enqueueSnackbar } = this.props;
     API.get('/products', { params })
       .then(response => {
@@ -86,21 +82,13 @@ class OrderList extends React.Component {
       });
   }
 
-  // getIntegrations() {
-  //   API.get('/integrations', { params: { limit: 100, offset: 0 } })
-  //     .then(response => {
-  //       const { data } = response.data;
-  //       const integrations = data.map(item => item.id);
-  //       this.setState({ integrationFilterOptions: integrations });
-  //     })
-  //     .catch(error => {
-  //       // handle error
-  //       console.log(error);
-  //     });
-  // }
-
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const { 
+      searchTerm,
+      limit,
+      page,
+      serverSideFilterList 
+    } = this.state;
 
     const params = {
       offset: page * limit,
@@ -110,8 +98,8 @@ class OrderList extends React.Component {
     };
 
     this.setState({ isLoading: true });
-    this.getOrders(params);
-    // this.props.onGetOrders(params);
+    this.getProducts(params);
+    // this.props.onGetProducts(params);
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -208,7 +196,7 @@ class OrderList extends React.Component {
         label: ' ',
         options: {
           filter: false,
-          display: 'excluded',
+          display: 'excluded'
         }
       },
       {
@@ -217,15 +205,24 @@ class OrderList extends React.Component {
         options: {
           filter: false,
           customBodyRender: (value, tableMeta) => {
-            const [
-              images,
-              name
-            ] = tableMeta.rowData;
-            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const [images, name] = tableMeta.rowData;
+            const imgSrc =
+              images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar src={imgSrc} style={{ height: 72, width: 72, marginRight: 16 }} alt="product" />
-                <Typography variant="body" component="p">{name}</Typography>
+                <Avatar
+                  src={imgSrc}
+                  style={{
+                    height: 72,
+                    width: 72,
+                    marginRight: 16,
+                    borderRadius: 0
+                  }}
+                  alt="product"
+                />
+                <Typography noWrap variant="subtitle2" component="p">
+                  {name}
+                </Typography>
               </div>
             );
           }
@@ -358,7 +355,7 @@ class OrderList extends React.Component {
 
 OrderList.propTypes = {
   // products: PropTypes.array.isRequired,
-  // onGetOrders: PropTypes.func.isRequired,
+  // onGetProducts: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
@@ -371,7 +368,7 @@ OrderList.propTypes = {
 // });
 
 // const mapDispatchToProps = dispatch => ({
-//   onGetOrders: params => dispatch(getOrders(params))
+//   onGetProducts: params => dispatch(getProducts(params))
 // });
 
 // const OrderListMapped = connect(

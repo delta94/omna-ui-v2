@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import get from 'lodash/get';
 import { createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
 import ThemePallete from 'dan-api/palette/themePalette';
@@ -20,7 +19,6 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import LoadingState from '../../Common/LoadingState';
-import api from '../../Utils/api';
 import { setReloadLandingPage } from '../../../actions/TenantActions';
 
 const styles = {
@@ -40,59 +38,9 @@ const color = {
 };
 
 class CompossedLineBarArea extends Component {
-  state = {
-    orders: { data: [], pagination: {} },
-    limit: 100,
-    page: 0,
-    loading: false,
-    error: ''
-  };
-
-  componentDidMount() {
-    this.callAPI();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { reloadLandingPage, changeReloadLandingPage } = this.props;
-    if (
-      reloadLandingPage &&
-      reloadLandingPage === prevProps.reloadLandingPage
-    ) {
-      changeReloadLandingPage(false);
-      this.callAPI();
-    }
-  }
-
-  getOrders = params => {
-    this.setState({ loading: true });
-    api
-      .get('/orders', { params })
-      .then(response => {
-        this.setState({
-          orders: get(response, 'data', { data: [], pagination: {} })
-        });
-      })
-      .catch(error => {
-        this.setState({ error });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
-      });
-  };
-
-  callAPI = () => {
-    const { limit, page } = this.state;
-    const params = {
-      offset: page * limit,
-      limit
-    };
-
-    this.getOrders(params);
-  };
-
+  
   render() {
-    const { classes } = this.props;
-    const { orders, loading } = this.state;
+    const { classes, orders, loading } = this.props;
     const { data } = orders;
 
     const collection = data.map(item => ({
