@@ -14,6 +14,7 @@ import initval from './modules/initForm';
 import auth from './modules/auth';
 import flowsReducer from './modules/flows';
 import ordersReducer from './modules/orders';
+import integrationsReducer from './modules/integrations';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -26,6 +27,7 @@ export default function createReducer(injectedReducers = {}) {
     login,
     ui: uiReducer,
     tenant: tenantReducer,
+    integrations: integrationsReducer,
     initval,
     language: languageProviderReducer,
     router: connectRouter(history),

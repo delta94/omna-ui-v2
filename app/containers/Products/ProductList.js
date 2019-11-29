@@ -56,16 +56,15 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
         }
       }
-    });
+    }
+  });
 
   getOrders(params) {
     const { enqueueSnackbar } = this.props;
@@ -100,7 +99,9 @@ class OrderList extends React.Component {
   // }
 
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
 
     const params = {
       offset: page * limit,
@@ -122,16 +123,9 @@ class OrderList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  handleDetailsViewClick = product => {
+  handleRowClick = id => {
     const { history } = this.props;
-    // history.push(
-    //   `/app/products/${get(product, 'integration.id', 0)}/${get(
-    //     product,
-    //     'number',
-    //     0
-    //   )}/product-details`,
-    //   { product: { data: product } }
-    // );
+    history.push(`/app/products/${id}/`);
   };
 
   handleSearch = searchTerm => {
@@ -313,33 +307,32 @@ class OrderList extends React.Component {
       },
       onRowClick: (rowData, { dataIndex }) => {
         const product = data[dataIndex];
-        this.handleDetailsViewClick(product);
+        this.handleRowClick(product.id);
       },
-      customSort: (customSortData, colIndex, product) =>
-        customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-          }
-        })
+      customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+              < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+              < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+        }
+      })
     };
 
     return (
