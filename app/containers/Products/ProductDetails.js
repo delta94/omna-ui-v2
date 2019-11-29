@@ -7,8 +7,8 @@ import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-import styles from 'dan-components/Product/product-jss';
 import Loading from 'dan-components/Loading';
+import styles from './product-jss';
 
 import API from '../Utils/api';
 import PageHeader from '../Common/PageHeader';

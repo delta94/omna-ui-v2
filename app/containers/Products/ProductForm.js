@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-import styles from 'dan-components/Product/product-jss';
+import styles from './product-jss';
 import ProductCard from './ProductCard';
 import ProductDesc from './ProductDesc';
 
