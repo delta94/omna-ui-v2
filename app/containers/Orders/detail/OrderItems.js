@@ -31,7 +31,11 @@ class OrderItems extends Component {
         name: 'price',
         label: 'Price',
         options: {
-          filter: false
+          filter: false,
+          customBodyRender: (value, tableMeta) => {
+            const { currency } = tableMeta.rowData;
+            return <div>{Utils.getCurrencySymbol(currency) + value}</div>;
+          }
         }
       },
       {
@@ -47,8 +51,16 @@ class OrderItems extends Component {
         options: {
           filter: false,
           customBodyRender: (value, tableMeta) => {
-            return <div>{tableMeta.rowData[3] * tableMeta.rowData[4]}</div>;
+            const { currency } = tableMeta.rowData;
+            return <div>{Utils.getCurrencySymbol(currency) + (tableMeta.rowData[3] * tableMeta.rowData[4])}</div>;
           }
+        }
+      },
+      {
+        name: 'currency',
+        options: {
+          filter: false,
+          display: 'excluded'
         }
       }
     ];

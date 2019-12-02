@@ -16,6 +16,7 @@ import {
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
+import Utils from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
 // const variantIcon = Utils.iconVariants();
@@ -168,23 +169,6 @@ class OrderList extends React.Component {
     }
   };
 
-  getCurrencySymbol = currency => {
-    switch (currency) {
-      case 'EUR':
-        return '€';
-      case 'GBP':
-        return '£';
-      case 'CNY':
-        return '¥';
-      case 'RUB':
-        return '₽';
-      case 'JPY':
-        return '¥';
-      default:
-        return '$';
-    }
-  };
-
   render() {
     const { classes, history } = this.props;
     const {
@@ -235,7 +219,7 @@ class OrderList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
-            return <div>{this.getCurrencySymbol(currency) + value}</div>;
+            return <div>{Utils.getCurrencySymbol(currency) + value}</div>;
           }
         }
       },

@@ -34,6 +34,23 @@ class Utils {
     return channel;
   }
 
+  static getCurrencySymbol = currency => {
+    switch (currency) {
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      case 'CNY':
+        return '¥';
+      case 'RUB':
+        return '₽';
+      case 'JPY':
+        return '¥';
+      default:
+        return '$';
+    }
+  };
+
   static urlLogo(channel) {
     switch (channel && channel.replace(/[A-Z]{2}$/, '')) {
       case 'Lazada':

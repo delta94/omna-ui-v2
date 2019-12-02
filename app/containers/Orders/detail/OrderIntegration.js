@@ -66,7 +66,7 @@ class OrderIntegration extends Component {
             <ListItemText
               primary={
                 integration.created_at != null
-                  ? moment(integration.created_at).format('Y-MM-DD H:mm:ss')
+                  ? moment(integration.created_at).format('Y-MM-DD H:mm')
                   : '--'
               }
             />
@@ -76,7 +76,7 @@ class OrderIntegration extends Component {
             <ListItemText
               primary={
                 integration.updated_at != null
-                  ? moment(integration.updated_at).format('Y-MM-DD H:mm:ss')
+                  ? moment(integration.updated_at).format('Y-MM-DD H:mm')
                   : '--'
               }
             />
