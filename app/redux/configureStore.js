@@ -8,6 +8,7 @@ import { fromJS } from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
 import createReducer from './reducers';
+import watchProdVariants from './saga';
 
 export default function configureStore(initialState = {}, history) {
   let composeEnhancers = compose;
@@ -17,8 +18,9 @@ export default function configureStore(initialState = {}, history) {
   /* istanbul ignore next */
   if (process.env.NODE_ENV !== 'production' && typeof window === 'object') {
     /* eslint-disable no-underscore-dangle */
-    if (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__)
+    if (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
       composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({});
+    }
 
     // NOTE: Uncomment the code below to restore support for Redux Saga
     // Dev Tools once it supports redux-saga version 1.x.x
@@ -43,6 +45,7 @@ export default function configureStore(initialState = {}, history) {
     fromJS(initialState),
     composeEnhancers(...enhancers)
   );
+  sagaMiddleware.run(watchProdVariants);
 
   // Extensions
   store.runSaga = sagaMiddleware.run;

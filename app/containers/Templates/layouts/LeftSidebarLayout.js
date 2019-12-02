@@ -8,11 +8,33 @@ import {
   Header,
   Sidebar,
 } from 'dan-components';
+import Link from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
 import MySnackBar from '../../Common/SnackBar';
+
+const action = (
+  <div>
+    <Link
+      variant="body2"
+      style={{ marginRight: '10px' }}
+      component={RouterLink}
+      to="/app/tenant-configuration"
+    >
+      Initialize tenant
+    </Link>
+    <Link
+      variant="body2"
+      component={RouterLink}
+      to="/app/add-tenant"
+    >
+      Create new tenat
+    </Link>
+  </div>
+);
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -81,6 +103,7 @@ class LeftSidebarLayout extends React.Component {
                 customStyle
                 open={!isReadyToOmna}
                 message="The current tenant is not ready to use with OMNA application. Please initialize or switch the current tenant. Also you can create a new one."
+                action={action}
               />
             </div>
             {!pageLoaded && (<img src="/images/spinner.gif" alt="spinner" className={classes.circularProgress} />)}

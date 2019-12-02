@@ -83,6 +83,10 @@ export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
+export const ProductDetails = loadable(() => import('./Products/ProductDetails'), {
+  fallback: <Loading />
+});
+
 export const Integrations = loadable(
   () => import('./Settings/Integrations/Integrations'),
   {

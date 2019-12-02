@@ -6,8 +6,6 @@ import classNames from 'classnames';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
-import Link from '@material-ui/core/Link';
-import { Link as RouterLink } from 'react-router-dom';
 import green from '@material-ui/core/colors/green';
 import amber from '@material-ui/core/colors/amber';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -26,26 +24,6 @@ const variantIcon = {
   error: ErrorIcon,
   info: InfoIcon,
 };
-
-const action = (
-  <div>
-    <Link
-      variant="body2"
-      style={{ marginRight: '10px' }}
-      component={RouterLink}
-      to="/app/tenant-configuration"
-    >
-      Initialize tenant
-    </Link>
-    <Link
-      variant="body2"
-      component={RouterLink}
-      to="/app/add-tenant"
-    >
-      Create new tenat
-    </Link>
-  </div>
-);
 
 const styles = theme => ({
   success: {
@@ -82,7 +60,7 @@ const styles = theme => ({
 
 function MySnackBar(props) {
   const {
-    classes, message, variant, customStyle, open
+    classes, message, variant, customStyle, open, action
   } = props;
   const Icon = variantIcon[variant];
   const customColor = customColors[variant];
@@ -113,6 +91,11 @@ MySnackBar.propTypes = {
   variant: PropTypes.string.isRequired,
   customStyle: PropTypes.bool.isRequired,
   open: PropTypes.bool.isRequired,
+  action: PropTypes.object
+};
+
+MySnackBar.defaultProps = {
+  action: null
 };
 
 export default withStyles(styles)(MySnackBar);
