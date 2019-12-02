@@ -5,13 +5,16 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
+import {
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  Table,
+  TableRow,
+  TableFooter,
+  TablePagination
+} from '@material-ui/core';
 
 import LoadingState from '../../Common/LoadingState';
 import AlertDialog from '../../Common/AlertDialog';
@@ -29,8 +32,6 @@ const styles = theme => ({
     minWidth: 275
   },
   card: {
-    minWidth: 196,
-    maxWidth: 256,
     margin: 5
   },
   title: {
@@ -103,7 +104,6 @@ class Integrations extends Component {
       data: { data: { integration_id: id } }
     })
       .then(response => {
-        console.log(response);
         enqueueSnackbar('Integration unauthorized successfully', {
           variant: 'success'
         });
@@ -226,9 +226,9 @@ class Integrations extends Component {
                 </Button>
               </div>
               <Divider variant="middle" />
-              <div className={classes.cardList}>
-                {data
-                  && data.map(
+              <Grid container>
+                {data &&
+                  data.map(
                     ({
                       id,
                       name,
@@ -236,20 +236,28 @@ class Integrations extends Component {
                       logo = Utils.urlLogo(channel),
                       authorized
                     }) => (
-                      <Integration
-                        key={id}
-                        name={name}
-                        logo={logo}
-                        channel={channel}
-                        authorized={authorized}
-                        onIntegrationAuthorized={() => this.handleAuthorization(id)}
-                        onIntegrationUnauthorized={() => this.handleUnAuthorization(id)}
-                        onIntegrationDeleted={() => this.handleDeleteClick(id, name)}
-                        classes={classes}
-                      />
+                      <Grid item md={3} xs={12}>
+                        <Integration
+                          key={id}
+                          name={name}
+                          logo={logo}
+                          channel={channel}
+                          authorized={authorized}
+                          onIntegrationAuthorized={() =>
+                            this.handleAuthorization(id)
+                          }
+                          onIntegrationUnauthorized={() =>
+                            this.handleUnAuthorization(id)
+                          }
+                          onIntegrationDeleted={() =>
+                            this.handleDeleteClick(id, name)
+                          }
+                          classes={classes}
+                        />
+                      </Grid>
                     )
                   )}
-              </div>
+              </Grid>
               <Table>
                 <TableFooter>
                   <TableRow>

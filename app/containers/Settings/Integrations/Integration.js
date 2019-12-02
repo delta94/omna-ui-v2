@@ -41,7 +41,7 @@ const Integration = props => {
         title={name}
         subheader={Utils.fullChannelName(channel)}
       />
-      <CardActions className={classes.actions}>
+      <CardActions style={{ position: 'relative', bottom: 0 }}>
         {authorized ? (
           <Tooltip title="unauthorize">
             <IconButton

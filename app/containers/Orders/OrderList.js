@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 // import classNames from 'classnames';
 import moment from 'moment';
-// import { connect } from 'react-redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
-
-// material-ui
 import {
   withStyles,
   createMuiTheme,
@@ -20,7 +19,7 @@ import Utils from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
 // const variantIcon = Utils.iconVariants();
-// import { getOrders } from '../../actions/orderActions';
+import { getOrders } from '../../actions/orderActions';
 
 const styles = theme => ({
   table: {
@@ -54,15 +53,16 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
+  getMuiTheme = () =>
+    createMuiTheme({
+      overrides: {
+        MUIDataTableToolbar: {
+          filterPaper: {
+            width: '50%'
+          }
         }
       }
-    }
-  });
+    });
 
   getOrders(params) {
     const { enqueueSnackbar } = this.props;
@@ -84,6 +84,7 @@ class OrderList extends React.Component {
   }
 
   getIntegrations() {
+    const { enqueueSnackbar } = this.props;
     API.get('/integrations', { params: { limit: 100, offset: 0 } })
       .then(response => {
         const { data } = response.data;
@@ -91,16 +92,15 @@ class OrderList extends React.Component {
         this.setState({ integrationFilterOptions: integrations });
       })
       .catch(error => {
-        // handle error
-        console.log(error);
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       });
   }
 
   callAPI = () => {
-    const {
-      searchTerm, limit, page, serverSideFilterList
-    } = this.state;
-
+    // const { onGetOrders } = this.props;
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
     const params = {
       offset: page * limit,
       limit,
@@ -110,7 +110,7 @@ class OrderList extends React.Component {
 
     this.setState({ isLoading: true });
     this.getOrders(params);
-    // this.props.onGetOrders(params);
+    // onGetOrders(params);
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -123,14 +123,9 @@ class OrderList extends React.Component {
 
   handleDetailsViewClick = order => {
     const { history } = this.props;
-    history.push(
-      `/app/orders/${get(
-        order,
-        'number',
-        0
-      )}`,
-      { order: { data: order } }
-    );
+    history.push(`/app/orders/${get(order, 'number', 0)}`, {
+      order: { data: order }
+    });
   };
 
   handleSearch = searchTerm => {
@@ -170,7 +165,7 @@ class OrderList extends React.Component {
   };
 
   render() {
-    const { classes, history } = this.props;
+    const { classes, history  } = this.props;
     const {
       integrationFilterOptions,
       isLoading,
@@ -181,8 +176,7 @@ class OrderList extends React.Component {
       searchTerm
     } = this.state;
     const { pagination, data } = orders;
-
-    console.log(data);
+    
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -290,30 +284,31 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
-        switch (colIndex) {
-          case 3:
-            return (
-              (parseFloat(a.customSortData[colIndex])
-                < parseFloat(b.customSortData[colIndex])
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          case 4:
-            return (
-              (a.customSortData[colIndex].name.toLowerCase()
-                < b.customSortData[colIndex].name.toLowerCase()
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          default:
-            return (
-              (a.customSortData[colIndex] < b.customSortData[colIndex]
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-        }
-      })
+      customSort: (customSortData, colIndex, order) =>
+        customSortData.sort((a, b) => {
+          switch (colIndex) {
+            case 3:
+              return (
+                (parseFloat(a.customSortData[colIndex]) <
+                parseFloat(b.customSortData[colIndex])
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            case 4:
+              return (
+                (a.customSortData[colIndex].name.toLowerCase() <
+                b.customSortData[colIndex].name.toLowerCase()
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            default:
+              return (
+                (a.customSortData[colIndex] < b.customSortData[colIndex]
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+          }
+        })
     };
 
     return (
@@ -341,11 +336,11 @@ OrderList.propTypes = {
 };
 
 // const mapStateToProps = state => ({
-//   orders: state.orders.orders
+//   orders: state.getIn(['orders'])
 // });
 
 // const mapDispatchToProps = dispatch => ({
-//   onGetOrders: params => dispatch(getOrders(params))
+//   onGetOrders: bindActionCreators(params => getOrders(params), dispatch)
 // });
 
 // const OrderListMapped = connect(

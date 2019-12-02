@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import MUIDataTable from 'mui-datatables';
+import Utils from '../../Common/Utils';
 
 class OrderItems extends Component {
   render() {
@@ -34,7 +35,9 @@ class OrderItems extends Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
-            return <div>{Utils.getCurrencySymbol(currency) + value}</div>;
+            return (
+              <div>{Utils.getCurrencySymbol(currency) + value.toFixed(2)}</div>
+            );
           }
         }
       },
@@ -52,7 +55,12 @@ class OrderItems extends Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
-            return <div>{Utils.getCurrencySymbol(currency) + (tableMeta.rowData[3] * tableMeta.rowData[4])}</div>;
+            return (
+              <div>
+                {Utils.getCurrencySymbol(currency) +
+                  (tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(2)}
+              </div>
+            );
           }
         }
       },
