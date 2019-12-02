@@ -42,6 +42,7 @@ class OrderList extends React.Component {
   state = {
     isLoading: true,
     products: { data: [], pagination: {} },
+    integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -49,6 +50,7 @@ class OrderList extends React.Component {
   };
 
   componentDidMount() {
+    this.getIntegrations();
     this.callAPI();
   }
 
@@ -80,15 +82,23 @@ class OrderList extends React.Component {
       .finally(() => {
         this.setState({ isLoading: false });
       });
+  };
+
+  getIntegrations() {
+    API.get('/integrations', { params: { limit: 100, offset: 0 } })
+      .then(response => {
+        const { data } = response.data;
+        const integrations = data.map(item => item.id);
+        this.setState({ integrationFilterOptions: integrations });
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
   }
 
   callAPI = () => {
-    const { 
-      searchTerm,
-      limit,
-      page,
-      serverSideFilterList 
-    } = this.state;
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
       offset: page * limit,
@@ -183,6 +193,7 @@ class OrderList extends React.Component {
       products,
       page,
       serverSideFilterList,
+      integrationFilterOptions,
       searchTerm
     } = this.state;
     const { pagination, data } = products;
@@ -248,6 +259,18 @@ class OrderList extends React.Component {
           }
         }
       },
+      // {
+      //   name: 'integrations',
+      //   options: {
+      //     sort: true,
+      //     filterType: 'dropdown',
+      //     filterList: serverSideFilterList[4],
+      //     filterOptions: {
+      //       names: integrationFilterOptions
+      //     },
+      //     customBodyRender: value => <div>{value.name}</div>
+      //   }
+      // },
       {
         name: 'last_import_date',
         label: 'Last import',

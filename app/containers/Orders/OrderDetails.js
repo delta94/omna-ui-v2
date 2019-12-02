@@ -72,7 +72,7 @@ class OrderDetails extends Component {
 
   componentDidMount() {
     const order = get(this.props, 'location.state.order', null);
-    const storeId = get(order, 'data.integration.id', null)
+    const storeId = get(order, 'data.integration.id', null);
     const number = get(this.props, 'match.params.number', null);
 
     if (
