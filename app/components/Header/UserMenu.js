@@ -49,10 +49,9 @@ class UserMenu extends React.Component {
         <Button onClick={this.handleMenu('user-setting')}>
           <Avatar
             alt={user}
-            src={dummy.user.avatar}
-            style={{ width: 32, height: 32 }}
+            src={user ? user.picture : dummy.user.avatar}
           />
-          <div style={{ color: 'white', marginLeft: 8 }}>{user}</div>
+          <div style={{ color: 'white', marginLeft: 8 }}>{user ? user.name : ''}</div>
         </Button>
         <Menu
           id="menu-appbar"
