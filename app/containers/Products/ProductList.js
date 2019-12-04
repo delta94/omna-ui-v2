@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 // import classNames from 'classnames';
-import moment from 'moment';
+// import moment from 'moment';
 // import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 
@@ -170,7 +170,7 @@ class OrderList extends React.Component {
       products,
       page,
       serverSideFilterList,
-      integrationFilterOptions,
+      // integrationFilterOptions,
       searchTerm
     } = this.state;
     const { pagination, data } = products;

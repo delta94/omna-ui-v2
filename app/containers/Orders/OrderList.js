@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 // import classNames from 'classnames';
 import moment from 'moment';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+// import { connect } from 'react-redux';
+// import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import {
   withStyles,
@@ -19,7 +19,7 @@ import Utils from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
 // const variantIcon = Utils.iconVariants();
-import { getOrders } from '../../actions/orderActions';
+// import { getOrders } from '../../actions/orderActions';
 
 const styles = theme => ({
   table: {
@@ -49,7 +49,6 @@ class OrderList extends React.Component {
   };
 
   componentDidMount() {
-    this.getIntegrations();
     this.callAPI();
   }
 
@@ -109,6 +108,7 @@ class OrderList extends React.Component {
     };
 
     this.setState({ isLoading: true });
+    this.getIntegrations();
     this.getOrders(params);
     // onGetOrders(params);
   };
@@ -165,7 +165,7 @@ class OrderList extends React.Component {
   };
 
   render() {
-    const { classes, history  } = this.props;
+    const { classes, history } = this.props;
     const {
       integrationFilterOptions,
       isLoading,
@@ -176,7 +176,7 @@ class OrderList extends React.Component {
       searchTerm
     } = this.state;
     const { pagination, data } = orders;
-    
+
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -284,26 +284,26 @@ class OrderList extends React.Component {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
       },
-      customSort: (customSortData, colIndex, order) =>
-        customSortData.sort((a, b) => {
+      customSort: (data, colIndex, order) =>
+        data.sort((a, b) => {
           switch (colIndex) {
             case 3:
               return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
+                (parseFloat(a.data[colIndex]) <
+                parseFloat(b.data[colIndex])
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
             case 4:
               return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
+                (a.data[colIndex].name.toLowerCase() <
+                b.data[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
             default:
               return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
+                (a.data[colIndex] < b.data[colIndex]
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );

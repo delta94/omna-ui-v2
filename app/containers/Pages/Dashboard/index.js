@@ -22,17 +22,6 @@ class Dashboard extends Component {
     this.callAPI();
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { reloadLandingPage, changeReloadLandingPage } = this.props;
-  //   if (
-  //     reloadLandingPage &&
-  //     reloadLandingPage === prevProps.reloadLandingPage
-  //   ) {
-  //     changeReloadLandingPage(false);
-  //     this.callAPI();
-  //   }
-  // }
-
   getOrders = params => {
     const { enqueueSnackbar } = this.props;
     api
@@ -71,16 +60,18 @@ class Dashboard extends Component {
       });
   };
 
-  callAPI = () => {
+  buildParams = () => {
     const { limit, page } = this.state;
-    const params = {
+    return {
       offset: page * limit,
       limit
     };
+  }
 
+  callAPI = () => {
     this.setState({ loading: true });
-    this.getProducts(params);
-    this.getOrders(params);
+    this.getProducts(this.buildParams());
+    this.getOrders(this.buildParams());
   };
 
   render() {
@@ -114,7 +105,7 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  enqueueSnackbar: PropTypes.func
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
 export default withSnackbar(Dashboard);
