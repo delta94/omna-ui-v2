@@ -21,7 +21,10 @@ class LockScreen extends React.Component {
         const currentTenant = {
           secret: data.secret,
           token: data.token,
-          user: data.user.name,
+          user: {
+            name: data.user.name,
+            picture: data.user.picture
+          },
           isReadyToOmna: data.is_ready_to_omna,
           tenantId: data.id
         };
