@@ -17,23 +17,22 @@ import colorfull from 'dan-api/palette/colorfull';
 import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
-
   render() {
     const { classes, orders, products } = this.props;
-  
+
     console.log(orders);
 
     return (
-      <Paper
-        style={{ padding: '8px 16px', marginBottom: 16 }}
-      >
+      <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
         <ul className={classes.bigResume} style={{ margin: 0 }}>
           <li>
             <Avatar className={classNames(classes.avatar, classes.blueAvatar)}>
               <Dvr />
             </Avatar>
             <Typography variant="h6">
-              <span className={classes.blueText}>{orders.pagination.total}</span>
+              <span className={classes.blueText}>
+                {orders.pagination.total}
+              </span>
               <Typography>Orders</Typography>
             </Typography>
           </li>
@@ -42,7 +41,9 @@ class PerformanceChartWidget extends PureComponent {
               <CheckCircle />
             </Avatar>
             <Typography variant="h6">
-              <span className={classes.tealText}>{products.pagination.total}</span>
+              <span className={classes.tealText}>
+                {products.pagination.total}
+              </span>
               <Typography>Products</Typography>
             </Typography>
           </li>
@@ -74,8 +75,8 @@ class PerformanceChartWidget extends PureComponent {
 
 PerformanceChartWidget.propTypes = {
   classes: PropTypes.object.isRequired,
-  orders: PropTypes.array,
-  products: PropTypes.array
+  orders: PropTypes.object,
+  products: PropTypes.object
 };
 
 export default withStyles(styles)(PerformanceChartWidget);

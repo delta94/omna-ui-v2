@@ -1,4 +1,5 @@
 // Main Components
+export AutoComplete from './AutoComplete/AutoComplete';
 export Header from './Header/Header';
 export HeaderMenu from './Header/HeaderMenu';
 export Sidebar from './Sidebar/Sidebar';
