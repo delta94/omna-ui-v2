@@ -133,19 +133,35 @@ class Utils {
     return new Utils().getURL();
   }
 
-  static getUser() {
+  static getTenant() {
     if (sessionStorage.getItem('currentTenant')) {
       return JSON.parse(sessionStorage.getItem('currentTenant'));
     }
     return null;
   }
 
-  static setUser(user) {
-    sessionStorage.setItem('currentTenant', JSON.stringify(user));
+  static setTenant(tenant) {
+    sessionStorage.setItem('currentTenant', JSON.stringify(tenant));
   }
 
   static isAuthenticated() {
     if (sessionStorage.getItem('currentTenant')) {
+      return true;
+    }
+    return false;
+  }
+
+  static getDeactivationDate(deactivationDate) {
+    if (deactivationDate) {
+      const time = new Date(deactivationDate).getTime() - new Date().getTime();
+      return Math.round(time / ((1000 * 3600 * 24)));
+    }
+    return -1;
+  }
+
+  static isTenantEnabled(deactivationDate) {
+    const deactivation = this.getDeactivationDate(deactivationDate);
+    if (deactivation >= 1) {
       return true;
     }
     return false;

@@ -15,6 +15,20 @@ import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
 import MySnackBar from '../../Common/SnackBar';
+import Utils from '../../Common/Utils';
+
+const subscribeAction = (
+  <div>
+    <Link
+      variant="body2"
+      style={{ marginRight: '10px' }}
+      onClick={() => { window.open('https://cenit.io/billing'); }}
+    >
+      subscribe for Tenant Activation
+    </Link>
+
+  </div>
+);
 
 const action = (
   <div>
@@ -22,17 +36,11 @@ const action = (
       variant="body2"
       style={{ marginRight: '10px' }}
       component={RouterLink}
-      to="/app/tenant-configuration"
-    >
-      Initialize tenant
-    </Link>
-    <Link
-      variant="body2"
-      component={RouterLink}
       to="/app/add-tenant"
     >
-      Create new tenat
+      Create new Tenant
     </Link>
+
   </div>
 );
 
@@ -54,7 +62,13 @@ class LeftSidebarLayout extends React.Component {
       place,
       handleOpenGuide,
       isReadyToOmna,
+      deactivationDate,
+      enabledTenant,
+      tenantName
+
     } = this.props;
+
+    const deactivation = Utils.getDeactivationDate(deactivationDate);
 
     return (
       <Fragment>
@@ -99,10 +113,28 @@ class LeftSidebarLayout extends React.Component {
             ) */}
             <div>
               <MySnackBar
+                variant="info"
+                customStyle
+                open={deactivation >= 1 || false}
+                message={`This tenant ${tenantName} is ${deactivation} days left for deactivation`}
+                action={subscribeAction}
+              />
+            </div>
+            <div>
+              <MySnackBar
+                variant="error"
+                customStyle
+                open={!enabledTenant}
+                message={`This tenant ${tenantName} is not enabled.`}
+                action={subscribeAction}
+              />
+            </div>
+            <div>
+              <MySnackBar
                 variant="warning"
                 customStyle
-                open={!isReadyToOmna}
-                message="The current tenant is not ready to use with OMNA application. Please initialize or switch the current tenant. Also you can create a new one."
+                open={!isReadyToOmna && enabledTenant}
+                message="The current tenant is not ready to use with OMNA application. Please initialize the tenant."
                 action={action}
               />
             </div>
@@ -141,15 +173,24 @@ LeftSidebarLayout.propTypes = {
   place: PropTypes.string.isRequired,
   titleException: PropTypes.array.isRequired,
   handleOpenGuide: PropTypes.func.isRequired,
-  isReadyToOmna: PropTypes.bool
+  isReadyToOmna: PropTypes.bool,
+  deactivationDate: PropTypes.string,
+  enabledTenant: PropTypes.bool,
+  tenantName: PropTypes.string
 };
 
 LeftSidebarLayout.defaultProps = {
-  isReadyToOmna: true
+  isReadyToOmna: true,
+  deactivationDate: '',
+  enabledTenant: false,
+  tenantName: ''
 };
 
 const mapStateToProps = (state) => ({
   isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
+  deactivationDate: state.getIn(['tenant', 'deactivationDate']),
+  enabledTenant: state.getIn(['tenant', 'enabled']),
+  tenantName: state.getIn(['tenant', 'tenantName']),
   ...state,
 });
 

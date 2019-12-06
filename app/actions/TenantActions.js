@@ -43,3 +43,18 @@ export const setTenantId = (tenantId) => ({
   type: types.SET_TENANT_ID,
   tenantId
 });
+
+export const setDeactivationDate = (deactivationDate) => ({
+  type: types.SET_DEACTIVATION_DATE,
+  deactivationDate
+});
+
+export const setEnabledTenant = (enabled) => ({
+  type: types.SET_ENABLED_TENANT,
+  enabled
+});
+
+export const setTenantName = (tenantName) => ({
+  type: types.SET_TENANT_NAME,
+  tenantName
+});

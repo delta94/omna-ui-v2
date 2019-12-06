@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
 import PropTypes from 'prop-types';
@@ -65,23 +65,64 @@ const styles = theme => ({
 });
 
 class TenantConfiguration extends React.Component {
-  state = { loading: false };
+  state = {
+    loading: false
+  };
 
   updateTenant = (status) => {
     const { changeTenantStatus } = this.props;
     changeTenantStatus(status);
-    const user = Utils.getUser();
-    if (user) {
-      user.isReadyToOmna = status;
+    const tenant = Utils.getTenant();
+    if (tenant) {
+      tenant.isReadyToOmna = status;
+      Utils.setTenant(tenant);
     }
   }
+
+  /*   startUpTenant = async () => {
+      const { enqueueSnackbar, history } = this.props;
+      this.setState({ loading: true });
+      try {
+        const startUpResponse = await API.get('startup');
+        if (startUpResponse) {
+          enqueueSnackbar('Start up process initialized successfully', {
+            variant: 'success'
+          });
+        }
+        const startupDataResponse = startUpResponse.data.data;
+        const intervalObj = setInterval(async () => {
+          const taskResponse = await API.get(`tasks/${startupDataResponse.id}`);
+          const { data } = taskResponse.data;
+          if (data.status === 'failed') {
+            const notificationList = data.notifications.filter(item => item.type === 'error' && item.message.includes('tenant') && item.message.includes('not enabled')).map(notif => {
+              const value = notif;
+              value.message = 'The current Tenant is not enabled. Subscribe to a plan for Tenant Activation.';
+              return value;
+            });
+            this.setState({ notifications: notificationList });
+            this.setState({ loading: false });
+            clearInterval(intervalObj);
+          }
+          if (data.status === 'completed') {
+            this.setState({ loading: false });
+            clearInterval(intervalObj);
+            history.push('/app');
+          }
+        }, 8000);
+      } catch (error) {
+        this.setState({ loading: false });
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
+      }
+    } */
 
   startUpTenant = async () => {
     const { enqueueSnackbar, tenantId, history } = this.props;
     try {
+      this.setState({ loading: true });
       const response = await API.get('startup');
       if (response) {
-        this.setState({ loading: true });
         enqueueSnackbar('Start up process initialized successfully', {
           variant: 'success'
         });
@@ -96,8 +137,6 @@ class TenantConfiguration extends React.Component {
           });
           clearInterval(intervalObj);
           history.push('/');
-        } else {
-          clearInterval(intervalObj);
         }
       }, 10000);
     } catch (error) {
@@ -110,44 +149,47 @@ class TenantConfiguration extends React.Component {
   render() {
     const title = brand.name + ' - Tenant Configuration';
     const description = brand.desc;
-    const { classes } = this.props;
+    const { classes, enabledTenant } = this.props;
     const { loading } = this.state;
     return (
-      <div className={classes.root}>
-        <Helmet>
-          <title>{title}</title>
-          <meta name="description" content={description} />
-          <meta property="og:title" content={title} />
-          <meta property="og:description" content={description} />
-          <meta property="twitter:title" content={title} />
-          <meta property="twitter:description" content={description} />
-        </Helmet>
-        <div className={classes.container}>
-          <div className={classes.artwork}>
-            <Avatar className={classes.icon}><Build /></Avatar>
-            <Hidden xsDown>
-              <Avatar className={classes.icon}><Warning /></Avatar>
-            </Hidden>
-            <Hidden xsDown>
-              <Avatar className={classes.icon}><Settings /></Avatar>
-            </Hidden>
-          </div>
-          <Typography variant="h4" gutterBottom>Configuration</Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '10px' }}>
-            Get your tenant ready to use OMNA application.
-          </Typography>
-          {loading && (
-            <Typography variant="subtitle1">
-              Preparing tenant ...
+      <Fragment>
+        {loading && <Loading />}
+        <div className={classes.root}>
+          <Helmet>
+            <title>{title}</title>
+            <meta name="description" content={description} />
+            <meta property="og:title" content={title} />
+            <meta property="og:description" content={description} />
+            <meta property="twitter:title" content={title} />
+            <meta property="twitter:description" content={description} />
+          </Helmet>
+          <div className={classes.container}>
+            <div className={classes.artwork}>
+              <Avatar className={classes.icon}><Build /></Avatar>
+              <Hidden xsDown>
+                <Avatar className={classes.icon}><Warning /></Avatar>
+              </Hidden>
+              <Hidden xsDown>
+                <Avatar className={classes.icon}><Settings /></Avatar>
+              </Hidden>
+            </div>
+            <Typography variant="h4" gutterBottom>Configuration</Typography>
+            <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '10px' }}>
+              {!enabledTenant ? 'Subscribe to a plan for Tenant Activation.' : 'Get your tenant ready to use OMNA application.'}
             </Typography>
-          )}
-          {loading ? <Loading /> : (
-            <Button variant="contained" color="primary" onClick={this.startUpTenant}>
-              Start
-            </Button>
-          )}
+            {loading && (
+              <Typography variant="subtitle1">
+                Preparing tenant ...
+              </Typography>
+            )}
+            {!enabledTenant ? null : (
+              <Button variant="contained" color="primary" onClick={this.startUpTenant}>
+                Start
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }
@@ -156,12 +198,14 @@ TenantConfiguration.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   tenantId: PropTypes.string.isRequired,
+  enabledTenant: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   changeTenantStatus: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
   tenantId: state.getIn(['tenant', 'tenantId']),
+  enabledTenant: state.getIn(['tenant', 'enabled']),
   ...state,
 });
 

@@ -42,13 +42,13 @@ class UserMenu extends React.Component {
 
   render() {
     const { anchorEl, openMenu } = this.state;
-    const user = Utils.getUser() ? Utils.getUser().user : null;
+    const user = Utils.getTenant() ? Utils.getTenant().user : null;
 
     return (
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
           <Avatar
-            alt={user}
+            alt="user-avatar"
             src={user ? user.picture : dummy.user.avatar}
           />
           <div style={{ color: 'white', marginLeft: 8 }}>{user ? user.name : ''}</div>

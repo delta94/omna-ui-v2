@@ -3,29 +3,48 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import Utils from './Utils';
 
-const AuthGuardRoute = ({ component: Component, ...rest }) => {
-  const { location } = window;
-  const uri = location.href;
+const tenantconfigUrl = '/app/tenant-configuration';
+const createTenantUrl = '/app/add-tenant';
+
+const AuthGuardRoute = ({
+  component: Component, location, path, ...rest
+}) => {
   let code = null;
-  const pathname = location.pathname ? location.pathname : '/';
-  if (uri.includes('code') && !Utils.isAuthenticated()) {
-    const url = new URL(uri);
-    const searchParams = new URLSearchParams(url.search);
+  const tenant = Utils.getTenant();
+  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
+  const isAuthenticated = Utils.isAuthenticated();
+  if (location.search.includes('code') && !isAuthenticated) {
+    const searchParams = new URLSearchParams(location.search);
     code = searchParams.get('code');
+  }
+  if (isAuthenticated && !isEnabled && path !== tenantconfigUrl && path !== createTenantUrl) {
+    return (
+      <Route
+        render={() => (
+          <Redirect to={{ pathname: tenantconfigUrl }} />
+        )}
+      />
+    );
   }
   return (
     <Route
       {...rest}
       render={props => (
-        Utils.isAuthenticated() ? <Component {...props} />
-          : <Redirect to={{ pathname: '/lock-screen', state: { redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${location.pathname}`, code, pathname } }} />
+        isAuthenticated ? <Component {...props} />
+          : <Redirect to={{ pathname: '/lock-screen', state: { redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${path}`, code, path } }} />
       )}
     />
   );
 };
 
 AuthGuardRoute.propTypes = {
-  component: PropTypes.func.isRequired
+  component: PropTypes.func.isRequired,
+  path: PropTypes.string.isRequired,
+  location: PropTypes.object
+};
+
+AuthGuardRoute.defaultProps = {
+  location: null
 };
 
 export default AuthGuardRoute;

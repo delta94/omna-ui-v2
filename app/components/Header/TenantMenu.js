@@ -22,7 +22,10 @@ import {
   setTenantStatus,
   setTenantId,
   setReloadTenants,
-  setReloadLandingPage
+  setReloadLandingPage,
+  setDeactivationDate,
+  setEnabledTenant,
+  setTenantName
 } from '../../actions/TenantActions';
 
 const styles = () => ({
@@ -44,11 +47,11 @@ const styles = () => ({
 
 function TenantMenu(props) {
   const { classes, reloadTenants } = props;
-  const [tenantName, setTenantName] = useState('');
+  const [name, setName] = useState('');
   const [tenantList, setTenantList] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   useEffect(() => {
     async function changeTenant() {
@@ -62,7 +65,7 @@ function TenantMenu(props) {
           data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
           const found = data.find(element => element.id === tenantId);
-          setTenantName(found.name);
+          setName(found.name);
         } catch (error) {
           enqueueSnackbar(
             get(error, 'response.data.message', 'Unknown error'),
@@ -86,8 +89,11 @@ function TenantMenu(props) {
         const { data } = response.data;
         data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
-        const found = data.find(element => element.id === tenantId);
-        setTenantName(found.name);
+        const found = data.findIndex(element => element.id === tenantId);
+        setSelectedIndex(found);
+        // const found = data.find(element => element.id === tenantId);
+        const element = data[found];
+        setName(element.name);
       } catch (error) {
         enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
           variant: 'error'
@@ -97,28 +103,36 @@ function TenantMenu(props) {
     getTenants();
   }, []);
 
-  const handleTenantChange = async (e, tenantId, name, index) => {
+  const handleTenantChange = async (e, tenantId, _name, index) => {
     const {
       enqueueSnackbar,
       changeTenantStatus,
       changeReloadLandingPage,
       changeTenantId,
+      changeDeactivationDate,
+      changeEnabledTenant,
+      changeTenantName,
       history
     } = props;
     try {
-      setTenantName(name);
+      setName(_name);
       setSelectedIndex(index);
       setAnchorEl(null);
       const response = await API.get(`tenants/${tenantId}`);
       const { data } = response.data;
-      const user = Utils.getUser();
-      user.token = data.token;
-      user.secret = data.secret;
-      user.isReadyToOmna = data.is_ready_to_omna;
-      user.tenantId = data.id;
-      Utils.setUser(user);
+      const tenant = Utils.getTenant();
+      tenant.name = data.name;
+      tenant.token = data.token;
+      tenant.secret = data.secret;
+      tenant.isReadyToOmna = data.is_ready_to_omna;
+      tenant.tenantId = data.id;
+      tenant.enabled = Utils.isTenantEnabled(data.deactivation);
+      Utils.setTenant(tenant);
       changeTenantStatus(data.is_ready_to_omna);
       changeTenantId(data.id);
+      changeDeactivationDate(data.deactivation);
+      changeEnabledTenant(tenant.enabled);
+      changeTenantName(data.name);
       if (!data.is_ready_to_omna) {
         history.push('/app/tenant-configuration');
       } else {
@@ -154,7 +168,7 @@ function TenantMenu(props) {
             <HomeIcon className={classes.icon} />
           </ListItemIcon>
           <ListItemText
-            primary={tenantName}
+            primary={name}
             className={classes.selectedTenant}
           />
           <ListItemIcon style={{ margin: 0 }}>
@@ -174,7 +188,7 @@ function TenantMenu(props) {
             key={option.id}
             value={option.id}
             disabled={index === 0}
-            // selected={index === selectedIndex}
+            selected={index === selectedIndex}
             onClick={event => handleTenantChange(event, option.id, option.name, index)
             }
           >
@@ -192,7 +206,10 @@ TenantMenu.propTypes = {
   reloadTenants: PropTypes.bool.isRequired,
   changeTenantStatus: PropTypes.func.isRequired,
   changeReloadLandingPage: PropTypes.func.isRequired,
+  changeDeactivationDate: PropTypes.func.isRequired,
+  changeEnabledTenant: PropTypes.func.isRequired,
   changeTenantId: PropTypes.func.isRequired,
+  changeTenantName: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
@@ -207,7 +224,10 @@ const mapDispatchToProps = dispatch => ({
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeReloadTenants: bindActionCreators(setReloadTenants, dispatch),
-  changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch)
+  changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch),
+  changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
+  changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
+  changeTenantName: bindActionCreators(setTenantName, dispatch)
 });
 
 const TenantMenuMapped = withSnackbar(withStyles(styles)(TenantMenu));
