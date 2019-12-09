@@ -20,8 +20,6 @@ class PerformanceChartWidget extends PureComponent {
   render() {
     const { classes, orders, products } = this.props;
 
-    console.log(orders);
-
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
         <ul className={classes.bigResume} style={{ margin: 0 }}>

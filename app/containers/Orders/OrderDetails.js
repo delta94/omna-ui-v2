@@ -95,7 +95,6 @@ class OrderDetails extends Component {
       })
       .catch(error => {
         // handle error
-        console.log(error);
         this.setState({ success: false, messageError: error.message });
       });
   };

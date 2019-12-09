@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
 import get from 'lodash/get';
-import { AutoComplete, PapperBlock } from 'dan-components';
+import { PapperBlock } from 'dan-components';
 import { withSnackbar } from 'notistack';
 import api from '../../Utils/api';
 import PerformanceChartWidget from './PerformanceChartWidget';
@@ -91,7 +91,7 @@ class Dashboard extends Component {
           <meta property="twitter:description" content={description} />
         </Helmet>
         <PerformanceChartWidget orders={orders} products={products} />
-        {/* <AutoComplete data={products.data} placeholder="Select product" handleChange={value => console.log(value)} /> */}
+        
         <PapperBlock
           title="Orders Total Price / Month"
           icon="ios-stats-outline"

@@ -1,12 +1,11 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
+import { Button, Divider, Hidden } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { Divider } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import dummy from 'dan-api/dummy/dummyContents';
 import styles from './header-jss';
@@ -47,11 +46,12 @@ class UserMenu extends React.Component {
     return (
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
-          <Avatar
-            alt={user}
-            src={user ? user.picture : dummy.user.avatar}
-          />
-          <div style={{ color: 'white', marginLeft: 8 }}>{user ? user.name : ''}</div>
+          <Avatar alt={user} src={user ? user.picture : dummy.user.avatar} />
+          <Hidden xsDown>
+            <div style={{ color: 'white', marginLeft: 8 }}>
+              {user ? user.name : ''}
+            </div>
+          </Hidden>
         </Button>
         <Menu
           id="menu-appbar"

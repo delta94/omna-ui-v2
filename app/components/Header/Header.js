@@ -122,7 +122,7 @@ class Header extends React.Component {
           )
         }
       >
-        <Toolbar disableGutters={!open}>
+        <Toolbar disableGutters={!open} style={{ justifyContent: 'space-between' }}>
           {disableToggleButton && (
             <Fab
               size="small"

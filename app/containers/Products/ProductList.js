@@ -175,7 +175,6 @@ class OrderList extends React.Component {
     } = this.state;
     const { pagination, data } = products;
 
-    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
