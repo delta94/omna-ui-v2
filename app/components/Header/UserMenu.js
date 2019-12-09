@@ -41,7 +41,7 @@ class UserMenu extends React.Component {
 
   render() {
     const { anchorEl, openMenu } = this.state;
-    const user = Utils.getUser() ? Utils.getUser().user : null;
+    const user = Utils.getTenant() ? Utils.getTenant().user : null;
 
     return (
       <div>

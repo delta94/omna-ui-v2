@@ -7,12 +7,14 @@ import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
-import { setTenantStatus, setTenantId } from '../../../actions/TenantActions';
+import {
+  setTenantStatus, setTenantId, setDeactivationDate, setEnabledTenant, setTenantName
+} from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
   componentDidMount() {
     const {
-      history, location, changeTenantStatus, changeTenantId
+      history, location, changeTenantStatus, changeTenantId, changeDeactivationDate, changeEnabledTenant, changeTenantName
     } = this.props;
     const { redirect, code, pathname } = location.state;
     if (code) {
@@ -21,16 +23,21 @@ class LockScreen extends React.Component {
         const currentTenant = {
           secret: data.secret,
           token: data.token,
+          name: data.name,
           user: {
             name: data.user.name,
             picture: data.user.picture
           },
           isReadyToOmna: data.is_ready_to_omna,
+          enabled: Utils.isTenantEnabled(data.deactivation),
           tenantId: data.id
         };
-        Utils.setUser(currentTenant);
+        Utils.setTenant(currentTenant);
         changeTenantStatus(currentTenant.isReadyToOmna);
         changeTenantId(data.id);
+        changeTenantName(data.name);
+        changeDeactivationDate(data.deactivation);
+        changeEnabledTenant(currentTenant.enabled);
         pathname ? history.push(pathname) : history.push('/');
       });
     } else {
@@ -53,7 +60,10 @@ LockScreen.propTypes = {
   location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   changeTenantStatus: PropTypes.func.isRequired,
-  changeTenantId: PropTypes.func.isRequired
+  changeTenantId: PropTypes.func.isRequired,
+  changeDeactivationDate: PropTypes.func.isRequired,
+  changeEnabledTenant: PropTypes.func.isRequired,
+  changeTenantName: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -64,7 +74,10 @@ const mapStateToProps = (state) => ({
 
 const dispatchToProps = dispatch => ({
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
-  changeTenantId: bindActionCreators(setTenantId, dispatch)
+  changeTenantId: bindActionCreators(setTenantId, dispatch),
+  changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
+  changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
+  changeTenantName: bindActionCreators(setTenantName, dispatch),
 });
 
 const LockScreenMapped = connect(
