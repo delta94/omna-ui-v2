@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import { Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
@@ -13,18 +14,30 @@ import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import LocalActivity from '@material-ui/icons/LocalActivity';
 import Typography from '@material-ui/core/Typography';
-import colorfull from 'dan-api/palette/colorfull';
+import AuthGuardRoute from '../../Common/AuthGuardRoute';
+import {
+  Orders,
+  Products,
+  Integrations,
+  Workflows,
+  Webhooks
+} from '../../pageListAsync';
 import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
+  handleClick = () => {
+    const { history } = this.props;
+    history.push('/app/orders/');
+  };
+
   render() {
-    const { classes, orders, products } = this.props;
+    const { classes, integrations, orders, products, tasks } = this.props;
 
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
         <ul className={classes.bigResume} style={{ margin: 0 }}>
           <li>
-            <Avatar className={classNames(classes.avatar, classes.blueAvatar)}>
+            <Avatar className={classNames(classes.avatar, classes.blueAvatar)} onClick={this.handleClick}>
               <Dvr />
             </Avatar>
             <Typography variant="h6">
@@ -50,8 +63,8 @@ class PerformanceChartWidget extends PureComponent {
               <Healing />
             </Avatar>
             <Typography variant="h6">
-              <span className={classes.pinkText}>17</span>
-              <Typography>Complaints</Typography>
+              <span className={classes.pinkText}>{integrations.pagination.total}</span>
+              <Typography>Integrations</Typography>
             </Typography>
           </li>
           <li>
@@ -61,8 +74,8 @@ class PerformanceChartWidget extends PureComponent {
               <LocalActivity />
             </Avatar>
             <Typography variant="h6">
-              <span className={classes.purpleText}>18</span>
-              <Typography>Referrals</Typography>
+              <span className={classes.purpleText}>{tasks.pagination.total}</span>
+              <Typography>Tasks</Typography>
             </Typography>
           </li>
         </ul>

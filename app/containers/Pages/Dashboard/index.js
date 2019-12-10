@@ -13,7 +13,9 @@ class Dashboard extends Component {
   state = {
     orders: { data: [], pagination: {} },
     products: { data: [], pagination: {} },
-    limit: 100,
+    integrations: { data: [], pagination: {} },
+    tasks: { data: [], pagination: {} },
+    limit: 5,
     page: 0,
     loading: false
   };
@@ -60,6 +62,42 @@ class Dashboard extends Component {
       });
   };
 
+  getIntegrations = params => {
+    const { enqueueSnackbar } = this.props;
+    api.get('/integrations', { params })
+      .then(response => {
+        this.setState({
+          integrations: get(response, 'data', { data: [], pagination: {} })
+        });
+      })
+      .catch(error => {
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
+  }
+
+  getTasks = params => {
+    const { enqueueSnackbar } = this.props;
+    api.get('/tasks', { params })
+      .then(response => {
+        this.setState({
+          tasks: get(response, 'data', { data: [], pagination: {} }),
+        });
+      })
+      .catch(error => {
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
+  };
+
   buildParams = () => {
     const { limit, page } = this.state;
     return {
@@ -72,10 +110,12 @@ class Dashboard extends Component {
     this.setState({ loading: true });
     this.getProducts(this.buildParams());
     this.getOrders(this.buildParams());
+    this.getIntegrations(this.buildParams());
+    this.getTasks(this.buildParams());
   };
 
   render() {
-    const { orders, products, loading } = this.state;
+    const { integrations, orders, products, tasks, loading } = this.state;
 
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
@@ -90,7 +130,7 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        <PerformanceChartWidget orders={orders} products={products} />
+        <PerformanceChartWidget integrations={integrations} orders={orders} products={products} tasks={tasks} />
         
         <PapperBlock
           title="Orders Total Price / Month"
