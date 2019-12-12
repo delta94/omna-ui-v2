@@ -9,6 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 // material-ui
 // core
 import { withStyles } from '@material-ui/core/styles';
+import { withSnackbar } from 'notistack';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
@@ -75,10 +76,7 @@ class OrderDetails extends Component {
     const storeId = get(order, 'data.integration.id', null);
     const number = get(this.props, 'match.params.number', null);
 
-    if (
-      order !== null
-      && number === get(order, 'data.number', null)
-    ) {
+    if (order !== null && number === get(order, 'data.number', null)) {
       this.setState({ order, loading: false });
       this.callAPI(storeId, number);
     } else {
@@ -87,6 +85,7 @@ class OrderDetails extends Component {
   }
 
   getOrderDocumentTypes = params => {
+    const { enqueueSnackbar } = this.props;
     API.get(
       `/integrations/${params.store_id}/orders/${params.number}/doc/types`
     )
@@ -94,8 +93,9 @@ class OrderDetails extends Component {
         this.setState({ documentTypes: response.data.data });
       })
       .catch(error => {
-        // handle error
-        this.setState({ success: false, messageError: error.message });
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       });
   };
 
@@ -144,9 +144,8 @@ class OrderDetails extends Component {
       <div>
         <PageHeader title="Order Details" history={history} />
         <div className="item-padding">
-          {loading ? <LoadingState loading={loading} /> : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
+          {loading ? (
+            <LoadingState loading={loading} />
           ) : (
             <div>
               <Paper>
@@ -180,7 +179,8 @@ class OrderDetails extends Component {
                   <Tooltip title="Print order">
                     <Button
                       size="small"
-                      onClick={() => this.onPrintHandler(integrationId, dataNumber)
+                      onClick={() =>
+                        this.onPrintHandler(integrationId, dataNumber)
                       }
                     >
                       <Ionicon icon={variantIcon.print} />
@@ -204,13 +204,14 @@ class OrderDetails extends Component {
                     <strong>
                       {get(order, 'data.updated_date', null) != null
                         ? moment(order.data.updated_date).format(
-                          'Y-MM-DD H:mm:ss'
-                        )
+                            'Y-MM-DD H:mm:ss'
+                          )
                         : '--'}
                     </strong>
                   </Typography>
                 </div>
               </Paper>
+
               <div className="orderDetailContainer">
                 <div className="display-flex" style={{ flexFlow: 'row wrap' }}>
                   <div className="orderDetailContainer">
@@ -258,7 +259,8 @@ class OrderDetails extends Component {
 
 OrderDetails.propTypes = {
   classes: PropTypes.shape({}).isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(OrderDetails);
+export default withSnackbar(withStyles(styles)(OrderDetails));
