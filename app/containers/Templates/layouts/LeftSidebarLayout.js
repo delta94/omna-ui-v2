@@ -24,7 +24,7 @@ const subscribeAction = (
       style={{ marginRight: '10px' }}
       onClick={() => { window.open('https://cenit.io/billing'); }}
     >
-      subscribe for Tenant Activation
+      billing settings
     </Link>
 
   </div>
@@ -36,9 +36,9 @@ const action = (
       variant="body2"
       style={{ marginRight: '10px' }}
       component={RouterLink}
-      to="/app/add-tenant"
+      to="/app/tenant-configuration"
     >
-      Create new Tenant
+      Initialize tenant
     </Link>
 
   </div>
@@ -82,20 +82,14 @@ class LeftSidebarLayout extends React.Component {
           title={place}
           history={history}
           openGuide={handleOpenGuide}
-          disableToggleButton={isReadyToOmna}
-          disableSearchBox={isReadyToOmna}
         />
-        {
-          isReadyToOmna && (
-            <Sidebar
-              open={sidebarOpen}
-              toggleDrawerOpen={toggleDrawer}
-              loadTransition={loadTransition}
-              dataMenu={dataMenu}
-              leftSidebar
-            />
-          )
-        }
+        <Sidebar
+          open={sidebarOpen}
+          toggleDrawerOpen={toggleDrawer}
+          loadTransition={loadTransition}
+          dataMenu={dataMenu}
+          leftSidebar
+        />
         <main className={classNames(classes.content, !sidebarOpen ? classes.contentPaddingLeft : '')} id="mainContent">
           <Decoration
             mode={mode}
@@ -122,10 +116,10 @@ class LeftSidebarLayout extends React.Component {
             </div>
             <div>
               <MySnackBar
-                variant="error"
+                variant="warning"
                 customStyle
                 open={!enabledTenant}
-                message={`This tenant ${tenantName} is not enabled.`}
+                message={`This tenant ${tenantName} is disabled. Go to your billing settings and subscribe to a plan for Tenant Activation.`}
                 action={subscribeAction}
               />
             </div>

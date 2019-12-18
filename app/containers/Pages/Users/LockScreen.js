@@ -16,7 +16,7 @@ class LockScreen extends React.Component {
     const {
       history, location, changeTenantStatus, changeTenantId, changeDeactivationDate, changeEnabledTenant, changeTenantName
     } = this.props;
-    const { redirect, code, pathname } = location.state;
+    const { redirect, code, path } = location.state;
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
@@ -38,7 +38,7 @@ class LockScreen extends React.Component {
         changeTenantName(data.name);
         changeDeactivationDate(data.deactivation);
         changeEnabledTenant(currentTenant.enabled);
-        pathname ? history.push(pathname) : history.push('/');
+        path ? history.push(path) : history.push('/');
       });
     } else {
       window.location.replace(redirect);
