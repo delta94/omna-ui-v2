@@ -3,21 +3,21 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import Utils from './Utils';
 
-const tenantconfigUrl = '/app/tenant-configuration';
-const createTenantUrl = '/app/add-tenant';
+// const tenantconfigUrl = '/app/tenant-configuration';
+// const createTenantUrl = '/app/add-tenant';
 
 const AuthGuardRoute = ({
   component: Component, location, path, ...rest
 }) => {
   let code = null;
-  const tenant = Utils.getTenant();
-  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
+  // const tenant = Utils.getTenant();
+  //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
   const isAuthenticated = Utils.isAuthenticated();
   if (location.search.includes('code') && !isAuthenticated) {
     const searchParams = new URLSearchParams(location.search);
     code = searchParams.get('code');
   }
-  if (isAuthenticated && !isEnabled && path !== tenantconfigUrl && path !== createTenantUrl) {
+  /*   if (isAuthenticated && !isEnabled && path !== tenantconfigUrl && path !== createTenantUrl) {
     return (
       <Route
         render={() => (
@@ -25,7 +25,7 @@ const AuthGuardRoute = ({
         )}
       />
     );
-  }
+  } */
   return (
     <Route
       {...rest}

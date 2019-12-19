@@ -94,7 +94,6 @@ class Header extends React.Component {
       gradient,
       title,
       history,
-      disableToggleButton
     } = this.props;
     const {
       open,
@@ -123,16 +122,14 @@ class Header extends React.Component {
         }
       >
         <Toolbar disableGutters={!open} style={{ justifyContent: 'space-between' }}>
-          {disableToggleButton && (
-            <Fab
-              size="small"
-              className={classes.menuButton}
-              aria-label="Menu"
-              onClick={toggleDrawerOpen}
-            >
-              <MenuIcon />
-            </Fab>
-          )}
+          <Fab
+            size="small"
+            className={classes.menuButton}
+            aria-label="Menu"
+            onClick={toggleDrawerOpen}
+          >
+            <MenuIcon />
+          </Fab>
           <Hidden smDown>
             <div className={classes.headerProperties}>
               <Typography component="h2" className={classNames(classes.headerTitle, showTitle && classes.show)}>
@@ -172,11 +169,6 @@ Header.propTypes = {
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  disableToggleButton: PropTypes.bool
-};
-
-Header.defaultProps = {
-  disableToggleButton: true
 };
 
 export default withStyles(styles)(Header);
