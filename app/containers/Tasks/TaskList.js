@@ -6,7 +6,7 @@ import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
 import MUIDataTable from 'mui-datatables';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';

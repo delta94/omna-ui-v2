@@ -8,6 +8,7 @@ const AutoComplete = props => {
 
   return (
     <SingleSelect
+      variant="outlined"
       placeholder={placeholder || 'Select an item'}
       options={options}
       onChange={value => handleChange(value)}

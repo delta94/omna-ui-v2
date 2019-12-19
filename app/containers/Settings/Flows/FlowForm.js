@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Ionicon from 'react-ionicons';
 // dandelion-template
 import { PapperBlock } from 'dan-components';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 //
 import FormActions from '../../Common/FormActions';
 import Scheduler from './Scheduler';
@@ -19,59 +20,92 @@ const styles = theme => ({
     padding: theme.spacing.unit
   },
   inputWidth: {
-    width: '300px',
+    width: '300px'
   },
   marginTop: {
-    marginTop: theme.spacing.unit,
+    marginTop: theme.spacing.unit
   },
   marginLeft: {
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing.unit
   },
   paper: {
     display: 'flex',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
-    maxWidth: 300,
+    maxWidth: 300
   },
   chips: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   }
 });
 
 function FlowForm(props) {
   const {
-    classes, history, flowType, flowsTypes, integration, integrationsOptions, onSubmit, scheduler,
+    classes,
+    history,
+    flowType,
+    flowsTypes,
+    integration,
+    integrationsOptions,
+    onSubmit,
+    scheduler,
     disableRule
   } = props;
 
   const {
-    startDate, endDate, time, active, daysOfWeek, weeksOfMonth, monthsOfYear, status
+    startDate,
+    endDate,
+    time,
+    active,
+    daysOfWeek,
+    weeksOfMonth,
+    monthsOfYear,
+    status
   } = scheduler;
 
-  const onInputFlowChange = (e) => { props.onInputFlowChange(e.target.value); };
+  const onInputFlowChange = e => {
+    props.onInputFlowChange(e.target.value);
+  };
 
-  const onIntegrationChange = (e) => { props.onIntegrationChange(e.target.value); };
+  const onIntegrationChange = e => {
+    debugger;
+    props.onIntegrationChange(e.target.value);
+  };
 
-  const onActiveChange = (e) => { props.onActiveChange(e); };
+  const onActiveChange = e => {
+    props.onActiveChange(e);
+  };
 
-  const onStartDateChange = (e) => { props.onStartDateChange(e); };
+  const onStartDateChange = e => {
+    props.onStartDateChange(e);
+  };
 
-  const onEndDateChange = (e) => { props.onEndDateChange(e); };
+  const onEndDateChange = e => {
+    props.onEndDateChange(e);
+  };
 
-  const onTimeChange = (e) => { props.onTimeChange(e); };
+  const onTimeChange = e => {
+    props.onTimeChange(e);
+  };
 
-  const onDaysOfWeekChange = (e) => { props.onDaysOfWeekChange(e); };
+  const onDaysOfWeekChange = e => {
+    props.onDaysOfWeekChange(e);
+  };
 
-  const onWeeksOfMonthChange = (e) => { props.onWeeksOfMonthChange(e); };
+  const onWeeksOfMonthChange = e => {
+    props.onWeeksOfMonthChange(e);
+  };
 
-  const onMonthsOfYearChange = (e) => { props.onMonthsOfYearChange(e); };
+  const onMonthsOfYearChange = e => {
+    props.onMonthsOfYearChange(e);
+  };
 
-  const onSubmitForm = (e) => {
+  const onSubmitForm = e => {
     e.preventDefault();
     onSubmit();
   };
@@ -79,11 +113,13 @@ function FlowForm(props) {
   return (
     <Fragment>
       <form onSubmit={onSubmitForm} noValidate autoComplete="off">
-        <PapperBlock title="Workflow" icon="ios-shuffle" desc="Define a workflow from an available integration">
+        <PapperBlock
+          title="Workflow"
+          icon="ios-shuffle"
+          desc="Define a workflow from an available integration"
+        >
           <div className={classes.paper}>
-            <Typography variant="h6">
-              I want to:
-            </Typography>
+            <Typography variant="h6">I want to:</Typography>
             <TextField
               required
               id="flows"
@@ -96,7 +132,7 @@ function FlowForm(props) {
               SelectProps={{
                 MenuProps: {
                   className: classes.inputWidth
-                },
+                }
               }}
               margin="normal"
               variant="outlined"
@@ -109,34 +145,30 @@ function FlowForm(props) {
               ))}
             </TextField>
             <Ionicon icon="ios-repeat" className={classes.marginLeft} />
-            <TextField
-              required
-              id="integrations"
-              select
-              label="Integrations"
-              value={integration}
-              name="integrations"
-              disabled={disableRule}
+            <Autocomplete
+              autoHighlight
+              id="combo-box-integrations"
+              options={integrationsOptions}
               onChange={onIntegrationChange}
-              SelectProps={{
-                MenuProps: {
-                  className: classes.inputWidth
-                },
-              }}
-              margin="normal"
-              variant="outlined"
-              className={classNames(classes.inputWidth, classes.marginLeft)}
-            >
-              {integrationsOptions.map(option => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
+              getOptionLabel={option => option.name}
+              style={{ width: 300 }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Integrations"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
           </div>
         </PapperBlock>
 
-        <PapperBlock title="Scheduler" icon="ios-clock-outline" desc="Select how often you want to run the workflow">
+        <PapperBlock
+          title="Scheduler"
+          icon="ios-clock-outline"
+          desc="Select how often you want to run the workflow"
+        >
           <Scheduler
             startDate={startDate}
             endDate={endDate}

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 /* material-ui */
 // core
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton';
 // icons
 import FirstPageIcon from '@material-ui/icons/FirstPage';

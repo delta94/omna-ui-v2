@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import classNames from 'classnames';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Ionicon from 'react-ionicons';
@@ -23,7 +23,14 @@ class PapperBlock extends React.Component {
     } = this.props;
     return (
       <div>
-        <Paper className={classNames(classes.root, noMargin && classes.noMargin, colorMode && classes.colorMode)} elevation={0}>
+        <Paper
+          className={classNames(
+            classes.root,
+            noMargin && classes.noMargin,
+            colorMode && classes.colorMode
+          )}
+          elevation={0}
+        >
           <div className={classes.descBlock}>
             <span className={classes.iconTitle}>
               <Ionicon icon={icon} />
@@ -37,7 +44,13 @@ class PapperBlock extends React.Component {
               </Typography>
             </div>
           </div>
-          <section className={classNames(classes.content, whiteBg && classes.whiteBg, overflowX && classes.overflowX)}>
+          <section
+            className={classNames(
+              classes.content,
+              whiteBg && classes.whiteBg,
+              overflowX && classes.overflowX
+            )}
+          >
             {children}
           </section>
         </Paper>
@@ -55,7 +68,7 @@ PapperBlock.propTypes = {
   whiteBg: PropTypes.bool,
   colorMode: PropTypes.bool,
   noMargin: PropTypes.bool,
-  overflowX: PropTypes.bool,
+  overflowX: PropTypes.bool
 };
 
 PapperBlock.defaultProps = {
@@ -66,7 +79,4 @@ PapperBlock.defaultProps = {
   icon: 'ios-bookmark-outline'
 };
 
-export default compose(
-  withTheme(),
-  withStyles(styles)
-)(PapperBlock);
+export default withTheme((withStyles(styles)(PapperBlock)));

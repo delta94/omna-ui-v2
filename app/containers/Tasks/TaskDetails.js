@@ -10,7 +10,7 @@ import Ionicon from 'react-ionicons';
 
 /* material-ui */
 // core
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';

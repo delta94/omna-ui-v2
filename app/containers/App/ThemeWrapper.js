@@ -3,14 +3,10 @@ import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
 import Loading from 'react-loading-bar';
 import { bindActionCreators } from 'redux';
-import {
-  withTheme, withStyles,
-  createMuiTheme, MuiThemeProvider
-} from '@material-ui/core/styles';
+import { withTheme, withStyles } from '@material-ui/styles';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import 'dan-styles/vendors/react-loading-bar/index.css';
-import {
-  changeModeAction,
-} from 'dan-actions/UiActions';
+import { changeModeAction } from 'dan-actions/UiActions';
 import applicationTheme from '../../styles/theme/applicationTheme';
 
 const styles = {
@@ -18,8 +14,8 @@ const styles = {
     width: '100%',
     minHeight: '100%',
     marginTop: 0,
-    zIndex: 1,
-  },
+    zIndex: 1
+  }
 };
 
 export const AppContext = React.createContext();
@@ -29,17 +25,17 @@ class ThemeWrapper extends React.Component {
     super(props);
     this.state = {
       pageLoaded: true,
-      theme: createMuiTheme(applicationTheme(props.color, props.mode)),
+      theme: createMuiTheme(applicationTheme(props.color, props.mode))
     };
   }
 
   componentWillMount = () => {
     this.onProgressShow();
-  }
+  };
 
   componentDidMount = () => {
     this.playProgress();
-  }
+  };
 
   componentWillUnmount() {
     this.onProgressShow();
@@ -53,18 +49,18 @@ class ThemeWrapper extends React.Component {
 
   onProgressShow = () => {
     this.setState({ pageLoaded: true });
-  }
+  };
 
   onProgressHide = () => {
     this.setState({ pageLoaded: false });
-  }
+  };
 
   playProgress = () => {
     this.onProgressShow();
     setTimeout(() => {
       this.onProgressHide();
     }, 500);
-  }
+  };
 
   render() {
     const { classes, children } = this.props;
@@ -91,18 +87,18 @@ ThemeWrapper.propTypes = {
   children: PropTypes.node.isRequired,
   color: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
-  changeMode: PropTypes.func.isRequired,
+  changeMode: PropTypes.func.isRequired
 };
 
 const reducer = 'ui';
 const mapStateToProps = state => ({
   force: state, // force state from reducer
   color: state.getIn([reducer, 'theme']),
-  mode: state.getIn([reducer, 'type']),
+  mode: state.getIn([reducer, 'type'])
 });
 
 const dispatchToProps = dispatch => ({
-  changeMode: bindActionCreators(changeModeAction, dispatch),
+  changeMode: bindActionCreators(changeModeAction, dispatch)
 });
 
 const ThemeWrapperMapped = connect(
@@ -110,4 +106,4 @@ const ThemeWrapperMapped = connect(
   dispatchToProps
 )(ThemeWrapper);
 
-export default withTheme()(withStyles(styles)(ThemeWrapperMapped));
+export default withTheme(withStyles(styles)(ThemeWrapperMapped));
