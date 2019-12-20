@@ -21,7 +21,7 @@ const styles = theme => ({
   },
   rootDetail: {
     marginTop: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit * 6,
+    paddingBottom: theme.spacing(6),
   },
   rootSlider: {
     display: 'flex',
@@ -30,7 +30,7 @@ const styles = theme => ({
   },
   rootDesc: {
     overflow: 'hidden',
-    marginTop: theme.spacing.unit * 6,
+    marginTop: theme.spacing(6),
   },
   item: {
     textAlign: 'center',
@@ -74,17 +74,17 @@ const styles = theme => ({
   },
   detailWrap: {
     position: 'relative',
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing(2)
   },
   title: {
     marginBottom: 30
   },
   subtitle: {
-    margin: `${theme.spacing.unit * 6}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px`
+    margin: `${theme.spacing(6)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`
   },
   price: {
     display: 'flex',
-    padding: `${theme.spacing.unit * 3}px ${theme.spacing.unit * 1.5}px`,
+    padding: `${theme.spacing(3)}px ${theme.spacing(1.5)}px`,
     '& > *': {
       marginRight: 10
     }
@@ -101,7 +101,7 @@ const styles = theme => ({
     [theme.breakpoints.up('sm')]: {
       padding: '10px 20px',
       display: 'flex',
-      marginRight: theme.spacing.unit * 2
+      marginRight: theme.spacing(2)
     },
   },
   quantity: {
@@ -113,17 +113,17 @@ const styles = theme => ({
     }
   },
   desc: {
-    padding: theme.spacing.unit * 2
+    padding: theme.spacing(2)
   },
   imgGallery: {
-    marginTop: theme.spacing.unit * 3,
-    marginLeft: theme.spacing.unit * 8,
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(8),
     [theme.breakpoints.down('md')]: {
-      marginRight: theme.spacing.unit * 8,
+      marginRight: theme.spacing(8),
     },
     [theme.breakpoints.down('sm')]: {
-      marginRight: theme.spacing.unit * 2,
-      marginLeft: theme.spacing.unit * 2,
+      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(2),
     }
   },
   divider: {

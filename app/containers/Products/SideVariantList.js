@@ -17,7 +17,7 @@ const styles = theme => ({
     fontWeight: '700',
   },
   title: {
-    marginTop: theme.spacing.unit * 2,
+    marginTop: theme.spacing(2),
   },
   orderSummary: {
     [theme.breakpoints.up('md')]: {
@@ -27,7 +27,7 @@ const styles = theme => ({
   },
   paper: {
     background: theme.palette.type === 'dark' ? darken(theme.palette.secondary.main, 0.5) : lighten(theme.palette.secondary.light, 0.5),
-    /* padding: theme.spacing.unit * 2, */
+    /* padding: theme.spacing(2), */
     /* height: 550, */
     overflow: 'auto',
     '& h6': {

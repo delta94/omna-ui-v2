@@ -44,11 +44,11 @@ const styles = theme => ({
     padding: '5px'
   },
   actions: {
-    padding: theme.spacing.unit * 1
+    padding: theme.spacing(1)
   },
   tableRoot: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: 'auto'
   },
   icon: {
@@ -56,7 +56,7 @@ const styles = theme => ({
   },
   pageTitle: {
     padding: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit * 3,
+    paddingBottom: theme.spacing(3),
     [theme.breakpoints.up('lg')]: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -66,7 +66,7 @@ const styles = theme => ({
       fontWeight: 700,
       textTransform: 'capitalize',
       [theme.breakpoints.down('md')]: {
-        marginBottom: theme.spacing.unit * 3
+        marginBottom: theme.spacing(3)
       }
     }
   },

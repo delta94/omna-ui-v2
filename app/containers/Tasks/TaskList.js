@@ -51,7 +51,7 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit
   },
   marginLeft2u: {
-    marginLeft: theme.spacing.unit * 2
+    marginLeft: theme.spacing(2)
   }
 });
 

@@ -317,37 +317,37 @@ const applicationTheme = (color, mode) => ({
           '0px 1px 5px 0px rgba(80,80,80, 0.2), 0px 2px 2px 0px rgba(80,80,80, 0.14), 0px 3px 1px -2px rgba(80,80,80, 0.12)'
       }
     },
-    MuiExpansionPanel: {
-      root: {
-        '&:first-child': {
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8
-        },
-        '&:last-child': {
-          borderBottomLeftRadius: 8,
-          borderBottomRightRadius: 8
-        }
-      },
-      expanded: {
-        borderRadius: 8,
-        boxShadow:
-          mode === 'dark'
-            ? `0px 0px 0px 1px ${
-              themePalette(color, mode).palette.primary.main
-            }`
-            : `0px 0px 3px 0px ${
-              themePalette(color, mode).palette.primary.main
-            }, 0px 1px 1px 0px ${
-              themePalette(color, mode).palette.primary.light
-            }, 0px 2px 1px -1px ${
-              themePalette(color, mode).palette.primary.light
-            }`,
-        '& + div': {
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8
-        }
-      }
-    },
+    // MuiExpansionPanel: {
+    //   root: {
+    //     '&:first-child': {
+    //       borderTopLeftRadius: 8,
+    //       borderTopRightRadius: 8
+    //     },
+    //     '&:last-child': {
+    //       borderBottomLeftRadius: 8,
+    //       borderBottomRightRadius: 8
+    //     }
+    //   },
+    //   expanded: {
+    //     borderRadius: 8,
+    //     boxShadow:
+    //       mode === 'dark'
+    //         ? `0px 0px 0px 1px ${
+    //           themePalette(color, mode).palette.primary.main
+    //         }`
+    //         : `0px 0px 3px 0px ${
+    //           themePalette(color, mode).palette.primary.main
+    //         }, 0px 1px 1px 0px ${
+    //           themePalette(color, mode).palette.primary.light
+    //         }, 0px 2px 1px -1px ${
+    //           themePalette(color, mode).palette.primary.light
+    //         }`,
+    //     '& + div': {
+    //       borderTopLeftRadius: 8,
+    //       borderTopRightRadius: 8
+    //     }
+    //   }
+    // },
     MuiDialogTitle: {
       root: {
         position: 'relative',

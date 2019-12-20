@@ -2,6 +2,9 @@ import React from 'react';
 import Loading from 'dan-components/Loading';
 import loadable from '../utils/loadable';
 
+export const HomePage = loadable(() => import('./LandingPage/HomePage'), {
+  fallback: <Loading />
+});
 export const BlankPage = loadable(() => import('./Pages/BlankPage'), {
   fallback: <Loading />
 });

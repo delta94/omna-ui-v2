@@ -115,7 +115,7 @@ ElementPlusValuePrinter.propTypes = {
 
 const styles = theme => ({
   root: {
-    marginTop: theme.spacing.unit * 2,
+    marginTop: theme.spacing(2),
     overflowX: 'auto'
   },
   tabRoot: {
@@ -125,7 +125,7 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit
   },
   marginLeft2u: {
-    marginLeft: theme.spacing.unit * 2
+    marginLeft: theme.spacing(2)
   },
   leftIcon: {
     marginRight: theme.spacing.unit

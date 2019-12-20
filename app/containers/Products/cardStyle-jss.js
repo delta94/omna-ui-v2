@@ -7,7 +7,7 @@ import roundedThumbDark from 'dan-images/decoration/roundedThumbDark.png';
 
 const styles = theme => ({
   divider: {
-    margin: `${theme.spacing.unit * 3}px 0`
+    margin: `${theme.spacing(3)}px 0`
   },
   card: {
     minWidth: 275,
@@ -58,7 +58,7 @@ const styles = theme => ({
   },
   btnArea: {
     justifyContent: 'center',
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
   playIcon: {
     height: 38,
@@ -76,10 +76,10 @@ const styles = theme => ({
   },
   cardMedia: {
     position: 'relative',
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing(3),
   },
   gutterBottom: {
-    marginBottom: theme.spacing.unit * 3
+    marginBottom: theme.spacing(3)
   },
   landscapeCard: {
     [theme.breakpoints.up('sm')]: {
@@ -176,7 +176,7 @@ const styles = theme => ({
     width: '100%',
   },
   price: {
-    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`
+    padding: `${theme.spacing.unit}px ${theme.spacing(2)}px ${theme.spacing(3)}px`
   },
   verified: {
     fontSize: 16,
@@ -229,13 +229,13 @@ const styles = theme => ({
   },
   newsList: {
     display: 'flex',
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing(3),
     [theme.breakpoints.down('xs')]: {
       flexDirection: 'column-reverse'
     }
   },
   newsListContent: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     flex: 1,
     overflow: 'hidden'
   },
@@ -307,7 +307,7 @@ const styles = theme => ({
       textShadow: '0 0 22px #a0a0a0',
       fontWeight: 'bold',
       color: theme.palette.common.white,
-      marginTop: theme.spacing.unit * 3
+      marginTop: theme.spacing(3)
     }
   },
   featureList: {
@@ -340,10 +340,10 @@ const styles = theme => ({
     overflow: 'hidden'
   },
   mainFeaturedPostContent: {
-    padding: `${theme.spacing.unit * 2}px`,
+    padding: `${theme.spacing(2)}px`,
     minHeight: 200,
     [theme.breakpoints.up('md')]: {
-      padding: `${theme.spacing.unit * 6}px`,
+      padding: `${theme.spacing(6)}px`,
       paddingRight: 0,
     },
     [theme.breakpoints.down('sm')]: {

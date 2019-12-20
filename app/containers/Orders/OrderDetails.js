@@ -30,8 +30,8 @@ const variantIcon = Utils.iconVariants();
 
 const styles = theme => ({
   root: {
-    marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
     overflowX: 'auto'
   },
   subRoot: {
@@ -46,7 +46,7 @@ const styles = theme => ({
     fontSize: 20
   },
   marginLeft2u: {
-    marginLeft: theme.spacing.unit * 2
+    marginLeft: theme.spacing(2)
   },
   marginLeft: {
     marginLeft: theme.spacing.unit

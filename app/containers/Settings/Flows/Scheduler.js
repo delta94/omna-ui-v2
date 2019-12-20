@@ -41,7 +41,7 @@ const styles = theme => ({
     maxWidth: 350,
   },
   picker: {
-    margin: `${theme.spacing.unit * 3}px 5px`,
+    margin: `${theme.spacing(3)}px 5px`,
   }
 });
 
@@ -217,4 +217,5 @@ Scheduler.propTypes = {
   onWeeksOfMonthChange: PropTypes.func.isRequired,
   onMonthsOfYearChange: PropTypes.func.isRequired,
 };
+
 export default withSnackbar(withStyles(styles)(Scheduler));

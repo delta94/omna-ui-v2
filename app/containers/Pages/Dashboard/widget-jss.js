@@ -22,21 +22,21 @@ const styles = theme => ({
     }
   },
   divider: {
-    margin: `${theme.spacing.unit * 3}px 0`
+    margin: `${theme.spacing(3)}px 0`
   },
   dividerBig: {
-    margin: `${theme.spacing.unit * 2}px 0`
+    margin: `${theme.spacing(2)}px 0`
   },
   centerItem: {},
   smallTitle: {
-    padding: `0 ${theme.spacing.unit * 2}px`,
+    padding: `0 ${theme.spacing(2)}px`,
     color: theme.palette.type === 'dark' ? theme.palette.primary.light : theme.palette.primary.dark,
   },
   leftIcon: {
     marginRight: theme.spacing.unit
   },
   secondaryWrap: {
-    padding: `1px ${theme.spacing.unit * 2}px`,
+    padding: `1px ${theme.spacing(2)}px`,
     borderRadius: 4,
     justifyContent: 'space-around',
     '& > $centerItem': {
@@ -69,7 +69,7 @@ const styles = theme => ({
       justifyContent: 'flex-start',
       [theme.breakpoints.down('xs')]: {
         paddingRight: 0,
-        paddingBottom: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing(2),
         width: '50%',
         float: 'left',
       },
@@ -231,10 +231,10 @@ const styles = theme => ({
     color: theme.palette.primary.main
   },
   productPhoto: {
-    borderRadius: theme.spacing.unit * 0.5,
+    borderRadius: theme.spacing(0.5),
     marginRight: theme.spacing.unit,
-    width: theme.spacing.unit * 10,
-    height: theme.spacing.unit * 10,
+    width: theme.spacing(10),
+    height: theme.spacing(10),
   },
   done: {},
   listItem: {
@@ -344,20 +344,20 @@ const styles = theme => ({
     flexDirection: 'column',
     fontWeight: 500,
     fontSize: 20,
-    marginBottom: theme.spacing.unit * 10
+    marginBottom: theme.spacing(10)
   },
   carouselDesc: {
     color: theme.palette.common.white
   },
   chartWrap: {
     overflow: 'auto',
-    marginTop: theme.spacing.unit * 2
+    marginTop: theme.spacing(2)
   },
   chartFluid: {
     width: '100%',
     minWidth: 400,
     height: 300,
-    marginLeft: theme.spacing.unit * -3
+    marginLeft: theme.spacing(-3)
   },
   tabNotif: {
     '& > span': {
@@ -437,7 +437,7 @@ const styles = theme => ({
     alignItems: 'center',
     background: theme.palette.type === 'dark' ? theme.palette.secondary.dark : theme.palette.secondary.main,
     [theme.breakpoints.down('sm')]: {
-      paddingTop: theme.spacing.unit * 3
+      paddingTop: theme.spacing(3)
     },
     '& > time': {
       border: `10px solid ${theme.palette.secondary.main}`,
@@ -454,7 +454,7 @@ const styles = theme => ({
   },
   today: {
     fontSize: 18,
-    margin: theme.spacing.unit * 3,
+    margin: theme.spacing(3),
     fontWeight: theme.typography.fontWeightRegular,
     color: theme.palette.primary.light
   },
@@ -463,7 +463,7 @@ const styles = theme => ({
     textAlign: 'center',
     justifyContent: 'center',
     '& li': {
-      margin: `${theme.spacing.unit * 3}px ${theme.spacing.unit}px ${theme.spacing.unit * 2}px`
+      margin: `${theme.spacing(3)}px ${theme.spacing.unit}px ${theme.spacing(2)}px`
     }
   },
   buttonReadMore: {
@@ -486,7 +486,7 @@ const styles = theme => ({
     boxShadow: 'none'
   },
   mobileStepper: {
-    margin: `0 auto ${theme.spacing.unit * 4}px`,
+    margin: `0 auto ${theme.spacing(4)}px`,
     textAlign: 'center',
     borderRadius: '0 0 12px 12px',
     [theme.breakpoints.down('sm')]: {
@@ -511,7 +511,7 @@ const styles = theme => ({
   rootCalculator: {
     width: '100%',
     height: 420,
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     backgroundImage: theme.palette.type === 'dark' ? gradientBgDark(theme) : gradientBgLight(theme),
     '& button': {
       background: fade(theme.palette.background.paper, 0.3),
@@ -537,7 +537,7 @@ const styles = theme => ({
     }
   },
   activityList: {
-    paddingLeft: theme.spacing.unit * 4,
+    paddingLeft: theme.spacing(4),
     paddingRight: 0,
     position: 'relative',
     [theme.breakpoints.down('xs')]: {
@@ -545,7 +545,7 @@ const styles = theme => ({
     }
   },
   activityText: {
-    paddingLeft: theme.spacing.unit * 4,
+    paddingLeft: theme.spacing(4),
     '& span': {
       fontSize: 12,
       fontWeight: theme.typography.fontWeightMedium
@@ -572,7 +572,7 @@ const styles = theme => ({
       whiteSpace: 'pre-wrap',
       wordBreak: 'break-word',
       display: 'block',
-      paddingLeft: theme.spacing.unit * 2,
+      paddingLeft: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
         textAlign: 'right',
         width: 60,
@@ -582,13 +582,13 @@ const styles = theme => ({
   },
   formControl: {
     width: '100%',
-    marginBottom: theme.spacing.unit * 3,
-    marginTop: theme.spacing.unit * -2,
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(-2),
   },
   formControlTrade: {
     width: '100%',
-    marginTop: theme.spacing.unit * -2,
-    marginBottom: theme.spacing.unit * 2,
+    marginTop: theme.spacing(-2),
+    marginBottom: theme.spacing(2),
   },
   tradeUp: {
     color: green[500],
@@ -617,15 +617,15 @@ const styles = theme => ({
     },
     '& button': {
       [theme.breakpoints.down('xs')]: {
-        marginTop: theme.spacing.unit * 2
+        marginTop: theme.spacing(2)
       }
     }
   },
   walletLabel: {
-    marginBottom: theme.spacing.unit * 3
+    marginBottom: theme.spacing(3)
   },
   tabContainer: {
-    margin: `0 ${theme.spacing.unit * -3}px`,
+    margin: `0 ${theme.spacing(-3)}px`,
     overflow: 'hidden'
   },
   rootTable: {

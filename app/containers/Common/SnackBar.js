@@ -54,7 +54,7 @@ const styles = theme => ({
     borderRadius: '5px'
   },
   box: {
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing(2),
   }
 });
 
