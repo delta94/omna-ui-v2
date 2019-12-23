@@ -35,7 +35,7 @@ TabContainer.defaultProps = {
 function ProductDesc(props) {
   const [tabIndex, setTabIndex] = useState(0);
   const {
-    classes, theme, variants, tabList, updateProperties
+    classes, theme, variantList, tabList, updateProperties
   } = props;
 
   const handleChange = (event, index) => {
@@ -85,7 +85,7 @@ function ProductDesc(props) {
                     {properties && <Properties classes={classes} properties={properties} onPropertyChange={onPropertyChange} />}
                   </Grid>
                   <Grid>
-                    <Variants variants={variants} />
+                    <Variants variantList={variantList} />
                   </Grid>
                 </TabContainer>
               );

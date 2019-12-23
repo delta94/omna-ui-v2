@@ -8,10 +8,11 @@ import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import styles from './product-jss';
 import ProductCard from './ProductCard';
 import ProductDesc from './ProductDesc';
+import Wysiwyg from './Wysiwyg';
 
 function ProductForm(props) {
   const {
-    name, images, price, description, integrations, variants,
+    name, images, price, description, integrations, variantList, variants
   } = props;
 
   /*   const getThumb = product ? product.images.map(a => a.src) : null;
@@ -31,13 +32,15 @@ function ProductForm(props) {
   return (
     <div>
       <ProductCard
-        thumbnail={images.length > 0 ? images[0] : '/images/screen/no-image.png'}
+        thumbnail={images.length > 0 ? images[0] : '/images/image_placeholder.png'}
         name={name}
         desc={description}
         price={price}
+        variants={variants}
         list
       />
-      <ProductDesc tabList={[...integrations]} variants={variants} />
+      <Wysiwyg text={description} />
+      <ProductDesc tabList={[...integrations]} variantList={variantList} />
     </div>
   );
 }
@@ -48,7 +51,8 @@ ProductForm.propTypes = {
   description: PropTypes.string,
   images: PropTypes.array.isRequired,
   integrations: PropTypes.array.isRequired,
-  variants: PropTypes.object.isRequired
+  variantList: PropTypes.object.isRequired,
+  variants: PropTypes.number.isRequired,
 };
 
 ProductForm.defaultProps = {

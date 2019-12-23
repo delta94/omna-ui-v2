@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import classNames from 'classnames';
 import Card from '@material-ui/core/Card';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
@@ -14,7 +13,6 @@ import Chip from '@material-ui/core/Chip';
 import AddShoppingCart from '@material-ui/icons/AddShoppingCart';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
-import Type from 'dan-styles/Typography.scss';
 import styles from './cardStyle-jss';
 
 class ProductCard extends React.Component {
@@ -25,9 +23,8 @@ class ProductCard extends React.Component {
       soldout,
       thumbnail,
       name,
-      desc,
+      variants,
       price,
-      prevPrice,
       list,
       detailOpen,
       addToCart,
@@ -59,36 +56,31 @@ class ProductCard extends React.Component {
           <Typography noWrap gutterBottom variant="h5" className={classes.title} component="h2">
             {name}
           </Typography>
-          <Typography component="p" className={classes.desc}>
-            {desc}
-          </Typography>
-        </CardContent>
-        <CardActions className={classes.price}>
-          <Typography variant="h5">
-            <span>
-              $
-              {price}
-            </span>
-          </Typography>
-          {prevPrice > 0 && (
-            <Typography variant="caption" component="h5">
-              <span className={Type.lineThrought}>
+          <div className={classes.price}>
+            <Typography component="h2">
+              Price:
+            </Typography>
+            <Typography variant="h6">
+              <span>
                 $
-                {prevPrice}
+                {price}
               </span>
             </Typography>
-          )}
+          </div>
+          <div className={classes.variants}>
+            <Typography component="h2">
+              Variants:
+            </Typography>
+            <Typography variant="h6">
+              {variants}
+            </Typography>
+          </div>
+        </CardContent>
+        <CardActions>
           <div className={classes.rightAction}>
             <Button size="small" variant="outlined" color="secondary" onClick={detailOpen}>
               See More
             </Button>
-            {!soldout && (
-              <Tooltip title="Add to cart" placement="top">
-                <IconButton color="secondary" onClick={addToCart} className={classes.buttonAddList}>
-                  <AddShoppingCart />
-                </IconButton>
-              </Tooltip>
-            )}
           </div>
         </CardActions>
       </Card>
@@ -103,9 +95,8 @@ ProductCard.propTypes = {
   soldout: PropTypes.bool,
   thumbnail: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  desc: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  prevPrice: PropTypes.number,
+  variants: PropTypes.number.isRequired,
   list: PropTypes.bool,
   detailOpen: PropTypes.func,
   addToCart: PropTypes.func,
