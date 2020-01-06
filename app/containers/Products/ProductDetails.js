@@ -16,32 +16,29 @@ import ProductForm from './ProductForm';
 import { getProductVariantList } from '../../actions/IntegrationActions';
 
 function ProductDetails(props) {
-  const {
-    history, match, updateProductVariants, productVariants
-  } = props;
-  const [product, setProduct] = useState();
-  const [variants, setVariants] = useState(productVariants);
+  const { history, match, updateProductVariants, productVariants } = props;
+  const [product, setProduct] = useState(
+    JSON.parse(sessionStorage.getItem(`${match.params.id}`))
+  );
+  const [variantList, setVariantList] = useState(productVariants);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // caching product
     // if (!localStorage.getItem(`${match.params.id}`)) {
     setIsLoading(true);
-    API.get(`products/${match.params.id}`).then(response => {
-      const { data } = response.data;
-      // testing images
-      /* if (data.images.length === 0) {
-        data.images = [{ src: 'https://cdn.shopify.com/s/files/1/0042/2815/3413/products/white.jpg?v=1567575315' },
-        { src: 'https://cdn.shopify.com/s/files/1/0042/2815/3413/products/dress.jpg?v=1567575315' }];
-      } */
-      setProduct(data);
-      localStorage.setItem(`${match.params.id}`, JSON.stringify(data));
-    }).catch((error) => {
-      console.log(error);
-    }).then(() => {
-      setIsLoading(false);
-    });
-    // }
+    API.get(`products/${match.params.id}`)
+      .then(response => {
+        const { data } = response.data;
+        setProduct(data);
+        localStorage.setItem(`${match.params.id}`, JSON.stringify(data));
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .then(() => {
+        setIsLoading(false);
+      });
   }, [match.params.id]);
 
   useEffect(() => {
@@ -50,23 +47,14 @@ function ProductDetails(props) {
         const integration = product.integrations[0];
         const { id, product: _product } = integration;
         updateProductVariants(id, _product.remote_product_id);
-        setVariants(productVariants);
+        setVariantList(productVariants);
       }
     }
   }, [product]);
 
   useEffect(() => {
-    setVariants(productVariants);
+    setVariantList(productVariants);
   }, [productVariants]);
-
-  /*   useEffect(() => {
-    if (properties) {
-      const { tabIndex, values } = properties;
-      const temp = product;
-      temp.integrations[tabIndex].product.properties = values;
-      setProduct(temp);
-    }
-  }, [properties]); */
 
   return (
     <div>
@@ -80,7 +68,8 @@ function ProductDetails(props) {
           images={product.images}
           integrations={product.integrations}
           history={history}
-          variants={variants}
+          variants={product.variants}
+          variantList={variantList}
         />
       )}
     </div>
@@ -95,13 +84,13 @@ ProductDetails.propTypes = {
   updateProductVariants: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
-  productVariants: state.getIn(['integrations', 'productVariants']),
+const mapStateToProps = state => ({
+  productVariants: state.getIn(['integrations', 'productVariants'])
   // properties: state.getIn(['integrations', 'properties'])
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  updateProductVariants: bindActionCreators(getProductVariantList, dispatch),
+const mapDispatchToProps = dispatch => ({
+  updateProductVariants: bindActionCreators(getProductVariantList, dispatch)
 });
 
 const ProductDetailsMapped = connect(

@@ -5,7 +5,7 @@ import MySnackBar from '../Common/SnackBar';
 import SideVariantlist from './SideVariantList';
 
 function Variants(props) {
-  const { variants } = props;
+  const { variantList } = props;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const onItemClick = (index) => { setSelectedIndex(index); };
 
@@ -14,18 +14,18 @@ function Variants(props) {
       <Typography variant="subtitle2">
         Variants
       </Typography>
-      {variants.size === 0 && (
+      {variantList.size === 0 && (
         <div style={{ marginTop: '10px' }}>
           <MySnackBar
             variant="info"
             customStyle
-            open={variants.size === 0 || false}
+            open={variantList.size === 0 || false}
             message="There are not available variants"
           />
         </div>
 
       )}
-      {variants && variants.map(({
+      {variantList && variantList.map(({
         id, sku, price, quantity, images
       }, index) => (
         <SideVariantlist
@@ -44,7 +44,7 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  variants: PropTypes.object.isRequired
+  variantList: PropTypes.object.isRequired
 };
 
 export default Variants;

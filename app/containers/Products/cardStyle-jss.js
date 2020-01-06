@@ -93,7 +93,7 @@ const styles = theme => ({
   },
   floatingButtonWrap: {
     position: 'relative',
-    paddingTop: 50
+    paddingTop: 20
   },
   buttonAdd: {
     position: 'absolute',
@@ -176,7 +176,14 @@ const styles = theme => ({
     width: '100%',
   },
   price: {
-    padding: `${theme.spacing.unit}px ${theme.spacing(2)}px ${theme.spacing(3)}px`
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: '30px'
+  },
+  variants: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: '15px'
   },
   verified: {
     fontSize: 16,
@@ -203,8 +210,7 @@ const styles = theme => ({
       paddingTop: '21.25%'
     },
     '& $price': {
-      flexDirection: 'column',
-      justifyContent: 'center',
+      display: 'flex',
       '& button': {
         marginTop: 20
       }
