@@ -25,7 +25,7 @@ function ProductDetails(props) {
 
   useEffect(() => {
     // caching product
-    // if (!sessionStorage.getItem(`${match.params.id}`)) {
+    // if (!localStorage.getItem(`${match.params.id}`)) {
     setIsLoading(true);
     API.get(`products/${match.params.id}`).then(response => {
       const { data } = response.data;
@@ -35,7 +35,7 @@ function ProductDetails(props) {
         { src: 'https://cdn.shopify.com/s/files/1/0042/2815/3413/products/dress.jpg?v=1567575315' }];
       } */
       setProduct(data);
-      sessionStorage.setItem(`${match.params.id}`, JSON.stringify(data));
+      localStorage.setItem(`${match.params.id}`, JSON.stringify(data));
     }).catch((error) => {
       console.log(error);
     }).then(() => {

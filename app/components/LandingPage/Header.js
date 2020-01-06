@@ -34,7 +34,6 @@ class Header extends React.Component {
     menuList: [
       createData('feature', '#feature'),
       createData('showcase', '#showcase'),
-      createData('testimonials', '#testimonials'),
       createData('technology', '#tech'),
       createData('pricing', '#pricing'),
       createData('contact', '#contact'),
@@ -90,7 +89,7 @@ class Header extends React.Component {
               </NavLink>
               <Hidden mdDown>
                 <nav>
-                  <Scrollspy items={['feature', 'showcase', 'testimonials', 'tech', 'pricing', 'contact']} currentClassName="active">
+                  <Scrollspy items={['feature', 'showcase', 'tech', 'pricing', 'contact']} currentClassName="active">
                     { menuList.map(item => (
                       <li key={item.id.toString()}>
                         <Button component={AnchorLink} href={item.url}>{item.name}</Button>

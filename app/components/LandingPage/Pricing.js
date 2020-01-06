@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Typography } from '@material-ui/core';
 import PricingCard from '../CardPaper/PricingCard';
 import Title from './Title';
 import styles from './landingStyle-jss';
@@ -12,33 +12,49 @@ class Pricing extends React.Component {
     return (
       <div className={classes.pricing}>
         <div className={slideMode ? classes.fullWidth : classes.container}>
-          <Title title="Pricing" desc="Cras convallis lacus orci, tristique tincidunt magna consequat in." align="center" monocolor={slideMode && true} />
+          <Title
+            title="Pricing"
+            desc=""
+            align="center"
+            monocolor={slideMode && true}
+          />
           <Grid container className={classes.root} spacing={5}>
             <Grid item md={4} xs={12}>
               <PricingCard
                 title="For Learn"
                 price="FREE"
                 tier="free"
-                feature={['Vel fermentum', 'Aenean facilisis vitae', 'Vestibulum nec']}
+                feature={[
+                  '1 Month trial',
+                  'No credit card required',
+                  'Not limitation in the use of the app'
+                ]}
               />
             </Grid>
             <Grid item md={4} xs={12}>
               <PricingCard
-                title="Recomended"
-                price="$24"
+                title="Small Bussines"
+                price="$15 USD"
                 tier="cheap"
-                feature={['Vel fermentum', 'Aenean facilisis vitae', 'Vestibulum nec', 'Pellentesque ac bibendum', 'Vivamus sit amet']}
+                feature={['Price per tenant*', 'Only system support']}
               />
             </Grid>
             <Grid item md={4} xs={12}>
               <PricingCard
-                title="Extended"
-                price="$200"
+                title="Grow Up"
+                price="$99 USD"
                 tier="expensive"
-                feature={['Vel fermentum', 'Aenean facilisis vitae', 'Vestibulum nec', 'Pellentesque ac bibendum', 'Vivamus sit amet']}
+                feature={[
+                  'Price per tenant*',
+                  'VIP Support including business logic'
+                ]}
               />
             </Grid>
           </Grid>
+          <Typography component="p" className={classes.contactText}>
+            * Think in your tenant as your database, OMNA is a multi-tenant
+            solution.
+          </Typography>
         </div>
       </div>
     );
@@ -47,7 +63,7 @@ class Pricing extends React.Component {
 
 Pricing.propTypes = {
   classes: PropTypes.object.isRequired,
-  slideMode: PropTypes.bool,
+  slideMode: PropTypes.bool
 };
 
 Pricing.defaultProps = {

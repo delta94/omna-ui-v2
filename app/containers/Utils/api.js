@@ -5,7 +5,7 @@ import get from 'lodash/get';
 function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
-  const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
+  const currentTenant = JSON.parse(localStorage.getItem('currentTenant'));
   if (config.method === 'post' || config.method === 'delete') {
     if (config.url !== 'get_access_token') {
       data.token = currentTenant.token;

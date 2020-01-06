@@ -3,7 +3,7 @@ import {
   Banner,
   Feature,
   Showcase,
-  Testimonials,
+  // Testimonials,
   Technology,
   Pricing,
   Contact
@@ -22,9 +22,9 @@ class HomePage extends React.Component {
         <section id="showcase">
           <Showcase />
         </section>
-        <section id="testimonials">
+        {/* <section id="testimonials">
           <Testimonials />
-        </section>
+        </section> */}
         <section id="tech">
           <Technology />
         </section>

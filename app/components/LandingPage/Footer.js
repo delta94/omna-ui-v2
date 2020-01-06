@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import logo from 'dan-images/logo.svg';
+import logo from 'dan-images/omna_min.svg';
 import brand from 'dan-api/dummy/brand';
 import link from 'dan-api/ui/link';
 
@@ -59,7 +59,7 @@ class Footer extends React.Component {
           <div className={classes.spaceContainer}>
             <div className={classes.brand}>
               <img src={logo} alt={brand.name} />
-              {brand.name}
+              {brand.logoText}
             </div>
             <nav>
               <ul>
@@ -74,7 +74,7 @@ class Footer extends React.Component {
         </div>
         <div className={classes.copyright}>
           <div className={classes.container}>
-            <p>&copy; 2019 Dandelion Designs. All Right Reserved </p>
+            <p>&copy; 2019 {brand.logoText}. All Right Reserved </p>
             <span>
               <IconButton color="primary" className={classes.button} href={link.twitter} target="_blank"><Ionicon icon="logo-twitter" /></IconButton>
               <IconButton color="primary" className={classes.button} href={link.pinterest} target="_blank"><Ionicon icon="logo-pinterest" /></IconButton>

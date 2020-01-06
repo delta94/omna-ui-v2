@@ -75,7 +75,7 @@ class Technology extends React.Component {
       <div className={classes.tech}>
         {!slideMode && (<ParallaxDecoStyled />)}
         <div className={slideMode ? classes.fullWidth : classes.container}>
-          <Title title="The technologies" desc="Cras convallis lacus orci, tristique tincidunt magna consequat in." align="center" monocolor={slideMode && true} />
+          <Title title="Channels and integrations " desc="Popular Marketplaces, Storefronts, ERP, 3PL, Accounting and more" align="center" monocolor={slideMode && true} />
           <Grid container className={classes.root} spacing={3}>
             <Grid item sm={4} xs={12}>
               <div className={classNames(classes.wool, slideMode && classes.slideMode)}>

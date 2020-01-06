@@ -78,7 +78,7 @@ class Utils {
   }
 
   static getHeaders(url) {
-    const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
+    const currentTenant = JSON.parse(localStorage.getItem('currentTenant'));
     const params = {};
     params.token = currentTenant.token;
     params.timestamp = Date.now();
@@ -105,8 +105,8 @@ class Utils {
   }
 
   static logout() {
-    if (sessionStorage.getItem('currentTenant')) {
-      sessionStorage.removeItem('currentTenant');
+    if (localStorage.getItem('currentTenant')) {
+      localStorage.removeItem('currentTenant');
     }
     window.location.replace(
       `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
@@ -134,20 +134,21 @@ class Utils {
   }
 
   static getTenant() {
-    if (sessionStorage.getItem('currentTenant')) {
-      return JSON.parse(sessionStorage.getItem('currentTenant'));
+    if (localStorage.getItem('currentTenant')) {
+      return JSON.parse(localStorage.getItem('currentTenant'));
     }
     return null;
   }
 
   static setTenant(tenant) {
-    sessionStorage.setItem('currentTenant', JSON.stringify(tenant));
+    localStorage.setItem('currentTenant', JSON.stringify(tenant));
   }
 
   static isAuthenticated() {
-    if (sessionStorage.getItem('currentTenant')) {
+    if (localStorage.getItem('currentTenant')) {
       return true;
     }
+    
     return false;
   }
 

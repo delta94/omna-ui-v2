@@ -30,8 +30,8 @@ class Contact extends React.Component {
       <div className={classNames(classes.contact, !slideMode && classes.withBg)}>
         <div className={classes.container}>
           <div className={classes.contactBubble}>
-            <Title title="Say hello to us" align="left" nomargin />
-            <Typography component="p" className={classes.contactText}>Vivamus et luctus mauris. Maecenas nisl libero, tincidunt id odio id, feugiat vulputate quam. Vestibulum feugiat rhoncus metus. In non erat et ipsum molestie porta sit amet ut felis.</Typography>
+            <Title title="Contact Us" align="left" nomargin />
+            <Typography component="p" className={classes.contactText}>OMNA can help you with these scenarios and more. Don't wait, contact us now.</Typography>
             <Grid container spacing={3}>
               <Grid item lg={6} xs={12}>
                 <FormControl className={classes.formControl}>
