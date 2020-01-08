@@ -34,7 +34,7 @@ class Header extends React.Component {
     menuList: [
       createData('feature', '#feature'),
       createData('showcase', '#showcase'),
-      createData('technology', '#tech'),
+      createData('integrations', '#tech'),
       createData('pricing', '#pricing'),
       createData('contact', '#contact'),
     ]

@@ -22,21 +22,42 @@ function createFeatureData(icon, title, desc) {
 class Feature extends React.Component {
   state = {
     featureList: [
-      createFeatureData('ios-infinite-outline', 'Lorem ipsum dolor', 'Nulla lobortis nunc vitae nisi semper semper. Sed mi neque, convallis at ipsum at, blandit pretium enim.'),
-      createFeatureData('ios-flower-outline', 'Lorem ipsum dolor', 'Nulla lobortis nunc vitae nisi semper semper. Sed mi neque, convallis at ipsum at, blandit pretium enim.'),
-      createFeatureData('ios-ionic-outline', 'Lorem ipsum dolor', 'Nulla lobortis nunc vitae nisi semper semper. Sed mi neque, convallis at ipsum at, blandit pretium enim.')
+      createFeatureData(
+        'ios-infinite-outline',
+        'Product listing',
+        'Simply list once and your products will be pushed to leading global marketplaces (E.g. Lazada , Shopee, Qoo10 and more!)'
+      ),
+      createFeatureData(
+        'ios-flower-outline',
+        'Order management',
+        'Manage and fulfil all your orders on just one platform. Send to third party 3PL, ERP and Accounting solutions'
+      ),
+      createFeatureData(
+        'ios-ionic-outline',
+        'Inventory management',
+        'Real-time inventory sync on marketplaces and update after fulfil your orders'
+      )
     ]
-  }
+  };
 
   render() {
     const { classes, slideMode } = this.props;
     const { featureList } = this.state;
     return (
-      <div className={classNames(classes.feature, slideMode ? classes.mono : classes.color)}>
+      <div
+        className={classNames(
+          classes.feature,
+          slideMode ? classes.mono : classes.color
+        )}
+      >
         <div className={!slideMode ? classes.container : ''}>
-          <Title title="Main Feature" align="center" monocolor={slideMode && true} />
+          <Title
+            title="Main Feature"
+            align="center"
+            monocolor={slideMode && true}
+          />
           <Grid container className={classes.root} spacing={5}>
-            { featureList.map(item => (
+            {featureList.map(item => (
               <Grid key={item.id.toString()} item xs={12} md={4}>
                 <Typography component="h4" variant="h6">
                   <span className={classes.icon}>
@@ -48,7 +69,7 @@ class Feature extends React.Component {
                   {item.desc}
                 </Typography>
               </Grid>
-            )) }
+            ))}
           </Grid>
         </div>
       </div>
