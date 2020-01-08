@@ -11,7 +11,7 @@ const styles = theme => ({
     [theme.breakpoints.up('lg')]: {
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'flex-end',
+      alignItems: 'flex-end'
     },
     '& h4': {
       fontWeight: 700,
@@ -19,25 +19,31 @@ const styles = theme => ({
       [theme.breakpoints.down('md')]: {
         marginBottom: theme.spacing(3)
       }
-    },
+    }
   },
   darkTitle: {
-    color: theme.palette.type === 'dark' ? theme.palette.primary.main : theme.palette.primary.dark,
+    color:
+      theme.palette.type === 'dark'
+        ? theme.palette.primary.main
+        : theme.palette.primary.dark
   },
   lightTitle: {
-    color: theme.palette.common.white,
+    color: theme.palette.common.white
   }
 });
 
-function PageHeader(props) {
+const PageHeader = props => {
   const { classes, history, title } = props;
+  
   return (
     <div className={classes.pageTitle}>
-      <Typography className={classes.darkTitle} component="h4" variant="h4">{title}</Typography>
+      <Typography className={classes.darkTitle} component="h4" variant="h4">
+        {title}
+      </Typography>
       <BreadCrumb separator=" / " theme="dark" location={history.location} />
     </div>
   );
-}
+};
 
 export default withStyles(styles)(PageHeader);
 

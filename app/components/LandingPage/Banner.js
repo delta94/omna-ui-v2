@@ -84,7 +84,7 @@ class Banner extends React.Component {
               href={link.buy}
               target="_blank"
             >
-              Buy Now
+              Sign In
             </Button>
             <Button
               size="large"
@@ -94,7 +94,7 @@ class Banner extends React.Component {
               component={Link}
               to={link.dashboard}
             >
-              See Demo
+              Try It Free
             </Button>
           </div>
           <div className={classes.previewApp}>
