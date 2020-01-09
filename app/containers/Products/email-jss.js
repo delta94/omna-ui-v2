@@ -103,6 +103,16 @@ const styles = theme => ({
       color: theme.palette.primary.dark
     }
   },
+  bigAvatar: {
+    width: 80,
+    height: 80,
+    boxShadow: theme.glow.light,
+    margin: '5px'
+  },
+  variantExpansionPanelDetails: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
   content: {
     flexGrow: 1,
     zIndex: 120,
@@ -127,10 +137,12 @@ const styles = theme => ({
   },
   /* Email List */
   column: {
+    display: 'flex',
+    alignItems: 'center',
     flexBasis: '33.33%',
     overflow: 'hidden',
     paddingRight: '0 !important',
-    paddingTop: 5,
+    // paddingTop: 5,
     marginLeft: 20
   },
   secondaryHeading: {

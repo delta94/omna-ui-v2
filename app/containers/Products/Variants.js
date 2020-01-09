@@ -1,13 +1,23 @@
 import React, { Fragment, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Avatar from '@material-ui/core/Avatar';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FormBuilder from './FormBuilder';
 import MySnackBar from '../Common/SnackBar';
-import SideVariantlist from './SideVariantList';
+import styles from './email-jss';
 
 function Variants(props) {
-  const { variantList } = props;
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const onItemClick = (index) => { setSelectedIndex(index); };
+  const { variantList, classes } = props;
+  const [selectedIndex] = useState(0);
+  const integration = variantList.size > 0 ? variantList[selectedIndex].integrations[0] : null;
+  const properties = integration ? integration.variant.properties : null;
+  // const { id, label, value, name, required, input_type: type, options, placeholder } = properties;
 
   return (
     <Fragment>
@@ -26,25 +36,53 @@ function Variants(props) {
 
       )}
       {variantList && variantList.map(({
-        id, sku, price, quantity, images
-      }, index) => (
-        <SideVariantlist
-          key={id}
-          index={index}
-          selectedIndex={selectedIndex}
-          sku={sku}
-          price={price}
-          images={images}
-          quantity={quantity}
-          onClick={() => onItemClick(index)}
-        />
+        sku, price, images, quantity
+      }) => (
+        <ExpansionPanel className={classes.emailList}>
+          <ExpansionPanelSummary className={classes.emailSummary} expandIcon={<ExpandMoreIcon />}>
+            <div className={classes.fromHeading}>
+              <Avatar
+                alt="avatar"
+                src={images.length > 0 ? images[0] : '/images/screen/no-image.png'}
+                className={classes.bigAvatar}
+              />
+              <Typography className={classes.heading}>
+                {sku}
+              </Typography>
+            </div>
+            <div className={classes.column}>
+              <Typography className={classes.secondaryHeading} noWrap>{`Quantity: ${quantity} Item(s) - ${price}$`}</Typography>
+            </div>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails className={classes.variantExpansionPanelDetails}>
+            <Grid container spacing={3}>
+              {properties && properties.map(({
+                id, label, name, required, input_type: type, options, value, placeholder
+              }) => (
+                <Grid item xs>
+                  <FormBuilder
+                    id={id}
+                    name={name}
+                    value={value}
+                    label={label}
+                    type={type}
+                    required={required}
+                    placeholder={placeholder}
+                    options={options}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       ))}
     </Fragment>
   );
 }
 
 Variants.propTypes = {
-  variantList: PropTypes.object.isRequired
+  variantList: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
-export default Variants;
+export default withStyles(styles)(Variants);

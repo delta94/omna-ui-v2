@@ -9,50 +9,34 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import AddShoppingCart from '@material-ui/icons/AddShoppingCart';
 import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
 import styles from './cardStyle-jss';
 
 class ProductCard extends React.Component {
   render() {
     const {
       classes,
-      discount,
-      soldout,
       thumbnail,
       name,
       variants,
       price,
       list,
       detailOpen,
-      addToCart,
       width,
     } = this.props;
     return (
       <Card className={classNames(classes.cardProduct, isWidthUp('sm', width) && list ? classes.cardList : '')}>
-        <div className={classes.status}>
-          {discount !== '' && (
-            <Chip label={'Discount ' + discount} className={classes.chipDiscount} />
-          )}
-          {soldout && (
-            <Chip label="Sold Out" className={classes.chipSold} />
-          )}
-        </div>
         <CardMedia
           className={classes.mediaProduct}
           image={thumbnail}
           title={name}
         />
         <CardContent className={classes.floatingButtonWrap}>
-          {!soldout && (
-            <Tooltip title="Add to cart" placement="top">
-              <Fab onClick={addToCart} size="small" color="secondary" aria-label="add" className={classes.buttonAdd}>
-                <AddShoppingCart />
-              </Fab>
-            </Tooltip>
-          )}
+          <Tooltip title="Add to cart" placement="top">
+            <Button size="small" variant="outlined" color="secondary" onClick={detailOpen} className={classes.buttonAdd}>
+              See More
+            </Button>
+          </Tooltip>
           <Typography noWrap gutterBottom variant="h5" className={classes.title} component="h2">
             {name}
           </Typography>
@@ -76,13 +60,15 @@ class ProductCard extends React.Component {
             </Typography>
           </div>
         </CardContent>
-        <CardActions>
-          <div className={classes.rightAction}>
-            <Button size="small" variant="outlined" color="secondary" onClick={detailOpen}>
-              See More
-            </Button>
-          </div>
-        </CardActions>
+        {isWidthUp('sm', width) && (
+          <CardActions>
+            <div className={classes.rightAction}>
+              <Button size="small" variant="outlined" color="secondary" onClick={detailOpen}>
+                See More
+              </Button>
+            </div>
+          </CardActions>
+        )}
       </Card>
     );
   }
@@ -90,22 +76,16 @@ class ProductCard extends React.Component {
 
 ProductCard.propTypes = {
   classes: PropTypes.object.isRequired,
-  discount: PropTypes.string,
   width: PropTypes.string.isRequired,
-  soldout: PropTypes.bool,
   thumbnail: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   variants: PropTypes.number.isRequired,
   list: PropTypes.bool,
   detailOpen: PropTypes.func,
-  addToCart: PropTypes.func,
 };
 
 ProductCard.defaultProps = {
-  discount: '',
-  soldout: false,
-  prevPrice: 0,
   list: false,
   detailOpen: () => (false),
   addToCart: () => (false),

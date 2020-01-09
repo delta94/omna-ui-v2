@@ -1,11 +1,20 @@
 import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 
+const styles = () => ({
+  inputWidth: {
+    width: '300px'
+    // minWidth: '280px',
+    // maxWidth: '300px'
+  }
+});
+
 function FormBuilder(props) {
   const {
-    id, type, label, value, name, required, placeholder, options, disabled, onChange
+    id, type, label, value, name, required, placeholder, options, disabled, onChange, classes
   } = props;
   return (
     <TextField
@@ -20,7 +29,7 @@ function FormBuilder(props) {
       select={type === 'single_select'}
       margin="normal"
       variant="outlined"
-      style={{ width: '300px' }}
+      className={classes.inputWidth}
     >
       {options && options.map(option => (
         <MenuItem key={option} value={option}>
@@ -42,6 +51,7 @@ FormBuilder.propTypes = {
   disabled: PropTypes.bool.isRequired,
   options: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
-export default FormBuilder;
+export default withStyles(styles)(FormBuilder);
