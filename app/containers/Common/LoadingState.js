@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
@@ -47,9 +47,14 @@ function LoadingState(props) {
 }
 
 LoadingState.propTypes = {
-  classes: PropTypes.object,
+  classes: PropTypes.object.isRequired,
   text: PropTypes.string,
   loading: PropTypes.bool
+};
+
+LoadingState.defaultProps = {
+  text: 'Loading',
+  loading: true
 };
 
 export default withStyles(styles)(LoadingState);
