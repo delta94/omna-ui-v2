@@ -111,6 +111,7 @@ const styles = theme => ({
   },
   variantExpansionPanelDetails: {
     display: 'flex',
+    flexDirection: 'column',
     flexWrap: 'wrap'
   },
   content: {

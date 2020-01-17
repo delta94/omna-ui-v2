@@ -1,6 +1,7 @@
-import React, { Fragment, useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
@@ -10,35 +11,91 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FormBuilder from './FormBuilder';
 import MySnackBar from '../Common/SnackBar';
+import LoadingState from '../Common/LoadingState';
 import styles from './email-jss';
 
-function Variants(props) {
-  const { variantList, classes } = props;
-  const [selectedIndex] = useState(0);
-  const integration = variantList.size > 0 ? variantList[selectedIndex].integrations[0] : null;
+const VariantDetails = (params) => {
+  const { integrations, selectedTab } = params;
+  const integration = integrations.find(item => item.id === selectedTab);
   const properties = integration ? integration.variant.properties : null;
-  // const { id, label, value, name, required, input_type: type, options, placeholder } = properties;
+  if (integration) {
+    return (
+      <Fragment>
+        {properties ? (
+          <Grid container spacing={6} direction="row" justify="flex-start">
+            {properties.map(({
+              id, label, name, required, input_type: type, options, value, placeholder
+            }) => (
+              <Grid key={id} item>
+                <FormBuilder
+                  id={id}
+                  name={name}
+                  value={value}
+                  label={label}
+                  type={type}
+                  required={required}
+                  placeholder={placeholder}
+                  options={options}
+                />
+              </Grid>
+            ))
+            }
+          </Grid>
+        )
+          : (
+            <div style={{ marginTop: '10px' }}>
+              <MySnackBar
+                variant="info"
+                customStyle
+                open
+                message="There is not available properties"
+              />
+            </div>
+          )
+        }
+      </Fragment>
+
+    );
+  }
+  return (
+    <div style={{ marginTop: '10px' }}>
+      <MySnackBar
+        variant="error"
+        customStyle
+        open
+        message="There is something wrong at showing properties"
+      />
+    </div>
+  );
+};
+
+function Variants(props) {
+  const {
+    productVariants, selectedTab, loadingState, classes
+  } = props;
 
   return (
     <Fragment>
-      <Typography variant="subtitle2">
+      <Typography variant="subtitle2" gutterBottom>
         Variants
       </Typography>
-      {variantList.size === 0 && (
+      {loadingState && <div style={{ margin: '25px' }}><LoadingState /></div>}
+      {!loadingState && productVariants.size === 0 && (
         <div style={{ marginTop: '10px' }}>
           <MySnackBar
             variant="info"
             customStyle
-            open={variantList.size === 0 || false}
-            message="There are not available variants"
+            open={productVariants.size === 0 || false}
+            message="There is not available variants"
           />
         </div>
 
-      )}
-      {variantList && variantList.map(({
-        sku, price, images, quantity
+      )
+      }
+      {productVariants.map(({
+        sku, price, images, quantity, integrations
       }) => (
-        <ExpansionPanel className={classes.emailList}>
+        <ExpansionPanel key={sku} className={classes.emailList}>
           <ExpansionPanelSummary className={classes.emailSummary} expandIcon={<ExpandMoreIcon />}>
             <div className={classes.fromHeading}>
               <Avatar
@@ -55,24 +112,10 @@ function Variants(props) {
             </div>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.variantExpansionPanelDetails}>
-            <Grid container spacing={3}>
-              {properties && properties.map(({
-                id, label, name, required, input_type: type, options, value, placeholder
-              }) => (
-                <Grid item xs>
-                  <FormBuilder
-                    id={id}
-                    name={name}
-                    value={value}
-                    label={label}
-                    type={type}
-                    required={required}
-                    placeholder={placeholder}
-                    options={options}
-                  />
-                </Grid>
-              ))}
-            </Grid>
+            <Typography variant="subtitle2">
+              Properties
+            </Typography>
+            <VariantDetails integrations={integrations} selectedTab={selectedTab} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}
@@ -81,8 +124,20 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  variantList: PropTypes.object.isRequired,
+  productVariants: PropTypes.object.isRequired,
+  loadingState: PropTypes.bool.isRequired,
+  selectedTab: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Variants);
+const mapStateToProps = state => ({
+  loadingState: state.getIn(['integrations', 'loadingState']),
+  productVariants: state.getIn(['integrations', 'productVariants'])
+});
+
+const VariantsMapped = connect(
+  mapStateToProps,
+  null
+)(Variants);
+
+export default withStyles(styles)(VariantsMapped);

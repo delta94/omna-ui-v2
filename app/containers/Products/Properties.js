@@ -1,120 +1,135 @@
-import React, { Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
+import Typography from '@material-ui/core/Typography';
+import SwipeableViews from 'react-swipeable-views';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
-import withWidth from '@material-ui/core/withWidth';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import Paper from '@material-ui/core/Paper';
+import styles from './product-jss';
 import FormBuilder from './FormBuilder';
+import MySnackBar from '../Common/SnackBar';
 
-const GridItem = ({
-  width, id, name, label, value, required, options, type, disabled, placeholder, onChange
-}) => (
-  <Grid item xs={width}>
-    <List>
-      <ListItem>
-        <FormBuilder
-          id={id}
-          name={name}
-          value={value}
-          label={label}
-          type={type}
-          required={required}
-          placeholder={placeholder}
-          disabled={disabled}
-          options={options}
-          onChange={onChange}
-        />
-      </ListItem>
-    </List>
-  </Grid>
-);
+function TabContainer({ children, dir }) {
+  return (
+    <Typography component="div" dir={dir} style={{ padding: 8 * 3 }}>
+      {children}
+    </Typography>
+  );
+}
 
-GridItem.propTypes = {
-  width: PropTypes.number,
-  id: PropTypes.string,
-  label: PropTypes.string,
-  value: PropTypes.any,
-  name: PropTypes.string,
-  type: PropTypes.string,
-  required: PropTypes.bool,
-  placeholder: PropTypes.string,
-  options: PropTypes.array,
-  onChange: PropTypes.func,
-  disabled: PropTypes.bool,
+TabContainer.propTypes = {
+  children: PropTypes.node,
+  dir: PropTypes.string.isRequired,
 };
 
-GridItem.defaultProps = {
-  width: null,
-  id: '',
-  label: '',
-  value: null,
-  name: '',
-  type: '',
-  required: null,
-  placeholder: '',
-  options: [],
-  onChange: null,
-  disabled: null,
+TabContainer.defaultProps = {
+  children: null,
 };
 
 function Properties(props) {
-  const { properties, width, disabledForm } = props;
+  const {
+    classes, theme, tabList,
+  } = props;
 
-  const onChange = (e) => {
+  const [tabIndex, setTabIndex] = useState(0);
+  const _props = tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [];
+  const [defaultProps, setDefaultProps] = useState(_props);
+
+  const handleChange = (event, index) => {
+    setTabIndex(index);
+    props.onTabChange(index);
+  };
+
+  const handleChangeIndex = index => {
+    setTabIndex(index);
+  };
+
+  const onPropertyChange = (e) => {
     const { id, value } = e.target;
-    // const tempProps = properties.find(property => property.id === id);
-    const tempProps = properties.map(property => {
+    const tempProps = defaultProps.map(property => {
       const propItem = property;
       if (property.id === id) {
         propItem.value = value;
       }
       return propItem;
     });
-    props.onPropertyChange(tempProps);
+    setDefaultProps(tempProps);
   };
 
   return (
-    <Fragment>
-      <Typography variant="subtitle2">
-        Properties
-      </Typography>
-      <Grid container spacing={8}>
-        <Grid container item xs={12} spacing={16}>
-          {properties && properties.map(({
-            id, label, required, input_type: type, options, value, placeholder
-          }) => {
-            switch (width) {
-              case 'xs':
-                return <GridItem key={id} width={8} id={id} label={label} value={value} required={required} options={options} type={type} disabled={disabledForm} placeholder={placeholder} onChange={onChange} />;
-              case 'sm':
-                return <GridItem key={id} width={6} id={id} label={label} value={value} required={required} options={options} type={type} disabled={disabledForm} placeholder={placeholder} onChange={onChange} />;
-              default:
-                return <GridItem key={id} width={4} id={id} label={label} value={value} required={required} options={options} type={type} disabled={disabledForm} placeholder={placeholder} onChange={onChange} />;
+    tabList && (
+      <div>
+        <Paper className={classes.rootDesc} elevation={0}>
+          <AppBar position="static" color="default">
+            <Tabs
+              value={tabIndex}
+              onChange={handleChange}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              {tabList && tabList.map((tab) => (
+                <Tab key={tab.id} label={tab.name} />
+              ))}
+            </Tabs>
+          </AppBar>
+          <SwipeableViews
+            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+            index={tabIndex}
+            onChangeIndex={handleChangeIndex}
+          >
+            {tabList && tabList.map(({ product }) => (
+              <TabContainer key={product.remote_product_id} dir={theme.direction}>
+                <Typography variant="subtitle2">
+                  Properties
+                </Typography>
+                {defaultProps.length > 0 ? (
+                  <Grid container spacing={6} direction="row" justify="flex-start">
+                    {defaultProps.map(({
+                      id, label, name, required, input_type: type, options, value, placeholder
+                    }) => (
+                      <Grid key={id} item>
+                        <FormBuilder
+                          id={id}
+                          name={name}
+                          value={value}
+                          label={label}
+                          type={type}
+                          required={required}
+                          placeholder={placeholder}
+                          options={options}
+                          onChange={onPropertyChange}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <div style={{ marginTop: '10px' }}>
+                    <MySnackBar
+                      variant="info"
+                      customStyle
+                      open={defaultProps.length === 0}
+                      message="There are not available properties"
+                    />
+                  </div>
+                )}
+              </TabContainer>
+            ))
             }
-          }
-          )}
-        </Grid>
-      </Grid>
-    </Fragment>
+          </SwipeableViews>
+        </Paper>
+      </div>
+    )
   );
 }
 
 Properties.propTypes = {
-  width: PropTypes.string.isRequired,
-  properties: PropTypes.array.isRequired,
-  disabledForm: PropTypes.bool.isRequired,
-  onPropertyChange: PropTypes.func.isRequired,
+  classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  disabledForm: state.getIn(['integrations', 'disabledForm']),
-});
-
-const PropertiesMapped = connect(
-  mapStateToProps,
-  null
-)(Properties);
-
-export default withWidth()(PropertiesMapped);
+export default withStyles(styles, { withTheme: true })(Properties);

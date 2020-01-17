@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
@@ -12,15 +12,15 @@ class Wysiwyg extends PureComponent {
   constructor(props) {
     super(props);
     const { text } = this.props;
-    const blocksFromHTML = convertFromHTML(text);
-    const contentBlock = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap);
-    if (contentBlock) {
-      const editorState = EditorState.createWithContent(contentBlock);
-      this.state = {
-        editorState,
-      };
+    let contentBlock;
+    if (text) {
+      const blocksFromHTML = convertFromHTML(text);
+      contentBlock = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap);
     }
+    this.state = {
+      editorState: contentBlock ? EditorState.createWithContent(contentBlock) : null,
+    };
   }
 
   onEditorStateChange = editorState => {
@@ -31,20 +31,25 @@ class Wysiwyg extends PureComponent {
 
   render() {
     const { editorState } = this.state;
-    const { classes } = this.props;
+    const { text, classes } = this.props;
     return (
-      <Paper style={{ margin: '10px 0px 0px 0px' }}>
-        <Typography variant="subtitle2" style={{ padding: '15px' }}>Description</Typography>
-        <Editor
-          editorState={editorState}
-          editorClassName={classes.textEditor}
-          toolbarClassName={classes.toolbarEditor}
-          onEditorStateChange={this.onEditorStateChange}
-        />
-      </Paper>
+      <Fragment>
+        {text && (
+          <Paper style={{ margin: '10px 0px 0px 0px' }}>
+            <Typography variant="subtitle2" style={{ padding: '15px' }}>Description</Typography>
+            <Editor
+              editorState={editorState}
+              editorClassName={classes.textEditor}
+              toolbarClassName={classes.toolbarEditor}
+              onEditorStateChange={this.onEditorStateChange}
+            />
+          </Paper>
+        )}
+      </Fragment>
     );
   }
 }
+
 
 Wysiwyg.propTypes = {
   classes: PropTypes.object.isRequired,
