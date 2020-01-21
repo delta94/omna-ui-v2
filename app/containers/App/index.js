@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom';
 import NotFound from 'containers/Pages/Standalone/NotFoundDedicated';
 import Auth from './Auth';
 import Application from './Application';
-import LandingCorporate from './Landing';
 import ThemeWrapper, { AppContext } from './ThemeWrapper';
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
@@ -14,14 +13,13 @@ class App extends React.Component {
         <AppContext.Consumer>
           {changeMode => (
             <Switch>
-              <Route path="/" exact component={LandingCorporate} />
-              {/* <Route
+              <Route
                 exact
                 path="/"
                 render={props => (
                   <Application {...props} changeMode={changeMode} />
                 )}
-              /> */}
+              />
               <Route
                 path="/app"
                 render={props => (
