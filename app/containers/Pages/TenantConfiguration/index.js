@@ -132,7 +132,7 @@ class TenantConfiguration extends React.Component {
         const { data } = resp.data;
         if (data.is_ready_to_omna && data.id === tenantId) {
           this.updateTenant(data.is_ready_to_omna);
-          enqueueSnackbar(`${data.name} tenant is ready to use with Omna`, {
+          enqueueSnackbar(`${data.name} tenant is ready to use with OMNA`, {
             variant: 'success'
           });
           clearInterval(intervalObj);
