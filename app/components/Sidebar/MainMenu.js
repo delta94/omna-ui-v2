@@ -25,6 +25,7 @@ class MainMenu extends React.Component {
       open,
       dataMenu
     } = this.props;
+
     const getMenus = menuArray => menuArray.map((item, index) => {
       if (item.child) {
         return (
@@ -92,7 +93,7 @@ class MainMenu extends React.Component {
               <Ionicon icon={item.icon} />
             </ListItemIcon>
           )}
-          <ListItemText classes={{ primary: classes.primary }} primary={item.name} />
+          <ListItemText classes={{ primary: classes.primary }} inset={!item.icon} primary={item.name} />
           {item.badge && (
             <Chip color="primary" label={item.badge} className={classes.badge} />
           )}
