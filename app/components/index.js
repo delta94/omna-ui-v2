@@ -6,18 +6,6 @@ export BreadCrumb from './BreadCrumb/BreadCrumb';
 export SourceReader from './SourceReader/SourceReader';
 export PapperBlock from './PapperBlock/PapperBlock';
 export SearchUi from './Search/SearchUi';
-// Landing Page
-export Banner from './LandingPage/Banner';
-export Contact from './LandingPage/Contact';
-export Feature from './LandingPage/Feature';
-export Footer from './LandingPage/Footer';
-export HeaderLanding from './LandingPage/Header';
-export Pricing from './LandingPage/Pricing';
-export Showcase from './LandingPage/Showcase';
-export ShowcaseSlider from './LandingPage/ShowcaseSlider';
-export Technology from './LandingPage/Technology';
-export Testimonials from './LandingPage/Testimonials';
-export SideNav from './LandingPage/SideNav';
 // Guide
 export GuideSlider from './GuideSlider';
 // UI
