@@ -72,9 +72,8 @@ function FlowForm(props) {
     props.onInputFlowChange(e.target.value);
   };
 
-  const onIntegrationChange = e => {
-    debugger;
-    props.onIntegrationChange(e.target.value);
+  const onIntegrationChange = (e, newValue) => {
+    props.onIntegrationChange(newValue ? newValue.id : '');
   };
 
   const onActiveChange = e => {
@@ -146,12 +145,13 @@ function FlowForm(props) {
             </TextField>
             <Ionicon icon="ios-repeat" className={classes.marginLeft} />
             <Autocomplete
-              autoHighlight
               id="combo-box-integrations"
               options={integrationsOptions}
               onChange={onIntegrationChange}
               getOptionLabel={option => option.name}
-              style={{ width: 300 }}
+              inputValue={integration}
+              disabled={disableRule}
+              style={{ width: '300px' }}
               renderInput={params => (
                 <TextField
                   {...params}
