@@ -453,10 +453,6 @@ class Flows extends Component {
             break;
         }
       },
-      onRowClick: (rowData, { dataIndex }) => {
-        const order = data[dataIndex];
-        this.handleDetailsViewClick(order);
-      },
       customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
         switch (colIndex) {
           case 3:

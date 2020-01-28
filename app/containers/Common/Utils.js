@@ -125,7 +125,7 @@ class Utils {
   }
 
   static returnAfterAuthorization() {
-    return `${new Utils().getURL()}/app/settings/integrations`;
+    return `${new Utils().getURL()}/app/integrations`;
   }
 
   static baseAPIURL() {
