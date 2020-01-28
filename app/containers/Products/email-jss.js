@@ -3,7 +3,8 @@ import orange from '@material-ui/core/colors/orange';
 import blue from '@material-ui/core/colors/indigo';
 import cyan from '@material-ui/core/colors/cyan';
 import { lighten, darken, fade } from '@material-ui/core/styles/colorManipulator';
-const drawerWidth = 240;
+
+const drawerWidth = 256;
 const styles = theme => ({
   root: {
     flexGrow: 1,

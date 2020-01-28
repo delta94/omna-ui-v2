@@ -51,18 +51,20 @@ class Utils {
     }
   };
 
-  static urlLogo(channel) {
+  static getLogo(channel) {
     switch (channel && channel.replace(/[A-Z]{2}$/, '')) {
       case 'Lazada':
-        return '/images/lazada_logo.png';
+        return '/images/logo/lazada_logo.png';
       case 'Qoo10':
-        return '/images/qoo10_logo.png';
+        return '/images/logo/qoo10_logo.png';
       case 'Shopee':
-        return '/images/shopee_logo.png';
+        return '/images/logo/shopee_logo.png';
+      case 'Shopify':
+        return '/images/logo/shopify_logo.png';
       case 'MercadoLibre':
-        return '/images/mercadolibre_logo.png';
+        return '/images/logo/mercadolibre_logo.png';
       default:
-        return '/images/marketplace_placeholder.jpg';
+        return '/images/logo/marketplace_placeholder.jpg';
     }
   }
 
@@ -86,8 +88,9 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg = url
-      + JSON.stringify(params)
+    const msg =
+      url +
+      JSON.stringify(params)
         .replace(/["']/g, '')
         .split('')
         .sort()
@@ -148,14 +151,14 @@ class Utils {
     if (localStorage.getItem('currentTenant')) {
       return true;
     }
-    
+
     return false;
   }
 
   static getDeactivationDate(deactivationDate) {
     if (deactivationDate) {
       const time = new Date(deactivationDate).getTime() - new Date().getTime();
-      return Math.round(time / ((1000 * 3600 * 24)));
+      return Math.round(time / (1000 * 3600 * 24));
     }
     return -1;
   }

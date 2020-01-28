@@ -1,12 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardHeader from '@material-ui/core/CardHeader';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  Avatar,
+  Card,
+  CardActions,
+  CardHeader,
+  Divider,
+  IconButton,
+  Tooltip,
+  Typography
+} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import BlockIcon from '@material-ui/icons/Block';
@@ -17,16 +21,25 @@ const Integration = props => {
   const {
     name,
     channel,
+    group,
     logo,
     authorized,
     classes,
     onIntegrationAuthorized,
     onIntegrationUnauthorized,
-    onIntegrationDeleted
+    onIntegrationDeleted,
+    noActions
   } = props;
 
   return (
-    <Card className={classes.card} style={{ flex: '1 1 auto' }}>
+    <Card
+      className={classes.card}
+      style={{
+        flex: '1 1 auto',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
       <CardHeader
         avatar={
           logo ? (
@@ -38,35 +51,59 @@ const Integration = props => {
             />
           ) : null
         }
-        title={name}
+        title={
+          <Typography
+            component="h5"
+            variant="h6"
+            color="inherit"
+            gutterBottom
+          >
+            {name}
+          </Typography>
+        }
+        style={{ padding: '48px 16px' }}
         subheader={Utils.fullChannelName(channel)}
       />
-      <CardActions style={{ position: 'relative', bottom: 0 }}>
-        {authorized ? (
-          <Tooltip title="unauthorize">
-            <IconButton
-              aria-label="unauthorize"
-              onClick={onIntegrationUnauthorized}
-            >
-              <BlockIcon />
+      <Divider />
+      {noActions ? (
+        <div style={{ margin: 16 }}>
+          <Typography
+            component="h5"
+            variant="body2"
+            color="inherit"
+            gutterBottom
+          >
+            {group}
+          </Typography>
+        </div>
+      ) : (
+        <CardActions style={{ position: 'relative', bottom: 0 }}>
+          {authorized ? (
+            <Tooltip title="unauthorize">
+              <IconButton
+                aria-label="unauthorize"
+                onClick={onIntegrationUnauthorized}
+              >
+                <BlockIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title="authorize">
+              <IconButton
+                aria-label="authorize"
+                onClick={onIntegrationAuthorized}
+              >
+                <VerifiedUserIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title="delete">
+            <IconButton aria-label="delete" onClick={onIntegrationDeleted}>
+              <DeleteIcon />
             </IconButton>
           </Tooltip>
-        ) : (
-          <Tooltip title="authorize">
-            <IconButton
-              aria-label="authorize"
-              onClick={onIntegrationAuthorized}
-            >
-              <VerifiedUserIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-        <Tooltip title="delete">
-          <IconButton aria-label="delete" onClick={onIntegrationDeleted}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
+        </CardActions>
+      )}
     </Card>
   );
 };
@@ -74,12 +111,12 @@ const Integration = props => {
 Integration.propTypes = {
   name: PropTypes.string.isRequired,
   logo: PropTypes.string.isRequired,
-  channel: PropTypes.string.isRequired,
+  channel: PropTypes.string,
   authorized: PropTypes.bool.isRequired,
   classes: PropTypes.object.isRequired,
-  onIntegrationAuthorized: PropTypes.func.isRequired,
-  onIntegrationUnauthorized: PropTypes.func.isRequired,
-  onIntegrationDeleted: PropTypes.func.isRequired
+  onIntegrationAuthorized: PropTypes.func,
+  onIntegrationUnauthorized: PropTypes.func,
+  onIntegrationDeleted: PropTypes.func
 };
 
 export default Integration;

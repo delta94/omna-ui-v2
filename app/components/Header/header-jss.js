@@ -3,7 +3,7 @@ import {
   gradientBgLight,
   gradientBgDark
 } from 'containers/Templates/appStyles-jss';
-const drawerWidth = 240;
+const drawerWidth = 256;
 
 const styles = theme => ({
   appBar: {

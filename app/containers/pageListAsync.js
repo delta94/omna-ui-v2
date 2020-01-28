@@ -33,9 +33,12 @@ export const Logout = loadable(() => import('./Auth/Logout'), {
   fallback: <Loading />
 });
 
-export const TenantConfiguration = loadable(() => import('./Pages/TenantConfiguration'), {
-  fallback: <Loading />,
-});
+export const TenantConfiguration = loadable(
+  () => import('./Pages/TenantConfiguration'),
+  {
+    fallback: <Loading />
+  }
+);
 
 // OMNA
 export const Dashboard = loadable(() => import('./Tasks/TaskList'), {
@@ -54,12 +57,9 @@ export const Orders = loadable(() => import('./Orders/OrderList'), {
   fallback: <Loading />
 });
 
-export const OrderDetails = loadable(
-  () => import('./Orders/OrderDetails'),
-  {
-    fallback: <Loading />
-  }
-);
+export const OrderDetails = loadable(() => import('./Orders/OrderDetails'), {
+  fallback: <Loading />
+});
 
 export const Webhooks = loadable(
   () => import('./Settings/Webhooks/WebhookList'),
@@ -86,9 +86,19 @@ export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
-export const ProductDetails = loadable(() => import('./Products/ProductDetails'), {
-  fallback: <Loading />
-});
+export const ProductDetails = loadable(
+  () => import('./Products/ProductDetails'),
+  {
+    fallback: <Loading />
+  }
+);
+
+export const AvailableIntegrations = loadable(
+  () => import('./Settings/Integrations/AvailableIntegrations/Integrations'),
+  {
+    fallback: <Loading />
+  }
+);
 
 export const Integrations = loadable(
   () => import('./Settings/Integrations/Integrations'),

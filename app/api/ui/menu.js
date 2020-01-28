@@ -32,11 +32,11 @@ module.exports = [
         name: 'My Integrations',
         link: '/app/integrations'
       },
-    /*   {
+      {
         key: 'available-integrations',
         name: 'Available Integrations',
-        link: '/app/integrations'
-      } */
+        link: '/app/available-integrations'
+      }
     ]
   },
   {

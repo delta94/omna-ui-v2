@@ -15,7 +15,7 @@ import Utils from '../../Common/Utils';
 class OrderIntegration extends Component {
   render() {
     const { classes, integration } = this.props;
-    const logo = Utils.urlLogo(integration.channel);
+    const logo = Utils.getLogo(integration.channel);
 
     return (
       <Card className={classes.subRoot} style={{ flex: '1 1 auto' }}>

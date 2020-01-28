@@ -202,6 +202,8 @@ class Integrations extends Component {
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
 
+    console.log(data);
+    
     return (
       <div>
         <PageHeader title="My integrations" history={history} />
@@ -233,7 +235,7 @@ class Integrations extends Component {
                       id,
                       name,
                       channel,
-                      logo = Utils.urlLogo(channel),
+                      logo = Utils.getLogo(channel),
                       authorized
                     }) => (
                       <Grid item md={3} xs={12}>

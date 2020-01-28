@@ -213,7 +213,12 @@ class OrderList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
-            return <div>{Utils.getCurrencySymbol(currency) + value}</div>;
+            return (
+              <div>
+                {`${Utils.getCurrencySymbol(currency)}
+                  ${parseFloat(value).toFixed(2)} ${currency ? currency : ''}`}
+              </div>
+            );
           }
         }
       },
@@ -283,7 +288,7 @@ class OrderList extends React.Component {
       onRowClick: (rowData, { dataIndex }) => {
         const order = data[dataIndex];
         this.handleDetailsViewClick(order);
-      },
+      }
       // customSort: (data, colIndex, order) =>
       //   data.sort((a, b) => {
       //     debugger;

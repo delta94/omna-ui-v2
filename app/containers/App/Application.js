@@ -12,6 +12,7 @@ import {
   OrderDetails,
   Products,
   ProductDetails,
+  AvailableIntegrations,
   Integrations,
   AddIntegrationForm,
   Workflows,
@@ -61,6 +62,11 @@ class Application extends React.Component {
               exact
               path="/app/products/:id"
               component={ProductDetails}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/available-integrations"
+              component={AvailableIntegrations}
             />
             <AuthGuardRoute
               exact

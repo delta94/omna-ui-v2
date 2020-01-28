@@ -4,7 +4,7 @@ import red from '@material-ui/core/colors/red';
 import amber from '@material-ui/core/colors/amber';
 import grey from '@material-ui/core/colors/grey';
 
-const drawerWidth = 240;
+const drawerWidth = 256;
 const styles = theme => ({
   user: {
     justifyContent: 'center'

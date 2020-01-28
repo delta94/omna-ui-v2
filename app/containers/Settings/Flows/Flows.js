@@ -63,7 +63,7 @@ const styles = theme => ({
       alignItems: 'flex-end'
     },
     '& h4': {
-      fontWeight: 700,
+      fontWeight: 600,
       textTransform: 'capitalize',
       [theme.breakpoints.down('md')]: {
         marginBottom: theme.spacing(3)

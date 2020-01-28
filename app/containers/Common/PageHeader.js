@@ -14,7 +14,7 @@ const styles = theme => ({
       alignItems: 'flex-end'
     },
     '& h4': {
-      fontWeight: 700,
+      fontWeight: 600,
       textTransform: 'capitalize',
       [theme.breakpoints.down('md')]: {
         marginBottom: theme.spacing(3)
@@ -37,7 +37,7 @@ const PageHeader = props => {
   
   return (
     <div className={classes.pageTitle}>
-      <Typography className={classes.darkTitle} component="h4" variant="h4">
+      <Typography className={classes.darkTitle} component="h5" variant="h5">
         {title}
       </Typography>
       <BreadCrumb separator=" / " theme="dark" location={history.location} />
