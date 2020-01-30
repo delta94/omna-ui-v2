@@ -154,7 +154,6 @@ class Integrations extends Component {
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
 
-    console.log(data);
     return (
       <div>
         <PageHeader title="Available integrations" history={history} />

@@ -11,7 +11,6 @@ const logout = () => {
   };
 
   const response = API.get('/sign_out', { params });
-  console.log(response);
 
   return {
     type: AUTH_LOGOUT

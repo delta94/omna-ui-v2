@@ -9,12 +9,11 @@ import styles from '../../../components/Forms/user-jss';
 class ResetPassword extends React.Component {
   state = {
     valueForm: []
-  }
+  };
 
   submitForm(values) {
     setTimeout(() => {
       this.setState({ valueForm: values });
-      console.log(`You submitted:\n\n${this.state.valueForm}`); // eslint-disable-line
     }, 500); // simulate server latency
   }
 
@@ -34,7 +33,7 @@ class ResetPassword extends React.Component {
         </Helmet>
         <div className={classes.container}>
           <div className={classes.userFormWrap}>
-            <ResetForm onSubmit={(values) => this.submitForm(values)} />
+            <ResetForm onSubmit={values => this.submitForm(values)} />
           </div>
         </div>
       </div>
@@ -43,7 +42,7 @@ class ResetPassword extends React.Component {
 }
 
 ResetPassword.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(ResetPassword);

@@ -8,14 +8,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import PropTypes from 'prop-types';
 
-function AlertDialog(props) {
+const AlertDialog = props => {
   const handleCancel = () => {
-    console.log('cancel');
     this.props.handleCancel();
   };
 
   const handleConfirm = () => {
-    console.log('confirm');
     this.props.handleConfirm();
   };
 
@@ -44,7 +42,7 @@ function AlertDialog(props) {
       </Dialog>
     </div>
   );
-}
+};
 
 AlertDialog.defaultProps = {
   open: false,

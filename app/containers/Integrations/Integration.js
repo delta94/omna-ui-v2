@@ -77,7 +77,7 @@ const Integration = props => {
             color="inherit"
             gutterBottom
           >
-            {group}
+            {`${group} ${name.slice(-2)}`}
           </Typography>
 
           <Tooltip title="Add integration">

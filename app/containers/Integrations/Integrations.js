@@ -190,11 +190,6 @@ class Integrations extends Component {
   }
 
   handleAddIntegrationClick = (event, value) => {
-    console.log('event');
-    console.log(event);
-    console.log('value');
-    console.log(value);
-
     this.setState({ openForm: true });
   };
 
@@ -221,16 +216,16 @@ class Integrations extends Component {
     return (
       <div>
         <PageHeader title="My integrations" history={history} />
-        <Paper>
-          {loading ? (
-            <div className="item-padding">
-              <LoadingState loading={loading} text="Loading" />
-            </div>
-          ) : null}
-          {loading ? null : !success ? (
-            <GenericErrorMessage messageError={messageError} />
-          ) : (
-            <div>
+        {loading ? (
+          <div className="item-padding">
+            <LoadingState loading={loading} text="Loading" />
+          </div>
+        ) : null}
+        {loading ? null : !success ? (
+          <GenericErrorMessage messageError={messageError} />
+        ) : (
+          <div>
+            <Paper style={{ margin: '0 4px 8px' }}>
               <div className="display-flex justify-content-space-between">
                 <Button
                   variant="outlined"
@@ -241,60 +236,59 @@ class Integrations extends Component {
                   Add Integration
                 </Button>
               </div>
-              <Divider variant="middle" />
-              <Grid container>
-                {data &&
-                  data.map(
-                    ({
-                      id,
-                      name,
-                      channel,
-                      logo = Utils.getLogo(channel),
-                      authorized
-                    }) => (
-                      <Grid item md={3} xs={12}>
-                        <Integration
-                          key={id}
-                          name={name}
-                          logo={logo}
-                          channel={channel}
-                          authorized={authorized}
-                          onIntegrationAuthorized={() =>
-                            this.handleAuthorization(id)
-                          }
-                          onIntegrationUnauthorized={() =>
-                            this.handleUnAuthorization(id)
-                          }
-                          onIntegrationDeleted={() =>
-                            this.handleDeleteClick(id, name)
-                          }
-                          classes={classes}
-                        />
-                      </Grid>
-                    )
-                  )}
-              </Grid>
-              <Table>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                      rowsPerPageOptions={[5, 10, 25, 50]}
-                      count={count}
-                      rowsPerPage={limit}
-                      page={page}
-                      SelectProps={{
-                        native: true
-                      }}
-                      onChangePage={this.handleChangePage}
-                      onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                      ActionsComponent={GenericTablePagination}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
-          )}
-        </Paper>
+            </Paper>
+            <Grid container>
+              {data &&
+                data.map(
+                  ({
+                    id,
+                    name,
+                    channel,
+                    logo = Utils.getLogo(channel),
+                    authorized
+                  }) => (
+                    <Grid item md={3} xs={12}>
+                      <Integration
+                        key={id}
+                        name={name}
+                        logo={logo}
+                        channel={channel}
+                        authorized={authorized}
+                        onIntegrationAuthorized={() =>
+                          this.handleAuthorization(id)
+                        }
+                        onIntegrationUnauthorized={() =>
+                          this.handleUnAuthorization(id)
+                        }
+                        onIntegrationDeleted={() =>
+                          this.handleDeleteClick(id, name)
+                        }
+                        classes={classes}
+                      />
+                    </Grid>
+                  )
+                )}
+            </Grid>
+            <Table>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    count={count}
+                    rowsPerPage={limit}
+                    page={page}
+                    SelectProps={{
+                      native: true
+                    }}
+                    onChangePage={this.handleChangePage}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                    ActionsComponent={GenericTablePagination}
+                  />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </div>
+        )}
 
         <AlertDialog
           open={alertDialog.open}
