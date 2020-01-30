@@ -16,14 +16,14 @@ import {
   TablePagination
 } from '@material-ui/core';
 
-import LoadingState from '../../Common/LoadingState';
-import AlertDialog from '../../Common/AlertDialog';
-import Utils from '../../Common/Utils';
-import GenericTablePagination from '../../Common/GenericTablePagination';
-import GenericErrorMessage from '../../Common/GenericErrorMessage';
-import API from '../../Utils/api';
+import LoadingState from 'dan-containers/Common/LoadingState';
+import AlertDialog from 'dan-containers/Common/AlertDialog';
+import Utils from 'dan-containers/Common/Utils';
+import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
+import GenericErrorMessage from 'dan-containers/Common/GenericErrorMessage';
+import API from 'dan-containers/Utils/api';
 import Integration from './Integration';
-import PageHeader from '../../Common/PageHeader';
+import PageHeader from 'dan-containers/Common/PageHeader';
 
 const styles = theme => ({
   cardList: {

@@ -94,21 +94,21 @@ export const ProductDetails = loadable(
 );
 
 export const AvailableIntegrations = loadable(
-  () => import('./Settings/Integrations/AvailableIntegrations/Integrations'),
+  () => import('./Integrations/AvailableIntegrations/Integrations'),
   {
     fallback: <Loading />
   }
 );
 
 export const Integrations = loadable(
-  () => import('./Settings/Integrations/Integrations'),
+  () => import('./Integrations/Integrations'),
   {
     fallback: <Loading />
   }
 );
 
 export const AddIntegrationForm = loadable(
-  () => import('./Settings/Integrations/AddIntegrationForm'),
+  () => import('./Integrations/AddIntegrationForm'),
   {
     fallback: <Loading />
   }

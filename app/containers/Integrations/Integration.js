@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   Avatar,
+  Button,
   Card,
   CardActions,
   CardHeader,
@@ -15,7 +16,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import BlockIcon from '@material-ui/icons/Block';
 
-import Utils from '../../Common/Utils';
+import Utils from 'dan-containers/Common/Utils';
 
 const Integration = props => {
   const {
@@ -28,7 +29,8 @@ const Integration = props => {
     onIntegrationAuthorized,
     onIntegrationUnauthorized,
     onIntegrationDeleted,
-    noActions
+    noActions,
+    handleAddIntegration
   } = props;
 
   return (
@@ -52,12 +54,7 @@ const Integration = props => {
           ) : null
         }
         title={
-          <Typography
-            component="h5"
-            variant="h6"
-            color="inherit"
-            gutterBottom
-          >
+          <Typography component="h5" variant="h6" color="inherit" gutterBottom>
             {name}
           </Typography>
         }
@@ -66,7 +63,14 @@ const Integration = props => {
       />
       <Divider />
       {noActions ? (
-        <div style={{ margin: 16 }}>
+        <div
+          style={{
+            margin: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
           <Typography
             component="h5"
             variant="body2"
@@ -75,6 +79,16 @@ const Integration = props => {
           >
             {group}
           </Typography>
+
+          <Tooltip title="Add integration">
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleAddIntegration}
+            >
+              Add
+            </Button>
+          </Tooltip>
         </div>
       ) : (
         <CardActions style={{ position: 'relative', bottom: 0 }}>

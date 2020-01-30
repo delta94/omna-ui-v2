@@ -31,7 +31,11 @@ const styles = theme => ({
       [theme.breakpoints.down('md')]: {
         '& td': {
           height: 40
-        }
+        },
+        
+      },
+      '& tr': {
+        cursor: 'pointer',
       }
     }
   }
@@ -232,7 +236,7 @@ class OrderList extends React.Component {
           filterOptions: {
             names: integrationFilterOptions
           },
-          customBodyRender: value => <div>{value.name}</div>
+          customBodyRender: value => <div>{value ? value.name : ''}</div>
         }
       },
       {
@@ -319,7 +323,7 @@ class OrderList extends React.Component {
 
     return (
       <div>
-        <PageHeader title="Orders" history={history} />
+        <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
           {isLoading ? <Loading /> : null}
           <MuiThemeProvider theme={this.getMuiTheme()}>

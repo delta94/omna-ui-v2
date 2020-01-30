@@ -13,10 +13,10 @@ import Divider from '@material-ui/core/Divider';
 //
 import Loading from 'dan-components/Loading';
 //
-import FormActions from '../../Common/FormActions';
-import API from '../../Utils/api';
-import Utils from '../../Common/Utils';
-import PageHeader from '../../Common/PageHeader';
+import FormActions from 'dan-containers/Common/FormActions';
+import API from 'dan-containers/Utils/api';
+import Utils from 'dan-containers/Common/Utils';
+import PageHeader from 'dan-containers/Common/PageHeader';
 
 
 const styles = () => ({

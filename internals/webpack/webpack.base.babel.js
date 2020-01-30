@@ -15,9 +15,9 @@ module.exports = options => ({
     {
       // Compile into js/build.js
       path: path.resolve(process.cwd(), 'build'),
-      publicPath: '/',
+      publicPath: '/'
     },
-    options.output,
+    options.output
   ), // Merge with env dependent settings
   optimization: options.optimization,
   module: {
@@ -41,8 +41,8 @@ module.exports = options => ({
         exclude: /node_modules/,
         use: {
           loader: 'happypack/loader?id=js',
-          options: options.babelQuery,
-        },
+          options: options.babelQuery
+        }
       },
       {
         // Preprocess our own .css files
@@ -50,46 +50,47 @@ module.exports = options => ({
         // for a list of loaders, see https://webpack.js.org/loaders/#styling
         test: /\.css$/,
         exclude: /node_modules/,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader']
       },
       {
         // Preprocess 3rd party .css files located in node_modules
         test: /\.css$/,
         include: /node_modules/,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(eot|otf|ttf|woff|woff2)$/,
-        use: 'file-loader',
+        use: 'file-loader'
       },
       {
         test: /\.(scss)$/,
-        use: [{
-          loader: 'style-loader'
-        },
-        {
-          loader: 'css-loader',
-          options:
+        use: [
           {
-            sourceMap: false,
-            importLoaders: 2,
-            modules: true,
-            localIdentName: '[local]__[hash:base64:5]'
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: false,
+              importLoaders: 2,
+              modules: true,
+              localIdentName: '[local]__[hash:base64:5]'
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: false
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              outputStyle: 'expanded',
+              sourceMap: false
+            }
           }
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            sourceMap: false
-          }
-        },
-        {
-          loader: 'sass-loader',
-          options: {
-            outputStyle: 'expanded',
-            sourceMap: false
-          }
-        }],
+        ]
       },
       {
         test: /\.md$/,
@@ -102,9 +103,9 @@ module.exports = options => ({
             loader: 'url-loader',
             options: {
               // Inline files smaller than 10 kB
-              limit: 10 * 1024,
-            },
-          },
+              limit: 10 * 1024
+            }
+          }
           /*
             Disabled image compression by default,
             due error in windows 10 because libpng not available.
@@ -134,22 +135,22 @@ module.exports = options => ({
           //      },
           //    },
           //  },
-        ],
+        ]
       },
       {
         test: /\.html$/,
-        use: 'html-loader',
+        use: 'html-loader'
       },
       {
         test: /\.(mp4|webm)$/,
         use: {
           loader: 'url-loader',
           options: {
-            limit: 10000,
-          },
-        },
-      },
-    ],
+            limit: 10000
+          }
+        }
+      }
+    ]
   },
   node: {
     fs: 'empty'
@@ -164,7 +165,7 @@ module.exports = options => ({
       loaders: ['babel-loader?cacheDirectory=true']
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+      NODE_ENV: 'development'
     }),
     new webpack.ContextReplacementPlugin(/^\.\/locale$/, context => {
       if (!/\/moment\//.test(context.context)) {
@@ -172,7 +173,7 @@ module.exports = options => ({
       }
       // context needs to be modified in place
       Object.assign(context, {
-      // include only CJK
+        // include only CJK
         regExp: /^\.\/(ja|ko|zh)/,
         // point to the locale data folder relative to moment's src/lib/locale
         request: '../../locale'
@@ -190,9 +191,10 @@ module.exports = options => ({
       'dan-api': path.resolve(__dirname, '../../app/api/'),
       'dan-images': path.resolve(__dirname, '../../public/images/'),
       'dan-vendor': path.resolve(__dirname, '../../node_modules/'),
+      'dan-containers': path.resolve(__dirname, '../../app/containers')
     }
   },
   devtool: options.devtool,
   target: 'web', // Make web variables accessible to webpack, e.g. window
-  performance: options.performance || {},
+  performance: options.performance || {}
 });
