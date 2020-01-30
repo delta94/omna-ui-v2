@@ -96,7 +96,7 @@ function WebhookForm(props) {
           ))}
         </TextField>
         <Divider variant="fullWidth" />
-        <FormActions history={history} acceptBtnDisabled={!topic || !address || !integration} />
+        <FormActions history={history} acceptButtonDisabled={!topic || !address || !integration} />
       </form>
     </Paper>
   );

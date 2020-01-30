@@ -189,7 +189,7 @@ function FlowForm(props) {
         </PapperBlock>
         <FormActions
           history={history}
-          acceptBtnDisabled={!(flowType && integration)}
+          acceptButtonDisabled={!(flowType && integration)}
         />
       </form>
     </Fragment>

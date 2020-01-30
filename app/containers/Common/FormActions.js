@@ -3,27 +3,36 @@ import Button from '@material-ui/core/Button';
 
 import PropTypes from 'prop-types';
 
-function FormActions(props) {
+const FormActions = props => {
   const {
-    cancelBtnLabel, acceptBtnLabel, acceptBtnAction, acceptBtnDisabled, history, type
+    cancelButtonLabel,
+    acceptButtonLabel,
+    acceptButtonDisabled,
+    history,
+    onAcceptClick,
+    onCancelClick,
+    type
   } = props;
 
   const handleCancelAction = () => {
-    history.goBack();
+    typeof history !== 'undefined' ? history.goBack() : onCancelClick();
   };
 
   return (
-    <div className="display-flex flex-direction-row-inverse" style={{ marginBottom: '25px', marginTop: '25px' }}>
+    <div
+      className="display-flex flex-direction-row-inverse"
+      style={{ marginBottom: '25px', marginTop: '25px' }}
+    >
       <Button
         variant="contained"
         size="medium"
         color="primary"
         type={type}
-        disabled={acceptBtnDisabled}
-        onClick={acceptBtnAction}
+        disabled={acceptButtonDisabled}
+        onClick={onAcceptClick}
         style={{ marginLeft: '10px' }}
       >
-        {acceptBtnLabel}
+        {acceptButtonLabel}
       </Button>
       <Button
         variant="contained"
@@ -32,27 +41,28 @@ function FormActions(props) {
         onClick={handleCancelAction}
         style={{ marginLeft: '10px' }}
       >
-        {cancelBtnLabel}
+        {cancelButtonLabel}
       </Button>
     </div>
   );
-}
+};
 
 FormActions.defaultProps = {
-  cancelBtnLabel: 'Cancel',
-  acceptBtnLabel: 'Save',
+  cancelButtonLabel: 'Cancel',
+  acceptButtonLabel: 'Save',
   type: 'submit',
-  acceptBtnDisabled: false,
-  acceptBtnAction: () => {}
+  acceptButtonDisabled: false,
+  onAcceptClick: () => {}
 };
 
 FormActions.propTypes = {
   history: PropTypes.object.isRequired,
-  cancelBtnLabel: PropTypes.string,
-  acceptBtnLabel: PropTypes.string,
+  cancelButtonLabel: PropTypes.string,
+  acceptButtonLabel: PropTypes.string,
   type: PropTypes.string,
-  acceptBtnAction: PropTypes.func,
-  acceptBtnDisabled: PropTypes.bool,
+  onAcceptClick: PropTypes.func,
+  onCancelClick: PropTypes.func,
+  acceptButtonDisabled: PropTypes.bool
 };
 
 export default FormActions;

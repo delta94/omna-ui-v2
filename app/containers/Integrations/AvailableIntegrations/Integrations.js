@@ -24,6 +24,7 @@ import GenericErrorMessage from 'dan-containers/Common/GenericErrorMessage';
 import API from 'dan-containers/Utils/api';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import Integration from '../Integration';
+import AddIntegrationForm from '../AddIntegrationForm';
 
 const styles = theme => ({
   cardList: {
@@ -49,6 +50,8 @@ class Integrations extends Component {
   state = {
     loading: true,
     integrations: { data: [], pagination: {} },
+    openForm: false,
+    channel: {},
     alertDialog: {
       open: false,
       integrationId: '',
@@ -125,9 +128,13 @@ class Integrations extends Component {
     this.setState({ loading: false });
   }
 
-  handleAddIntegrationClick = () => {
-    const { history } = this.props;
-    history.push('/app/integrations/add-integration');
+  handleAddIntegrationClick = (event, channel) => {
+    this.setState({ channel });
+    this.setState({ openForm: true });
+  };
+
+  handleCloseForm = () => {
+    this.setState({ openForm: false });
   };
 
   render() {
@@ -136,9 +143,11 @@ class Integrations extends Component {
       integrations,
       loading,
       alertDialog,
+      channel,
       success,
       messageError,
       limit,
+      openForm,
       page
     } = this.state;
 
@@ -146,7 +155,6 @@ class Integrations extends Component {
     const count = get(pagination, 'total', 0);
 
     console.log(data);
-
     return (
       <div>
         <PageHeader title="Available integrations" history={history} />
@@ -161,29 +169,21 @@ class Integrations extends Component {
           <div>
             <Grid container spacing={2}>
               {data &&
-                data.map(
-                  ({
-                    id,
-                    name,
-                    group,
-                    logo = Utils.getLogo(group),
-                    authorized
-                  }) => (
-                    <Grid item md={3} xs={12}>
-                      <Integration
-                        key={id}
-                        name={name}
-                        logo={logo}
-                        // channel={channel}
-                        group={group}
-                        authorized={authorized}
-                        classes={classes}
-                        noActions
-                        handleAddIntegration={this.handleAddIntegrationClick}
-                      />
-                    </Grid>
-                  )
-                )}
+                data.map(channel => (
+                  <Grid item md={3} xs={12}>
+                    <Integration
+                      key={name}
+                      name={channel.name}
+                      logo={Utils.getLogo(channel.group)}
+                      group={channel.group}
+                      classes={classes}
+                      noActions
+                      handleAddIntegration={event =>
+                        this.handleAddIntegrationClick(event, channel)
+                      }
+                    />
+                  </Grid>
+                ))}
             </Grid>
             <Table>
               <TableFooter>
@@ -211,6 +211,13 @@ class Integrations extends Component {
           message={alertDialog.message}
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
+        />
+
+        <AddIntegrationForm
+          channel={channel.name}
+          classes={classes}
+          handleClose={this.handleCloseForm}
+          open={openForm}
         />
       </div>
     );

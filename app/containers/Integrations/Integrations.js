@@ -23,6 +23,7 @@ import GenericTablePagination from 'dan-containers/Common/GenericTablePagination
 import GenericErrorMessage from 'dan-containers/Common/GenericErrorMessage';
 import API from 'dan-containers/Utils/api';
 import Integration from './Integration';
+import AddIntegrationForm from './AddIntegrationForm';
 import PageHeader from 'dan-containers/Common/PageHeader';
 
 const styles = theme => ({
@@ -49,6 +50,7 @@ class Integrations extends Component {
   state = {
     loading: true,
     integrations: { data: [], pagination: {} },
+    openForm: false,
     alertDialog: {
       open: false,
       integrationId: '',
@@ -187,6 +189,19 @@ class Integrations extends Component {
     this.setState({ loading: false });
   }
 
+  handleAddIntegrationClick = (event, value) => {
+    console.log('event');
+    console.log(event);
+    console.log('value');
+    console.log(value);
+
+    this.setState({ openForm: true });
+  };
+
+  handleCloseForm = () => {
+    this.setState({ openForm: false });
+  };
+
   render() {
     const { classes, history } = this.props;
     const {
@@ -196,14 +211,13 @@ class Integrations extends Component {
       success,
       messageError,
       limit,
+      openForm,
       page
     } = this.state;
 
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
 
-    console.log(data);
-    
     return (
       <div>
         <PageHeader title="My integrations" history={history} />
@@ -287,6 +301,12 @@ class Integrations extends Component {
           message={alertDialog.message}
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
+        />
+
+        <AddIntegrationForm
+          classes={classes}
+          handleClose={this.handleCloseForm}
+          open={openForm}
         />
       </div>
     );

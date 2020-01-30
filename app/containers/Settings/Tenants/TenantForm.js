@@ -48,7 +48,7 @@ function TenantForm(props) {
         </PapperBlock>
         <FormActions
           history={history}
-          acceptBtnDisabled={!name}
+          acceptButtonDisabled={!name}
         />
       </form>
 
