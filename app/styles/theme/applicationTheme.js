@@ -203,9 +203,9 @@ const applicationTheme = (color, mode) => ({
       root: {
         '& label + div': {
           alignItems: 'flex-end',
-          '& input, select, > div > div': {
+          /* '& input, select, > div > div': {
             padding: '24px 8px 4px'
-          },
+          }, */
           '&[role="radiogroup"]': {
             alignItems: 'flex-start'
           }
