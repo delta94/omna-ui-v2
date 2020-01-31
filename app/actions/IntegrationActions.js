@@ -14,6 +14,16 @@ export const getProductVariantList = (integrationId, remoteProductId) => ({
   payload: { integrationId, remoteProductId }
 });
 
+export const setProductDescription = (description) => ({
+  type: types.SET_PRODUCT_DESCRIPTION,
+  description
+});
+
+export const setProduct = (product) => ({
+  type: types.SET_PRODUCT,
+  product
+});
+
 /* export const getProductVariantList = () => (dispatch) => {
   dispatch({ type: 'GET_PRODUCT_VARIANTS', payload: {} });
 }; */

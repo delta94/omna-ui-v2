@@ -4,8 +4,8 @@ import * as types from '../../actions/actionConstants';
 const initialState = fromJS({
   productVariants: [],
   loadingState: false,
-  properties: null,
-  disabledForm: false
+  disabledForm: false,
+  product: null
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -18,14 +18,9 @@ export default function integrationsReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('loadingState', action.loading);
       });
-    case types.GET_PRODUCT_PROPERTIES:
+    case types.SET_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('properties', action.properties);
-      });
-    case types.SET_PRODUCT_PROPERTIES:
-      return state.withMutations((mutableState) => {
-        const { tabIndex, properties } = action.payload;
-        mutableState.set('properties', { tabIndex, values: properties });
+        mutableState.set('product', action.product);
       });
     default:
       return state;

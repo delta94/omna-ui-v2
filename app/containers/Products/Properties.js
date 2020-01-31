@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import styles from './product-jss';
 import FormBuilder from './FormBuilder';
@@ -31,7 +31,7 @@ TabContainer.defaultProps = {
 
 function Properties(props) {
   const {
-    classes, theme, tabList,
+    classes, theme, tabList
   } = props;
 
   const [tabIndex, setTabIndex] = useState(0);
@@ -48,14 +48,16 @@ function Properties(props) {
   };
 
   const onPropertyChange = (e) => {
-    const { id, value } = e.target;
+    const { product } = props;
+    const { name, value } = e.target;
     const tempProps = defaultProps.map(property => {
       const propItem = property;
-      if (property.id === id) {
+      if (property.label === name) {
         propItem.value = value;
       }
       return propItem;
     });
+    product.integrations[tabIndex].product.properties = tempProps;
     setDefaultProps(tempProps);
   };
 
@@ -84,29 +86,11 @@ function Properties(props) {
           >
             {tabList && tabList.map(({ product }) => (
               <TabContainer key={product.remote_product_id} dir={theme.direction}>
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" gutterBottom>
                   Properties
                 </Typography>
                 {defaultProps.length > 0 ? (
-                  <Grid container spacing={6} direction="row" justify="flex-start">
-                    {defaultProps.map(({
-                      id, label, name, required, input_type: type, options, value, placeholder
-                    }) => (
-                      <Grid key={id} item>
-                        <FormBuilder
-                          id={id}
-                          name={name}
-                          value={value}
-                          label={label}
-                          type={type}
-                          required={required}
-                          placeholder={placeholder}
-                          options={options}
-                          onChange={onPropertyChange}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
+                  <FormBuilder properties={defaultProps} onChange={onPropertyChange} />
                 ) : (
                   <div style={{ marginTop: '10px' }}>
                     <MySnackBar
@@ -132,4 +116,14 @@ Properties.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(Properties);
+const mapStateToProps = state => ({
+  product: state.getIn(['integrations', 'product']),
+  ...state
+});
+
+const PropertiesMapped = connect(
+  mapStateToProps,
+  null
+)(Properties);
+
+export default withStyles(styles, { withTheme: true })(PropertiesMapped);

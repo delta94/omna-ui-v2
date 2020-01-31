@@ -169,6 +169,12 @@ const styles = theme => ({
   purpleAvatar: {
     backgroundColor: purple[500],
   },
+  editFloatBtn: {
+    position: 'fixed',
+    bottom: 30,
+    right: 16,
+    zIndex: 1000
+  },
 });
 
 export default styles;
