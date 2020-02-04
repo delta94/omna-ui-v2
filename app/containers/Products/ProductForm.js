@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -15,18 +15,18 @@ import Variants from './Variants';
 import { getProductVariantList } from '../../actions/IntegrationActions';
 
 function ProductForm(props) {
-  const {
-    name, images, price, description, integrations, variants, updateProductVariants
-  } = props;
+  const { updateProductVariants, product } = props;
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [selectedTabValue, setSelectedTabValue] = useState('');
 
 
   useEffect(() => {
-    const { id, product } = integrations[selectedTabIndex];
-    updateProductVariants(id, product.remote_product_id);
-    setSelectedTabValue(id);
-  }, [selectedTabIndex]);
+    if (product) {
+      const { id, product: _product } = product.integrations[selectedTabIndex];
+      updateProductVariants(id, _product.remote_product_id);
+      setSelectedTabValue(id);
+    }
+  }, [product]);
 
   /*   const getThumb = product ? product.images.map(a => a.src) : null;
 
@@ -44,47 +44,55 @@ function ProductForm(props) {
 
   const handleTabChange = (index) => {
     setSelectedTabIndex(index);
-    const { id, product: _product } = integrations[index];
+    const { id, product: _product } = product.integrations[index];
     updateProductVariants(id, _product.remote_product_id);
+  };
+
+  const handleTextEditorChange = (e) => {
+    product.description = e.target.value;
   };
 
   return (
     <div>
-      <ProductCard
-        thumbnail={images.length > 0 ? images[0] : '/images/image_placeholder.png'}
-        name={name}
-        desc={description}
-        price={price}
-        variants={variants}
-        list
-      />
-      <Wysiwyg text={description} />
-      <Properties tabList={integrations} onTabChange={handleTabChange} />
-      <Variants selectedTab={selectedTabValue} />
+      {product && (
+        <Fragment>
+          <ProductCard
+            thumbnail={product.images.length > 0 ? product.images[0] : '/images/image_placeholder.png'}
+            name={product.name}
+            desc={product.description}
+            price={product.price}
+            variants={product.variants}
+            list
+          />
+          <Wysiwyg text={product.description} onTextEditorChange={handleTextEditorChange} />
+          <Properties tabList={product.integrations} onTabChange={handleTabChange} />
+          <Variants selectedTab={selectedTabValue} />
+        </Fragment>
+      )}
     </div>
   );
 }
 
 ProductForm.propTypes = {
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  description: PropTypes.string,
-  images: PropTypes.array.isRequired,
-  integrations: PropTypes.array.isRequired,
-  variants: PropTypes.number.isRequired,
+  product: PropTypes.object,
   updateProductVariants: PropTypes.func.isRequired
 };
 
 ProductForm.defaultProps = {
-  description: ''
+  product: null
 };
+
+const mapStateToProps = state => ({
+  product: state.getIn(['integrations', 'product']),
+  ...state
+});
 
 const mapDispatchToProps = (dispatch) => ({
   updateProductVariants: bindActionCreators(getProductVariantList, dispatch),
 });
 
 const ProductFormMapped = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ProductForm);
 

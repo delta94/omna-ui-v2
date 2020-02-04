@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -18,29 +17,26 @@ const VariantDetails = (params) => {
   const { integrations, selectedTab } = params;
   const integration = integrations.find(item => item.id === selectedTab);
   const properties = integration ? integration.variant.properties : null;
+
+  const onPropertyChange = () => {
+  /*     const { product } = props;
+    const { name, value } = e.target;
+    const tempProps = defaultProps.map(property => {
+      const propItem = property;
+      if (property.label === name) {
+        propItem.value = value;
+      }
+      return propItem;
+    });
+    product.integrations[tabIndex].product.properties = tempProps;
+    setDefaultProps(tempProps); */
+  };
+
   if (integration) {
     return (
       <Fragment>
         {properties ? (
-          <Grid container spacing={6} direction="row" justify="flex-start">
-            {properties.map(({
-              id, label, name, required, input_type: type, options, value, placeholder
-            }) => (
-              <Grid key={id} item>
-                <FormBuilder
-                  id={id}
-                  name={name}
-                  value={value}
-                  label={label}
-                  type={type}
-                  required={required}
-                  placeholder={placeholder}
-                  options={options}
-                />
-              </Grid>
-            ))
-            }
-          </Grid>
+          <FormBuilder properties={properties} onChange={onPropertyChange} />
         )
           : (
             <div style={{ marginTop: '10px' }}>
@@ -112,7 +108,7 @@ function Variants(props) {
             </div>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className={classes.variantExpansionPanelDetails}>
-            <Typography variant="subtitle2">
+            <Typography variant="subtitle2" gutterBottom>
               Properties
             </Typography>
             <VariantDetails integrations={integrations} selectedTab={selectedTab} />
