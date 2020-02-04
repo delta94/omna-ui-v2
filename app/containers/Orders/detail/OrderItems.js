@@ -36,7 +36,10 @@ class OrderItems extends Component {
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
             return (
-              <div>{Utils.getCurrencySymbol(currency) + value.toFixed(2) + ' ' + currency}</div>
+              <div>
+                {`${Utils.getCurrencySymbol(currency)}
+                  ${value.toFixed(2)} ${currency ? currency : ''}`}
+              </div>
             );
           }
         }
@@ -57,8 +60,10 @@ class OrderItems extends Component {
             const { currency } = tableMeta.rowData;
             return (
               <div>
-                {Utils.getCurrencySymbol(currency) +
-                  (tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(2) + ' ' + currency}
+                {`${Utils.getCurrencySymbol(currency)}
+                  ${(tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(2)} ${
+                  currency ? currency : ''
+                }`}
               </div>
             );
           }

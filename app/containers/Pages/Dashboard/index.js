@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
 import get from 'lodash/get';
-import { PapperBlock } from 'dan-components';
+import { PapperBlock, SalesChartWidget } from 'dan-components';
 import { withSnackbar } from 'notistack';
 import api from '../../Utils/api';
 import PerformanceChartWidget from './PerformanceChartWidget';
 import CompossedLineBarArea from './CompossedLineBarArea';
+import { Grid } from '@material-ui/core';
 
 class Dashboard extends Component {
   state = {
@@ -15,7 +16,7 @@ class Dashboard extends Component {
     webhooks: { data: [], pagination: {} },
     workflows: { data: [], pagination: {} },
     tasks: { data: [], pagination: {} },
-    limit: 5,
+    limit: 100,
     page: 0,
     loading: false
   };
@@ -46,7 +47,8 @@ class Dashboard extends Component {
   getWebhooks = params => {
     const { enqueueSnackbar } = this.props;
 
-    api.get('/webhooks', { params })
+    api
+      .get('/webhooks', { params })
       .then(response => {
         this.setState({
           webhooks: get(response, 'data', { data: [], pagination: {} })
@@ -68,7 +70,7 @@ class Dashboard extends Component {
     try {
       const response = await api.get('/flows', { params });
       this.setState({
-        workflows: get(response, 'data', { data: [], pagination: {} }),
+        workflows: get(response, 'data', { data: [], pagination: {} })
       });
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -119,6 +121,24 @@ class Dashboard extends Component {
 
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
+ 
+    console.log(orders);
+
+    const counts = orders.data.reduce((p, c) => {
+      var name = c.integration.channel;
+      if (!p.hasOwnProperty(name)) {
+        p[name] = 0;
+      }
+      p[name]++;
+      return p;
+    }, {});
+    
+    console.log(counts);
+    
+    var countsExtended = Object.keys(counts).map(k => {
+      return {name: k, value: counts[k]}; });
+    
+    console.log(countsExtended);
 
     return (
       <div>
@@ -137,14 +157,22 @@ class Dashboard extends Component {
           tasks={tasks}
         />
 
-        <PapperBlock
-          title="Orders Total Price / Month"
-          icon="ios-stats-outline"
-          desc=""
-          overflowX
-        >
-          <CompossedLineBarArea orders={orders} loading={loading} />
-        </PapperBlock>
+        <Grid container spacing={2}>
+          <Grid item md={8} xs={12}>
+            <PapperBlock
+              title="Orders Total Price / Month"
+              icon="ios-stats-outline"
+              desc=""
+              overflowX
+            >
+              <CompossedLineBarArea orders={orders} loading={loading} />
+            </PapperBlock>
+          </Grid>
+
+          <Grid item md={4} xs={12}>
+            <SalesChartWidget title="Orders / Channel" />
+          </Grid>
+        </Grid>
       </div>
     );
   }

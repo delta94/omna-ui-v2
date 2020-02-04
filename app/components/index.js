@@ -33,3 +33,5 @@ export HeadlineCard from './CardPaper/HeadlineCard';
 export EmptyData from './Tables/EmptyData';
 // Error
 export ErrorWrap from './Error/ErrorWrap';
+//Widget
+export SalesChartWidget from './Widget/SalesChartWidget';
