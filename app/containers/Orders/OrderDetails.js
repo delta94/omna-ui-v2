@@ -14,9 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 // our
-import API from '../Utils/api';
+import api from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
-import GenericErrorMessage from '../Common/GenericErrorMessage';
 import './orderDetails.css';
 import Utils from '../Common/Utils';
 import OrderPayment from './detail/OrderPayment';
@@ -68,7 +67,7 @@ class OrderDetails extends Component {
     messageError: '',
     openDialog: false,
     selectedDocumentType: {},
-    documentTypes: []
+    documentTypes: [],
   };
 
   componentDidMount() {
@@ -84,35 +83,34 @@ class OrderDetails extends Component {
     }
   }
 
-  getOrderDocumentTypes = params => {
+  getOrderDocumentTypes = async params => {
     const { enqueueSnackbar } = this.props;
-    API.get(
-      `/integrations/${params.store_id}/orders/${params.number}/doc/types`
-    )
-      .then(response => {
-        this.setState({ documentTypes: response.data.data });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
+    const response = await api.get(
+      `/integrations/${params.storeId}/orders/${params.number}/doc/types`
+    );
+
+    try {
+      this.setState({ documentTypes: response.data.data });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
       });
+    }
   };
 
-  callAPI = (StoreId, number) => {
+  callAPI = (storeId, number) => {
     const params = {
-      store_id: StoreId,
+      storeId: storeId,
       number
     };
-
-    this.getOrderDocumentTypes(params);
   };
 
-  onClickGetAPIorder = (StoreId, number) => () => {
-    this.callAPI(StoreId, number);
+  onClickGetAPIorder = (storeId, number) => {
+    this.callAPI(storeId, number);
   };
 
   onPrintHandler = () => {
+    this.getOrderDocumentTypes(params);
     this.handleClickOpen();
   };
 
@@ -130,8 +128,6 @@ class OrderDetails extends Component {
     const {
       order,
       loading,
-      success,
-      messageError,
       openDialog,
       selectedDocumentType,
       documentTypes
@@ -168,7 +164,7 @@ class OrderDetails extends Component {
                   </Button>
                   <Tooltip title="Reload information">
                     <Button
-                      onClick={this.onClickGetAPIorder(
+                      onClick={() => this.onClickGetAPIorder(
                         integrationId,
                         dataNumber
                       )}

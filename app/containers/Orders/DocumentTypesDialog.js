@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
-import API from '../Utils/api';
+import api from '../Utils/api';
 
 // const useStyles = makeStyles({
 //   avatar: {
@@ -17,61 +17,62 @@ import API from '../Utils/api';
 //   }
 // });
 
-const DocumentTypesDialog = props => {
+class DocumentTypesDialog extends Component {
   //   const classes = useStyles();
-  const {
-    onClose,
-    selectedValue,
-    open,
-    types,
-    integrationId,
-    orderNumber
-  } = props;
 
-  const handleClose = () => {
+  handleClose = () => {
+    const { onClose, selectedValue } = this.props;
     onClose(selectedValue);
   };
 
-  const handleListItemClick = value => {
+  handleListItemClick = async value => {
     onClose(value);
-    API.get(
+    const response = await api.get(
       `/integrations/${integrationId}/orders/${orderNumber}/doc/${value.type}`
-    )
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      });
+    );
+
+    try {
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  return (
-    <Dialog
-      onClose={handleClose}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-    >
-      <DialogTitle id="simple-dialog-title">Document types</DialogTitle>
-      <List>
-        {types.map(type => (
-          <ListItem
-            button
-            onClick={() => handleListItemClick(type)}
-            key={type.type}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <PersonIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={type.title} />
-          </ListItem>
-        ))}
-      </List>
-    </Dialog>
-  );
-};
+  render() {
+    const {
+      open,
+      types,
+      integrationId,
+      orderNumber
+    } = this.props;
+
+    return (
+      <Dialog
+        onClose={this.handleClose}
+        aria-labelledby="simple-dialog-title"
+        open={open}
+      >
+        <DialogTitle id="simple-dialog-title">Document types</DialogTitle>
+        <List>
+          {types.map(type => (
+            <ListItem
+              button
+              onClick={() => handleListItemClick(type)}
+              key={type.type}
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  <PersonIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={type.title} />
+            </ListItem>
+          ))}
+        </List>
+      </Dialog>
+    );
+  }
+}
 
 DocumentTypesDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
