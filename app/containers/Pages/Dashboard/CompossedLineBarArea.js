@@ -112,7 +112,7 @@ class CompossedLineBarArea extends Component {
                 <Area
                   type="monotone"
                   dataKey="total_price"
-                  label="Total price"
+                  name="Total price"
                   fillOpacity="0.8"
                   fill={color.main}
                   stroke="none"

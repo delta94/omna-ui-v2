@@ -14,7 +14,7 @@ import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
   render() {
-    const { classes, integrations, orders, products, tasks } = this.props;
+    const { classes, workflows, orders, webhooks, tasks } = this.props;
 
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
@@ -36,7 +36,7 @@ class PerformanceChartWidget extends PureComponent {
             </Button>
           </li>
           <li>
-            <Button color="primary" component={Link} to="/app/products">
+            <Button color="primary" component={Link} to="/app/webhooks">
               <Avatar
                 className={classNames(classes.avatar, classes.tealAvatar)}
               >
@@ -44,14 +44,14 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.tealText}>
-                  {products.pagination.total}
+                  {webhooks.pagination.total}
                 </span>
-                <Typography>Products</Typography>
+                <Typography>Webhooks</Typography>
               </Typography>
             </Button>
           </li>
           <li>
-            <Button color="primary" component={Link} to="/app/integrations">
+            <Button color="primary" component={Link} to="/app/workflows">
               <Avatar
                 className={classNames(classes.avatar, classes.pinkAvatar)}
               >
@@ -59,9 +59,9 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.pinkText}>
-                  {integrations.pagination.total}
+                  {workflows.pagination.total}
                 </span>
-                <Typography>Integrations</Typography>
+                <Typography>Workflows</Typography>
               </Typography>
             </Button>
           </li>
@@ -89,8 +89,8 @@ class PerformanceChartWidget extends PureComponent {
 PerformanceChartWidget.propTypes = {
   classes: PropTypes.object.isRequired,
   orders: PropTypes.object,
-  products: PropTypes.object,
-  integrations: PropTypes.object,
+  webhooks: PropTypes.object,
+  workflows: PropTypes.object,
   tasks: PropTypes.object
 };
 

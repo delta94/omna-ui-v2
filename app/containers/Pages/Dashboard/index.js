@@ -12,8 +12,8 @@ import CompossedLineBarArea from './CompossedLineBarArea';
 class Dashboard extends Component {
   state = {
     orders: { data: [], pagination: {} },
-    products: { data: [], pagination: {} },
-    integrations: { data: [], pagination: {} },
+    webhooks: { data: [], pagination: {} },
+    workflows: { data: [], pagination: {} },
     tasks: { data: [], pagination: {} },
     limit: 5,
     page: 0,
@@ -43,13 +43,13 @@ class Dashboard extends Component {
       });
   };
 
-  getProducts = params => {
+  getWebhooks = params => {
     const { enqueueSnackbar } = this.props;
-    api
-      .get('/products', { params })
+
+    api.get('/webhooks', { params })
       .then(response => {
         this.setState({
-          products: get(response, 'data', { data: [], pagination: {} })
+          webhooks: get(response, 'data', { data: [], pagination: {} })
         });
       })
       .catch(error => {
@@ -62,30 +62,30 @@ class Dashboard extends Component {
       });
   };
 
-  getIntegrations = params => {
+  getWorkflows = async params => {
     const { enqueueSnackbar } = this.props;
-    api.get('/integrations', { params })
-      .then(response => {
-        this.setState({
-          integrations: get(response, 'data', { data: [], pagination: {} })
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
+
+    try {
+      const response = await api.get('/flows', { params });
+      this.setState({
+        workflows: get(response, 'data', { data: [], pagination: {} }),
       });
-  }
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }
+
+    this.setState({ isLoading: false });
+  };
 
   getTasks = params => {
     const { enqueueSnackbar } = this.props;
-    api.get('/tasks', { params })
+    api
+      .get('/tasks', { params })
       .then(response => {
         this.setState({
-          tasks: get(response, 'data', { data: [], pagination: {} }),
+          tasks: get(response, 'data', { data: [], pagination: {} })
         });
       })
       .catch(error => {
@@ -108,14 +108,14 @@ class Dashboard extends Component {
 
   callAPI = () => {
     this.setState({ loading: true });
-    this.getProducts(this.buildParams());
     this.getOrders(this.buildParams());
-    this.getIntegrations(this.buildParams());
+    this.getWebhooks(this.buildParams());
+    this.getWorkflows(this.buildParams());
     this.getTasks(this.buildParams());
   };
 
   render() {
-    const { integrations, orders, products, tasks, loading } = this.state;
+    const { workflows, orders, webhooks, tasks, loading } = this.state;
 
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
@@ -130,8 +130,13 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        <PerformanceChartWidget integrations={integrations} orders={orders} products={products} tasks={tasks} />
-        
+        <PerformanceChartWidget
+          workflows={workflows}
+          orders={orders}
+          webhooks={webhooks}
+          tasks={tasks}
+        />
+
         <PapperBlock
           title="Orders Total Price / Month"
           icon="ios-stats-outline"
