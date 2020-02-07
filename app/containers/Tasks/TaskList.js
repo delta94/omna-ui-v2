@@ -22,9 +22,10 @@ const variantIcon = Utils.iconVariants();
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);
-  const Icon = not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
-    ? variantIcon.info
-    : variantIcon[not];
+  const Icon =
+    not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
+      ? variantIcon.info
+      : variantIcon[not];
   return (
     <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
@@ -96,9 +97,7 @@ class TaskList extends React.Component {
   };
 
   callAPI = () => {
-    const {
-      searchTerm, limit, page, serverSideFilterList
-    } = this.state;
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
       offset: page * limit,
@@ -164,14 +163,15 @@ class TaskList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  verifyNotifications = notifications => notifications.reduce((acc, item) => {
-    if (acc !== 'error') {
-      if (item.type === 'error') return 'error';
-      if (item.type === 'warning') return 'warning';
-      if (item.type === 'info' && acc !== 'warning') return 'info';
-    }
-    return acc;
-  }, '');
+  verifyNotifications = notifications =>
+    notifications.reduce((acc, item) => {
+      if (acc !== 'error') {
+        if (item.type === 'error') return 'error';
+        if (item.type === 'warning') return 'warning';
+        if (item.type === 'info' && acc !== 'warning') return 'info';
+      }
+      return acc;
+    }, '');
 
   isSelected = id => get(this.state, 'selected', []).includes(id);
 
@@ -256,12 +256,15 @@ class TaskList extends React.Component {
 
     const count = get(pagination, 'total', 0);
 
+    console.log(data);
+
     const columns = [
       {
         name: 'id',
+        label: 'ID',
         options: {
           filter: false,
-          display: 'excluded'
+          display: 'exclude'
         }
       },
       {
@@ -269,6 +272,30 @@ class TaskList extends React.Component {
         label: 'Description',
         options: {
           filter: false,
+        }
+      },
+      {
+        name: 'updated_at',
+        label: 'Date',
+        options: {
+          filter: false,
+          customBodyRender: value => (
+            <Typography variant="caption">
+              {value != null ? moment(value).format('Y-MM-DD H:mm:ss') : '--'}
+            </Typography>
+          )
+        }
+      },
+      {
+        name: 'status',
+        label: ' ',
+        options: {
+          // display: false,
+          // filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          // filterOptions: {
+          //   names: integrationFilterOptions
+          // },
           customBodyRender: (value, tableMeta) => {
             const [
               id,
@@ -280,81 +307,40 @@ class TaskList extends React.Component {
               scheduler
             ] = tableMeta.rowData;
 
-            const notifications = Array.isArray(notificationsArray) && notificationsArray.length > 0
-              ? this.verifyNotifications(notificationsArray)
-              : null;
+            const notifications =
+              Array.isArray(notificationsArray) && notificationsArray.length > 0
+                ? this.verifyNotifications(notificationsArray)
+                : null;
 
             return (
-              <div className="display-flex justify-content-space-between align-items-center">
-                <div
-                  className="display-flex justify-content-flex-start"
-                  style={{ flexDirection: 'column' }}
-                >
-                  <Typography variant="subtitle2" color="primary">
-                    <strong>{description}</strong>
-                  </Typography>
-                  <div className="display-flex justify-content-flex-start">
-                    <Typography variant="caption" color="inherit">
-                      {id}
-                    </Typography>
-                    <Typography variant="caption">
-                      <strong>Updated at:</strong>
-                      {' '}
-                      {updatedAt != null
-                        ? moment(updatedAt).format('Y-MM-DD H:mm:ss')
-                        : '--'}
-                    </Typography>
-                  </div>
+              <div
+                className="display-flex justify-content-flex-end align-items-end"
+                style={{ flexDirection: 'column' }}
+              >
+                <div className="item-margin-left">
+                  {notifications === 'error' ||
+                  notifications === 'warning' ||
+                  notifications === 'info' ? (
+                    <NotificationBottom type={notifications} />
+                  ) : null}
+                  {scheduler ? (
+                    <Tooltip title="This task has a schedule">
+                      <IconButton aria-label="Schedule">
+                        <Ionicon icon={variantIcon.schedule} />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
                 </div>
-                <div
-                  className="display-flex justify-content-flex-end align-items-end"
-                  style={{ flexDirection: 'column' }}
-                >
-                  <div className="item-margin-left">
-                    {notifications === 'error'
-                      || notifications === 'warning'
-                      || notifications === 'info' ? (
-                        <NotificationBottom type={notifications} />
-                      ) : null}
-                    {scheduler ? (
-                      <Tooltip title="This task has a schedule">
-                        <IconButton aria-label="Schedule">
-                          <Ionicon icon={variantIcon.schedule} />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                  </div>
-                  <div className={classes.marginLeft2u}>
-                    <Status
-                      status={status}
-                      progress={progress}
-                      classes={classes}
-                    />
-                  </div>
+                <div className={classes.marginLeft2u}>
+                  <Status
+                    status={status}
+                    progress={progress}
+                    classes={classes}
+                  />
                 </div>
               </div>
             );
           }
-        }
-      },
-      {
-        name: 'updated_at',
-        label: 'Updated at',
-        options: {
-          filter: false,
-          display: false
-        }
-      },
-      {
-        name: 'status',
-        label: 'Status',
-        options: {
-          display: false,
-          // filterType: 'dropdown',
-          filterList: serverSideFilterList[3]
-          // filterOptions: {
-          //   names: integrationFilterOptions
-          // },
         }
       },
       {
