@@ -42,25 +42,40 @@ const Integration = props => {
         alignItems: 'center'
       }}
     >
-      <CardHeader
-        avatar={
-          logo ? (
-            <Avatar
-              src={logo}
-              alt="logo"
-              aria-label="Recipe"
-              className={classes.avatar}
-            />
-          ) : null
-        }
-        title={
-          <Typography component="h5" variant="h6" color="inherit" gutterBottom>
-            {name}
-          </Typography>
-        }
-        style={{ padding: '48px 16px' }}
-        subheader={Utils.fullChannelName(channel)}
-      />
+      {logo ? (
+        <CardHeader
+          avatar={
+            logo ? (
+              <Avatar
+                src={logo}
+                alt="logo"
+                aria-label="Recipe"
+                className={classes.avatar}
+              />
+            ) : null
+          }
+          title={
+            <Typography
+              component="h5"
+              variant="h6"
+              color="inherit"
+              gutterBottom
+            >
+              {name}
+            </Typography>
+          }
+          style={{ padding: '48px 16px' }}
+          subheader={Utils.fullChannelName(channel)}
+        />
+      ) : (
+        <img
+          src={`/images/logo/${group.toLowerCase()}_logo_full.png`}
+          style={{
+            flex: '1 1 auto',
+            padding: '48px 32px'
+          }}
+        />
+      )}
       <Divider />
       {noActions ? (
         <div
@@ -77,7 +92,7 @@ const Integration = props => {
             color="inherit"
             gutterBottom
           >
-            {`${group} ${name.slice(-2)}`}
+            {`${group} ${group !== 'Shopify' ? name.slice(-2) : ''}`}
           </Typography>
 
           <Tooltip title="Add integration">
@@ -123,10 +138,10 @@ const Integration = props => {
 };
 
 Integration.propTypes = {
-  name: PropTypes.string.isRequired,
-  logo: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  logo: PropTypes.string,
   channel: PropTypes.string,
-  authorized: PropTypes.bool.isRequired,
+  authorized: PropTypes.bool,
   classes: PropTypes.object.isRequired,
   onIntegrationAuthorized: PropTypes.func,
   onIntegrationUnauthorized: PropTypes.func,

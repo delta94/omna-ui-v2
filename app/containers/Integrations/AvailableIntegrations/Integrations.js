@@ -173,7 +173,7 @@ class Integrations extends Component {
                     <Integration
                       key={name}
                       name={channel.name}
-                      logo={Utils.getLogo(channel.group)}
+                      // logo={Utils.getLogo(channel.group)}
                       group={channel.group}
                       classes={classes}
                       noActions
