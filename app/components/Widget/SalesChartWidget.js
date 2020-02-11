@@ -22,7 +22,6 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import { data2 } from 'dan-api/chart/chartMiniData';
 import styles from './widget-jss';
 import PapperBlock from '../PapperBlock/PapperBlock';
 
@@ -37,7 +36,7 @@ const colorsPie = [purple[500], blue[500], cyan[500], pink[500]];
 
 class SalesChartWidget extends PureComponent {
   render() {
-    const { classes, title } = this.props;
+    const { classes, data, title } = this.props;
     return (
       <PapperBlock
         whiteBg
@@ -49,7 +48,7 @@ class SalesChartWidget extends PureComponent {
         <Divider className={classes.divider} />
         <PieChart width={300} height={300}>
           <Pie
-            data={data2}
+            data={data}
             cx={150}
             cy={100}
             dataKey="value"
@@ -59,7 +58,7 @@ class SalesChartWidget extends PureComponent {
             paddingAngle={5}
             label
           >
-            {data2.map((entry, index) => (
+            {data.map((entry, index) => (
               <Cell
                 key={index.toString()}
                 fill={colorsPie[index % colorsPie.length]}

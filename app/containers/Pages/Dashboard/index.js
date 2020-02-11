@@ -122,8 +122,6 @@ class Dashboard extends Component {
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
  
-    console.log(orders);
-
     const counts = orders.data.reduce((p, c) => {
       var name = c.integration.channel;
       if (!p.hasOwnProperty(name)) {
@@ -133,13 +131,9 @@ class Dashboard extends Component {
       return p;
     }, {});
     
-    console.log(counts);
-    
     var countsExtended = Object.keys(counts).map(k => {
       return {name: k, value: counts[k]}; });
     
-    console.log(countsExtended);
-
     return (
       <div>
         <Helmet>
@@ -170,7 +164,7 @@ class Dashboard extends Component {
           </Grid>
 
           <Grid item md={4} xs={12}>
-            <SalesChartWidget title="Orders / Channel" />
+            <SalesChartWidget title="Orders / Channel" data={countsExtended} />
           </Grid>
         </Grid>
       </div>
