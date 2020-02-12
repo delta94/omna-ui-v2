@@ -14,8 +14,8 @@ import LoadingState from '../Common/LoadingState';
 import styles from './email-jss';
 
 const VariantDetails = (params) => {
-  const { integrations, selectedTab } = params;
-  const integration = integrations.find(item => item.id === selectedTab);
+  const { integrations, selectedIntegration } = params;
+  const integration = integrations.find(item => item.id === selectedIntegration);
   const properties = integration ? integration.variant.properties : null;
 
   const onPropertyChange = () => {
@@ -67,7 +67,7 @@ const VariantDetails = (params) => {
 
 function Variants(props) {
   const {
-    productVariants, selectedTab, loadingState, classes
+    variantList, selectedIntegration, loadingState, classes
   } = props;
 
   return (
@@ -76,19 +76,19 @@ function Variants(props) {
         Variants
       </Typography>
       {loadingState && <div style={{ margin: '25px' }}><LoadingState /></div>}
-      {!loadingState && productVariants.size === 0 && (
+      {!loadingState && variantList.lenght === 0 && (
         <div style={{ marginTop: '10px' }}>
           <MySnackBar
             variant="info"
             customStyle
-            open={productVariants.size === 0 || false}
+            open={variantList.lenght === 0 || false}
             message="There is not available variants"
           />
         </div>
 
       )
       }
-      {productVariants.map(({
+      {variantList.map(({
         sku, price, images, quantity, integrations
       }) => (
         <ExpansionPanel key={sku} className={classes.emailList}>
@@ -111,7 +111,7 @@ function Variants(props) {
             <Typography variant="subtitle2" gutterBottom>
               Properties
             </Typography>
-            <VariantDetails integrations={integrations} selectedTab={selectedTab} />
+            <VariantDetails integrations={integrations} selectedIntegration={selectedIntegration} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}
@@ -120,15 +120,18 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  productVariants: PropTypes.object.isRequired,
+  variantList: PropTypes.object,
   loadingState: PropTypes.bool.isRequired,
-  selectedTab: PropTypes.string.isRequired,
+  selectedIntegration: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 
+Variants.defaultProps = {
+  variantList: []
+};
+
 const mapStateToProps = state => ({
-  loadingState: state.getIn(['integrations', 'loadingState']),
-  productVariants: state.getIn(['integrations', 'productVariants'])
+  loadingState: state.getIn(['integrations', 'loadingState'])
 });
 
 const VariantsMapped = connect(

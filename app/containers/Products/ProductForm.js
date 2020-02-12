@@ -2,71 +2,57 @@ import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import styles from './product-jss';
-import ProductCard from './ProductCard';
 import Properties from './Properties';
-import Wysiwyg from './Wysiwyg';
 import Variants from './Variants';
-import { getProductVariantList } from '../../actions/IntegrationActions';
+import ProductInfo from './ProductInfo';
+import { getProductVariantList, setProduct } from '../../actions/IntegrationActions';
 
 function ProductForm(props) {
-  const { updateProductVariants, product } = props;
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
-  const [selectedTabValue, setSelectedTabValue] = useState('');
+  const {
+    name, price, description, variants, images, integrations,
+    updateProductVariants, variantList, updateProduct, product
+  } = props;
 
+  const [selectedIntegration, setSelectedIntegration] = useState('');
 
   useEffect(() => {
-    if (product) {
-      const { id, product: _product } = product.integrations[selectedTabIndex];
-      updateProductVariants(id, _product.remote_product_id);
-      setSelectedTabValue(id);
-    }
-  }, [product]);
-
-  /*   const getThumb = product ? product.images.map(a => a.src) : null;
-
-  const settings = {
-    customPaging: (i) => (
-      <a>
-        <img src={getThumb[i]} alt="thumb" />
-      </a>
-    ),
-    infinite: true,
-    dots: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  }; */
+    setSelectedIntegration(integrations ? integrations[0].id : '');
+  }, [integrations]);
 
   const handleTabChange = (index) => {
-    setSelectedTabIndex(index);
     const { id, product: _product } = product.integrations[index];
+    setSelectedIntegration(id);
     updateProductVariants(id, _product.remote_product_id);
   };
 
-  const handleTextEditorChange = (e) => {
-    product.description = e.target.value;
-  };
+  const handleNameChange = (value) => updateProduct({ ...product, name: value });
+
+  const handlePriceChange = (value) => updateProduct({ ...product, price: value });
+
+  const handleDescriptionChange = (value) => updateProduct({ ...product, description: value });
+
 
   return (
     <div>
       {product && (
         <Fragment>
-          <ProductCard
-            thumbnail={product.images.length > 0 ? product.images[0] : '/images/image_placeholder.png'}
-            name={product.name}
-            desc={product.description}
-            price={product.price}
-            variants={product.variants}
-            list
+          <ProductInfo
+            thumbnail={images.length !== 0 ? images : ['/images/image_placeholder.png']}
+            name={name}
+            description={description}
+            price={price}
+            variants={variants}
+            onNameChange={handleNameChange}
+            onPriceChange={handlePriceChange}
+            onDescriptionChange={handleDescriptionChange}
           />
-          <Wysiwyg text={product.description} onTextEditorChange={handleTextEditorChange} />
-          <Properties tabList={product.integrations} onTabChange={handleTabChange} />
-          <Variants selectedTab={selectedTabValue} />
+          <Properties tabList={integrations} onTabChange={handleTabChange} />
+          <Variants variantList={variantList} selectedIntegration={selectedIntegration} />
         </Fragment>
       )}
     </div>
@@ -74,6 +60,14 @@ function ProductForm(props) {
 }
 
 ProductForm.propTypes = {
+  name: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  variants: PropTypes.string.isRequired,
+  variantList: PropTypes.array.isRequired,
+  images: PropTypes.array.isRequired,
+  integrations: PropTypes.array.isRequired,
+  updateProduct: PropTypes.func.isRequired,
   product: PropTypes.object,
   updateProductVariants: PropTypes.func.isRequired
 };
@@ -89,6 +83,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateProductVariants: bindActionCreators(getProductVariantList, dispatch),
+  updateProduct: bindActionCreators(setProduct, dispatch),
 });
 
 const ProductFormMapped = connect(

@@ -97,7 +97,7 @@ function Properties(props) {
                       variant="info"
                       customStyle
                       open={defaultProps.length === 0}
-                      message="There are not available properties"
+                      message="There is not available properties"
                     />
                   </div>
                 )}
