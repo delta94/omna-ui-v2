@@ -19,7 +19,7 @@ import PageHeader from '../Common/PageHeader';
 import ProductForm from './ProductForm';
 import { setProduct, getProductVariantList } from '../../actions/IntegrationActions';
 
-function ProductDetails(props) {
+function EditProduct(props) {
   const {
     history, match, product, getProduct, classes, productVariants, updateProductVariants
   } = props;
@@ -91,7 +91,7 @@ function ProductDetails(props) {
   );
 }
 
-ProductDetails.propTypes = {
+EditProduct.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
@@ -120,6 +120,6 @@ const mapDispatchToProps = (dispatch) => ({
 const ProductDetailsMapped = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProductDetails);
+)(EditProduct);
 
 export default withStyles(styles)(withSnackbar(ProductDetailsMapped));
