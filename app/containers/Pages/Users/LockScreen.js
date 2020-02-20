@@ -8,15 +8,26 @@ import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
 import {
-  setTenantStatus, setTenantId, setDeactivationDate, setEnabledTenant, setTenantName
+  setTenantStatus,
+  setTenantId,
+  setDeactivationDate,
+  setEnabledTenant,
+  setTenantName
 } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
   componentDidMount() {
     const {
-      history, location, changeTenantStatus, changeTenantId, changeDeactivationDate, changeEnabledTenant, changeTenantName
+      history,
+      location,
+      changeTenantStatus,
+      changeTenantId,
+      changeDeactivationDate,
+      changeEnabledTenant,
+      changeTenantName
     } = this.props;
     const { redirect, code, path } = location.state;
+
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
@@ -66,10 +77,10 @@ LockScreen.propTypes = {
   changeTenantName: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
   tenantId: state.getIn(['tenant', 'tenantId']),
-  ...state,
+  ...state
 });
 
 const dispatchToProps = dispatch => ({
@@ -77,7 +88,7 @@ const dispatchToProps = dispatch => ({
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
   changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
-  changeTenantName: bindActionCreators(setTenantName, dispatch),
+  changeTenantName: bindActionCreators(setTenantName, dispatch)
 });
 
 const LockScreenMapped = connect(

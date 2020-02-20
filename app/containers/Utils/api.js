@@ -45,6 +45,10 @@ const API = axios.create({
   baseURL: 'https://cenit.io/app/ecapi-v1'
 });
 
+export const CENIT_APP = axios.create({
+  baseURL: 'https://cenit.io/app/omna-dev'
+});
+
 API.interceptors.request.use(setParams, Promise.reject);
 
 export default API;

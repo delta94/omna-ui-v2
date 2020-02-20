@@ -86,12 +86,9 @@ export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
-export const EditProduct = loadable(
-  () => import('./Products/EditProduct'),
-  {
-    fallback: <Loading />
-  }
-);
+export const EditProduct = loadable(() => import('./Products/EditProduct'), {
+  fallback: <Loading />
+});
 
 export const AvailableIntegrations = loadable(
   () => import('./Integrations/AvailableIntegrations/Integrations'),
@@ -134,6 +131,13 @@ export const EditWorkflow = loadable(
 
 export const AddTenant = loadable(
   () => import('./Settings/Tenants/AddTenant'),
+  {
+    fallback: <Loading />
+  }
+);
+
+export const InstallShopify = loadable(
+  () => import('./Shopify/InstallShopify'),
   {
     fallback: <Loading />
   }
