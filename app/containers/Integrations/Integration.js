@@ -69,10 +69,15 @@ const Integration = props => {
         />
       ) : (
         <img
-          src={`/images/logo/${group.toLowerCase()}_logo_full.png`}
+          alt="Logo"
+          src={`/images/logo/${group.toLowerCase()}${
+            group !== 'Shopify' && group !== 'Shopee'
+              ? `.${name.slice(-2).toLowerCase()}`
+              : ''
+          }_logo_full.png`}
           style={{
             flex: '1 1 auto',
-            padding: '48px 32px'
+            padding: '48px'
           }}
         />
       )}
@@ -135,6 +140,16 @@ const Integration = props => {
       )}
     </Card>
   );
+};
+
+Integration.defaultProps = {
+  name: '',
+  logo: '',
+  channel: '',
+  authorized: false,
+  onIntegrationAuthorized: () => {},
+  onIntegrationUnauthorized: () => {},
+  onIntegrationDeleted: () => {}
 };
 
 Integration.propTypes = {

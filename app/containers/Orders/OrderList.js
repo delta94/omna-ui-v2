@@ -31,11 +31,10 @@ const styles = theme => ({
       [theme.breakpoints.down('md')]: {
         '& td': {
           height: 40
-        },
-        
+        }
       },
       '& tr': {
-        cursor: 'pointer',
+        cursor: 'pointer'
       }
     }
   }
@@ -183,10 +182,12 @@ class OrderList extends React.Component {
 
     const count = get(pagination, 'total', 0);
 
+    console.log(orders);
+
     const columns = [
       {
         name: 'number',
-        label: 'Number',
+        label: 'Order',
         options: {
           filter: false
         }
@@ -197,7 +198,7 @@ class OrderList extends React.Component {
         options: {
           filter: false,
           customBodyRender: value => (
-            <div>{moment(value).format('Y-MM-DD')}</div>
+            <div>{moment(value).format('DD-MM-YYYY HH:mm')}</div>
           )
         }
       },
@@ -211,6 +212,13 @@ class OrderList extends React.Component {
         }
       },
       {
+        name: 'currency',
+        options: {
+          filter: false,
+          display: 'exclude'
+        }
+      },
+      {
         name: 'total_price',
         label: 'Total',
         options: {
@@ -220,7 +228,7 @@ class OrderList extends React.Component {
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}
-                  ${parseFloat(value).toFixed(2)} ${currency ? currency : ''}`}
+                  ${parseFloat(value).toFixed(2)} ${currency}`}
               </div>
             );
           }
@@ -237,13 +245,6 @@ class OrderList extends React.Component {
             names: integrationFilterOptions
           },
           customBodyRender: value => <div>{value ? value.name : ''}</div>
-        }
-      },
-      {
-        name: 'currency',
-        options: {
-          filter: false,
-          display: 'excluded'
         }
       },
       {

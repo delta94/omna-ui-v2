@@ -256,12 +256,9 @@ class TaskList extends React.Component {
 
     const count = get(pagination, 'total', 0);
 
-    console.log(data);
-
     const columns = [
       {
         name: 'id',
-        label: 'ID',
         options: {
           filter: false,
           display: 'exclude'
@@ -271,7 +268,7 @@ class TaskList extends React.Component {
         name: 'description',
         label: 'Description',
         options: {
-          filter: false,
+          filter: false
         }
       },
       {
@@ -298,9 +295,6 @@ class TaskList extends React.Component {
           // },
           customBodyRender: (value, tableMeta) => {
             const [
-              id,
-              description,
-              updatedAt,
               status,
               progress,
               notificationsArray,
@@ -369,7 +363,6 @@ class TaskList extends React.Component {
     const options = {
       filterType: 'checkbox',
       responsive: 'stacked',
-      viewColumns: false,
       download: false,
       print: false,
       serverSide: true,
