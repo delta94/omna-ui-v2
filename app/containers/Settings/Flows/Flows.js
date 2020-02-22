@@ -370,14 +370,14 @@ class Flows extends Component {
 
             return (
               <div>
-                <Tooltip title="edit">
+                {/* <Tooltip title="edit">
                   <IconButton
                     aria-label="edit"
                     onClick={() => this.handleEditFlow(id)}
                   >
                     <Ionicon icon="md-create" />
                   </IconButton>
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip title="start">
                   <IconButton
                     aria-label="start"
@@ -483,7 +483,11 @@ class Flows extends Component {
             <Ionicon icon="md-add-circle" />
           </IconButton>
         </Tooltip>
-      )
+      ),
+      onRowClick: (rowData, { dataIndex }) => {
+        const flow = data[dataIndex];
+        this.handleEditFlow(flow.id);
+      }
     };
 
     return (
