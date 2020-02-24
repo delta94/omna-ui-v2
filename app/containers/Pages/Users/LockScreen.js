@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import axios from 'axios';
 import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
+
 import {
   setTenantStatus,
   setTenantId,
@@ -16,7 +18,7 @@ import {
 } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
-  componentDidMount() {
+  async componentDidMount() {
     const {
       history,
       location,
@@ -26,8 +28,9 @@ class LockScreen extends React.Component {
       changeEnabledTenant,
       changeTenantName
     } = this.props;
-    const { redirect, code, path } = location.state;
-
+    const {
+      redirect, code, pathname, store
+    } = location.state;
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
@@ -49,9 +52,45 @@ class LockScreen extends React.Component {
         changeTenantName(data.name);
         changeDeactivationDate(data.deactivation);
         changeEnabledTenant(currentTenant.enabled);
-        path ? history.push(path) : history.push('/');
+        pathname ? history.push(pathname) : history.push('/');
       });
-    } else {
+    }
+    if (store) {
+      try {
+        const response = await axios.get(
+          `https://cenit.io/app/omna-dev/request_tenant_info?search=${store}`
+        );
+        console.log(response);
+        const { data } = response.data;
+        Utils.setTenant(data);
+        changeTenantId(data.tenantId);
+        changeTenantName(data.name);
+        changeEnabledTenant(data.enabled);
+        pathname ? history.push(pathname) : history.push('/');
+      } catch (error) {
+        console.log(error);
+      }
+      // this.getSettings();
+
+      // .then((data)=>{
+      //   API.post('/integrations', {
+      //     data: { name: data.shop, channel: 'Ov2Shopify' }
+      //   })
+      //     .then(responseIntegration => {
+      //       // const { data } = responseIntegration.data;
+      //       console.log(responseIntegration);
+      //     })
+      //     .catch(error => {
+      //       console.log(error);
+      //     })
+      //     .then(() => {
+      //       // history.push('/');
+      //       // get product
+      //     });
+      // });
+    }
+
+    if (!code && !store) {
       window.location.replace(redirect);
     }
   }

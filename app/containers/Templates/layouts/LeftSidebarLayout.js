@@ -23,7 +23,8 @@ const subscribeAction = (
         window.open('https://cenit.io/billing');
       }}
     >
-      billing settings
+
+      subscribe for Tenant Activation
     </Link>
   </div>
 );
@@ -34,9 +35,10 @@ const action = (
       variant="body2"
       style={{ marginRight: '10px' }}
       component={RouterLink}
-      to="/app/tenant-configuration"
+      to="/app/add-tenant"
     >
-      Initialize tenant
+
+      Create new Tenant
     </Link>
   </div>
 );
@@ -78,14 +80,18 @@ class LeftSidebarLayout extends React.Component {
           title={place}
           history={history}
           openGuide={handleOpenGuide}
+          disableToggleButton={isReadyToOmna}
+          disableSearchBox={isReadyToOmna}
         />
-        <Sidebar
-          open={sidebarOpen}
-          toggleDrawerOpen={toggleDrawer}
-          loadTransition={loadTransition}
-          dataMenu={dataMenu}
-          leftSidebar
-        />
+        {isReadyToOmna && (
+          <Sidebar
+            open={sidebarOpen}
+            toggleDrawerOpen={toggleDrawer}
+            loadTransition={loadTransition}
+            dataMenu={dataMenu}
+            leftSidebar
+          />
+        )}
         <main
           className={classNames(
             classes.content,
@@ -120,10 +126,10 @@ class LeftSidebarLayout extends React.Component {
             </div>
             <div>
               <MySnackBar
-                variant="warning"
+                variant="error"
                 customStyle
                 open={!enabledTenant}
-                message={`This tenant ${tenantName} is disabled. Go to your billing settings and subscribe to a plan for Tenant Activation.`}
+                message={`This tenant ${tenantName} is not enabled.`}
                 action={subscribeAction}
               />
             </div>
