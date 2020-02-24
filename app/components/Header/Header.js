@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -160,13 +160,17 @@ class Header extends React.Component {
               />)
           }
           {
-            currentTenant && !currentTenant.fromShopifyApp && (<TenantMenu history={history} />)
+            currentTenant && !currentTenant.fromShopifyApp && (
+              <div>
+                <TenantMenu history={history} />
+                <Hidden xsDown>
+                  <span className={classes.separatorV} />
+                </Hidden>
+                <UserMenu />
+              </div>
+            )
           }
-          
-          <Hidden xsDown>
-            <span className={classes.separatorV} />
-          </Hidden>
-          <UserMenu />
+
         </Toolbar>
       </AppBar>
     );
