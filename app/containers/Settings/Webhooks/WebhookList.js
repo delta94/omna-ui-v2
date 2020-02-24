@@ -7,8 +7,12 @@ import { Link } from 'react-router-dom';
 /* material-ui */
 import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { Button, IconButton } from '@material-ui/core';
+import {
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider
+} from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 //
@@ -20,7 +24,7 @@ import AlertDialog from '../../Common/AlertDialog';
 import API from '../../Utils/api';
 import PageHeader from '../../Common/PageHeader';
 
-const styles = (theme) => ({
+const styles = theme => ({
   table: {
     '& > div': {
       overflow: 'auto'
@@ -52,7 +56,7 @@ class WebhookList extends React.Component {
       objectId: '',
       objectName: '',
       message: ''
-    },
+    }
   };
 
   componentDidMount() {
@@ -61,15 +65,16 @@ class WebhookList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
+  getMuiTheme = () =>
+    createMuiTheme({
+      overrides: {
+        MUIDataTableToolbar: {
+          filterPaper: {
+            width: '50%'
+          }
         }
       }
-    }
-  });
+    });
 
   getTopics() {
     API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
@@ -120,9 +125,7 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const {
-      limit, page, searchTerm, serverSideFilterList,
-    } = this.state;
+    const { limit, page, searchTerm, serverSideFilterList } = this.state;
     const params = {
       offset: page * limit,
       limit,
@@ -169,9 +172,9 @@ class WebhookList extends React.Component {
         this.setState({ searchTerm: '' }, this.callAPI);
       }
     }
-  }
+  };
 
-  handleFilterChange = (filterList) => {
+  handleFilterChange = filterList => {
     if (filterList) {
       this.setState({ serverSideFilterList: filterList }, this.callAPI);
     } else {
@@ -184,14 +187,14 @@ class WebhookList extends React.Component {
     if (serverSideFilterList.length > 0) {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
-  }
+  };
 
-  handleEdit = (id) => {
+  handleEdit = id => {
     const { history } = this.props;
     history.push(`/app/webhooks/${id}`);
   };
 
-  handleOnClickDelete = (tableMeta) => {
+  handleOnClickDelete = tableMeta => {
     const id = tableMeta ? tableMeta.rowData[0] : null;
     const address = tableMeta ? tableMeta.rowData[1] : null;
     const topic = tableMeta ? tableMeta.rowData[2] : null;
@@ -217,19 +220,27 @@ class WebhookList extends React.Component {
     const { enqueueSnackbar } = this.props;
     const { alertDialog } = this.state;
     this.setState({ loading: true });
-    API.delete(`webhooks/${alertDialog.objectId}`).then(() => {
-      enqueueSnackbar('webhook deleted successfully', {
-        variant: 'success'
+    API.delete(`webhooks/${alertDialog.objectId}`)
+      .then(() => {
+        enqueueSnackbar('webhook deleted successfully', {
+          variant: 'success'
+        });
+        this.callAPI();
+      })
+      .catch(error => {
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
+      })
+      .then(() => {
+        this.setState({ loading: false });
       });
-      this.callAPI();
-    }).catch(error => {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }).then(() => {
-      this.setState({ loading: false });
-    });
-  }
+  };
+
+  handleAddWebhookClick = () => {
+    const { history } = this.props;
+    history.push(`/app/webhooks/add-webhook`);
+  };
 
   render() {
     const { classes, history } = this.props;
@@ -243,7 +254,7 @@ class WebhookList extends React.Component {
       serverSideFilterList,
       topicFilterOptions,
       integrationFilterOptions,
-      alertDialog,
+      alertDialog
     } = this.state;
 
     const count = pagination.total;
@@ -312,7 +323,9 @@ class WebhookList extends React.Component {
               <Tooltip title="edit">
                 <EditIcon
                   color="action"
-                  onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)}
+                  onClick={() =>
+                    this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)
+                  }
                 />
               </Tooltip>
               <Tooltip title="delete">
@@ -324,7 +337,7 @@ class WebhookList extends React.Component {
             </div>
           )
         }
-      },
+      }
     ];
 
     const options = {
@@ -361,18 +374,7 @@ class WebhookList extends React.Component {
           default:
             break;
         }
-      },
-      customToolbar: () => (
-        <Tooltip title="add">
-          <IconButton
-            aria-label="add"
-            component={Link}
-            to="/app/webhooks/add-webhook"
-          >
-            <Ionicon icon="md-add-circle" />
-          </IconButton>
-        </Tooltip>
-      ),
+      }
     };
 
     return (
@@ -382,6 +384,16 @@ class WebhookList extends React.Component {
           {loading ? <Loading /> : null}
           <MuiThemeProvider theme={this.getMuiTheme()}>
             <MUIDataTable
+              title={
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  style={{ margin: '10px' }}
+                  onClick={this.handleAddWebhookClick}
+                >
+                  Add Webhook
+                </Button>
+              }
               data={data}
               columns={columns}
               options={options}

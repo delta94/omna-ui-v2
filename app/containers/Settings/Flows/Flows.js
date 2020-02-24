@@ -9,7 +9,13 @@ import {
 } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
-import { IconButton, Menu, MenuItem, Tooltip } from '@material-ui/core';
+import {
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip
+} from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 //
 import get from 'lodash/get';
@@ -96,8 +102,7 @@ class Flows extends Component {
     page: 0,
     serverSideFilterList: [],
     searchTerm: '',
-    anchorEl: null,
-    openMenu: null
+    anchorEl: null
   };
 
   componentDidMount() {
@@ -309,8 +314,7 @@ class Flows extends Component {
       page,
       searchTerm,
       serverSideFilterList,
-      anchorEl,
-      openMenu
+      anchorEl
     } = this.state;
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
@@ -393,35 +397,28 @@ class Flows extends Component {
                   open={Boolean(anchorEl)}
                   onClose={this.handleClose}
                 >
-                  <MenuItem>
-                    <IconButton
-                      aria-label="start"
-                      onClick={() => this.handleStartFlow(id)}
-                    >
+                  <MenuItem onClick={() => this.handleStartFlow(id)}>
+                    <ListItemIcon>
                       <Ionicon icon="md-play" />
-                    </IconButton>
+                    </ListItemIcon>
                     Start
                   </MenuItem>
-                  <MenuItem>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => this.handleOnClickDeleteFlow(id, title)}
-                    >
+                  <MenuItem
+                    onClick={() => this.handleOnClickDeleteFlow(id, title)}
+                  >
+                    <ListItemIcon>
                       <Ionicon icon="md-trash" />
-                    </IconButton>
+                    </ListItemIcon>
                     Delete
                   </MenuItem>
-                  <MenuItem>
-                    <IconButton
-                      aria-label="start"
-                      onClick={() => this.handleToggleScheduler(id)}
-                    >
+                  <MenuItem onClick={() => this.handleToggleScheduler(id)}>
+                    <ListItemIcon>
                       {task.scheduler && task.scheduler.active ? (
                         <Ionicon icon="ios-close-circle" />
                       ) : (
                         <Ionicon icon="ios-timer" />
                       )}
-                    </IconButton>
+                    </ListItemIcon>
                     {task.scheduler && task.scheduler.active
                       ? 'Disable scheduler'
                       : 'Enable scheduler'}
