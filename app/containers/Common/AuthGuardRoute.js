@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import Utils from './Utils';
-import InstallShopify from '../Shopify/InstallShopify';
 // const tenantconfigUrl = '/app/tenant-configuration';
 // const createTenantUrl = '/app/add-tenant';
 
@@ -10,19 +9,21 @@ const AuthGuardRoute = ({
   component: Component, location, path, ...rest
 }) => {
   let code = null;
+  let store = null;
   // const tenant = Utils.getTenant();
   //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
   const isAuthenticated = Utils.isAuthenticated();
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
-    return (
+    store = searchParams.get('store');
+    /*  return (
       <Route
         {...rest}
         render={props => (
           <InstallShopify {...props} store={searchParams.get('store')} />
         )}
       />
-    );
+    ); */
   }
 
   if (location.search.includes('code') && !isAuthenticated) {
@@ -38,7 +39,6 @@ const AuthGuardRoute = ({
       />
     );
   } */
-
   return (
     <Route
       {...rest}
@@ -51,7 +51,8 @@ const AuthGuardRoute = ({
             state: {
               redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${path}`,
               code,
-              path
+              path,
+              store
             }
           }}
         />
