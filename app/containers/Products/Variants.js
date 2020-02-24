@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
@@ -14,8 +13,8 @@ import LoadingState from '../Common/LoadingState';
 import styles from './email-jss';
 
 const VariantDetails = (params) => {
-  const { integrations, selectedTab } = params;
-  const integration = integrations.find(item => item.id === selectedTab);
+  const { integrations, selectedIntegration } = params;
+  const integration = integrations.find(item => item.id === selectedIntegration);
   const properties = integration ? integration.variant.properties : null;
 
   const onPropertyChange = () => {
@@ -67,28 +66,27 @@ const VariantDetails = (params) => {
 
 function Variants(props) {
   const {
-    productVariants, selectedTab, loadingState, classes
+    variants, variantList, selectedIntegration, classes
   } = props;
-
   return (
     <Fragment>
       <Typography variant="subtitle2" gutterBottom>
         Variants
       </Typography>
-      {loadingState && <div style={{ margin: '25px' }}><LoadingState /></div>}
-      {!loadingState && productVariants.size === 0 && (
+      {variants > 0 && (variantList.lenght === 0 || variantList.size === 0) && <div style={{ margin: '25px' }}><LoadingState /></div>}
+      {variants === 0 && (
         <div style={{ marginTop: '10px' }}>
           <MySnackBar
             variant="info"
             customStyle
-            open={productVariants.size === 0 || false}
+            open
             message="There is not available variants"
           />
         </div>
 
       )
       }
-      {productVariants.map(({
+      {variants && variantList.map(({
         sku, price, images, quantity, integrations
       }) => (
         <ExpansionPanel key={sku} className={classes.emailList}>
@@ -111,7 +109,7 @@ function Variants(props) {
             <Typography variant="subtitle2" gutterBottom>
               Properties
             </Typography>
-            <VariantDetails integrations={integrations} selectedTab={selectedTab} />
+            <VariantDetails integrations={integrations} selectedIntegration={selectedIntegration} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
       ))}
@@ -120,20 +118,14 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  productVariants: PropTypes.object.isRequired,
-  loadingState: PropTypes.bool.isRequired,
-  selectedTab: PropTypes.string.isRequired,
+  variants: PropTypes.number.isRequired,
+  variantList: PropTypes.object,
+  selectedIntegration: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({
-  loadingState: state.getIn(['integrations', 'loadingState']),
-  productVariants: state.getIn(['integrations', 'productVariants'])
-});
+Variants.defaultProps = {
+  variantList: []
+};
 
-const VariantsMapped = connect(
-  mapStateToProps,
-  null
-)(Variants);
-
-export default withStyles(styles)(VariantsMapped);
+export default withStyles(styles)(Variants);

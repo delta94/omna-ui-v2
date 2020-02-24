@@ -21,7 +21,7 @@ const styles = theme => ({
   },
   rootDetail: {
     marginTop: theme.spacing.unit,
-    paddingBottom: theme.spacing(6),
+    paddingBottom: theme.spacing(3),
   },
   rootSlider: {
     display: 'flex',
@@ -84,9 +84,17 @@ const styles = theme => ({
   },
   price: {
     display: 'flex',
-    padding: `${theme.spacing(3)}px ${theme.spacing(1.5)}px`,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     '& > *': {
       marginRight: 10
+    }
+  },
+  variant: {
+    display: 'flex',
+    alignItems: 'baseline',
+    '& p': {
+      marginLeft: `${theme.spacing(1)}px`
     }
   },
   ratting: {
@@ -100,8 +108,7 @@ const styles = theme => ({
     padding: '10px 8px',
     [theme.breakpoints.up('sm')]: {
       padding: '10px 20px',
-      display: 'flex',
-      marginRight: theme.spacing(2)
+      display: 'flex'
     },
   },
   quantity: {
@@ -175,6 +182,9 @@ const styles = theme => ({
     right: 16,
     zIndex: 1000
   },
+  inputWidth: {
+    width: '300px'
+  }
 });
 
 export default styles;

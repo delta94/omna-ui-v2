@@ -10,7 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import Wysiwyg from './Wysiwyg';
+import RichEditor from './RichEditor';
 
 
 const styles = (theme) => ({
@@ -134,7 +134,7 @@ const MuiRichTextEditor = (props) => {
     label, value, onChange
   } = props;
   return (
-    <Wysiwyg label={label} text={value} onTextEditorChange={onChange} />
+    <RichEditor label={label} text={value} onTextEditorChange={onChange} />
   );
 };
 

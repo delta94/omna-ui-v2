@@ -86,8 +86,8 @@ export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
-export const ProductDetails = loadable(
-  () => import('./Products/ProductDetails'),
+export const EditProduct = loadable(
+  () => import('./Products/EditProduct'),
   {
     fallback: <Loading />
   }
