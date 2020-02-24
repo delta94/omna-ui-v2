@@ -2,10 +2,17 @@ import { fromJS, List } from 'immutable';
 import * as types from '../../actions/actionConstants';
 
 const initialState = fromJS({
+  product: null,
+  name: '',
+  description: '',
+  price: null,
+  variants: null,
+  integrations: [],
+  properties: [],
   productVariants: [],
   loadingState: false,
   disabledForm: false,
-  product: null
+
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -21,6 +28,26 @@ export default function integrationsReducer(state = initialState, action) {
     case types.SET_PRODUCT:
       return state.withMutations((mutableState) => {
         mutableState.set('product', action.product);
+      });
+    case types.SET_PRODUCT_NAME:
+      return state.withMutations((mutableState) => {
+        mutableState.set('name', action.name);
+      });
+    case types.SET_PRODUCT_DESCRIPTION:
+      return state.withMutations((mutableState) => {
+        mutableState.set('description', action.description);
+      });
+    case types.SET_PRODUCT_PRICE:
+      return state.withMutations((mutableState) => {
+        mutableState.set('price', action.price);
+      });
+    case types.SET_PRODUCT_INTEGRATIONS:
+      return state.withMutations((mutableState) => {
+        mutableState.set('integrations', action.integrations);
+      });
+    case types.SET_PRODUCT_PROPERTIES:
+      return state.withMutations((mutableState) => {
+        mutableState.set('properties', action.properties);
       });
     default:
       return state;
