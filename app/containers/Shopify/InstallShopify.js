@@ -23,7 +23,7 @@ function InstallShopify(props) {
 }
 
 InstallShopify.propTypes = {
-  history: PropTypes.string.isRequired,
+  history: PropTypes.object.isRequired,
   store: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired
 };

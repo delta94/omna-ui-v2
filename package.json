@@ -43,8 +43,7 @@
     "test": "jest"
   },
   "browserslist": [
-    "last 2 versions",
-    "> 1%"
+    "defaults"
   ],
   "lint-staged": {
     "*.js": [
