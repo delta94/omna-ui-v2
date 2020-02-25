@@ -137,7 +137,7 @@ export const AddTenant = loadable(
 );
 
 export const InstallShopify = loadable(
-  () => import('./Shopify/InstallShopify'),
+  () => import('./Shopify/Components/InstallShopify'),
   {
     fallback: <Loading />
   }
