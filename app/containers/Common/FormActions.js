@@ -15,7 +15,7 @@ const FormActions = props => {
   } = props;
 
   const handleCancelAction = () => {
-    typeof history !== 'undefined' ? history.goBack() : onCancelClick();
+    history ? history.goBack() : onCancelClick();
   };
 
   return (
@@ -48,18 +48,20 @@ const FormActions = props => {
 };
 
 FormActions.defaultProps = {
+  history: null,
   cancelButtonLabel: 'Cancel',
   acceptButtonLabel: 'Save',
   type: 'submit',
   acceptButtonDisabled: false,
-  onAcceptClick: () => {}
+  onAcceptClick: () => {},
+  onCancelClick: () => {},
 };
 
 FormActions.propTypes = {
-  history: PropTypes.object.isRequired,
   cancelButtonLabel: PropTypes.string,
   acceptButtonLabel: PropTypes.string,
   type: PropTypes.string,
+  history: PropTypes.object,
   onAcceptClick: PropTypes.func,
   onCancelClick: PropTypes.func,
   acceptButtonDisabled: PropTypes.bool

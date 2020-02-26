@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
@@ -21,10 +21,12 @@ function RichEditor(props) {
       let contentBlock;
       if (text) {
         const blocksFromHTML = convertFromHTML(text);
-        contentBlock = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks,
-          blocksFromHTML.entityMap);
+        if (blocksFromHTML.contentBlocks) {
+          contentBlock = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap);
+        }
       }
-      setEditorState(contentBlock ? EditorState.createWithContent(contentBlock) : null);
+      setEditorState(contentBlock ? EditorState.createWithContent(contentBlock) : EditorState.createEmpty());
       setDeliveredText(true);
     }
   }, [text]);
@@ -36,20 +38,15 @@ function RichEditor(props) {
   };
 
   return (
-    <Fragment>
-      {text && (
-        <Paper style={{ margin: '10px 0px 0px 0px' }}>
-          <Typography variant="subtitle2" style={{ padding: '15px' }}>{label}</Typography>
-          <Editor
-            editorState={editorState}
-            editorClassName={classes.textEditor}
-            toolbarClassName={classes.toolbarEditor}
-            onEditorStateChange={onEditorStateChange}
-          />
-        </Paper>
-      )}
-      {/* <div>{draftToHtml(convertToRaw(editorState.getCurrentContent()))}</div> */}
-    </Fragment>
+    <Paper style={{ margin: '10px 0px 0px 0px' }}>
+      <Typography variant="subtitle2" style={{ padding: '15px' }}>{label}</Typography>
+      <Editor
+        editorState={editorState}
+        editorClassName={classes.textEditor}
+        toolbarClassName={classes.toolbarEditor}
+        onEditorStateChange={onEditorStateChange}
+      />
+    </Paper>
   );
 }
 
