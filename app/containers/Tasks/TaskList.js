@@ -22,8 +22,7 @@ const variantIcon = Utils.iconVariants();
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);
-  const Icon =
-    not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
+  const Icon = not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
       ? variantIcon.info
       : variantIcon[not];
   return (
@@ -97,7 +96,9 @@ class TaskList extends React.Component {
   };
 
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+ searchTerm, limit, page, serverSideFilterList 
+} = this.state;
 
     const params = {
       offset: page * limit,
@@ -163,8 +164,7 @@ class TaskList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  verifyNotifications = notifications =>
-    notifications.reduce((acc, item) => {
+  verifyNotifications = notifications => notifications.reduce((acc, item) => {
       if (acc !== 'error') {
         if (item.type === 'error') return 'error';
         if (item.type === 'warning') return 'warning';
@@ -256,12 +256,9 @@ class TaskList extends React.Component {
 
     const count = get(pagination, 'total', 0);
 
-    console.log(data);
-
     const columns = [
       {
         name: 'id',
-        label: 'ID',
         options: {
           filter: false,
           display: 'exclude'
@@ -271,7 +268,7 @@ class TaskList extends React.Component {
         name: 'description',
         label: 'Description',
         options: {
-          filter: false,
+          filter: false
         }
       },
       {
@@ -298,17 +295,13 @@ class TaskList extends React.Component {
           // },
           customBodyRender: (value, tableMeta) => {
             const [
-              id,
-              description,
-              updatedAt,
               status,
               progress,
               notificationsArray,
               scheduler
             ] = tableMeta.rowData;
 
-            const notifications =
-              Array.isArray(notificationsArray) && notificationsArray.length > 0
+            const notifications = Array.isArray(notificationsArray) && notificationsArray.length > 0
                 ? this.verifyNotifications(notificationsArray)
                 : null;
 
@@ -318,9 +311,9 @@ class TaskList extends React.Component {
                 style={{ flexDirection: 'column' }}
               >
                 <div className="item-margin-left">
-                  {notifications === 'error' ||
-                  notifications === 'warning' ||
-                  notifications === 'info' ? (
+                  {notifications === 'error'
+                  || notifications === 'warning'
+                  || notifications === 'info' ? (
                     <NotificationBottom type={notifications} />
                   ) : null}
                   {scheduler ? (
@@ -369,7 +362,6 @@ class TaskList extends React.Component {
     const options = {
       filterType: 'checkbox',
       responsive: 'stacked',
-      viewColumns: false,
       download: false,
       print: false,
       serverSide: true,

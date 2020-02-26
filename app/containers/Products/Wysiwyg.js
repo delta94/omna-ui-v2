@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import 'dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css';
 import styles from './email-jss';
 
-class Wysiwyg extends PureComponent {
+class Wysiwyg extends Component {
   constructor(props) {
     super(props);
     const { text } = this.props;
@@ -36,26 +36,23 @@ class Wysiwyg extends PureComponent {
 
   render() {
     const { editorState } = this.state;
-    const { label, text, classes } = this.props;
+    const { label, classes } = this.props;
     return (
       <Fragment>
-        {text && (
-          <Paper style={{ margin: '10px 0px 0px 0px' }}>
-            <Typography variant="subtitle2" style={{ padding: '15px' }}>{label}</Typography>
-            <Editor
-              editorState={editorState}
-              editorClassName={classes.textEditor}
-              toolbarClassName={classes.toolbarEditor}
-              onEditorStateChange={this.onEditorStateChange}
-            />
-          </Paper>
-        )}
+        <Paper style={{ margin: '10px 0px 0px 0px' }}>
+          <Typography variant="subtitle2" style={{ padding: '16px' }}>{label}</Typography>
+          <Editor
+            editorState={editorState}
+            editorClassName={classes.textEditor}
+            toolbarClassName={classes.toolbarEditor}
+            onEditorStateChange={this.onEditorStateChange}
+          />
+        </Paper>
         {/* <div>{draftToHtml(convertToRaw(editorState.getCurrentContent()))}</div> */}
       </Fragment>
     );
   }
 }
-
 
 Wysiwyg.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -67,7 +64,7 @@ Wysiwyg.propTypes = {
 
 Wysiwyg.defaultProps = {
   label: 'Description',
-  onTextEditorChange: () => {}
+  onTextEditorChange: () => { }
 };
 
 export default withStyles(styles)(Wysiwyg);

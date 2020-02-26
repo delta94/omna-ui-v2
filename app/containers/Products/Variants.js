@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
@@ -67,28 +66,27 @@ const VariantDetails = (params) => {
 
 function Variants(props) {
   const {
-    variantList, selectedIntegration, loadingState, classes
+    variants, variantList, selectedIntegration, classes
   } = props;
-
   return (
     <Fragment>
       <Typography variant="subtitle2" gutterBottom>
         Variants
       </Typography>
-      {loadingState && <div style={{ margin: '25px' }}><LoadingState /></div>}
-      {!loadingState && variantList.lenght === 0 && (
+      {variants > 0 && (variantList.lenght === 0 || variantList.size === 0) && <div style={{ margin: '25px' }}><LoadingState /></div>}
+      {variants === 0 && (
         <div style={{ marginTop: '10px' }}>
           <MySnackBar
             variant="info"
             customStyle
-            open={variantList.lenght === 0 || false}
+            open
             message="There is not available variants"
           />
         </div>
 
       )
       }
-      {variantList.map(({
+      {variants && variantList.map(({
         sku, price, images, quantity, integrations
       }) => (
         <ExpansionPanel key={sku} className={classes.emailList}>
@@ -120,8 +118,8 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
+  variants: PropTypes.number.isRequired,
   variantList: PropTypes.object,
-  loadingState: PropTypes.bool.isRequired,
   selectedIntegration: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
@@ -130,13 +128,4 @@ Variants.defaultProps = {
   variantList: []
 };
 
-const mapStateToProps = state => ({
-  loadingState: state.getIn(['integrations', 'loadingState'])
-});
-
-const VariantsMapped = connect(
-  mapStateToProps,
-  null
-)(Variants);
-
-export default withStyles(styles)(VariantsMapped);
+export default withStyles(styles)(Variants);

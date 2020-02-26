@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
@@ -30,13 +29,10 @@ TabContainer.defaultProps = {
 };
 
 function Properties(props) {
-  const {
-    classes, theme, tabList
-  } = props;
+  const { classes, theme, tabList } = props;
 
   const [tabIndex, setTabIndex] = useState(0);
-  const _props = tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [];
-  const [defaultProps, setDefaultProps] = useState(_props);
+  const defaultProps = tabList ? tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [] : [];
 
   const handleChange = (event, index) => {
     setTabIndex(index);
@@ -47,9 +43,10 @@ function Properties(props) {
     setTabIndex(index);
   };
 
-  const onPropertyChange = (e) => {
-    const { product } = props;
-    const { name, value } = e.target;
+  const onPropertyChange = () => {
+    // console.log('onPropertyChange');
+    // const { name, value } = e.target;
+  /*    const { product } = props;
     const tempProps = defaultProps.map(property => {
       const propItem = property;
       if (property.label === name) {
@@ -58,7 +55,7 @@ function Properties(props) {
       return propItem;
     });
     product.integrations[tabIndex].product.properties = tempProps;
-    setDefaultProps(tempProps);
+    setDefaultProps(tempProps); */
   };
 
   return (
@@ -89,7 +86,7 @@ function Properties(props) {
                 <Typography variant="subtitle2" gutterBottom>
                   Properties
                 </Typography>
-                {defaultProps.length > 0 ? (
+                {defaultProps && defaultProps.length > 0 ? (
                   <FormBuilder properties={defaultProps} onChange={onPropertyChange} />
                 ) : (
                   <div style={{ marginTop: '10px' }}>
@@ -112,18 +109,13 @@ function Properties(props) {
 }
 
 Properties.propTypes = {
+  tabList: PropTypes.object,
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  product: state.getIn(['integrations', 'product']),
-  ...state
-});
+Properties.defaultProps = {
+  tabList: []
+};
 
-const PropertiesMapped = connect(
-  mapStateToProps,
-  null
-)(Properties);
-
-export default withStyles(styles, { withTheme: true })(PropertiesMapped);
+export default withStyles(styles, { withTheme: true })(Properties);

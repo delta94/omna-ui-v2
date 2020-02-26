@@ -155,7 +155,7 @@ function FlowForm(props) {
               renderInput={params => (
                 <TextField
                   {...params}
-                  label="Integrations"
+                  label="My Integrations"
                   variant="outlined"
                   fullWidth
                 />

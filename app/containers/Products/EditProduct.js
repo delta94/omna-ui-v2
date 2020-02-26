@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -17,16 +17,20 @@ import styles from './product-jss';
 import API from '../Utils/api';
 import PageHeader from '../Common/PageHeader';
 import ProductForm from './ProductForm';
-import { setProduct, getProductVariantList } from '../../actions/IntegrationActions';
+import { getProductVariantList } from '../../actions/IntegrationActions';
 
 function EditProduct(props) {
   const {
-    history, match, product, getProduct, classes, productVariants, updateProductVariants
+    match, classes, productVariants, updateProductVariants, history
   } = props;
-  const {
-    name, price, description, variants, images, integrations
-  } = product || {};
-  const [isLoading, setIsLoading] = useState(false);
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [variants, setVariants] = useState(null);
+  const [integrations, setIntegrations] = useState(null);
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -34,7 +38,13 @@ function EditProduct(props) {
       try {
         const response = await API.get(`products/${match.params.id}`);
         const { data } = response.data;
-        getProduct(data);
+        setId(data.id);
+        setName(data.name);
+        setPrice(data.price);
+        setDescription(data.description);
+        setIntegrations(data.integrations);
+        setVariants(data.variants);
+        setImages(data.images);
       } catch (error) {
         console.log(error);
       }
@@ -44,15 +54,14 @@ function EditProduct(props) {
   }, [match.params.id]);
 
   useEffect(() => {
-    if (product) {
-      const { id, product: _product } = product.integrations[0];
-      updateProductVariants(id, _product.remote_product_id);
+    if (integrations) {
+      const { id: _id, product: _product } = integrations[0];
+      updateProductVariants(_id, _product.remote_product_id);
     }
-  }, [product ? product.id : '']);
+  }, [integrations]);
 
   const handleEdit = async () => {
     const { enqueueSnackbar } = props;
-    // const { name, price, description } = product;
     const data = { name, price: parseFloat(price), description };
     setIsLoading(true);
     try {
@@ -71,22 +80,35 @@ function EditProduct(props) {
     }
   };
 
+  const onIntegrationsChange = (index) => {
+    const { id: _id, product: _product } = integrations[index];
+    updateProductVariants(_id, _product.remote_product_id);
+  };
+
   return (
     <div>
       {isLoading ? <Loading /> : null}
       <PageHeader title="Edit product" history={history} />
-      <ProductForm
-        name={name}
-        price={price}
-        description={description}
-        images={images}
-        variants={variants}
-        integrations={integrations}
-        variantList={productVariants}
-      />
-      <Fab color="secondary" aria-label="edit" className={classes.editFloatBtn} onClick={() => handleEdit()}>
-        <EditIcon />
-      </Fab>
+      {id && (
+        <Fragment>
+          <ProductForm
+            name={name}
+            price={price}
+            description={description}
+            images={images}
+            variants={variants}
+            integrations={integrations}
+            variantList={productVariants}
+            onNameChange={(e) => setName(e)}
+            onPriceChange={(e) => setPrice(e)}
+            onDescriptionChange={(e) => setDescription(e)}
+            onIntegrationsChange={onIntegrationsChange}
+          />
+          <Fab color="secondary" aria-label="edit" className={classes.editFloatBtn} onClick={() => handleEdit()}>
+            <EditIcon />
+          </Fab>
+        </Fragment>
+      )}
     </div>
   );
 }
@@ -95,25 +117,17 @@ EditProduct.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  product: PropTypes.object.isRequired,
-  getProduct: PropTypes.func.isRequired,
   productVariants: PropTypes.array.isRequired,
   updateProductVariants: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-/* ProductDetails.defaultProps = {
-  product: null
-}; */
-
 const mapStateToProps = state => ({
-  product: state.getIn(['integrations', 'product']),
   productVariants: state.getIn(['integrations', 'productVariants']),
   ...state
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  getProduct: bindActionCreators(setProduct, dispatch),
   updateProductVariants: bindActionCreators(getProductVariantList, dispatch),
 });
 

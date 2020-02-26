@@ -14,7 +14,7 @@ import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 // import styles from 'dan-components/Product/product-jss';
-import Wysiwyg from './Wysiwyg';
+import RichEditor from './RichEditor';
 import styles from './product-jss';
 
 function NumberFormatCustom(props) {
@@ -47,6 +47,7 @@ function ProductInfo(props) {
   const {
     name, rating, thumbnail, description, price, variants, editable, classes
   } = props;
+
   const settings = {
     customPaging: (i) => (
       <a>
@@ -124,8 +125,7 @@ function ProductInfo(props) {
                     </Typography>
                   )}
               </div>
-
-              <Wysiwyg text={description} onTextEditorChange={handleDescriptionChange} />
+              <RichEditor text={description} onTextEditorChange={handleDescriptionChange} />
               <div className={classes.btnArea}>
                 <span className={classes.variant}>
                   <Typography variant="h6">
@@ -144,9 +144,9 @@ function ProductInfo(props) {
 
 ProductInfo.propTypes = {
   name: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
-  variants: PropTypes.string.isRequired,
+  variants: PropTypes.number.isRequired,
   thumbnail: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
   rating: PropTypes.number,

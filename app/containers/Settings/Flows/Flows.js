@@ -8,9 +8,15 @@ import {
   MuiThemeProvider
 } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
-import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip
+} from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 //
 import get from 'lodash/get';
 import moment from 'moment';
@@ -44,7 +50,7 @@ const styles = theme => ({
     padding: '5px'
   },
   actions: {
-    padding: theme.spacing(1)
+    // padding: theme.spacing(1)
   },
   tableRoot: {
     width: '100%',
@@ -95,7 +101,8 @@ class Flows extends Component {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
-    searchTerm: ''
+    searchTerm: '',
+    anchorEl: null
   };
 
   componentDidMount() {
@@ -104,14 +111,14 @@ class Flows extends Component {
   }
 
   getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
+      overrides: {
+        MUIDataTableToolbar: {
+          filterPaper: {
+            width: '50%'
+          }
         }
       }
-    }
-  });
+    });
 
   getIntegrations() {
     API.get('/integrations', { params: { limit: 100, offset: 0 } })
@@ -227,8 +234,8 @@ class Flows extends Component {
 
   callAPI = () => {
     const {
-      searchTerm, limit, page, serverSideFilterList
-    } = this.state;
+ searchTerm, limit, page, serverSideFilterList 
+} = this.state;
 
     const params = {
       offset: page * limit,
@@ -285,6 +292,18 @@ class Flows extends Component {
     }
   };
 
+  handleMenu = event => {
+    this.setState({
+      anchorEl: event.currentTarget
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      anchorEl: null
+    });
+  };
+
   render() {
     const { classes, history } = this.props;
     const {
@@ -295,7 +314,8 @@ class Flows extends Component {
       limit,
       page,
       searchTerm,
-      serverSideFilterList
+      serverSideFilterList,
+      anchorEl
     } = this.state;
     const { pagination, data } = flows;
     const count = get(pagination, 'total', 0);
@@ -362,56 +382,57 @@ class Flows extends Component {
           sort: false,
           empty: true,
           customBodyRender: (value, tableMeta) => {
-            const [
-              id,
-              title,
-              task = { scheduler: '' }
-            ] = tableMeta.rowData ? tableMeta.rowData : [];
+            const [id, title, task = { scheduler: '' }] = tableMeta.rowData
+              ? tableMeta.rowData
+              : [];
 
             return (
               <div>
-                <Tooltip title="edit">
+                <IconButton onClick={this.handleMenu}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={() => this.handleStartFlow(id)}>
+                    <ListItemIcon>
+                      <Ionicon icon="md-play" />
+                    </ListItemIcon>
+                    Start
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => this.handleOnClickDeleteFlow(id, title)}
+                  >
+                    <ListItemIcon>
+                      <Ionicon icon="md-trash" />
+                    </ListItemIcon>
+                    Delete
+                  </MenuItem>
+                  <MenuItem onClick={() => this.handleToggleScheduler(id)}>
+                    <ListItemIcon>
+                      {task.scheduler && task.scheduler.active ? (
+                        <Ionicon icon="ios-close-circle" />
+                      ) : (
+                        <Ionicon icon="ios-timer" />
+                      )}
+                    </ListItemIcon>
+                    {task.scheduler && task.scheduler.active
+                      ? 'Disable scheduler'
+                      : 'Enable scheduler'}
+                  </MenuItem>
+                </Menu>
+                {/* <Tooltip title="edit">
                   <IconButton
                     aria-label="edit"
                     onClick={() => this.handleEditFlow(id)}
                   >
                     <Ionicon icon="md-create" />
                   </IconButton>
-                </Tooltip>
-                <Tooltip title="start">
-                  <IconButton
-                    aria-label="start"
-                    onClick={() => this.handleStartFlow(id)}
-                  >
-                    <Ionicon icon="md-play" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="delete">
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => this.handleOnClickDeleteFlow(id, title)}
-                  >
-                    <Ionicon icon="md-trash" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  title={
-                    task.scheduler && task.scheduler.active
-                      ? 'disable scheduler'
-                      : 'enable scheduler'
-                  }
-                >
-                  <IconButton
-                    aria-label="start"
-                    onClick={() => this.handleToggleScheduler(id)}
-                  >
-                    {task.scheduler && task.scheduler.active ? (
-                      <Ionicon icon="ios-close-circle" />
-                    ) : (
-                      <Ionicon icon="ios-timer" />
-                    )}
-                  </IconButton>
-                </Tooltip>
+                </Tooltip> */}
               </div>
             );
           }
@@ -454,36 +475,42 @@ class Flows extends Component {
         }
       },
       customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
-        switch (colIndex) {
-          case 3:
-            return (
-              (parseFloat(a.customSortData[colIndex])
+          switch (colIndex) {
+            case 3:
+              return (
+                (parseFloat(a.customSortData[colIndex])
                 < parseFloat(b.customSortData[colIndex])
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          case 4:
-            return (
-              (a.customSortData[colIndex].name.toLowerCase()
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            case 4:
+              return (
+                (a.customSortData[colIndex].name.toLowerCase()
                 < b.customSortData[colIndex].name.toLowerCase()
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-          default:
-            return (
-              (a.customSortData[colIndex] < b.customSortData[colIndex]
-                ? -1
-                : 1) * (order === 'desc' ? 1 : -1)
-            );
-        }
-      }),
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            default:
+              return (
+                (a.customSortData[colIndex] < b.customSortData[colIndex]
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+          }
+        }),
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton aria-label="add" onClick={this.handleAddAction}>
             <Ionicon icon="md-add-circle" />
           </IconButton>
         </Tooltip>
-      )
+      ),
+      onCellClick: (rowData, { colIndex, dataIndex }) => {
+        if (colIndex !== 6) {
+          const flow = data[dataIndex];
+          this.handleEditFlow(flow.id);
+        }
+      }
     };
 
     return (
