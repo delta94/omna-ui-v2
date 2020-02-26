@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-// import classNames from 'classnames';
-// import moment from 'moment';
-// import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Tooltip from '@material-ui/core/Tooltip';
+import Ionicon from 'react-ionicons';
+import IconButton from '@material-ui/core/IconButton';
 import { withSnackbar } from 'notistack';
 
 // material-ui
@@ -42,7 +43,7 @@ class OrderList extends React.Component {
   state = {
     isLoading: true,
     products: { data: [], pagination: {} },
-    integrationFilterOptions: [],
+    // integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -50,20 +51,19 @@ class OrderList extends React.Component {
   };
 
   componentDidMount() {
-    this.getIntegrations();
+    // this.getIntegrations();
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
         }
       }
-    });
+    }
+  });
 
   getProducts = params => {
     const { enqueueSnackbar } = this.props;
@@ -84,7 +84,7 @@ class OrderList extends React.Component {
       });
   };
 
-  getIntegrations() {
+  /*   getIntegrations() {
     API.get('/integrations', { params: { limit: 100, offset: 0 } })
       .then(response => {
         const { data } = response.data;
@@ -92,13 +92,14 @@ class OrderList extends React.Component {
         this.setState({ integrationFilterOptions: integrations });
       })
       .catch(error => {
-        // handle error
         console.log(error);
       });
-  }
+  } */
 
   callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+      searchTerm, limit, page, serverSideFilterList
+    } = this.state;
 
     const params = {
       offset: page * limit,
@@ -192,8 +193,7 @@ class OrderList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
-            const imgSrc =
-              images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
@@ -234,10 +234,10 @@ class OrderList extends React.Component {
               <div>
                 {' '}
                 {`${Utils.getCurrencySymbol(currency)}
-            ${parseFloat(value).toFixed(2)} ${currency ? currency : ''}`}
+            ${parseFloat(value).toFixed(2)} ${currency || ''}`}
               </div>
             );
-          }
+          },
         }
       },
       {
@@ -305,31 +305,41 @@ class OrderList extends React.Component {
         const product = data[dataIndex];
         this.handleRowClick(product.id);
       },
-      customSort: (customSortData, colIndex, product) =>
-        customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-          }
-        })
+      customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+              < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+              < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+        }
+      }),
+      customToolbar: () => (
+        <Tooltip title="add">
+          <IconButton
+            aria-label="add"
+            component={Link}
+            to="/app/products/add-product"
+          >
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      ),
     };
 
     return (
@@ -347,26 +357,11 @@ class OrderList extends React.Component {
 }
 
 OrderList.propTypes = {
-  // products: PropTypes.array.isRequired,
-  // onGetProducts: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func
   }).isRequired
 };
-
-// const mapStateToProps = state => ({
-//   products: state.products.products
-// });
-
-// const mapDispatchToProps = dispatch => ({
-//   onGetProducts: params => dispatch(getProducts(params))
-// });
-
-// const OrderListMapped = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(OrderList);
 
 export default withSnackbar(withStyles(styles)(OrderList));

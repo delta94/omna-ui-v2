@@ -42,7 +42,6 @@ NumberFormatCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-
 function ProductInfo(props) {
   const {
     name, rating, thumbnail, description, price, variants, editable, classes
@@ -60,8 +59,8 @@ function ProductInfo(props) {
     slidesToScroll: 1,
   };
 
-  const handlePriceChange = event => props.onPriceChange(event.target.value);
   const handleNameChange = event => props.onNameChange(event.target.value);
+  const handlePriceChange = event => props.onPriceChange(parseFloat(event.target.value));
   const handleDescriptionChange = event => props.onDescriptionChange(event.target.value);
 
   return (
@@ -126,14 +125,16 @@ function ProductInfo(props) {
                   )}
               </div>
               <RichEditor text={description} onTextEditorChange={handleDescriptionChange} />
-              <div className={classes.btnArea}>
-                <span className={classes.variant}>
-                  <Typography variant="h6">
-                    variants:
-                  </Typography>
-                  <p>{variants}</p>
-                </span>
-              </div>
+              {variants !== 0 && (
+                <div className={classes.btnArea}>
+                  <span className={classes.variant}>
+                    <Typography variant="h6">
+                      variants:
+                    </Typography>
+                    <p>{variants}</p>
+                  </span>
+                </div>
+              )}
             </section>
           </Grid>
         </Grid>
@@ -146,7 +147,7 @@ ProductInfo.propTypes = {
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
-  variants: PropTypes.number.isRequired,
+  variants: PropTypes.number,
   thumbnail: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
   rating: PropTypes.number,
@@ -157,6 +158,7 @@ ProductInfo.propTypes = {
 };
 
 ProductInfo.defaultProps = {
+  variants: 0,
   editable: true,
   rating: null
 };

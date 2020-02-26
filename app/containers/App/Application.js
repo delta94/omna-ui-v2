@@ -12,6 +12,7 @@ import {
   OrderDetails,
   Products,
   EditProduct,
+  AddProduct,
   AvailableIntegrations,
   Integrations,
   AddIntegrationForm,
@@ -55,6 +56,11 @@ class Application extends React.Component {
               component={TaskDetails}
             />
             <AuthGuardRoute exact path="/app/products" component={Products} />
+            <AuthGuardRoute
+              exact
+              path="/app/products/add-product"
+              component={AddProduct}
+            />
             <AuthGuardRoute
               exact
               path="/app/products/:id"
