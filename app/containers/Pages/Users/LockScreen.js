@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import axios from 'axios';
 import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
 import InstallShopify from '../../Shopify/Components/InstallShopify';
-// import { getSettingsInfo } from '../../Shopify/Services/ShopifyService';
+import getSettingsInfo from '../../Shopify/Services/ShopifyService';
 
 import {
   setTenantStatus,
@@ -65,31 +64,12 @@ class LockScreen extends React.Component {
     }
 
     if (store) {
-      // getSettingsInfo(this.props);
-      try {
-        const response = await axios.get(
-          `https://cenit.io/app/omna-dev/request_tenant_info?search=${store}`
-        );
-        const { data } = response.data;
-        Utils.setTenant(data);
-        changeTenantStatus(data.isReadyToOmna);
-        changeTenantId(data.tenantId);
-        changeTenantName(data.name);
-        changeEnabledTenant(data.enabled);
-        if (response) {
-          const collectionsInstalled = await this.installCollections();
-          if (collectionsInstalled) {
-            const integrationInstalled = await this.installIntegration(data);
-            if (integrationInstalled) {
-              this.setState({
-                installShopify: true
-              });
-              pathname ? history.push(pathname) : history.push('/');
-            }
-          }
-        }
-      } catch (error) {
-        console.log(error);
+      const result = await getSettingsInfo.getSettingsInfo(this.props);
+      if (result) {
+        this.setState({
+          installShopify: result
+        });
+        pathname ? history.push(pathname) : history.push('/');
       }
     }
 
@@ -97,50 +77,6 @@ class LockScreen extends React.Component {
       window.location.replace(redirect);
     }
   }
-
-  installCollections = async () => {
-    try {
-      let collections = await API.get('/collections', {
-        params: { limit: 100, offset: 0 }
-      });
-      if (collections) {
-        collections = collections.data.data;
-        const ids = collections.filter(item => item.status === 'no_installed');
-
-        const collectionsInstalled = [];
-
-        ids.forEach(async id => {
-          const resp = await API.patch(`/collections/${id}`);
-          collectionsInstalled.push(resp);
-        });
-
-        if (collectionsInstalled.lenght === collections.lenght) {
-          return true;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    return false;
-  };
-
-  installIntegration = async data => {
-    await API.post('/integrations', {
-      data: { name: data.shop, channel: 'Ov2Shopify' }
-    }).catch(error => {
-      if (error) {
-        if (
-          error.response.data.message
-          === 'Already exists an integration with the same name'
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    return true;
-  };
 
   render() {
     const { classes } = this.props;
