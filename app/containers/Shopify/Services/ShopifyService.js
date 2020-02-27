@@ -78,6 +78,21 @@ const ShopifyService = {
     });
 
     return true;
+  },
+
+  async getPlanInfo(store) {
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/plan?task=get&shop=${store}`
+      );
+      if (response) {
+        console.log(response);
+        return true;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return false;
   }
 };
 
