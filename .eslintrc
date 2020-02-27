@@ -44,6 +44,8 @@
     "react/require-default-props": 0,
     "no-trailing-spaces": 0,
     "react/jsx-closing-bracket-location": 0,
+    "react/jsx-one-expression-per-line": "off",
+    "object-curly-newline": "off",
     "jsx-a11y/label-has-for": [
       2,
       {
