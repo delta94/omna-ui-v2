@@ -179,10 +179,7 @@ class OrderList extends React.Component {
       searchTerm
     } = this.state;
     const { pagination, data } = orders;
-
     const count = get(pagination, 'total', 0);
-
-    console.log(orders);
 
     const columns = [
       {

@@ -32,7 +32,7 @@ function Properties(props) {
   const { classes, theme, tabList } = props;
 
   const [tabIndex, setTabIndex] = useState(0);
-  const defaultProps = tabList ? tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [] : [];
+  const defaultProps = tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [];
 
   const handleChange = (event, index) => {
     setTabIndex(index);
@@ -46,72 +46,71 @@ function Properties(props) {
   const onPropertyChange = () => {
     // console.log('onPropertyChange');
     // const { name, value } = e.target;
-  /*    const { product } = props;
-    const tempProps = defaultProps.map(property => {
-      const propItem = property;
-      if (property.label === name) {
-        propItem.value = value;
-      }
-      return propItem;
-    });
-    product.integrations[tabIndex].product.properties = tempProps;
-    setDefaultProps(tempProps); */
+    /*    const { product } = props;
+      const tempProps = defaultProps.map(property => {
+        const propItem = property;
+        if (property.label === name) {
+          propItem.value = value;
+        }
+        return propItem;
+      });
+      product.integrations[tabIndex].product.properties = tempProps;
+      setDefaultProps(tempProps); */
   };
 
   return (
-    tabList && (
-      <div>
-        <Paper className={classes.rootDesc} elevation={0}>
-          <AppBar position="static" color="default">
-            <Tabs
-              value={tabIndex}
-              onChange={handleChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              {tabList && tabList.map((tab) => (
-                <Tab key={tab.id} label={tab.name} />
-              ))}
-            </Tabs>
-          </AppBar>
-          <SwipeableViews
-            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-            index={tabIndex}
-            onChangeIndex={handleChangeIndex}
+    <div>
+      <Paper className={classes.rootDesc} elevation={0}>
+        <AppBar position="static" color="default">
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
           >
-            {tabList && tabList.map(({ product }) => (
-              <TabContainer key={product.remote_product_id} dir={theme.direction}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Properties
-                </Typography>
-                {defaultProps && defaultProps.length > 0 ? (
-                  <FormBuilder properties={defaultProps} onChange={onPropertyChange} />
-                ) : (
-                  <div style={{ marginTop: '10px' }}>
-                    <MySnackBar
-                      variant="info"
-                      customStyle
-                      open={defaultProps.length === 0}
-                      message="There is not available properties"
-                    />
-                  </div>
-                )}
-              </TabContainer>
-            ))
-            }
-          </SwipeableViews>
-        </Paper>
-      </div>
-    )
+            {tabList.map((tab) => (
+              <Tab key={tab.id} label={tab.name} />
+            ))}
+          </Tabs>
+        </AppBar>
+        <SwipeableViews
+          axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+          index={tabIndex}
+          onChangeIndex={handleChangeIndex}
+        >
+          {tabList.map(({ product }) => (
+            <TabContainer key={product.remote_product_id} dir={theme.direction}>
+              <Typography variant="subtitle2" gutterBottom>
+                Properties
+              </Typography>
+              {defaultProps && defaultProps.length > 0 ? (
+                <FormBuilder properties={defaultProps} onChange={onPropertyChange} />
+              ) : (
+                <div style={{ marginTop: '10px' }}>
+                  <MySnackBar
+                    variant="info"
+                    customStyle
+                    open={defaultProps.length === 0}
+                    message="There is not available properties"
+                  />
+                </div>
+              )}
+            </TabContainer>
+          ))
+          }
+        </SwipeableViews>
+      </Paper>
+    </div>
   );
 }
 
 Properties.propTypes = {
-  tabList: PropTypes.object,
+  tabList: PropTypes.array,
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
+  onTabChange: PropTypes.func.isRequired
 };
 
 Properties.defaultProps = {

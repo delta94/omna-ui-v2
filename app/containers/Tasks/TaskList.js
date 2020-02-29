@@ -253,7 +253,6 @@ class TaskList extends React.Component {
       serverSideFilterList
     } = this.state;
     const { pagination, data } = tasks;
-    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -304,7 +303,6 @@ class TaskList extends React.Component {
               scheduler
             ] = tableMeta.rowData;
 
-            console.log(tableMeta.rowData);
             const notifications =
               Array.isArray(notificationsArray) && notificationsArray.length > 0
                 ? this.verifyNotifications(notificationsArray)
@@ -319,8 +317,8 @@ class TaskList extends React.Component {
                   {notifications === 'error' ||
                   notifications === 'warning' ||
                   notifications === 'info' ? (
-                    <NotificationBottom type={notifications} />
-                  ) : null}
+                      <NotificationBottom type={notifications} />
+                    ) : null}
                   {scheduler ? (
                     <Tooltip title="This task has a schedule">
                       <IconButton aria-label="Schedule">

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -8,8 +8,6 @@ import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-import Fab from '@material-ui/core/Fab';
-import EditIcon from '@material-ui/icons/Edit';
 import Loading from 'dan-components/Loading';
 
 import styles from './product-jss';
@@ -20,19 +18,13 @@ import ProductForm from './ProductForm';
 import { getProductVariantList } from '../../actions/IntegrationActions';
 
 function EditProduct(props) {
-  const {
-    match,
-    classes,
-    productVariants,
-    updateProductVariants,
-    history
-  } = props;
+  const { match, productVariants, updateProductVariants, history } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
-  const [price, setPrice] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [variants, setVariants] = useState(null);
-  const [integrations, setIntegrations] = useState(null);
+  const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState('');
+  const [variants, setVariants] = useState();
+  const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,7 +50,7 @@ function EditProduct(props) {
   }, [match.params.id]);
 
   useEffect(() => {
-    if (integrations) {
+    if (integrations && integrations.length > 0) {
       const { id: _id, product: _product } = integrations[0];
       updateProductVariants(_id, _product.remote_product_id);
     }
@@ -94,36 +86,27 @@ function EditProduct(props) {
       {isLoading ? <Loading /> : null}
       <PageHeader title="Edit product" history={history} />
       {id && (
-        <Fragment>
-          <ProductForm
-            name={name}
-            price={price}
-            description={description}
-            images={images}
-            variants={variants}
-            integrations={integrations}
-            variantList={productVariants}
-            onNameChange={e => setName(e)}
-            onPriceChange={e => setPrice(e)}
-            onDescriptionChange={e => setDescription(e)}
-            onIntegrationsChange={onIntegrationsChange}
-          />
-          <Fab
-            color="secondary"
-            aria-label="edit"
-            className={classes.editFloatBtn}
-            onClick={() => handleEdit()}
-          >
-            <EditIcon />
-          </Fab>
-        </Fragment>
+        <ProductForm
+          name={name}
+          price={price}
+          description={description}
+          images={images}
+          variants={variants}
+          integrations={integrations}
+          variantList={productVariants}
+          onNameChange={e => setName(e)}
+          onPriceChange={e => setPrice(e)}
+          onDescriptionChange={e => setDescription(e)}
+          onIntegrationsChange={onIntegrationsChange}
+          onCancelClick={() => history.goBack()}
+          onSubmitForm={handleEdit}
+        />
       )}
     </div>
   );
 }
 
 EditProduct.propTypes = {
-  classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   productVariants: PropTypes.array.isRequired,
@@ -140,9 +123,9 @@ const mapDispatchToProps = dispatch => ({
   updateProductVariants: bindActionCreators(getProductVariantList, dispatch)
 });
 
-const ProductDetailsMapped = connect(
+const EditProductMapped = connect(
   mapStateToProps,
   mapDispatchToProps
 )(EditProduct);
 
-export default withStyles(styles)(withSnackbar(ProductDetailsMapped));
+export default withStyles(styles)(withSnackbar(EditProductMapped));

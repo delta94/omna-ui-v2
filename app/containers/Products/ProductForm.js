@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
@@ -8,10 +8,11 @@ import styles from './product-jss';
 import Properties from './Properties';
 import Variants from './Variants';
 import ProductInfo from './ProductInfo';
+import FormActions from '../Common/FormActions';
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations, variantList
+    name, price, description, variants, images, integrations = [], variantList, onCancelClick
   } = props;
 
   const [selectedIntegration, setSelectedIntegration] = useState('');
@@ -31,8 +32,13 @@ function ProductForm(props) {
     props.onIntegrationsChange(value);
   };
 
+  const onSubmitForm = (e) => {
+    e.preventDefault();
+    props.onSubmitForm();
+  };
+
   return (
-    <div>
+    <form noValidate autoComplete="off" onSubmit={onSubmitForm}>
       <ProductInfo
         thumbnail={images.length !== 0 ? images : ['/images/image_placeholder.png']}
         name={name}
@@ -43,9 +49,14 @@ function ProductForm(props) {
         onPriceChange={handlePriceChange}
         onDescriptionChange={handleDescriptionChange}
       />
-      <Properties tabList={integrations} onTabChange={handleIntegrationsChange} />
-      <Variants variants={variants} variantList={variantList} selectedIntegration={selectedIntegration} />
-    </div>
+      {integrations && integrations.length > 0 && (
+        <Fragment>
+          <Properties tabList={integrations} onTabChange={handleIntegrationsChange} />
+          <Variants variants={variants} variantList={variantList} selectedIntegration={selectedIntegration} />
+        </Fragment>
+      )}
+      <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
+    </form>
   );
 }
 
@@ -53,19 +64,24 @@ ProductForm.propTypes = {
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
-  variants: PropTypes.number.isRequired,
-  variantList: PropTypes.array.isRequired,
-  images: PropTypes.array.isRequired,
+  variants: PropTypes.number,
+  variantList: PropTypes.array,
+  images: PropTypes.array,
   integrations: PropTypes.array,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
-  onIntegrationsChange: PropTypes.func.isRequired
+  onIntegrationsChange: PropTypes.func,
+  onCancelClick: PropTypes.func.isRequired,
+  onSubmitForm: PropTypes.func.isRequired
 };
 
 ProductForm.defaultProps = {
-  product: null,
-  integrations: []
+  variants: 0,
+  variantList: [],
+  images: [],
+  integrations: [],
+  onIntegrationsChange: () => {}
 };
 
 export default withStyles(styles)(ProductForm);
