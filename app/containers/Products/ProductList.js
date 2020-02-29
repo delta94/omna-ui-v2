@@ -169,11 +169,9 @@ class OrderList extends React.Component {
       products,
       page,
       serverSideFilterList,
-      // integrationFilterOptions,
       searchTerm
     } = this.state;
     const { pagination, data } = products;
-
     const count = get(pagination, 'total', 0);
 
     const columns = [

@@ -33,6 +33,9 @@ const Integration = props => {
     handleAddIntegration
   } = props;
 
+  let subtitle = group.replace('[', '');
+  subtitle = subtitle.replace(']', '');
+
   return (
     <Card
       className={classes.card}
@@ -65,7 +68,7 @@ const Integration = props => {
             </Typography>
           }
           style={{ padding: '48px 16px' }}
-          subheader={Utils.fullChannelName(channel)}
+          subheader={subtitle}
         />
       ) : (
         <img

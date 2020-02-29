@@ -245,12 +245,14 @@ class Integrations extends Component {
                     name,
                     channel,
                     logo = Utils.getLogo(channel),
-                    authorized
+                    authorized,
+                    channel_title
                   }) => (
                     <Grid item md={3} xs={12}>
                       <Integration
                         key={id}
                         name={name}
+                        group={channel_title}
                         logo={logo}
                         channel={channel}
                         authorized={authorized}

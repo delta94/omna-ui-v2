@@ -21,7 +21,11 @@ import { getProductVariantList } from '../../actions/IntegrationActions';
 
 function EditProduct(props) {
   const {
-    match, classes, productVariants, updateProductVariants, history
+    match,
+    classes,
+    productVariants,
+    updateProductVariants,
+    history
   } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -80,7 +84,7 @@ function EditProduct(props) {
     }
   };
 
-  const onIntegrationsChange = (index) => {
+  const onIntegrationsChange = index => {
     const { id: _id, product: _product } = integrations[index];
     updateProductVariants(_id, _product.remote_product_id);
   };
@@ -99,12 +103,17 @@ function EditProduct(props) {
             variants={variants}
             integrations={integrations}
             variantList={productVariants}
-            onNameChange={(e) => setName(e)}
-            onPriceChange={(e) => setPrice(e)}
-            onDescriptionChange={(e) => setDescription(e)}
+            onNameChange={e => setName(e)}
+            onPriceChange={e => setPrice(e)}
+            onDescriptionChange={e => setDescription(e)}
             onIntegrationsChange={onIntegrationsChange}
           />
-          <Fab color="secondary" aria-label="edit" className={classes.editFloatBtn} onClick={() => handleEdit()}>
+          <Fab
+            color="secondary"
+            aria-label="edit"
+            className={classes.editFloatBtn}
+            onClick={() => handleEdit()}
+          >
             <EditIcon />
           </Fab>
         </Fragment>
@@ -127,8 +136,8 @@ const mapStateToProps = state => ({
   ...state
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  updateProductVariants: bindActionCreators(getProductVariantList, dispatch),
+const mapDispatchToProps = dispatch => ({
+  updateProductVariants: bindActionCreators(getProductVariantList, dispatch)
 });
 
 const ProductDetailsMapped = connect(

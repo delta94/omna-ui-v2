@@ -253,7 +253,7 @@ class TaskList extends React.Component {
       serverSideFilterList
     } = this.state;
     const { pagination, data } = tasks;
-
+    console.log(data);
     const count = get(pagination, 'total', 0);
 
     const columns = [
@@ -295,12 +295,16 @@ class TaskList extends React.Component {
           // },
           customBodyRender: (value, tableMeta) => {
             const [
+              id,
+              description,
+              date,
               status,
               progress,
               notificationsArray,
               scheduler
             ] = tableMeta.rowData;
 
+            console.log(tableMeta.rowData);
             const notifications =
               Array.isArray(notificationsArray) && notificationsArray.length > 0
                 ? this.verifyNotifications(notificationsArray)

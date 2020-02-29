@@ -224,7 +224,8 @@ class OrderList extends React.Component {
         options: {
           filter: false,
           customBodyRender: (value, tableMeta) => {
-            const { currency } = tableMeta.rowData;
+            const currency = tableMeta.rowData[3];
+
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}
