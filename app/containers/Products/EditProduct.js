@@ -10,12 +10,11 @@ import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Loading from 'dan-components/Loading';
 
-import styles from './product-jss';
-
+import { getProductVariantList } from 'dan-actions/productActions';
 import API from '../Utils/api';
 import PageHeader from '../Common/PageHeader';
 import ProductForm from './ProductForm';
-import { getProductVariantList } from '../../actions/IntegrationActions';
+import styles from './product-jss';
 
 function EditProduct(props) {
   const { match, productVariants, updateProductVariants, history } = props;
@@ -115,7 +114,7 @@ EditProduct.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  productVariants: state.getIn(['integrations', 'productVariants']),
+  productVariants: state.getIn(['product', 'productVariants']),
   ...state
 });
 

@@ -7,7 +7,7 @@ const initialState = fromJS({
   error: ''
 });
 
-const reducer = (state = initialState, action = {}) => {
+export default (state = initialState, action = {}) => {
   switch (action.type) {
     case actionConstants.GET_ORDERS_START:
       return state.withMutations(mutableState => {
@@ -27,5 +27,3 @@ const reducer = (state = initialState, action = {}) => {
       return state;
   }
 };
-
-export default reducer;

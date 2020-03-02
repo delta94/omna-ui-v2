@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-// import classNames from 'classnames';
 import moment from 'moment';
 import { connect } from 'react-redux';
-// import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import { getOrders } from 'dan-actions/orderActions';
-import API from '../Utils/api';
+import { getIntegrations } from 'dan-actions/integrationActions';
 import Utils from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
@@ -41,7 +35,6 @@ const styles = theme => ({
 
 class OrderList extends Component {
   state = {
-    integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -52,34 +45,13 @@ class OrderList extends Component {
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
-        }
-      }
-    });
-
-  getIntegrations() {
-    const { enqueueSnackbar } = this.props;
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      });
-  }
-
   callAPI = () => {
-    const { enqueueSnackbar, error, onGetOrders } = this.props;
+    const {
+      enqueueSnackbar,
+      error,
+      onGetIntegrations,
+      onGetOrders
+    } = this.props;
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
     const params = {
       offset: page * limit,
@@ -88,7 +60,7 @@ class OrderList extends Component {
       integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
 
-    this.getIntegrations();
+    onGetIntegrations({ limit: 100, offset: 0 });
     onGetOrders(params);
 
     if (error)
@@ -149,16 +121,14 @@ class OrderList extends Component {
   };
 
   render() {
-    const { classes, history, orders, loading } = this.props;
-    const {
-      integrationFilterOptions,
-      limit,
-      page,
-      serverSideFilterList,
-      searchTerm
-    } = this.state;
+    const { classes, history, orders, loading, integrations } = this.props;
+    const { limit, page, serverSideFilterList, searchTerm } = this.state;
     const { pagination, data } = orders;
     const count = get(pagination, 'total', 0);
+
+    const integrationFilterOptions = integrations.data.map(
+      integration => integration.id
+    );
 
     const columns = [
       {
@@ -304,9 +274,7 @@ class OrderList extends Component {
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
           {loading ? <Loading /> : null}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
-            <MUIDataTable columns={columns} data={data} options={options} />
-          </MuiThemeProvider>
+          <MUIDataTable columns={columns} data={data} options={options} />
         </div>
       </div>
     );
@@ -317,7 +285,9 @@ OrderList.propTypes = {
   orders: PropTypes.object.isRequired,
   onGetOrders: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.string.isRequired,
+  error: PropTypes.object.isRequired,
+  integrations: PropTypes.object.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
@@ -328,11 +298,13 @@ OrderList.propTypes = {
 const mapStateToProps = state => ({
   orders: state.getIn(['order', 'orders']),
   loading: state.getIn(['order', 'loading']),
-  error: state.getIn(['order', 'error'])
+  error: state.getIn(['order', 'error']),
+  integrations: state.getIn(['integration', 'integrations'])
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetOrders: params => dispatch(getOrders(params))
+  onGetOrders: params => dispatch(getOrders(params)),
+  onGetIntegrations: params => dispatch(getIntegrations(params))
 });
 
 const OrderListMapped = connect(

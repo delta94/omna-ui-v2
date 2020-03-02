@@ -14,6 +14,7 @@ import initval from './modules/initForm';
 import auth from './modules/auth';
 import flowsReducer from './modules/flows';
 import ordersReducer from './modules/orders';
+import productsReducer from './modules/products';
 import integrationsReducer from './modules/integrations';
 
 /**
@@ -27,7 +28,8 @@ export default function createReducer(injectedReducers = {}) {
     login,
     ui: uiReducer,
     tenant: tenantReducer,
-    integrations: integrationsReducer,
+    integration: integrationsReducer,
+    product: productsReducer,
     initval,
     language: languageProviderReducer,
     router: connectRouter(history),
