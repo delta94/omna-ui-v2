@@ -11,13 +11,13 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-function PlansBoard({ plans }) {
+function PlansBoard({ plansAvailable }) {
   const containerStyles = useStyles();
 
   return (
     <div className={containerStyles.container}>
-      {plans
-        && plans.map(item => (
+      {plansAvailable
+        && plansAvailable.map(item => (
           <PlanInfo
             key={item.id}
             name={item.name}
@@ -36,5 +36,5 @@ function PlansBoard({ plans }) {
 export default PlansBoard;
 
 PlansBoard.propTypes = {
-  plans: PropTypes.array.isRequired
+  plansAvailable: PropTypes.array.isRequired
 };

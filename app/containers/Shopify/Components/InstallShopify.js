@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Container, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from '../../Common/Utils';
 import PlansBoard from './PlansBoard';
 import ShopifyService from '../Services/ShopifyService';
+import CurrentPlan from './CurrentPlan';
 
 const useStyles = makeStyles({
   circularProgress: {
@@ -24,14 +25,18 @@ function InstallShopify() {
   const classes = useStyles();
   const isAuthenticated = Utils.isAuthenticated();
 
-  const [plans, setPlans] = useState([]);
+  const [plansAvailable, setPlansAvailable] = useState([]);
+  const [planCurrent, setPlanCurrent] = useState({});
 
   useEffect(() => {
     async function getPlans() {
-      const result = await ShopifyService.getPlanInfo(
+      const result = await ShopifyService.getPlanInfoAvailablePlans(
         'omnatesting2.myshopify.com'
       );
-      setPlans(result);
+      if (result) {
+        setPlansAvailable(result[0]);
+        setPlanCurrent(result[1]);
+      }
     }
     getPlans();
   }, []);
@@ -51,7 +56,17 @@ function InstallShopify() {
           </h2>
         </div>
       )}
-      {plans.length > 0 && <PlansBoard plans={plans} />}
+      {/* {planCurrent.null && <CurrentPlan />} */}
+
+      {planCurrent && plansAvailable.length > 0 ? (
+        <Container maxWidth="md">
+          <CurrentPlan planCurrent={planCurrent} />
+          <Divider />
+          <PlansBoard plansAvailable={plansAvailable} />{' '}
+        </Container>
+      ) : (
+        <h1>Loading</h1>
+      )}
     </div>
   );
 }

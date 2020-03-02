@@ -82,14 +82,15 @@ const ShopifyService = {
     return true;
   },
 
-  async getPlanInfo(store) {
+  async getPlanInfoAvailablePlans(store) {
     try {
       const response = await axios.get(
         `https://cenit.io/app/omna-dev/plan?task=get&shop=${store}`
       );
       if (response) {
-        const { plans } = response.data;
-        return plans;
+        const availablePlans = response.data.available_plans;
+        const currentPlan = response.data.current_plan;
+        return [availablePlans, currentPlan];
       }
     } catch (error) {
       console.log(error);
