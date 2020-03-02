@@ -22,7 +22,7 @@ import integrationsReducer from './modules/integrations';
 export default function createReducer(injectedReducers = {}) {
   const rootReducer = combineReducers({
     auth,
-    orders: ordersReducer,
+    order: ordersReducer,
     form,
     login,
     ui: uiReducer,

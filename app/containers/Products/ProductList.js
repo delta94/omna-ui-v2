@@ -7,7 +7,6 @@ import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
 import { withSnackbar } from 'notistack';
 
-// material-ui
 import { Avatar, Typography } from '@material-ui/core';
 import {
   withStyles,
@@ -20,8 +19,6 @@ import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
 import Utils from '../Common/Utils';
 import PageHeader from '../Common/PageHeader';
-// const variantIcon = Utils.iconVariants();
-// import { getProducts } from '../../actions/orderActions';
 
 const styles = theme => ({
   table: {
@@ -55,15 +52,16 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
+  getMuiTheme = () =>
+    createMuiTheme({
+      overrides: {
+        MUIDataTableToolbar: {
+          filterPaper: {
+            width: '50%'
+          }
         }
       }
-    }
-  });
+    });
 
   getProducts = params => {
     const { enqueueSnackbar } = this.props;
@@ -84,22 +82,8 @@ class OrderList extends React.Component {
       });
   };
 
-  /*   getIntegrations() {
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  } */
-
   callAPI = () => {
-    const {
-      searchTerm, limit, page, serverSideFilterList
-    } = this.state;
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
       offset: page * limit,
@@ -191,7 +175,8 @@ class OrderList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
-            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const imgSrc =
+              images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
@@ -235,7 +220,7 @@ class OrderList extends React.Component {
             ${parseFloat(value).toFixed(2)} ${currency || ''}`}
               </div>
             );
-          },
+          }
         }
       },
       {
@@ -303,30 +288,31 @@ class OrderList extends React.Component {
         const product = data[dataIndex];
         this.handleRowClick(product.id);
       },
-      customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
-        switch (colIndex) {
-          case 3:
-            return (
-              (parseFloat(a.customSortData[colIndex])
-              < parseFloat(b.customSortData[colIndex])
-                ? -1
-                : 1) * (product === 'desc' ? 1 : -1)
-            );
-          case 4:
-            return (
-              (a.customSortData[colIndex].name.toLowerCase()
-              < b.customSortData[colIndex].name.toLowerCase()
-                ? -1
-                : 1) * (product === 'desc' ? 1 : -1)
-            );
-          default:
-            return (
-              (a.customSortData[colIndex] < b.customSortData[colIndex]
-                ? -1
-                : 1) * (product === 'desc' ? 1 : -1)
-            );
-        }
-      }),
+      customSort: (customSortData, colIndex, product) =>
+        customSortData.sort((a, b) => {
+          switch (colIndex) {
+            case 3:
+              return (
+                (parseFloat(a.customSortData[colIndex]) <
+                parseFloat(b.customSortData[colIndex])
+                  ? -1
+                  : 1) * (product === 'desc' ? 1 : -1)
+              );
+            case 4:
+              return (
+                (a.customSortData[colIndex].name.toLowerCase() <
+                b.customSortData[colIndex].name.toLowerCase()
+                  ? -1
+                  : 1) * (product === 'desc' ? 1 : -1)
+              );
+            default:
+              return (
+                (a.customSortData[colIndex] < b.customSortData[colIndex]
+                  ? -1
+                  : 1) * (product === 'desc' ? 1 : -1)
+              );
+          }
+        }),
       customToolbar: () => (
         <Tooltip title="add">
           <IconButton
@@ -337,7 +323,7 @@ class OrderList extends React.Component {
             <Ionicon icon="md-add-circle" />
           </IconButton>
         </Tooltip>
-      ),
+      )
     };
 
     return (

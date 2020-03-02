@@ -14,8 +14,12 @@ export const INIT = 'INIT';
 export const CLEAR = 'CLEAR';
 // Flows
 export const GET_FLOWS = 'GET_FLOWS';
+
 // Orders
 export const GET_ORDERS = 'GET_ORDERS';
+export const GET_ORDERS_START = 'GET_ORDERS_START';
+export const GET_ORDERS_SUCCESS = 'GET_ORDERS_SUCCESS';
+export const GET_ORDERS_FAILED = 'GET_ORDERS_FAILED';
 
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
