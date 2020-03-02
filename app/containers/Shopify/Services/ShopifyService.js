@@ -37,6 +37,7 @@ const ShopifyService = {
     }
     return false;
   },
+
   async installCollections() {
     try {
       let collections = await API.get('/collections', {
@@ -62,6 +63,7 @@ const ShopifyService = {
     }
     return false;
   },
+
   async installIntegration(data) {
     await API.post('/integrations', {
       data: { name: data.shop, channel: 'Ov2Shopify' }
@@ -86,13 +88,13 @@ const ShopifyService = {
         `https://cenit.io/app/omna-dev/plan?task=get&shop=${store}`
       );
       if (response) {
-        console.log(response);
-        return true;
+        const { plans } = response.data;
+        return plans;
       }
     } catch (error) {
       console.log(error);
     }
-    return false;
+    return [];
   }
 };
 

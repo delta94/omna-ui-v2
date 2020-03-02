@@ -4,38 +4,37 @@ import { makeStyles } from '@material-ui/core/styles';
 import PlanInfo from './PlanInfo';
 
 const useStyles = makeStyles(() => ({
-    container: {
-        padding: '20px',
-        width: '100%',
-        border: 'none'
-    }
+  container: {
+    padding: '20px',
+    width: '100%',
+    border: 'none'
+  }
 }));
 
 function PlansBoard({ plans }) {
+  const containerStyles = useStyles();
 
-    const containerStyles = useStyles();
-
-    return (
-        <div className={containerStyles.container}>
-            {
-                plans.map((item, index) => (
-                    <PlanInfo key={(index + 1).toString()} 
-                              name={item.name}
-                              price={item.price.toString()}
-                              costByOrder={item.cost_by_order.toString()}
-                              orderLimit={item.order_limit.toString()}
-                              trialDays={item.trial_days.toString()}
-                              cappedAmount={item.capped_amount.toString()}
-                              actionLabel="Get It Now"
-                    />
-                ))
-            }
-        </div>
-    );
+  return (
+    <div className={containerStyles.container}>
+      {plans
+        && plans.map(item => (
+          <PlanInfo
+            key={item.id}
+            name={item.name}
+            price={item.price}
+            costByOrder={item.cost_by_order}
+            orderLimit={item.order_limit}
+            trialDays={item.trial_days}
+            cappedAmount={item.capped_amount}
+            actionLabel="Get It Now"
+          />
+        ))}
+    </div>
+  );
 }
 
 export default PlansBoard;
 
 PlansBoard.propTypes = {
-    plans: PropTypes.array.isRequired
+  plans: PropTypes.array.isRequired
 };

@@ -34,9 +34,9 @@ class LockScreen extends React.Component {
       changeEnabledTenant,
       changeTenantName
     } = this.props;
-    const {
- redirect, code, pathname, store 
-} = location.state;
+    const { redirect, code, pathname, store } = location.state;
+
+    // let plansResult = [];
 
     if (code) {
       API.post('get_access_token', { code }).then(response => {
@@ -66,10 +66,14 @@ class LockScreen extends React.Component {
     if (store) {
       const result = await getSettingsInfo.getSettingsInfo(this.props);
       if (result) {
+        // plansResult = await getSettingsInfo.getPlanInfo(store);
+
+        // if (plansResult) {
         this.setState({
           installShopify: result
         });
         pathname ? history.push(pathname) : history.push('/');
+        // }
       }
     }
 
