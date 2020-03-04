@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import map from 'lodash/map';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
@@ -24,130 +23,30 @@ import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 import Utils from '../Common/Utils';
 import PageHeader from '../Common/PageHeader';
+import TaskNotifications from './TaskNotifications';
+import NotificationBottom from './NotificationBottom';
+import styles from './tasks-jss';
+import TabContainer from './TabContainer';
+import ElementPlusValuePrinter from './ElementPlusValuePrinter';
+import TaskScheduler from './TaskScheduler';
 
 const variantIcon = Utils.iconVariants();
 
-const myClass = {
-  info: 'isa_info',
-  success: 'isa_success',
-  warning: 'isa_warning',
-  error: 'isa_error',
-};
-
 const tabHeaders = [
   {
-    label: 'Executions', key: 0
+    label: 'Executions',
+    key: 0
   },
   {
-    label: 'Scheduler', key: 1
+    label: 'Scheduler',
+    key: 1
   },
   {
-    label: 'Notifications', key: 2
+    label: 'Notifications',
+    key: 2
   }
 ];
 
-function NotificationBottom({ type, message }) {
-  const Icon = type !== 'success' && type !== 'error' && type !== 'warning' ? variantIcon.info : variantIcon[type];
-  return (
-    <div className={myClass[type]}>
-      <div className="display-flex justify-content-flex-start">
-        <div>
-          <Ionicon icon={Icon} />
-        </div>
-        <div className="display-flex flex-direction-column flex-wrap-wrap item-margin-left">
-          {message}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-NotificationBottom.propTypes = {
-  type: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired
-};
-
-function TabContainer({ children }) {
-  return (
-    <Typography component="div" style={{ margin: '10px' }}>
-      {children}
-    </Typography>
-  );
-}
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired
-};
-
-function ElementPlusValuePrinter({
-  element,
-  value,
-  elementVariant,
-  elementColor,
-  valueVariant,
-  valueColor
-}) {
-  return (
-    <div className="display-flex align-items-baseline">
-      <div>
-        <Typography variant={elementVariant} color={elementColor}>
-          <strong>
-            {element}
-            :
-          </strong>
-        </Typography>
-      </div>
-      <div className="item-margin-left">
-        <Typography variant={valueVariant} color={valueColor}>
-          {value}
-        </Typography>
-      </div>
-    </div>
-  );
-}
-ElementPlusValuePrinter.propTypes = {
-  element: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  elementVariant: PropTypes.string.isRequired,
-  elementColor: PropTypes.string.isRequired,
-  valueVariant: PropTypes.string.isRequired,
-  valueColor: PropTypes.string.isRequired
-};
-
-const styles = theme => ({
-  root: {
-    marginTop: theme.spacing(2),
-    overflowX: 'auto'
-  },
-  tabRoot: {
-    backgroundColor: theme.palette.background.paper
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit
-  },
-  marginLeft2u: {
-    marginLeft: theme.spacing(2)
-  },
-  leftIcon: {
-    marginRight: theme.spacing.unit
-  },
-  iconSmall: {
-    fontSize: 20
-  },
-  margin: {
-    margin: theme.spacing.unit
-  },
-  error: {
-    color: 'red'
-  },
-  green: {
-    color: 'green'
-  },
-  gray: {
-    color: 'gray'
-  }
-});
-
-/* ======= Principal Class ======= */
 class TaskDetails extends React.Component {
   state = {
     task: { data: {} },
@@ -173,7 +72,7 @@ class TaskDetails extends React.Component {
     }
   }
 
-  getAPItask = (id) => {
+  getAPItask = id => {
     this.setState({ loading: true });
 
     API.get(`/tasks/${id}`)
@@ -181,7 +80,6 @@ class TaskDetails extends React.Component {
         this.setState({ task: get(response, 'data', { data: {} }) });
       })
       .catch(error => {
-        // handle error
         console.log(error);
         this.setState({ success: false, messageError: error.message });
       })
@@ -190,9 +88,9 @@ class TaskDetails extends React.Component {
       });
   };
 
-  onClickGetAPItask = (id) => () => {
+  onClickGetAPItask = id => () => {
     this.getAPItask(id);
-  }
+  };
 
   handleTabChange = (event, value) => {
     this.setState({ content: value });
@@ -200,9 +98,10 @@ class TaskDetails extends React.Component {
 
   deleteFromAPI = id => {
     const { enqueueSnackbar } = this.props;
-    API.get(`/tasks/${id}/destroy`).then(() => {
-      enqueueSnackbar('Task deleted successfully', { variant: 'success' });
-    })
+    API.get(`/tasks/${id}/destroy`)
+      .then(() => {
+        enqueueSnackbar('Task deleted successfully', { variant: 'success' });
+      })
       .catch(error => {
         enqueueSnackbar(error, { variant: 'error' });
       })
@@ -241,63 +140,6 @@ class TaskDetails extends React.Component {
     this.handleDialogCancel();
   };
 
-  markDayOfWeek = days => {
-    const daysOfWeek = {
-      Mon: false,
-      Tue: false,
-      Wed: false,
-      Thu: false,
-      Fri: false,
-      Sat: false,
-      Sun: false
-    };
-
-    days.forEach(day => {
-      daysOfWeek[day] = true;
-    });
-
-    return daysOfWeek;
-  };
-
-  markWeekOfMonth = weeks => {
-    const weeksOfMonth = {
-      First: false,
-      Second: false,
-      Third: false,
-      Fourth: false,
-      Last: false
-    };
-
-    weeks.forEach(week => {
-      weeksOfMonth[week] = true;
-    });
-
-    return weeksOfMonth;
-  };
-
-  markMonthOfYear = months => {
-    const monthsOfYear = {
-      Jan: false,
-      Feb: false,
-      Mar: false,
-      Apr: false,
-      May: false,
-      Jun: false,
-      Jul: false,
-      Aug: false,
-      Sep: false,
-      Oct: false,
-      Nov: false,
-      Dic: false
-    };
-
-    months.forEach(month => {
-      monthsOfYear[month] = true;
-    });
-
-    return monthsOfYear;
-  };
-
   reRunFromAPI(id) {
     const { enqueueSnackbar } = this.props;
     API.get(`/tasks/${id}/retry`)
@@ -328,14 +170,7 @@ class TaskDetails extends React.Component {
     const notifications = get(data, 'notifications', []);
     const executions = get(data, 'executions', []);
     const id = get(data, 'id', '');
-
-    const daysOfWeek = this.markDayOfWeek(get(scheduler, 'days_of_week', []));
-    const weeksOfMonth = this.markWeekOfMonth(
-      get(scheduler, 'weeks_of_month', [])
-    );
-    const monthsOfYear = this.markMonthOfYear(
-      get(scheduler, 'months_of_year', [])
-    );
+    console.log(scheduler);
 
     return (
       <div>
@@ -347,9 +182,6 @@ class TaskDetails extends React.Component {
               <GenericErrorMessage messageError={messageError} />
             ) : (
               <div>
-                {
-                  // ********* BUTTONS *********
-                }
                 <div className="display-flex justify-content-space-between">
                   <Button
                     variant="text"
@@ -358,7 +190,13 @@ class TaskDetails extends React.Component {
                     component={Link}
                     to="/app/tasks"
                   >
-                    <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
+                    <Ionicon
+                      icon={variantIcon.arrowBack}
+                      className={classNames(
+                        classes.leftIcon,
+                        classes.iconSmall
+                      )}
+                    />
                     Tasks
                   </Button>
                   <Button
@@ -367,7 +205,13 @@ class TaskDetails extends React.Component {
                     color="primary"
                     onClick={this.onClickGetAPItask(id)}
                   >
-                    <Ionicon icon={variantIcon.refresh} className={classNames(classes.leftIcon, classes.iconSmall)} />
+                    <Ionicon
+                      icon={variantIcon.refresh}
+                      className={classNames(
+                        classes.leftIcon,
+                        classes.iconSmall
+                      )}
+                    />
                     Reload Info
                   </Button>
                   <div>
@@ -381,7 +225,10 @@ class TaskDetails extends React.Component {
                           onClick={this.handleAlertClick(id, 'run')}
                         >
                           Run
-                          <Ionicon icon={variantIcon.play} className={classes.rightIcon} />
+                          <Ionicon
+                            icon={variantIcon.play}
+                            className={classes.rightIcon}
+                          />
                         </Button>
                       </Tooltip>
                     ) : null}
@@ -394,7 +241,10 @@ class TaskDetails extends React.Component {
                         onClick={this.handleAlertClick(id, 'remove')}
                       >
                         Delete
-                        <Ionicon icon={variantIcon.delete} className={classes.rightIcon} />
+                        <Ionicon
+                          icon={variantIcon.delete}
+                          className={classes.rightIcon}
+                        />
                       </Button>
                     </Tooltip>
                   </div>
@@ -403,8 +253,7 @@ class TaskDetails extends React.Component {
                 <div className={classNames(classes.root, classes.margin)}>
                   <div className="display-flex justify-content-space-between">
                     <Typography variant="subtitle1" color="primary">
-                      <strong>{get(data, 'description', '')}</strong>
-                      {' '}
+                      {`${get(data, 'description', '')} `}
                     </Typography>
                     <div className="display-flex justify-content-flex-end">
                       <ElementPlusValuePrinter
@@ -418,9 +267,7 @@ class TaskDetails extends React.Component {
                       <div className={classes.marginLeft}>
                         <div className="display-flex align-items-baseline">
                           <div>
-                            <Typography variant="subtitle2">
-                              <strong>Status: </strong>
-                            </Typography>
+                            <Typography variant="subtitle2">Status:</Typography>
                           </div>
                           <div className={classes.marginLeft}>
                             <Typography
@@ -429,11 +276,11 @@ class TaskDetails extends React.Component {
                                 status === 'failed'
                                   ? classes.error
                                   : status === 'completed'
-                                    ? classes.green
-                                    : classes.gray
+                                  ? classes.green
+                                  : classes.gray
                               }
                             >
-                              <strong>{status}</strong>
+                              {status}
                             </Typography>
                           </div>
                         </div>
@@ -442,8 +289,7 @@ class TaskDetails extends React.Component {
                   </div>
                   <div className={classNames(classes.marginLeft2u)}>
                     <Typography variant="caption" color="inherit">
-                      {id}
-                      {' '}
+                      {`${id} `}
                     </Typography>
                   </div>
                   <div className="display-flex justify-content-space-between justify-content-flex-start">
@@ -481,18 +327,20 @@ class TaskDetails extends React.Component {
                     onChange={this.handleTabChange}
                     value={get(this.state, 'content', [])}
                   />
-                  {/* Executions */}
                   {content === 0 && (
                     <TabContainer className="item-margin">
                       {executions.length > 0 ? (
                         executions.map(exec => (
                           // Considering that the object is unique in this list
-                          <div className={classes.root} key={JSON.stringify(exec)}>
+                          <div
+                            className={classes.root}
+                            key={JSON.stringify(exec)}
+                          >
                             <div className={classes.marginLeft2u}>
                               <div className="display-flex align-items-baseline">
                                 <div className={classes.marginLeft}>
                                   <Typography variant="subtitle2">
-                                    <strong>Status: </strong>
+                                    Status:
                                   </Typography>
                                 </div>
                                 <div className={classes.marginLeft}>
@@ -502,8 +350,8 @@ class TaskDetails extends React.Component {
                                       get(exec, 'status', '') === 'failed'
                                         ? classes.error
                                         : exec.status === 'completed'
-                                          ? classes.green
-                                          : classes.gray
+                                        ? classes.green
+                                        : classes.gray
                                     }
                                   >
                                     {exec.status}
@@ -511,22 +359,30 @@ class TaskDetails extends React.Component {
                                 </div>
                                 <div className={classes.marginLeft2u}>
                                   <Typography variant="subtitle2">
-                                    <strong>Start Date: </strong>
+                                    Start Date:
                                   </Typography>
                                 </div>
                                 <div className={classes.marginLeft}>
                                   <Typography variant="caption">
-                                    {get(exec, 'started_at', null) != null ? moment(exec.started_at).format('Y-MM-DD H:mm:ss') : '--'}
+                                    {get(exec, 'started_at', null) != null
+                                      ? moment(exec.started_at).format(
+                                          'Y-MM-DD H:mm:ss'
+                                        )
+                                      : '--'}
                                   </Typography>
                                 </div>
                                 <div className={classes.marginLeft2u}>
                                   <Typography variant="subtitle2">
-                                    <strong>Complete Date: </strong>
+                                    Complete Date:
                                   </Typography>
                                 </div>
                                 <div className={classes.marginLeft}>
                                   <Typography variant="caption">
-                                    {get(exec, 'completed_at', null) != null ? moment(exec.completed_at).format('Y-MM-DD H:mm:ss') : '--'}
+                                    {get(exec, 'completed_at', null) != null
+                                      ? moment(exec.completed_at).format(
+                                          'Y-MM-DD H:mm:ss'
+                                        )
+                                      : '--'}
                                   </Typography>
                                 </div>
                               </div>
@@ -542,128 +398,13 @@ class TaskDetails extends React.Component {
                       )}
                     </TabContainer>
                   )}
-                  {/* Scheduler */}
                   {content === 1 && (
                     <TabContainer className="item-margin">
                       {scheduler ? (
-                        <div className={classes.root}>
-                          <div className={classes.marginLeft2u}>
-                            <div className="display-flex align-items-baseline">
-                              <div>
-                                <Typography variant="subtitle2" color="primary">
-                                  <strong>
-                                    {scheduler.active && scheduler.active === true ? 'Active' : 'Inactive'}
-                                  </strong>
-                                </Typography>
-                              </div>
-                            </div>
-                            <div className="display-flex align-items-baseline">
-                              <div>
-                                <Typography variant="subtitle2">
-                                  <strong>Start Date: </strong>
-                                </Typography>
-                              </div>
-                              <div className={classes.marginLeft}>
-                                <Typography variant="caption">
-                                  {get(scheduler, 'start_date', null)}
-                                </Typography>
-                              </div>
-                              <div className={classes.marginLeft2u}>
-                                <Typography variant="subtitle2">
-                                  <strong>End Date: </strong>
-                                </Typography>
-                              </div>
-                              <div className={classes.marginLeft}>
-                                <Typography variant="caption">
-                                  {get(scheduler, 'end_date', null)}
-                                </Typography>
-                              </div>
-                            </div>
-                            <ElementPlusValuePrinter
-                              element="Time"
-                              value={get(scheduler, 'time', '')}
-                              elementVariant="subtitle2"
-                              valueVariant="caption"
-                              elementColor="default"
-                              valueColor="inherit"
-                            />
-                            <div className="item-margin-top">
-                              <Typography variant="subtitle2">
-                                <strong>Days of Week: </strong>
-                              </Typography>
-                              <Typography variant="caption">
-                                <div className="display-flex flex-wrap-wrap align-items-baseline">
-                                  {map(daysOfWeek, (value, llave) => (
-                                    <div
-                                      key={llave}
-                                      className="item-margin-left"
-                                    >
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        disabled={!value}
-                                        color="primary"
-                                        className={classes.button}
-                                      >
-                                        {llave}
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </Typography>
-                            </div>
-                            <div className="item-margin-top">
-                              <Typography variant="subtitle2">
-                                <strong>Weeks of Month: </strong>
-                              </Typography>
-                              <Typography variant="caption">
-                                <div className="display-flex flex-wrap-wrap align-items-baseline">
-                                  {map(weeksOfMonth, (value, llave) => (
-                                    <div
-                                      key={llave}
-                                      className="item-margin-left"
-                                    >
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        disabled={!value}
-                                        color="primary"
-                                        className={classes.button}
-                                      >
-                                        {llave}
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </Typography>
-                            </div>
-                            <div className="item-margin-top">
-                              <Typography variant="subtitle2">
-                                <strong>Months of Year: </strong>
-                              </Typography>
-                              <Typography variant="caption">
-                                <div className="display-flex flex-wrap-wrap align-items-baseline">
-                                  {map(monthsOfYear, (value, llave) => (
-                                    <div
-                                      key={llave}
-                                      className="item-margin-left"
-                                    >
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        disabled={!value}
-                                        color="primary"
-                                        className={classes.button}
-                                      >
-                                        {llave}
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </Typography>
-                            </div>
-                          </div>
-                        </div>
+                        <TaskScheduler
+                          classes={classes}
+                          scheduler={scheduler}
+                        />
                       ) : (
                         <NotificationBottom
                           type="info"
@@ -672,29 +413,9 @@ class TaskDetails extends React.Component {
                       )}
                     </TabContainer>
                   )}
-                  {/* Notifications */}
                   {content === 2 && (
                     <TabContainer>
-                      <div>
-                        {notifications.length > 0 ? (
-                          notifications.map((not, index) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <div className="item-margin-top item-margin-bottom" key={index}>
-                              <NotificationBottom
-                                type={get(not, 'type', 'info')}
-                                message={get(not, 'message', '')}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <div className="item-margin-top item-margin-bottom">
-                            <NotificationBottom
-                              type="info"
-                              message="There is no retrieved information."
-                            />
-                          </div>
-                        )}
-                      </div>
+                      <TaskNotifications notifications={notifications} />
                     </TabContainer>
                   )}
                 </div>
@@ -717,8 +438,8 @@ TaskDetails.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
+    push: PropTypes.func
+  }).isRequired
 };
 
 export default withSnackbar(

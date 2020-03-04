@@ -126,9 +126,9 @@ class OrderList extends Component {
     const { pagination, data } = orders;
     const count = get(pagination, 'total', 0);
 
-    const integrationFilterOptions = integrations.data.map(
-      integration => integration.id
-    );
+    const integrationFilterOptions = integrations.data
+      ? integrations.data.map(integration => integration.id)
+      : [];
 
     const columns = [
       {
