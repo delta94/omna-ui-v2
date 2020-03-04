@@ -12,6 +12,9 @@ const styles = theme => ({
   marginLeft2u: {
     marginLeft: theme.spacing(2)
   },
+  paddingBottom2u: {
+    paddingBottom: theme.spacing(2)
+  },
   leftIcon: {
     marginRight: theme.spacing.unit
   },

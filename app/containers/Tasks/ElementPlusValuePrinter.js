@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { Typography } from '@material-ui/core';
 
 const ElementPlusValuePrinter = ({
@@ -19,7 +20,9 @@ const ElementPlusValuePrinter = ({
       </div>
       <div className="item-margin-left">
         <Typography variant={valueVariant} color={valueColor}>
-          {value}
+          {value != null
+            ? moment(value.created_at).format('Y-MM-DD H:mm:ss')
+            : '--'}
         </Typography>
       </div>
     </div>

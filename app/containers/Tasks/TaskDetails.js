@@ -1,14 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
+import { get } from 'lodash';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
-import moment from 'moment';
 import Ionicon from 'react-ionicons';
 
-/* material-ui */
-// core
 import { withStyles } from '@material-ui/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -29,6 +26,7 @@ import styles from './tasks-jss';
 import TabContainer from './TabContainer';
 import ElementPlusValuePrinter from './ElementPlusValuePrinter';
 import TaskScheduler from './TaskScheduler';
+import TaskExecutions from './TaskExecutions';
 
 const variantIcon = Utils.iconVariants();
 
@@ -251,55 +249,49 @@ class TaskDetails extends React.Component {
                 </div>
                 <Divider />
                 <div className={classNames(classes.root, classes.margin)}>
-                  <div className="display-flex justify-content-space-between">
-                    <Typography variant="subtitle1" color="primary">
-                      {`${get(data, 'description', '')} `}
-                    </Typography>
-                    <div className="display-flex justify-content-flex-end">
-                      <ElementPlusValuePrinter
-                        element="Progress"
-                        value={get(data, 'progress', '') + '%'}
-                        elementVariant="subtitle2"
-                        valueVariant="caption"
-                        elementColor="default"
-                        valueColor="inherit"
-                      />
-                      <div className={classes.marginLeft}>
-                        <div className="display-flex align-items-baseline">
-                          <div>
-                            <Typography variant="subtitle2">Status:</Typography>
-                          </div>
-                          <div className={classes.marginLeft}>
-                            <Typography
-                              variant="caption"
-                              className={
-                                status === 'failed'
-                                  ? classes.error
-                                  : status === 'completed'
-                                  ? classes.green
-                                  : classes.gray
-                              }
-                            >
-                              {status}
-                            </Typography>
-                          </div>
+                  <Typography variant="subtitle1" color="primary">
+                    {`${get(data, 'description', '')} `}
+                  </Typography>
+                  <div className="display-flex justify-content-flex-start">
+                    <ElementPlusValuePrinter
+                      element="Progress"
+                      value={get(data, 'progress', '') + '%'}
+                      elementVariant="subtitle2"
+                      valueVariant="caption"
+                      elementColor="default"
+                      valueColor="inherit"
+                    />
+                    <div className={classes.marginLeft}>
+                      <div className="display-flex align-items-baseline">
+                        <div>
+                          <Typography variant="subtitle2">Status:</Typography>
+                        </div>
+                        <div className={classes.marginLeft}>
+                          <Typography
+                            variant="caption"
+                            className={
+                              status === 'failed'
+                                ? classes.error
+                                : status === 'completed'
+                                ? classes.green
+                                : classes.gray
+                            }
+                          >
+                            {status}
+                          </Typography>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className={classNames(classes.marginLeft2u)}>
+                  {/* <div className={classNames(classes.marginLeft2u)}>
                     <Typography variant="caption" color="inherit">
                       {`${id} `}
                     </Typography>
-                  </div>
+                  </div> */}
                   <div className="display-flex justify-content-space-between justify-content-flex-start">
                     <ElementPlusValuePrinter
                       element="Created at"
-                      value={
-                        get(data, 'created_at', null) != null
-                          ? moment(data.created_at).format('Y-MM-DD H:mm:ss')
-                          : '--'
-                      }
+                      value={get(data, 'created_at', null)}
                       elementVariant="subtitle2"
                       valueVariant="caption"
                       elementColor="default"
@@ -308,11 +300,7 @@ class TaskDetails extends React.Component {
                     <div className={classes.marginLeft2u}>
                       <ElementPlusValuePrinter
                         element="Updated at"
-                        value={
-                          get(data, 'updated_at', null) != null
-                            ? moment(data.updated_at).format('Y-MM-DD H:mm:ss')
-                            : '--'
-                        }
+                        value={get(data, 'updated_at', null)}
                         elementVariant="subtitle2"
                         valueVariant="caption"
                         elementColor="default"
@@ -330,66 +318,10 @@ class TaskDetails extends React.Component {
                   {content === 0 && (
                     <TabContainer className="item-margin">
                       {executions.length > 0 ? (
-                        executions.map(exec => (
-                          // Considering that the object is unique in this list
-                          <div
-                            className={classes.root}
-                            key={JSON.stringify(exec)}
-                          >
-                            <div className={classes.marginLeft2u}>
-                              <div className="display-flex align-items-baseline">
-                                <div className={classes.marginLeft}>
-                                  <Typography variant="subtitle2">
-                                    Status:
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft}>
-                                  <Typography
-                                    variant="caption"
-                                    className={
-                                      get(exec, 'status', '') === 'failed'
-                                        ? classes.error
-                                        : exec.status === 'completed'
-                                        ? classes.green
-                                        : classes.gray
-                                    }
-                                  >
-                                    {exec.status}
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Typography variant="subtitle2">
-                                    Start Date:
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft}>
-                                  <Typography variant="caption">
-                                    {get(exec, 'started_at', null) != null
-                                      ? moment(exec.started_at).format(
-                                          'Y-MM-DD H:mm:ss'
-                                        )
-                                      : '--'}
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft2u}>
-                                  <Typography variant="subtitle2">
-                                    Complete Date:
-                                  </Typography>
-                                </div>
-                                <div className={classes.marginLeft}>
-                                  <Typography variant="caption">
-                                    {get(exec, 'completed_at', null) != null
-                                      ? moment(exec.completed_at).format(
-                                          'Y-MM-DD H:mm:ss'
-                                        )
-                                      : '--'}
-                                  </Typography>
-                                </div>
-                              </div>
-                            </div>
-                            <Divider />
-                          </div>
-                        ))
+                        <TaskExecutions
+                          classes={classes}
+                          executions={executions}
+                        />
                       ) : (
                         <NotificationBottom
                           type="info"
