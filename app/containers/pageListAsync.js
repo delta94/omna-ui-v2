@@ -47,6 +47,10 @@ export const TaskDetails = loadable(() => import('./Tasks/TaskDetails'), {
   fallback: <Loading />
 });
 
+export const Collections = loadable(() => import('./Settings/Collections/CollectionList'), {
+  fallback: <Loading />
+});
+
 export const Orders = loadable(() => import('./Orders/OrderList'), {
   fallback: <Loading />
 });

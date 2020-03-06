@@ -13,6 +13,7 @@ import {
   Products,
   EditProduct,
   AddProduct,
+  Collections,
   AvailableIntegrations,
   Integrations,
   AddIntegrationForm,
@@ -68,6 +69,11 @@ class Application extends React.Component {
               exact
               path="/app/products/:id"
               component={EditProduct}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/collections"
+              component={Collections}
             />
             <AuthGuardRoute
               exact

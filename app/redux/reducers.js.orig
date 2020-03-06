@@ -29,9 +29,13 @@ export default function createReducer(injectedReducers = {}) {
     login,
     ui: uiReducer,
     tenant: tenantReducer,
+<<<<<<< HEAD
     integration: integrationsReducer,
     product: productsReducer,
+=======
+    integrations: integrationsReducer,
     collections: collectionsReducer,
+>>>>>>> Add "Collections" view
     initval,
     language: languageProviderReducer,
     router: connectRouter(history),
