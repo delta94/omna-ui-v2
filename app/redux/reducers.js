@@ -17,6 +17,7 @@ import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
 import integrationsReducer from './modules/integrations';
 import collectionsReducer from './modules/collections';
+import notificationsReducer from './modules/notifications';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -30,6 +31,7 @@ export default function createReducer(injectedReducers = {}) {
     ui: uiReducer,
     tenant: tenantReducer,
     integration: integrationsReducer,
+    notification: notificationsReducer,
     product: productsReducer,
     collections: collectionsReducer,
     initval,
