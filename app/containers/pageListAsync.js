@@ -79,7 +79,7 @@ export const AddProduct = loadable(() => import('./Products/AddProduct'), {
   fallback: <Loading />
 });
 
-export const AvailableIntegrations = loadable(() => import('./Integrations/AvailableIntegrations/Integrations'), {
+export const AvailableIntegrations = loadable(() => import('./Integrations/AvailableIntegrations'), {
   fallback: <Loading />
 });
 

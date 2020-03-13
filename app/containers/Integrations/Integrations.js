@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-// material-ui
 import { withStyles } from '@material-ui/core/styles';
 import {
   Button,
-  Divider,
   Grid,
   Paper,
   Table,
@@ -15,16 +13,15 @@ import {
   TableFooter,
   TablePagination
 } from '@material-ui/core';
-
-import LoadingState from 'dan-containers/Common/LoadingState';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import Utils from 'dan-containers/Common/Utils';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
-import GenericErrorMessage from 'dan-containers/Common/GenericErrorMessage';
 import API from 'dan-containers/Utils/api';
+import PageHeader from 'dan-containers/Common/PageHeader';
+import { getIntegrations } from 'dan-actions/integrationActions';
+import { AsyncSearch, Loading } from 'dan-components';
 import Integration from './Integration';
 import AddIntegrationForm from './AddIntegrationForm';
-import PageHeader from 'dan-containers/Common/PageHeader';
 
 const styles = theme => ({
   cardList: {
@@ -48,8 +45,7 @@ const styles = theme => ({
 
 class Integrations extends Component {
   state = {
-    loading: true,
-    integrations: { data: [], pagination: {} },
+    loadingState: true,
     openForm: false,
     alertDialog: {
       open: false,
@@ -57,37 +53,14 @@ class Integrations extends Component {
       integrationName: '',
       message: ''
     },
-    success: true,
-    messageError: '',
     limit: 5,
-    page: 0
+    page: 0,
+    searchTerm: ''
   };
 
   async componentDidMount() {
     this.initializeDataTable();
   }
-
-  getIntegrations = async params => {
-    const { enqueueSnackbar } = this.props;
-    let reqParams = params;
-    if (typeof reqParams !== 'undefined') {
-      reqParams.with_details = true;
-    } else {
-      reqParams = { with_details: true };
-    }
-    try {
-      const response = await API.get('/integrations', { params: reqParams });
-      this.setState({
-        integrations: get(response, 'data', { data: [], pagination: {} }),
-        limit: get(response, 'data.pagination.limit', 0)
-      });
-    } catch (error) {
-      this.setState({ success: false, messageError: error.message });
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
-  };
 
   handleAddIntegrationClick = () => {
     const { history } = this.props;
@@ -101,7 +74,7 @@ class Integrations extends Component {
 
   handleUnAuthorization = id => {
     const { enqueueSnackbar } = this.props;
-    this.setState({ loading: true });
+    this.setState({ loadingState: true });
     API.delete(`/integrations/${id}/authorize`, {
       data: { data: { integration_id: id } }
     })
@@ -117,7 +90,7 @@ class Integrations extends Component {
       })
       .then(() => {
         this.getIntegrations();
-        this.setState({ loading: false });
+        this.setState({ loadingState: false });
       });
   };
 
@@ -167,13 +140,15 @@ class Integrations extends Component {
   };
 
   makeRequest = () => {
-    const { limit, page } = this.state;
+    const { onGetIntegrations } = this.props;
+    const { limit, page, searchTerm } = this.state;
     const params = {
       offset: page * limit,
-      limit
+      limit,
+      term: searchTerm
     };
 
-    this.getIntegrations(params);
+    onGetIntegrations(params);
   };
 
   handleChangeRowsPerPage = event => {
@@ -183,13 +158,7 @@ class Integrations extends Component {
     );
   };
 
-  async initializeDataTable() {
-    this.setState({ loading: true });
-    await this.getIntegrations();
-    this.setState({ loading: false });
-  }
-
-  handleAddIntegrationClick = (event, value) => {
+  handleAddIntegrationClick = () => {
     this.setState({ openForm: true });
   };
 
@@ -197,18 +166,17 @@ class Integrations extends Component {
     this.setState({ openForm: false });
   };
 
+  handleSearch = e => {
+    this.setState({ searchTerm: e.target.value }, this.makeRequest);
+  };
+
+  initializeDataTable() {
+    this.makeRequest();
+  }
+
   render() {
-    const { classes, history } = this.props;
-    const {
-      integrations,
-      loading,
-      alertDialog,
-      success,
-      messageError,
-      limit,
-      openForm,
-      page
-    } = this.state;
+    const { classes, history, integrations, loading } = this.props;
+    const { alertDialog, limit, openForm, loadingState, page } = this.state;
 
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
@@ -216,81 +184,78 @@ class Integrations extends Component {
     return (
       <div>
         <PageHeader title="My integrations" history={history} />
-        {loading ? (
-          <div className="item-padding">
-            <LoadingState loading={loading} text="Loading" />
-          </div>
-        ) : null}
-        {loading ? null : !success ? (
-          <GenericErrorMessage messageError={messageError} />
-        ) : (
-          <div>
-            <Paper style={{ margin: '0 4px 8px' }}>
-              <div className="display-flex justify-content-space-between">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  style={{ margin: '10px' }}
-                  onClick={this.handleAddIntegrationClick}
-                >
-                  Add Integration
-                </Button>
-              </div>
-            </Paper>
-            <Grid container>
-              {data &&
-                data.map(
-                  ({
-                    id,
-                    name,
-                    channel,
-                    logo = Utils.getLogo(channel),
-                    authorized,
-                    channel_title
-                  }) => (
-                    <Grid item md={3} xs={12}>
-                      <Integration
-                        key={id}
-                        name={name}
-                        group={channel_title}
-                        logo={logo}
-                        channel={channel}
-                        authorized={authorized}
-                        onIntegrationAuthorized={() =>
-                          this.handleAuthorization(id)
-                        }
-                        onIntegrationUnauthorized={() =>
-                          this.handleUnAuthorization(id)
-                        }
-                        onIntegrationDeleted={() =>
-                          this.handleDeleteClick(id, name)
-                        }
-                        classes={classes}
-                      />
-                    </Grid>
-                  )
-                )}
-            </Grid>
-            <Table>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, 50]}
-                    count={count}
-                    rowsPerPage={limit}
-                    page={page}
-                    SelectProps={{
-                      native: true
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                    ActionsComponent={GenericTablePagination}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </div>
-        )}
+        {loading || loadingState ? <Loading /> : null}
+        <div>
+          <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
+            <div className="display-flex justify-content-space-between align-items-center">
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.handleAddIntegrationClick}
+              >
+                Add Integration
+              </Button>
+
+              <AsyncSearch
+                label="Search integration name"
+                loading={loading}
+                onChange={this.handleSearch}
+              />
+            </div>
+          </Paper>
+          <Grid container>
+            {data &&
+              data.map(
+                ({
+                  id,
+                  name,
+                  channel,
+                  logo = Utils.getLogo(channel),
+                  authorized,
+                  channel_title
+                }) => (
+                  <Grid item md={3} xs={12}>
+                    <Integration
+                      key={id}
+                      name={name}
+                      group={channel_title}
+                      logo={logo}
+                      channel={channel}
+                      authorized={authorized}
+                      onIntegrationAuthorized={() =>
+                        this.handleAuthorization(id)
+                      }
+                      onIntegrationUnauthorized={() =>
+                        this.handleUnAuthorization(id)
+                      }
+                      onIntegrationDeleted={() =>
+                        this.handleDeleteClick(id, name)
+                      }
+                      classes={classes}
+                    />
+                  </Grid>
+                )
+              )}
+          </Grid>
+          <Table>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  count={count}
+                  rowsPerPage={limit}
+                  page={page}
+                  SelectProps={{
+                    native: true
+                  }}
+                  onChangePage={this.handleChangePage}
+                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                  ActionsComponent={GenericTablePagination}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
 
         <AlertDialog
           open={alertDialog.open}
@@ -298,7 +263,6 @@ class Integrations extends Component {
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
         />
-
         <AddIntegrationForm
           classes={classes}
           handleClose={this.handleCloseForm}
@@ -312,7 +276,24 @@ class Integrations extends Component {
 Integrations.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  integrations: PropTypes.array.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(Integrations));
+const mapStateToProps = state => ({
+  loading: state.getIn(['integration', 'loading']),
+  integrations: state.getIn(['integration', 'integrations'])
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetIntegrations: query => dispatch(getIntegrations(query))
+});
+
+const MyIntegrationsMapped = withSnackbar(withStyles(styles)(Integrations));
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MyIntegrationsMapped);

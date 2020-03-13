@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
-// material-ui
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
 import {
@@ -17,79 +12,19 @@ import {
   Tooltip
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-//
 import get from 'lodash/get';
 import moment from 'moment';
-//
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
+import { getFlows } from 'dan-actions/flowActions';
+import { getIntegrations } from 'dan-actions/integrationActions';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
-
 import PageHeader from '../../Common/PageHeader';
-// import { getFlows } from '../../../actions/flowActions';
-
-const styles = theme => ({
-  inputWidth: {
-    width: '300px'
-  },
-  marginTop: {
-    marginTop: theme.spacing.unit
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit
-  },
-  padding: {
-    padding: theme.spacing.unit
-  },
-  paper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    flexWrap: 'wrap',
-    padding: '5px'
-  },
-  actions: {
-    // padding: theme.spacing(1)
-  },
-  tableRoot: {
-    width: '100%',
-    marginTop: theme.spacing(3),
-    overflowX: 'auto'
-  },
-  icon: {
-    color: '#9e9e9e'
-  },
-  pageTitle: {
-    padding: theme.spacing.unit,
-    paddingBottom: theme.spacing(3),
-    [theme.breakpoints.up('lg')]: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end'
-    },
-    '& h4': {
-      fontWeight: 600,
-      textTransform: 'capitalize',
-      [theme.breakpoints.down('md')]: {
-        marginBottom: theme.spacing(3)
-      }
-    }
-  },
-  darkTitle: {
-    color:
-      theme.palette.type === 'dark'
-        ? theme.palette.primary.main
-        : theme.palette.primary.dark
-  },
-  lightTitle: {
-    color: theme.palette.common.white
-  }
-});
+import styles from './flows-jss';
 
 class Flows extends Component {
   state = {
-    flows: { data: [], pagination: {} },
     alertDialog: {
       open: false,
       objectId: '',
@@ -106,51 +41,10 @@ class Flows extends Component {
   };
 
   componentDidMount() {
-    this.getIntegrations();
+    const { onGetIntegrations } = this.props;
+    onGetIntegrations({ limit: 100, offset: 0 });
     this.callAPI();
   }
-
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
-        }
-      }
-    });
-
-  getIntegrations() {
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      });
-  }
-
-  getFlows = async params => {
-    // this.props.onGetFlows(params);
-    const { enqueueSnackbar } = this.props;
-    try {
-      const response = await API.get('/flows', { params });
-      this.setState({
-        flows: get(response, 'data', { data: [], pagination: {} }),
-        limit: get(response, 'data.pagination.limit', 0)
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
-
-    this.setState({ isLoading: false });
-  };
 
   handleDeleteFlow = async () => {
     const { enqueueSnackbar } = this.props;
@@ -162,7 +56,7 @@ class Flows extends Component {
       enqueueSnackbar('Workflow deleted successfully', {
         variant: 'success'
       });
-      await this.getFlows();
+      // await this.getFlows();
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -216,11 +110,11 @@ class Flows extends Component {
   };
 
   handleToggleScheduler = async id => {
-    const { enqueueSnackbar } = this.props;
+    const { enqueueSnackbar, onGetFlows } = this.props;
     try {
       this.setState({ isLoading: true });
       await API.get(`flows/${id}/toggle/scheduler/status`);
-      this.getFlows();
+      onGetFlows();
       enqueueSnackbar('Scheduler toggled successfully', {
         variant: 'success'
       });
@@ -234,8 +128,8 @@ class Flows extends Component {
   };
 
   callAPI = () => {
+    const { onGetFlows } = this.props;
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
-
     const params = {
       offset: page * limit,
       limit,
@@ -243,8 +137,7 @@ class Flows extends Component {
       integration_id: serverSideFilterList[2] ? serverSideFilterList[2][0] : ''
     };
 
-    this.setState({ isLoading: true });
-    this.getFlows(params);
+    onGetFlows(params);
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -304,13 +197,12 @@ class Flows extends Component {
   };
 
   render() {
-    const { classes, history } = this.props;
+    const { classes, flows, history, loading } = this.props;
     const {
-      flows,
       integrationFilterOptions,
-      isLoading,
       alertDialog,
       limit,
+      isLoading,
       page,
       searchTerm,
       serverSideFilterList,
@@ -517,10 +409,11 @@ class Flows extends Component {
       <div>
         <PageHeader title="Workflows" history={history} />
         <div className={classes.table}>
-          {isLoading ? <Loading /> : null}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
+          {loading || isLoading ? (
+            <Loading />
+          ) : (
             <MUIDataTable columns={columns} data={data} options={options} />
-          </MuiThemeProvider>
+          )}
         </div>
 
         <AlertDialog
@@ -535,23 +428,30 @@ class Flows extends Component {
 }
 
 Flows.propTypes = {
-  // flows: PropTypes.object.isRequired,
-  // onGetFlows: PropTypes.func.isRequired,
+  flows: PropTypes.object.isRequired,
+  onGetFlows: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  // integrations: PropTypes.object.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-// const mapStateToProps = state => ({ flows: state.flows.flows });
+const mapStateToProps = state => ({
+  loading: state.getIn(['integration', 'loading']),
+  flows: state.getIn(['flows', 'flows']),
+  integrations: state.getIn(['integration', 'integrations'])
+});
 
-// const mapDispatchToProps = dispatch => ({
-//   onGetFlows: params => dispatch(getFlows(params))
-// });
+const mapDispatchToProps = dispatch => ({
+  onGetFlows: params => dispatch(getFlows(params)),
+  onGetIntegrations: params => dispatch(getIntegrations(params))
+});
 
-// export default withSnackbar(
-//   connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-//   )(Flows)
-// );
-export default withSnackbar(withStyles(styles)(Flows));
+const FlowsMapped = withSnackbar(withStyles(styles)(Flows));
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FlowsMapped);

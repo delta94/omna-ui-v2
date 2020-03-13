@@ -35,3 +35,6 @@ export EmptyData from './Tables/EmptyData';
 export ErrorWrap from './Error/ErrorWrap';
 //Widget
 export SalesChartWidget from './Widget/SalesChartWidget';
+
+export AsyncSearch from './AsyncSearch';
+export Loading from './Loading';
