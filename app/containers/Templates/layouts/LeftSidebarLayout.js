@@ -5,41 +5,11 @@ import classNames from 'classnames';
 import Fade from '@material-ui/core/Fade';
 import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
-import Link from '@material-ui/core/Link';
-import { Link as RouterLink } from 'react-router-dom';
+import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
-import MySnackBar from '../../Common/SnackBar';
-import Utils from '../../Common/Utils';
-
-const subscribeAction = (
-  <div>
-    <Link
-      variant="body2"
-      style={{ marginRight: '10px' }}
-      onClick={() => {
-        window.open('https://cenit.io/billing');
-      }}
-    >
-      billing settings
-    </Link>
-  </div>
-);
-
-const action = (
-  <div>
-    <Link
-      variant="body2"
-      style={{ marginRight: '10px' }}
-      component={RouterLink}
-      to="/app/tenant-configuration"
-    >
-      Initialize tenant
-    </Link>
-  </div>
-);
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -58,13 +28,8 @@ class LeftSidebarLayout extends React.Component {
       changeMode,
       place,
       handleOpenGuide,
-      isReadyToOmna,
-      deactivationDate,
-      enabledTenant,
-      tenantName
+      notifications
     } = this.props;
-
-    const deactivation = Utils.getDeactivationDate(deactivationDate);
 
     return (
       <Fragment>
@@ -109,33 +74,7 @@ class LeftSidebarLayout extends React.Component {
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
             ) */}
-            <div>
-              <MySnackBar
-                variant="info"
-                customStyle
-                open={deactivation >= 1 || false}
-                message={`This tenant ${tenantName} is ${deactivation} days left for deactivation`}
-                action={subscribeAction}
-              />
-            </div>
-            <div>
-              <MySnackBar
-                variant="warning"
-                customStyle
-                open={!enabledTenant}
-                message={`This tenant ${tenantName} is disabled. Go to your billing settings and subscribe to a plan for Tenant Activation.`}
-                action={subscribeAction}
-              />
-            </div>
-            <div>
-              <MySnackBar
-                variant="warning"
-                customStyle
-                open={!isReadyToOmna && enabledTenant}
-                message="The current tenant is not ready to use with OMNA application. Please initialize the tenant."
-                action={action}
-              />
-            </div>
+            <Notifications list={notifications} />
             {!pageLoaded && (
               <img
                 src="/images/spinner.gif"
@@ -177,24 +116,15 @@ LeftSidebarLayout.propTypes = {
   place: PropTypes.string.isRequired,
   titleException: PropTypes.array.isRequired,
   handleOpenGuide: PropTypes.func.isRequired,
-  isReadyToOmna: PropTypes.bool,
-  deactivationDate: PropTypes.string,
-  enabledTenant: PropTypes.bool,
-  tenantName: PropTypes.string
+  notifications: PropTypes.object
 };
 
 LeftSidebarLayout.defaultProps = {
-  isReadyToOmna: true,
-  deactivationDate: '',
-  enabledTenant: false,
-  tenantName: ''
+  notifications: []
 };
 
 const mapStateToProps = state => ({
-  isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
-  deactivationDate: state.getIn(['tenant', 'deactivationDate']),
-  enabledTenant: state.getIn(['tenant', 'enabled']),
-  tenantName: state.getIn(['tenant', 'tenantName']),
+  notifications: state.getIn(['notification', 'notifications']),
   ...state
 });
 

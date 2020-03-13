@@ -88,13 +88,11 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg =
-      url +
-      JSON.stringify(params)
-        .replace(/["']/g, '')
-        .split('')
-        .sort()
-        .join('');
+    const msg = url + JSON.stringify(params)
+      .replace(/["']/g, '')
+      .split('')
+      .sort()
+      .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
@@ -169,6 +167,18 @@ class Utils {
       return true;
     }
     return false;
+  }
+
+  static searchTermTimeout(_search, setSearchTerm) {
+    if (_search) {
+      const timer = setTimeout(() => {
+        setSearchTerm(_search);
+        clearTimeout(timer);
+      }, 1000);
+      window.addEventListener('keydown', () => {
+        clearTimeout(timer);
+      });
+    }
   }
 
   static iconVariants() {

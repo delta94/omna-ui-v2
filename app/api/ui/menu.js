@@ -45,6 +45,11 @@ module.exports = [
     icon: 'ios-settings',
     child: [
       {
+        key: 'collections',
+        name: 'Collections',
+        link: '/app/collections'
+      },
+      {
         key: 'workflows',
         name: 'Workflows',
         link: '/app/workflows'

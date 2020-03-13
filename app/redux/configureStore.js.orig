@@ -8,7 +8,12 @@ import { fromJS } from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunk from 'redux-thunk';
 import createReducer from './reducers';
+<<<<<<< HEAD
 import rootSaga from './sagas';
+=======
+import watchProdVariants from './saga';
+import { watchCollections, watchInstallCollection, watchUninstallCollection } from './saga/collectionsSaga';
+>>>>>>> Add "Collections" view
 
 export default function configureStore(initialState = {}, history) {
   let composeEnhancers = compose;
@@ -45,7 +50,15 @@ export default function configureStore(initialState = {}, history) {
     fromJS(initialState),
     composeEnhancers(...enhancers)
   );
+
+<<<<<<< HEAD
   sagaMiddleware.run(rootSaga);
+=======
+  sagaMiddleware.run(watchProdVariants);
+  sagaMiddleware.run(watchCollections);
+  sagaMiddleware.run(watchInstallCollection);
+  sagaMiddleware.run(watchUninstallCollection);
+>>>>>>> Add "Collections" view
 
   // Extensions
   store.runSaga = sagaMiddleware.run;

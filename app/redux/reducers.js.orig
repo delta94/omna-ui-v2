@@ -17,7 +17,6 @@ import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
 import integrationsReducer from './modules/integrations';
 import collectionsReducer from './modules/collections';
-import notificationsReducer from './modules/notifications';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -30,14 +29,17 @@ export default function createReducer(injectedReducers = {}) {
     login,
     ui: uiReducer,
     tenant: tenantReducer,
+<<<<<<< HEAD
     integration: integrationsReducer,
-    notification: notificationsReducer,
     product: productsReducer,
+=======
+    integrations: integrationsReducer,
     collections: collectionsReducer,
+>>>>>>> Add "Collections" view
     initval,
     language: languageProviderReducer,
-    flow: flowsReducer,
     router: connectRouter(history),
+    flows: flowsReducer,
     ...injectedReducers
   });
 
