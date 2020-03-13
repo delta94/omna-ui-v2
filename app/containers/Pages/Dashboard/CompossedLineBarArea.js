@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { createMuiTheme, withStyles } from '@material-ui/core/styles';
-import { Paper } from '@material-ui/core';
 import ThemePallete from 'dan-api/palette/themePalette';
 import blue from '@material-ui/core/colors/blue';
 import {
@@ -38,14 +37,13 @@ const color = {
 };
 
 class CompossedLineBarArea extends Component {
-  
   render() {
     const { classes, orders, loading } = this.props;
-    const { data } = orders;
 
-    const collection = data.map(item => ({
+    const collection = orders.get('data').map(item => ({
       ...item,
-      day: item.updated_date
+      day: item
+        .get('updated_date')
         .split('-')
         .reverse()
         .join('-'),
@@ -84,7 +82,7 @@ class CompossedLineBarArea extends Component {
           <div className="item-padding">
             <LoadingState loading={loading} text="Loading" />
           </div>
-        ) : data.length === 0 ? null : (
+        ) : orders.get('data').length === 0 ? null : (
           <div className={classes.chartFluid}>
             <ResponsiveContainer>
               <ComposedChart
@@ -128,8 +126,8 @@ class CompossedLineBarArea extends Component {
 
 CompossedLineBarArea.propTypes = {
   classes: PropTypes.object.isRequired,
-  reloadLandingPage: PropTypes.bool.isRequired,
-  changeReloadLandingPage: PropTypes.func.isRequired
+  loading: PropTypes.bool.isRequired,
+  orders: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

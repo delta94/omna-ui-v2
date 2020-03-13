@@ -1,11 +1,12 @@
 import { fromJS } from 'immutable';
 import * as actionConstants from 'dan-actions/actionConstants';
 
-const initialState = { flows: { data: [], pagination: {} }, loading: false };
+const initialState = fromJS({
+  flows: { data: [], pagination: { total: 0 } },
+  loading: false
+});
 
-const initialImmutableState = fromJS(initialState);
-
-const reducer = (state = initialImmutableState, action = {}) => {
+export default (state = initialState, action = {}) => {
   switch (action.type) {
     case actionConstants.GET_FLOWS_START:
       return state.withMutations(mutableState => {
@@ -13,7 +14,7 @@ const reducer = (state = initialImmutableState, action = {}) => {
       });
     case actionConstants.GET_FLOWS_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('flows', action.data);
+        mutableState.set('flows', fromJS(action.data));
         mutableState.set('loading', false);
       });
     case actionConstants.GET_FLOWS_FAILED:
@@ -25,5 +26,3 @@ const reducer = (state = initialImmutableState, action = {}) => {
       return state;
   }
 };
-
-export default reducer;

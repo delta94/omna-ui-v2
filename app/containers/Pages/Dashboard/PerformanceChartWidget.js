@@ -29,7 +29,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.blueText}>
-                  {orders.pagination.total}
+                  {orders.getIn(['pagination', 'total'])}
                 </span>
                 <Typography>Orders</Typography>
               </Typography>
@@ -59,7 +59,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.pinkText}>
-                  {workflows.pagination.total}
+                  {workflows.getIn(['pagination', 'total'])}
                 </span>
                 <Typography>Workflows</Typography>
               </Typography>

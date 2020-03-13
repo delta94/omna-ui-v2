@@ -32,8 +32,8 @@ export default function createReducer(injectedReducers = {}) {
     product: productsReducer,
     initval,
     language: languageProviderReducer,
+    flow: flowsReducer,
     router: connectRouter(history),
-    flows: flowsReducer,
     ...injectedReducers
   });
 

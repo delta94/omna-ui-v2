@@ -3,7 +3,14 @@ import orderSaga from './orderSaga';
 import productSaga from './productSaga';
 import integrationSaga from './integrationSaga';
 import channelSaga from './channelSaga';
+import flowSaga from './flowSaga';
 
 export default function* rootSaga() {
-  yield all([orderSaga(), productSaga(), integrationSaga(), channelSaga()]);
+  yield all([
+    channelSaga(),
+    flowSaga(),
+    integrationSaga(),
+    orderSaga(),
+    productSaga()
+  ]);
 }

@@ -1,48 +1,49 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
 import get from 'lodash/get';
-import { PapperBlock, SalesChartWidget } from 'dan-components';
+import { PapperBlock, Loading, SalesChartWidget } from 'dan-components';
 import { withSnackbar } from 'notistack';
+import { getFlows } from 'dan-actions/flowActions';
+import { getOrders } from 'dan-actions/orderActions';
+import { Grid } from '@material-ui/core';
 import api from '../../Utils/api';
 import PerformanceChartWidget from './PerformanceChartWidget';
 import CompossedLineBarArea from './CompossedLineBarArea';
-import { Grid } from '@material-ui/core';
 
 class Dashboard extends Component {
   state = {
-    orders: { data: [], pagination: {} },
     webhooks: { data: [], pagination: {} },
-    workflows: { data: [], pagination: {} },
     tasks: { data: [], pagination: {} },
     limit: 100,
     page: 0,
-    loading: false
+    loadingState: false
   };
 
   componentDidMount() {
     this.callAPI();
   }
 
-  getOrders = params => {
-    const { enqueueSnackbar } = this.props;
-    api
-      .get('/orders', { params })
-      .then(response => {
-        this.setState({
-          orders: get(response, 'data', { data: [], pagination: {} })
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
-      });
-  };
+  // getOrders = params => {
+  //   const { enqueueSnackbar } = this.props;
+  //   api
+  //     .get('/orders', { params })
+  //     .then(response => {
+  //       this.setState({
+  //         orders: get(response, 'data', { data: [], pagination: {} })
+  //       });
+  //     })
+  //     .catch(error => {
+  //       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+  //         variant: 'error'
+  //       });
+  //     })
+  //     .finally(() => {
+  //       this.setState({ loadingState: false });
+  //     });
+  // };
 
   getWebhooks = params => {
     const { enqueueSnackbar } = this.props;
@@ -60,25 +61,8 @@ class Dashboard extends Component {
         });
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ loadingState: false });
       });
-  };
-
-  getWorkflows = async params => {
-    const { enqueueSnackbar } = this.props;
-
-    try {
-      const response = await api.get('/flows', { params });
-      this.setState({
-        workflows: get(response, 'data', { data: [], pagination: {} })
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
-
-    this.setState({ isLoading: false });
   };
 
   getTasks = params => {
@@ -96,7 +80,7 @@ class Dashboard extends Component {
         });
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ loadingState: false });
       });
   };
 
@@ -109,31 +93,33 @@ class Dashboard extends Component {
   };
 
   callAPI = () => {
-    this.setState({ loading: true });
-    this.getOrders(this.buildParams());
-    this.getWebhooks(this.buildParams());
-    this.getWorkflows(this.buildParams());
+    const { onGetOrders, onGetWorkflows } = this.props;
+    this.setState({ loadingState: true });
+    onGetOrders(this.buildParams());
+    onGetWorkflows(this.buildParams());
     this.getTasks(this.buildParams());
   };
 
   render() {
-    const { workflows, orders, webhooks, tasks, loading } = this.state;
+    const { webhooks, tasks, loadingState } = this.state;
+    const { orders, flows, loading } = this.props;
 
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
- 
-    const counts = orders.data.reduce((p, c) => {
-      var name = c.integration.channel;
+
+    const counts = orders.get('data').reduce((p, c) => {
+      var name = c.getIn(['integration', 'channel']);
       if (!p.hasOwnProperty(name)) {
         p[name] = 0;
       }
       p[name]++;
       return p;
     }, {});
-    
+
     var countsExtended = Object.keys(counts).map(k => {
-      return {name: k, value: counts[k]}; });
-    
+      return { name: k, value: counts[k] };
+    });
+
     return (
       <div>
         <Helmet>
@@ -144,12 +130,16 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        <PerformanceChartWidget
-          workflows={workflows}
-          orders={orders}
-          webhooks={webhooks}
-          tasks={tasks}
-        />
+        {loading ? (
+          <Loading />
+        ) : (
+          <PerformanceChartWidget
+            workflows={flows}
+            orders={orders}
+            webhooks={webhooks}
+            tasks={tasks}
+          />
+        )}
 
         <Grid container spacing={2}>
           <Grid item md={8} xs={12}>
@@ -159,7 +149,10 @@ class Dashboard extends Component {
               desc=""
               overflowX
             >
-              <CompossedLineBarArea orders={orders} loading={loading} />
+              <CompossedLineBarArea
+                orders={orders}
+                loadingState={loadingState}
+              />
             </PapperBlock>
           </Grid>
 
@@ -173,7 +166,28 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  flows: PropTypes.object.isRequired,
+  onGetWorkflows: PropTypes.func.isRequired,
+  orders: PropTypes.object.isRequired,
+  onGetOrders: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
-export default withSnackbar(Dashboard);
+const mapStateToProps = state => ({
+  orders: state.getIn(['order', 'orders']),
+  flows: state.getIn(['flow', 'flows']),
+  loading: state.getIn(['flow', 'loading'])
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetOrders: params => dispatch(getOrders(params)),
+  onGetWorkflows: params => dispatch(getFlows(params))
+});
+
+const DashboardMapped = withSnackbar(Dashboard);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DashboardMapped);

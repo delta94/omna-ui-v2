@@ -12,8 +12,12 @@ export const LOAD_PAGE = 'LOAD_PAGE';
 // Redux Form
 export const INIT = 'INIT';
 export const CLEAR = 'CLEAR';
+
 // Flows
 export const GET_FLOWS = 'GET_FLOWS';
+export const GET_FLOWS_START = 'GET_FLOWS_START';
+export const GET_FLOWS_SUCCESS = 'GET_FLOWS_SUCCESS';
+export const GET_FLOWS_FAILED = 'GET_FLOWS_FAILED';
 
 // Orders
 export const GET_ORDERS = 'GET_ORDERS';
