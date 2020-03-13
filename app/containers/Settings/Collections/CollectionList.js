@@ -64,38 +64,14 @@ function CollectionList(props) {
     }
   }, [_params]);
 
-  /*   useEffect(() => {
-    if (task) {
-      console.log(task);
-    }
-  }, [task]); */
-
   const handleInstall = async (id) => {
     const { enqueueSnackbar, onInstallCollection } = props;
-    try {
-      onInstallCollection(id);
-      enqueueSnackbar('Installing started', {
-        variant: 'success'
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
+    onInstallCollection(id, enqueueSnackbar);
   };
 
   const handleUninstall = (id) => {
     const { enqueueSnackbar, onUninstallCollection } = props;
-    try {
-      onUninstallCollection(id);
-      enqueueSnackbar('Uninstalling started', {
-        variant: 'success'
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
+    onUninstallCollection(id, enqueueSnackbar);
   };
 
   const handleChangePage = (_page) => {
@@ -144,6 +120,13 @@ function CollectionList(props) {
       }
     },
     {
+      name: 'status',
+      label: 'Status',
+      options: {
+        filter: false,
+      }
+    },
+    {
       name: 'installed_at',
       label: 'Installed at',
       options: {
@@ -170,7 +153,7 @@ function CollectionList(props) {
             <Tooltip title="uninstall">
               <CloseIcon
                 color="action"
-                onClick={() => handleUninstall(tableMeta)}
+                onClick={() => handleUninstall(tableMeta ? tableMeta.rowData[0] : null)}
               />
             </Tooltip>
           </div>
@@ -244,7 +227,6 @@ const CollectionListMapped = connect(
 CollectionList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  /* task: PropTypes.object.isRequired, */
   total: PropTypes.number.isRequired,
   loading: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,

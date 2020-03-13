@@ -44,6 +44,11 @@ const styles = theme => ({
   }
 });
 
+/* const Action = (props) => {
+  const { index, action, onClick } = props;
+  return <div role="button" tabIndex={0} onClick={() => onClick(index)} onKeyPress={() => {}}>{action}</div>;
+}; */
+
 function Notifications(props) {
   const { classes, list, onDeleteNotification } = props;
 
@@ -60,6 +65,11 @@ function Notifications(props) {
             action={
               (
                 <Fragment>
+                  {/* <Action
+                    index={index}
+                    action={action}
+                    onClick={() => handleClose(index)}
+                  /> */}
                   {action}
                   <IconButton
                     key="close"
@@ -85,6 +95,12 @@ Notifications.propTypes = {
   list: PropTypes.object.isRequired,
   onDeleteNotification: PropTypes.func.isRequired
 };
+
+/* Action.propTypes = {
+  index: PropTypes.number.isRequired,
+  action: PropTypes.object.isRequired,
+  onClick: PropTypes.func.isRequired
+}; */
 
 const mapDispatchToProps = dispatch => ({
   onDeleteNotification: bindActionCreators(deleteNotification, dispatch),

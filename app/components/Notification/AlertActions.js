@@ -14,17 +14,15 @@ export const subscribeAction = (
   </IconButton>
 );
 
-export const goToCollectionsAction = (
-  <IconButton>
-    <Link
-      variant="body2"
-      style={{ marginRight: '10px' }}
-      component={RouterLink}
-      to="/app/collections"
-    >
-      Go to collections
-    </Link>
-  </IconButton>
+export const goToTaskAction = (id) => (
+  <Link
+    variant="body2"
+    style={{ marginRight: '10px' }}
+    component={RouterLink}
+    to={`app/tasks/${id}`}
+  >
+    Go to task
+  </Link>
 );
 
 export const installOv2CollectionAction = (onInstallCollection) => (

@@ -1,6 +1,9 @@
 import { takeLatest, put, all } from 'redux-saga/effects';
+import get from 'lodash/get';
 import * as types from '../../actions/actionConstants';
 import API from '../../containers/Utils/api';
+import { GENERATED_TASK_INFO } from '../../components/Notification/AlertConstants';
+import { goToTaskAction } from '../../components/Notification/AlertActions';
 
 function* fetchCollectionsAsync(payload) {
   yield put({ type: types.SET_LOADING, data: true });
@@ -13,20 +16,42 @@ function* fetchCollectionsAsync(payload) {
 }
 
 function* installCollectionAsync(payload) {
-  yield put({ type: types.SET_LOADING, data: true });
-  const { id } = payload;
-  const response = yield API.patch(`/collections/${id}`);
-  const { data } = response.data;
-  yield put({ type: types.INSTALL_COLLECTION, data });
+  const { id, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, data: true });
+    const response = yield API.patch(`/collections/${id}`);
+    const { data } = response.data;
+    enqueueSnackbar('Installing started', {
+      variant: 'success'
+    });
+    yield put({ type: types.INSTALL_COLLECTION, data });
+    const taskNotif = { message: GENERATED_TASK_INFO, variant: 'info', action: goToTaskAction(data.id)};
+    yield put({ type: types.PUSH_NOTIFICATION, data: taskNotif });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
   yield put({ type: types.SET_LOADING, data: false });
 }
 
 function* uninstallCollectionAsync(payload) {
-  yield put({ type: types.SET_LOADING, data: true });
-  const { id } = payload;
-  const response = yield API.delete(`/collections/${id}`);
-  const { data } = response.data;
-  yield put({ type: types.UNINSTALL_COLLECTION, data });
+  const { id, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, data: true });
+    const response = yield API.delete(`/collections/${id}`);
+    const { data } = response.data;
+    enqueueSnackbar('Uninstalling started', {
+      variant: 'success'
+    });
+    yield put({ type: types.UNINSTALL_COLLECTION, data });
+    const taskNotif = { message: GENERATED_TASK_INFO, variant: 'info', action: goToTaskAction(data.id)};
+    yield put({ type: types.PUSH_NOTIFICATION, data: taskNotif });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
   yield put({ type: types.SET_LOADING, data: false });
 }
 

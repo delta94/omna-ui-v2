@@ -60,14 +60,14 @@ function TenantMenu(props) {
 
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
-    const { onPushNotification, onInstallCollection } = props;
+    const { onPushNotification, onInstallCollection, enqueueSnackbar } = props;
     const isEnabled = Utils.isTenantEnabled(deactivationDate);
     const subscribeNotif = { message: SUBSCRIBE_INFO`${tenantName}`, variant: 'error', action: subscribeAction };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
     const deactivation = Utils.getDeactivationDate(deactivationDate);
     const deactivationNotif = { message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`, variant: 'info', action: subscribeAction };
     deactivation >= 1 ? onPushNotification(deactivationNotif) : null;
-    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2CollectionAction(() => onInstallCollection('omna_v2'))};
+    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2CollectionAction(() => onInstallCollection('omna_v2', enqueueSnackbar))};
     !isReadyToOmna ? onPushNotification(tenantNotReadyNotif) : null;
   }
 

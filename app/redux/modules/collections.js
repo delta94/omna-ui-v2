@@ -34,16 +34,3 @@ export default function collectionsReducer(state = initialState, action) {
       return state;
   }
 }
-
-/* export default function collectionsReducer(state = initialState, action) {
-  switch (action.type) {
-    case types.SET_COLLECTIONS:
-      debugger;
-      return state.collections = action.data;
-    case types.SET_LOADING:
-      debugger;
-      return state.loadingState = action.data;
-    default:
-      return state;
-  }
-} */

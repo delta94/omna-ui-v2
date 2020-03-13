@@ -5,12 +5,14 @@ export const setCollectionList = (params) => ({
   params
 });
 
-export const installCollection = (id) => ({
+export const installCollection = (id, enqueueSnackbar) => ({
   type: types.INSTALL_COLLECTION_ASYNC,
-  id
+  id,
+  enqueueSnackbar
 });
 
-export const uninstallCollection = (id) => ({
+export const uninstallCollection = (id, enqueueSnackbar) => ({
   type: types.UNINSTALL_COLLECTION_ASYNC,
-  id
+  id,
+  enqueueSnackbar
 });
