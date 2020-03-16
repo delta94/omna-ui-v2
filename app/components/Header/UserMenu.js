@@ -47,7 +47,7 @@ class UserMenu extends React.Component {
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
           <Avatar
-            alt={user.name}
+            alt={user ? user.name : 'user-avatar'}
             src={user ? user.picture : dummy.user.avatar}
           />
           <Hidden xsDown>

@@ -123,8 +123,9 @@ class OrderList extends Component {
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
     const { limit, page, serverSideFilterList, searchTerm } = this.state;
-    const { pagination, data } = orders;
-    const count = get(pagination, 'total', 0);
+    const pagination = orders.get('pagination');
+    const data = orders.get('data').toJS();
+    const count = pagination.get('total');
 
     const integrationFilterOptions = integrations.data
       ? integrations.data.map(integration => integration.id)
@@ -273,8 +274,11 @@ class OrderList extends Component {
       <div>
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
-          {loading ? <Loading /> : null}
-          <MUIDataTable columns={columns} data={data} options={options} />
+          {loading ? (
+            <Loading />
+          ) : (
+            <MUIDataTable columns={columns} data={data} options={options} />
+          )}
         </div>
       </div>
     );
