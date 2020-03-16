@@ -26,25 +26,6 @@ class Dashboard extends Component {
     this.callAPI();
   }
 
-  // getOrders = params => {
-  //   const { enqueueSnackbar } = this.props;
-  //   api
-  //     .get('/orders', { params })
-  //     .then(response => {
-  //       this.setState({
-  //         orders: get(response, 'data', { data: [], pagination: {} })
-  //       });
-  //     })
-  //     .catch(error => {
-  //       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-  //         variant: 'error'
-  //       });
-  //     })
-  //     .finally(() => {
-  //       this.setState({ loadingState: false });
-  //     });
-  // };
-
   getWebhooks = params => {
     const { enqueueSnackbar } = this.props;
 
@@ -107,16 +88,19 @@ class Dashboard extends Component {
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
 
-    const counts = orders.get('data').reduce((p, c) => {
-      var name = c.getIn(['integration', 'channel']);
-      if (!p.hasOwnProperty(name)) {
-        p[name] = 0;
-      }
-      p[name]++;
-      return p;
-    }, {});
+    const counts = orders
+      .get('data')
+      .toJS()
+      .reduce((p, c) => {
+        const name = c.integration.channel;
+        if (!p.hasOwnProperty(name)) {
+          p[name] = 0;
+        }
+        p[name]++;
+        return p;
+      }, {});
 
-    var countsExtended = Object.keys(counts).map(k => {
+    const countsExtended = Object.keys(counts).map(k => {
       return { name: k, value: counts[k] };
     });
 
@@ -151,7 +135,7 @@ class Dashboard extends Component {
             >
               <CompossedLineBarArea
                 orders={orders}
-                loadingState={loadingState}
+                loading={loadingState && loading}
               />
             </PapperBlock>
           </Grid>

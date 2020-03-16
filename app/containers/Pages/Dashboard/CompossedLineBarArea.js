@@ -40,15 +40,17 @@ class CompossedLineBarArea extends Component {
   render() {
     const { classes, orders, loading } = this.props;
 
-    const collection = orders.get('data').map(item => ({
-      ...item,
-      day: item
-        .get('updated_date')
-        .split('-')
-        .reverse()
-        .join('-'),
-      month: moment(item.updated_date).format('MMM')
-    }));
+    const collection = orders
+      .get('data')
+      .toJS()
+      .map(item => ({
+        ...item,
+        day: item.updated_date
+          .split('-')
+          .reverse()
+          .join('-'),
+        month: moment(item.updated_date).format('MMM')
+      }));
 
     const mapDayToMonth = collection.map(x => ({
       ...x,
