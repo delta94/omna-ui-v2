@@ -6,14 +6,13 @@ import {
   withStyles, createMuiTheme, MuiThemeProvider, Tooltip
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
-import get from 'lodash/get';
 import moment from 'moment';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import PageHeader from '../../Common/PageHeader';
-import { setCollectionList, installCollection, uninstallCollection } from '../../../actions/CollectionActions';
+import { setAvailableIntegrationList, installAvailableIntegration, uninstallAvailableIntegration } from '../../../actions/AvailableIntegrationsActions';
 import Utils from '../../Common/Utils';
 
 const styles = theme => ({
@@ -42,9 +41,9 @@ const getMuiTheme = () => createMuiTheme({
   }
 });
 
-function CollectionList(props) {
+function AvailableIntegrationList(props) {
   const {
-    classes, history, collections, fetchCollections, total, loading, /* task */
+    classes, history, availableIntegrations, fetchAvailableIntegrations, total, loading, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [_params, _setParams] = useState({
@@ -54,24 +53,17 @@ function CollectionList(props) {
   });
 
   useEffect(() => {
-    const { enqueueSnackbar } = props;
-    try {
-      fetchCollections({ ..._params });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
+    fetchAvailableIntegrations({ ..._params }, enqueueSnackbar);
   }, [_params]);
 
   const handleInstall = async (id) => {
-    const { enqueueSnackbar, onInstallCollection } = props;
-    onInstallCollection(id, enqueueSnackbar);
+    const { onInstall } = props;
+    onInstall(id, enqueueSnackbar);
   };
 
   const handleUninstall = (id) => {
-    const { enqueueSnackbar, onUninstallCollection } = props;
-    onUninstallCollection(id, enqueueSnackbar);
+    const { onUninstall } = props;
+    onUninstall(id, enqueueSnackbar);
   };
 
   const handleChangePage = (_page) => {
@@ -194,11 +186,11 @@ function CollectionList(props) {
 
   return (
     <div>
-      <PageHeader title="Collections" history={history} />
+      <PageHeader title="Available Integrations" history={history} />
       <div className={classes.table}>
         {loading ? <Loading /> : null}
         <MuiThemeProvider theme={getMuiTheme()}>
-          <MUIDataTable columns={columns} data={collections} options={options} />
+          <MUIDataTable columns={columns} data={availableIntegrations} options={options} />
         </MuiThemeProvider>
       </div>
     </div>
@@ -206,34 +198,34 @@ function CollectionList(props) {
 }
 
 const mapStateToProps = state => ({
-  collections: state.getIn(['collections', 'collections']).toJS(),
-  task: state.getIn(['collections', 'task']),
-  total: state.getIn(['collections', 'total']),
-  loading: state.getIn(['collections', 'loading']),
+  availableIntegrations: state.getIn(['availableIntegration', 'availableIntegrations']).toJS(),
+  task: state.getIn(['availableIntegration', 'task']),
+  total: state.getIn(['availableIntegration', 'total']),
+  loading: state.getIn(['availableIntegration', 'loading']),
   ...state
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchCollections: bindActionCreators(setCollectionList, dispatch),
-  onInstallCollection: bindActionCreators(installCollection, dispatch),
-  onUninstallCollection: bindActionCreators(uninstallCollection, dispatch),
+  fetchAvailableIntegrations: bindActionCreators(setAvailableIntegrationList, dispatch),
+  onInstall: bindActionCreators(installAvailableIntegration, dispatch),
+  onUninstall: bindActionCreators(uninstallAvailableIntegration, dispatch),
 });
 
 const CollectionListMapped = connect(
   mapStateToProps,
   mapDispatchToProps
-)(CollectionList);
+)(AvailableIntegrationList);
 
-CollectionList.propTypes = {
+AvailableIntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   total: PropTypes.number.isRequired,
   loading: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  collections: PropTypes.array.isRequired,
-  fetchCollections: PropTypes.func.isRequired,
-  onInstallCollection: PropTypes.func.isRequired,
-  onUninstallCollection: PropTypes.func.isRequired
+  availableIntegrations: PropTypes.array.isRequired,
+  fetchAvailableIntegrations: PropTypes.func.isRequired,
+  onInstall: PropTypes.func.isRequired,
+  onUninstall: PropTypes.func.isRequired
 };
 
 export default withSnackbar(withStyles(styles)(CollectionListMapped));

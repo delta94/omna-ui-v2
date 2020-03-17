@@ -29,8 +29,8 @@ import {
 } from '../../actions/TenantActions';
 import { pushNotification, setNotificationList } from '../../actions/NotificationActions';
 import { TENANT_NOT_READY_INFO, DISABLED_TENANT_INFO, SUBSCRIBE_INFO } from '../Notification/AlertConstants';
-import { installOv2CollectionAction, subscribeAction } from '../Notification/AlertActions';
-import { installCollection } from '../../actions/CollectionActions';
+import { installOv2AvailableIntegrationAction, subscribeAction } from '../Notification/AlertActions';
+import { installAvailableIntegration } from '../../actions/AvailableIntegrationsActions';
 
 const styles = () => ({
   root: {
@@ -60,14 +60,14 @@ function TenantMenu(props) {
 
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
-    const { onPushNotification, onInstallCollection, enqueueSnackbar } = props;
+    const { onPushNotification, onInstall, enqueueSnackbar } = props;
     const isEnabled = Utils.isTenantEnabled(deactivationDate);
     const subscribeNotif = { message: SUBSCRIBE_INFO`${tenantName}`, variant: 'error', action: subscribeAction };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
     const deactivation = Utils.getDeactivationDate(deactivationDate);
     const deactivationNotif = { message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`, variant: 'info', action: subscribeAction };
     deactivation >= 1 ? onPushNotification(deactivationNotif) : null;
-    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2CollectionAction(() => onInstallCollection('omna_v2', enqueueSnackbar))};
+    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2AvailableIntegrationAction(() => onInstall('omna_v2', enqueueSnackbar))};
     !isReadyToOmna ? onPushNotification(tenantNotReadyNotif) : null;
   }
 
@@ -233,7 +233,7 @@ TenantMenu.propTypes = {
   changeTenantName: PropTypes.func.isRequired,
   onSetNotifications: PropTypes.func.isRequired,
   onPushNotification: PropTypes.func.isRequired,
-  onInstallCollection: PropTypes.func.isRequired,
+  onInstall: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
@@ -253,7 +253,7 @@ const mapDispatchToProps = dispatch => ({
   changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
   changeTenantName: bindActionCreators(setTenantName, dispatch),
   onPushNotification: bindActionCreators(pushNotification, dispatch),
-  onInstallCollection: bindActionCreators(installCollection, dispatch),
+  onInstall: bindActionCreators(installAvailableIntegration, dispatch),
   onSetNotifications: bindActionCreators(setNotificationList, dispatch),
 });
 

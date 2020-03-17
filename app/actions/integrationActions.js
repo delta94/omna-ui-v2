@@ -14,4 +14,9 @@ export const getChannels = query => {
   };
 };
 
+export const setLoading = (query) => ({
+  type: actionConstants.SET_LOADING,
+  query
+});
+
 export const getIntegration = () => {};

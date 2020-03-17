@@ -2,23 +2,23 @@ import { fromJS, List } from 'immutable';
 import * as types from '../../actions/actionConstants';
 
 const initialState = fromJS({
-  collections: [],
+  availableIntegrations: [],
   task: null,
   total: 0,
   loading: true
 });
 
-export default function collectionsReducer(state = initialState, action) {
+export default function availableIntegrationsReducer(state = initialState, action) {
   switch (action.type) {
-    case types.SET_COLLECTIONS:
+    case types.SET_AVAILABLE_INTEGRATIONS:
       return state.withMutations((mutableState) => {
-        mutableState.set('collections', List(action.data));
+        mutableState.set('availableIntegrations', List(action.data));
       });
-    case types.INSTALL_COLLECTION:
+    case types.INSTALL_AVAILABLE_INTEGRATION:
       return state.withMutations((mutableState) => {
         mutableState.set('task', action.data);
       });
-    case types.UNINSTALL_COLLECTION:
+    case types.UNINSTALL_AVAILABLE_INTEGRATION:
       return state.withMutations((mutableState) => {
         mutableState.set('task', action.data);
       });
