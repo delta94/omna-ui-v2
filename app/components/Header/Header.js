@@ -21,7 +21,7 @@ class Header extends React.Component {
   state = {
     open: false,
     turnDarker: false,
-    showTitle: false,
+    showTitle: false
   };
 
   // Initial header style
@@ -31,7 +31,7 @@ class Header extends React.Component {
 
   componentDidMount = () => {
     window.addEventListener('scroll', this.handleScroll);
-  }
+  };
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -40,8 +40,8 @@ class Header extends React.Component {
   handleScroll = () => {
     const doc = document.documentElement;
     const scroll = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
-    const newFlagDarker = (scroll > 30);
-    const newFlagTitle = (scroll > 40);
+    const newFlagDarker = scroll > 30;
+    const newFlagTitle = scroll > 40;
     if (this.flagDarker !== newFlagDarker) {
       this.setState({ turnDarker: newFlagDarker });
       this.flagDarker = newFlagDarker;
@@ -50,7 +50,7 @@ class Header extends React.Component {
       this.setState({ showTitle: newFlagTitle });
       this.flagTitle = newFlagTitle;
     }
-  }
+  };
 
   /*   openFullScreen = () => {
       this.setState({ fullScreen: true });
@@ -95,15 +95,11 @@ class Header extends React.Component {
       position,
       gradient,
       title,
-      history,
+      history
     } = this.props;
-    const {
-      open,
-      turnDarker,
-      showTitle
-    } = this.state;
+    const { open, turnDarker, showTitle } = this.state;
 
-    const setMargin = (sidebarPosition) => {
+    const setMargin = sidebarPosition => {
       if (sidebarPosition === 'right-sidebar') {
         return classes.right;
       }
@@ -114,18 +110,19 @@ class Header extends React.Component {
 
     return (
       <AppBar
-        className={
-          classNames(
-            classes.appBar,
-            classes.floatingBar,
-            margin && classes.appBarShift,
-            setMargin(position),
-            turnDarker && classes.darker,
-            gradient ? classes.gradientBg : classes.solidBg
-          )
-        }
+        className={classNames(
+          classes.appBar,
+          classes.floatingBar,
+          margin && classes.appBarShift,
+          setMargin(position),
+          turnDarker && classes.darker,
+          gradient ? classes.gradientBg : classes.solidBg
+        )}
       >
-        <Toolbar disableGutters={!open} style={{ justifyContent: 'space-between' }}>
+        <Toolbar
+          disableGutters={!open}
+          style={{ justifyContent: 'space-between' }}
+        >
           <Fab
             size="small"
             className={classes.menuButton}
@@ -136,7 +133,13 @@ class Header extends React.Component {
           </Fab>
           <Hidden smDown>
             <div className={classes.headerProperties}>
-              <Typography component="h2" className={classNames(classes.headerTitle, showTitle && classes.show)}>
+              <Typography
+                component="h2"
+                className={classNames(
+                  classes.headerTitle,
+                  showTitle && classes.show
+                )}
+              >
                 {title}
               </Typography>
             </div>
@@ -153,15 +156,17 @@ class Header extends React.Component {
             </div>
           )} */}
 
-          {
-            currentTenant && currentTenant.fromShopifyApp && (
-              <ShopInfo name={currentTenant.shop} 
-                        title={currentTenant.shopDomain} 
-              />)
-          }
-          {
-            currentTenant && !currentTenant.fromShopifyApp && (
-              <div>
+          {currentTenant ? (
+            currentTenant.fromShopifyApp ? (
+              <ShopInfo
+                name={currentTenant.shop}
+                title={currentTenant.shopDomain}
+              />
+            ) : (
+              <div
+                className={classNames(classes.headerProperties)}
+                style={{ flex: 'auto 0' }}
+              >
                 <TenantMenu history={history} />
                 <Hidden xsDown>
                   <span className={classes.separatorV} />
@@ -169,8 +174,7 @@ class Header extends React.Component {
                 <UserMenu />
               </div>
             )
-          }
-
+          ) : null}
         </Toolbar>
       </AppBar>
     );
@@ -185,7 +189,7 @@ Header.propTypes = {
   position: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Header);
