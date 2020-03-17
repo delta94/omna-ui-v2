@@ -2,12 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
-
-/* material-ui */
 import Tooltip from '@material-ui/core/Tooltip';
-import Ionicon from 'react-ionicons';
-import { Button, IconButton } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import {
   withStyles,
   createMuiTheme,
@@ -65,8 +61,7 @@ class WebhookList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () =>
-    createMuiTheme({
+  getMuiTheme = () => createMuiTheme({
       overrides: {
         MUIDataTableToolbar: {
           filterPaper: {
@@ -125,7 +120,9 @@ class WebhookList extends React.Component {
   }
 
   callAPI = () => {
-    const { limit, page, searchTerm, serverSideFilterList } = this.state;
+    const {
+ limit, page, searchTerm, serverSideFilterList 
+} = this.state;
     const params = {
       offset: page * limit,
       limit,
@@ -239,7 +236,7 @@ class WebhookList extends React.Component {
 
   handleAddWebhookClick = () => {
     const { history } = this.props;
-    history.push(`/app/webhooks/add-webhook`);
+    history.push('/app/webhooks/add-webhook');
   };
 
   render() {
@@ -323,8 +320,7 @@ class WebhookList extends React.Component {
               <Tooltip title="edit">
                 <EditIcon
                   color="action"
-                  onClick={() =>
-                    this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)
+                  onClick={() => this.handleEdit(tableMeta ? tableMeta.rowData[0] : null)
                   }
                 />
               </Tooltip>

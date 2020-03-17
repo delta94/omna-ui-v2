@@ -25,7 +25,8 @@ import {
   EditWebhook,
   DashboardPage,
   TenantConfiguration,
-  AddTenant
+  AddTenant,
+  InstallShopify
 } from '../pageListAsync';
 
 class Application extends React.Component {
@@ -55,11 +56,7 @@ class Application extends React.Component {
               path="/app/tasks/:id"
               component={TaskDetails}
             />
-            <AuthGuardRoute
-              exact
-              path="/app/products"
-              component={Products}
-            />
+            <AuthGuardRoute exact path="/app/products" component={Products} />
             <AuthGuardRoute
               exact
               path="/app/products/add-product"
@@ -90,11 +87,7 @@ class Application extends React.Component {
               path="/app/integrations/add-integration"
               component={AddIntegrationForm}
             />
-            <AuthGuardRoute
-              exact
-              path="/app/workflows"
-              component={Workflows}
-            />
+            <AuthGuardRoute exact path="/app/workflows" component={Workflows} />
             <AuthGuardRoute
               exact
               path="/app/workflows/add-workflow"
@@ -110,11 +103,7 @@ class Application extends React.Component {
               path="/app/add-tenant"
               component={AddTenant}
             />
-            <AuthGuardRoute
-              exact
-              path="/app/webhooks"
-              component={Webhooks}
-            />
+            <AuthGuardRoute exact path="/app/webhooks" component={Webhooks} />
             <AuthGuardRoute
               exact
               path="/app/webhooks/add-webhook"
@@ -125,10 +114,19 @@ class Application extends React.Component {
               path="/app/webhooks/:id"
               component={EditWebhook}
             />
+            <AuthGuardRoute
+              exact
+              path="/app/shopify"
+              component={InstallShopify}
+            />
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={DashboardPage} />
             <AuthGuardRoute exact path="/" component={DashboardPage} />
-            <AuthGuardRoute exact path="/app/tenant-configuration" component={TenantConfiguration} />
+            <AuthGuardRoute
+              exact
+              path="/app/tenant-configuration"
+              component={TenantConfiguration}
+            />
             {/* Default */}
             <Route component={NotFound} />
           </Switch>

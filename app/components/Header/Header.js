@@ -12,6 +12,8 @@ import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
 // import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
+import Utils from '../../containers/Common/Utils';
+import ShopInfo from '../../containers/Shopify/Components/ShopInfo';
 
 // const elem = document.documentElement;
 
@@ -108,6 +110,8 @@ class Header extends React.Component {
       return classes.left;
     };
 
+    const currentTenant = Utils.getTenant();
+
     return (
       <AppBar
         className={
@@ -149,11 +153,24 @@ class Header extends React.Component {
             </div>
           )} */}
 
-          <TenantMenu history={history} />
-          <Hidden xsDown>
-            <span className={classes.separatorV} />
-          </Hidden>
-          <UserMenu />
+          {
+            currentTenant && currentTenant.fromShopifyApp && (
+              <ShopInfo name={currentTenant.shop} 
+                        title={currentTenant.shopDomain} 
+              />)
+          }
+          {
+            currentTenant && !currentTenant.fromShopifyApp && (
+              <div>
+                <TenantMenu history={history} />
+                <Hidden xsDown>
+                  <span className={classes.separatorV} />
+                </Hidden>
+                <UserMenu />
+              </div>
+            )
+          }
+
         </Toolbar>
       </AppBar>
     );

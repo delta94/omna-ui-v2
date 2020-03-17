@@ -5,7 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { GuideSlider } from 'dan-components';
-import { toggleAction, openAction, playTransitionAction } from 'dan-actions/UiActions';
+import {
+  toggleAction,
+  openAction,
+  playTransitionAction
+} from 'dan-actions/UiActions';
 import LeftSidebarLayout from './layouts/LeftSidebarLayout';
 import RightSidebarLayout from './layouts/RightSidebarLayout';
 import LeftSidebarBigLayout from './layouts/LeftSidebarBigLayout';
@@ -35,7 +39,7 @@ class Dashboard extends React.Component {
         loadTransition(true);
       }, 500);
     });
-  }
+  };
 
   handleOpenGuide = () => {
     this.setState({ openGuide: true });
@@ -62,21 +66,25 @@ class Dashboard extends React.Component {
       changeMode
     } = this.props;
     const { openGuide } = this.state;
-    const titleException = ['/app', '/app/crm-dashboard', '/app/crypto-dashboard'];
+    const titleException = [
+      '/app',
+      '/app/crm-dashboard',
+      '/app/crypto-dashboard'
+    ];
     const parts = history.location.pathname.split('/');
     const place = parts[parts.length - 1].replace('-', ' ');
     return (
       <div
-        className={
-          classNames(
-            classes.appFrameInner,
-            layout === 'top-navigation' || layout === 'mega-menu' ? classes.topNav : classes.sideNav,
-            mode === 'dark' ? 'dark-mode' : 'light-mode'
-          )
-        }
+        className={classNames(
+          classes.appFrameInner,
+          layout === 'top-navigation' || layout === 'mega-menu'
+            ? classes.topNav
+            : classes.sideNav,
+          mode === 'dark' ? 'dark-mode' : 'light-mode'
+        )}
       >
         <GuideSlider openGuide={openGuide} closeGuide={this.handleCloseGuide} />
-        { /* Left Sidebar Layout */
+        {/* Left Sidebar Layout */
           layout === 'left-sidebar' && (
             <LeftSidebarLayout
               history={history}
@@ -93,11 +101,10 @@ class Dashboard extends React.Component {
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >
-              { children }
+              {children}
             </LeftSidebarLayout>
-          )
-        }
-        { /* Left Big-Sidebar Layout */
+          )}
+        {/* Left Big-Sidebar Layout */
           layout === 'big-sidebar' && (
             <LeftSidebarBigLayout
               history={history}
@@ -114,11 +121,10 @@ class Dashboard extends React.Component {
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >
-              { children }
+              {children}
             </LeftSidebarBigLayout>
-          )
-        }
-        { /* Right Sidebar Layout */
+          )}
+        {/* Right Sidebar Layout */
           layout === 'right-sidebar' && (
             <RightSidebarLayout
               history={history}
@@ -135,11 +141,10 @@ class Dashboard extends React.Component {
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >
-              { children }
+              {children}
             </RightSidebarLayout>
-          )
-        }
-        { /* Top Bar with Dropdown Menu */
+          )}
+        {/* Top Bar with Dropdown Menu */
           layout === 'top-navigation' && (
             <DropMenuLayout
               history={history}
@@ -156,11 +161,10 @@ class Dashboard extends React.Component {
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >
-              { children }
+              {children}
             </DropMenuLayout>
-          )
-        }
-        { /* Top Bar with Mega Menu */
+          )}
+        {/* Top Bar with Mega Menu */
           layout === 'mega-menu' && (
             <MegaMenuLayout
               history={history}
@@ -177,10 +181,9 @@ class Dashboard extends React.Component {
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >
-              { children }
+              {children}
             </MegaMenuLayout>
-          )
-        }
+          )}
       </div>
     );
   }
@@ -212,13 +215,13 @@ const mapStateToProps = state => ({
   deco: state.getIn([reducer, 'decoration']),
   layout: state.getIn([reducer, 'layout']),
   bgPosition: state.getIn([reducer, 'bgPosition']),
-  ...state,
+  ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   toggleDrawer: () => dispatch(toggleAction),
   initialOpen: bindActionCreators(openAction, dispatch),
-  loadTransition: bindActionCreators(playTransitionAction, dispatch),
+  loadTransition: bindActionCreators(playTransitionAction, dispatch)
 });
 
 const DashboardMaped = connect(
@@ -226,4 +229,4 @@ const DashboardMaped = connect(
   mapDispatchToProps
 )(Dashboard);
 
-export default (withStyles(styles)(DashboardMaped));
+export default withStyles(styles)(DashboardMaped);

@@ -7,16 +7,37 @@ import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
+import InstallShopify from '../../Shopify/Components/InstallShopify';
+import getSettingsInfo from '../../Shopify/Services/ShopifyService';
+
 import {
-  setTenantStatus, setTenantId, setDeactivationDate, setEnabledTenant, setTenantName
+  setTenantStatus,
+  setTenantId,
+  setDeactivationDate,
+  setEnabledTenant,
+  setTenantName
 } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
-  componentDidMount() {
+  constructor(props) {
+    super(props);
+    this.state = { installShopify: false };
+  }
+
+  async componentDidMount() {
     const {
-      history, location, changeTenantStatus, changeTenantId, changeDeactivationDate, changeEnabledTenant, changeTenantName
+      history,
+      location,
+      changeTenantStatus,
+      changeTenantId,
+      changeDeactivationDate,
+      changeEnabledTenant,
+      changeTenantName
     } = this.props;
-    const { redirect, code, path } = location.state;
+    const { redirect, code, pathname, store } = location.state;
+
+    // let plansResult = [];
+
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
@@ -38,18 +59,44 @@ class LockScreen extends React.Component {
         changeTenantName(data.name);
         changeDeactivationDate(data.deactivation);
         changeEnabledTenant(currentTenant.enabled);
-        path ? history.push(path) : history.push('/');
+        pathname ? history.push(pathname) : history.push('/');
       });
-    } else {
+    }
+
+    if (store) {
+      const result = await getSettingsInfo.getSettingsInfo(this.props);
+      if (result) {
+        // plansResult = await getSettingsInfo.getPlanInfo(store);
+
+        // if (plansResult) {
+        this.setState({
+          installShopify: result
+        });
+        pathname ? history.push(pathname) : history.push('/');
+        // }
+      }
+    }
+
+    if (!code && !store) {
       window.location.replace(redirect);
     }
   }
 
   render() {
     const { classes } = this.props;
+    const { installShopify } = this.state;
     return (
-      <div className={classes.root}>
-        <Loading />
+      <div>
+        {installShopify ? (
+          <div className={classes.root}>
+            <Loading />
+          </div>
+        ) : (
+          <div>
+            {' '}
+            <InstallShopify />
+          </div>
+        )}
       </div>
     );
   }
@@ -66,10 +113,10 @@ LockScreen.propTypes = {
   changeTenantName: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
   tenantId: state.getIn(['tenant', 'tenantId']),
-  ...state,
+  ...state
 });
 
 const dispatchToProps = dispatch => ({
@@ -77,7 +124,7 @@ const dispatchToProps = dispatch => ({
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
   changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
-  changeTenantName: bindActionCreators(setTenantName, dispatch),
+  changeTenantName: bindActionCreators(setTenantName, dispatch)
 });
 
 const LockScreenMapped = connect(

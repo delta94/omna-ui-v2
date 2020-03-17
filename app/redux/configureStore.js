@@ -60,5 +60,12 @@ export default function configureStore(initialState = {}, history) {
     });
   }
 
+  // To know if its Shopify App TO DO
+  // if (location.search.includes('store')) {
+  //   store.fromShopifyApp = true;
+  // } else {
+  //   store.fromShopifyApp = false;
+  // }
+
   return store;
 }

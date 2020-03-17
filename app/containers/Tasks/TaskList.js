@@ -293,15 +293,10 @@ class TaskList extends React.Component {
           //   names: integrationFilterOptions
           // },
           customBodyRender: (value, tableMeta) => {
-            const [
-              id,
-              description,
-              date,
-              status,
-              progress,
-              notificationsArray,
-              scheduler
-            ] = tableMeta.rowData;
+            const status = tableMeta.rowData[3];
+            const progress = tableMeta.rowData[4];
+            const notificationsArray = tableMeta.rowData[5];
+            const scheduler = tableMeta.rowData[6];
 
             const notifications =
               Array.isArray(notificationsArray) && notificationsArray.length > 0
@@ -317,8 +312,8 @@ class TaskList extends React.Component {
                   {notifications === 'error' ||
                   notifications === 'warning' ||
                   notifications === 'info' ? (
-                      <NotificationBottom type={notifications} />
-                    ) : null}
+                    <NotificationBottom type={notifications} />
+                  ) : null}
                   {scheduler ? (
                     <Tooltip title="This task has a schedule">
                       <IconButton aria-label="Schedule">
