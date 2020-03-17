@@ -19,13 +19,13 @@ export const goToTaskAction = (id) => (
     variant="body2"
     style={{ marginRight: '10px' }}
     component={RouterLink}
-    to={`app/tasks/${id}`}
+    to={`tasks/${id}`}
   >
     Go to task
   </Link>
 );
 
-export const installOv2CollectionAction = (onInstallCollection) => (
+export const installOv2AvailableIntegrationAction = (onInstallCollection) => (
   <IconButton
     key="install"
     aria-label="install"

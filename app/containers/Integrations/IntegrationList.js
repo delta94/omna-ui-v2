@@ -5,23 +5,25 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import { withStyles } from '@material-ui/core/styles';
 import {
-  Button,
   Grid,
   Paper,
   Table,
   TableRow,
   TableFooter,
-  TablePagination
+  TablePagination,
+  Tooltip,
+  IconButton
 } from '@material-ui/core';
+import Ionicon from 'react-ionicons';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
-import Utils from 'dan-containers/Common/Utils';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
-import API from 'dan-containers/Utils/api';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import { getIntegrations } from 'dan-actions/integrationActions';
+import { getIntegrations, setLoading } from 'dan-actions/integrationActions';
 import { AsyncSearch, Loading } from 'dan-components';
-import Integration from './Integration';
+import API from 'dan-containers/Utils/api';
+import Utils from 'dan-containers/Common/Utils';
 import AddIntegrationForm from './AddIntegrationForm';
+import Integration from './Integration';
 
 const styles = theme => ({
   cardList: {
@@ -38,14 +40,17 @@ const styles = theme => ({
   pos: {
     marginBottom: 2
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
   background: {
     backgroundColor: theme.palette.background.paper
   }
 });
 
-class Integrations extends Component {
+class IntegrationList extends Component {
   state = {
-    loadingState: true,
     openForm: false,
     alertDialog: {
       open: false,
@@ -73,12 +78,12 @@ class Integrations extends Component {
   };
 
   handleUnAuthorization = id => {
-    const { enqueueSnackbar } = this.props;
-    this.setState({ loadingState: true });
+    const { enqueueSnackbar, onSetLoading } = this.props;
+    onSetLoading(true);
     API.delete(`/integrations/${id}/authorize`, {
       data: { data: { integration_id: id } }
     })
-      .then(response => {
+      .then(() => {
         enqueueSnackbar('Integration unauthorized successfully', {
           variant: 'success'
         });
@@ -90,7 +95,7 @@ class Integrations extends Component {
       })
       .then(() => {
         this.getIntegrations();
-        this.setState({ loadingState: false });
+        onSetLoading(false);
       });
   };
 
@@ -176,31 +181,35 @@ class Integrations extends Component {
 
   render() {
     const { classes, history, integrations, loading } = this.props;
-    const { alertDialog, limit, openForm, loadingState, page } = this.state;
-
+    const { alertDialog, limit, openForm, page } = this.state;
     const { pagination, data } = integrations;
     const count = get(pagination, 'total', 0);
 
     return (
       <div>
-        <PageHeader title="My integrations" history={history} />
-        {loading || loadingState ? <Loading /> : null}
+        <PageHeader title="Installed integrations" history={history} />
+        {loading ? <Loading /> : null}
         <div>
           <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
-            <div className="display-flex justify-content-space-between align-items-center">
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={this.handleAddIntegrationClick}
-              >
-                Add Integration
-              </Button>
-
+            <div className={classes.actions}>
               <AsyncSearch
                 label="Search integration name"
                 loading={loading}
                 onChange={this.handleSearch}
               />
+              <Tooltip title="add">
+                <IconButton aria-label="add" onClick={this.handleAddIntegrationClick}>
+                  <Ionicon icon="md-add-circle" />
+                </IconButton>
+              </Tooltip>
+              {/* <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.handleAddIntegrationClick}
+              >
+                Add Integration
+              </Button> */}
+
             </div>
           </Paper>
           <Grid container>
@@ -212,13 +221,13 @@ class Integrations extends Component {
                   channel,
                   logo = Utils.getLogo(channel),
                   authorized,
-                  channel_title
+                  channel_title: channelTitle
                 }) => (
                   <Grid item md={3} xs={12}>
                     <Integration
                       key={id}
                       name={name}
-                      group={channel_title}
+                      group={channelTitle}
                       logo={logo}
                       channel={channel}
                       authorized={authorized}
@@ -273,12 +282,13 @@ class Integrations extends Component {
   }
 }
 
-Integrations.propTypes = {
+IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
+  onSetLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
@@ -288,10 +298,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetIntegrations: query => dispatch(getIntegrations(query))
+  onGetIntegrations: query => dispatch(getIntegrations(query)),
+  onSetLoading: query => dispatch(setLoading(query))
 });
 
-const MyIntegrationsMapped = withSnackbar(withStyles(styles)(Integrations));
+const MyIntegrationsMapped = withSnackbar(withStyles(styles)(IntegrationList));
 
 export default connect(
   mapStateToProps,

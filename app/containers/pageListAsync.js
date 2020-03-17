@@ -47,7 +47,7 @@ export const TaskDetails = loadable(() => import('./Tasks/TaskDetails'), {
   fallback: <Loading />
 });
 
-export const Collections = loadable(() => import('./Settings/Collections/CollectionList'), {
+export const AvailableIntegrations = loadable(() => import('./Integrations/AvailableIntegrations/AvailableIntegrationList'), {
   fallback: <Loading />
 });
 
@@ -83,11 +83,11 @@ export const AddProduct = loadable(() => import('./Products/AddProduct'), {
   fallback: <Loading />
 });
 
-export const AvailableIntegrations = loadable(() => import('./Integrations/AvailableIntegrations'), {
+export const Channels = loadable(() => import('./Integrations/Channels/ChannelList'), {
   fallback: <Loading />
 });
 
-export const Integrations = loadable(() => import('./Integrations/Integrations'), {
+export const InstalledIntegrations = loadable(() => import('./Integrations/IntegrationList'), {
   fallback: <Loading />
 });
 

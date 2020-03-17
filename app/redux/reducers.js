@@ -16,7 +16,7 @@ import flowsReducer from './modules/flows';
 import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
 import integrationsReducer from './modules/integrations';
-import collectionsReducer from './modules/collections';
+import availableIntegrationsReducer from './modules/availableIntegrations';
 import notificationsReducer from './modules/notifications';
 
 /**
@@ -33,7 +33,7 @@ export default function createReducer(injectedReducers = {}) {
     integration: integrationsReducer,
     notification: notificationsReducer,
     product: productsReducer,
-    collections: collectionsReducer,
+    availableIntegration: availableIntegrationsReducer,
     initval,
     language: languageProviderReducer,
     flow: flowsReducer,

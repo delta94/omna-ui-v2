@@ -18,8 +18,8 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
-import Integration from './Integration';
-import AddIntegrationForm from './AddIntegrationForm';
+import Integration from '../Integration';
+import AddIntegrationForm from '../AddIntegrationForm';
 
 const styles = theme => ({
   cardList: {
@@ -41,7 +41,7 @@ const styles = theme => ({
   }
 });
 
-class AvailableIntegrations extends Component {
+class ChannelList extends Component {
   state = {
     openForm: false,
     channel: {},
@@ -81,7 +81,6 @@ class AvailableIntegrations extends Component {
       limit,
       term: searchTerm
     };
-
     onGetChannels(params);
   };
 
@@ -118,7 +117,7 @@ class AvailableIntegrations extends Component {
 
     return (
       <div>
-        <PageHeader title="Available integrations" history={history} />
+        <PageHeader title="Channels" history={history} />
         {loading ? <Loading /> : null}
         <div>
           <Paper style={{ margin: '0 4px 8px' }}>
@@ -184,7 +183,7 @@ class AvailableIntegrations extends Component {
   }
 }
 
-AvailableIntegrations.propTypes = {
+ChannelList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   channels: PropTypes.array.isRequired,
@@ -201,11 +200,11 @@ const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query))
 });
 
-const AvailableIntegrationsMapped = withSnackbar(
-  withStyles(styles)(AvailableIntegrations)
+const ChannelsMapped = withSnackbar(
+  withStyles(styles)(ChannelList)
 );
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AvailableIntegrationsMapped);
+)(ChannelsMapped);
