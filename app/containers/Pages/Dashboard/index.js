@@ -83,7 +83,7 @@ class Dashboard extends Component {
 
   render() {
     const { webhooks, tasks, loadingState } = this.state;
-    const { orders, flows, loading } = this.props;
+    const { orders, flows, loadingOrders, loadingFlows } = this.props;
 
     const title = brand.name + ' - Dashboard';
     const description = brand.desc;
@@ -114,7 +114,7 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        {loading ? (
+        {loadingOrders || loadingFlows ? (
           <Loading />
         ) : (
           <PerformanceChartWidget
@@ -128,14 +128,14 @@ class Dashboard extends Component {
         <Grid container spacing={2}>
           <Grid item md={8} xs={12}>
             <PapperBlock
-              title="Orders Total Price / Month"
+              title="Orders / Month"
               icon="ios-stats-outline"
               desc=""
               overflowX
             >
               <CompossedLineBarArea
                 orders={orders}
-                loading={loadingState && loading}
+                loading={loadingState && loadingOrders}
               />
             </PapperBlock>
           </Grid>
@@ -155,13 +155,15 @@ Dashboard.propTypes = {
   onGetWorkflows: PropTypes.func.isRequired,
   orders: PropTypes.object.isRequired,
   onGetOrders: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired
+  loadingFlows: PropTypes.bool.isRequired,
+  loadingOrders: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => ({
-  orders: state.getIn(['order', 'orders']),
   flows: state.getIn(['flow', 'flows']),
-  loading: state.getIn(['flow', 'loading'])
+  loadingFlows: state.getIn(['flow', 'loading']),
+  loadingOrders: state.getIn(['order', 'loading']),
+  orders: state.getIn(['order', 'orders']),
 });
 
 const mapDispatchToProps = dispatch => ({

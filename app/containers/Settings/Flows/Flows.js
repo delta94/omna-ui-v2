@@ -31,7 +31,7 @@ class Flows extends Component {
       objectName: '',
       message: ''
     },
-    isLoading: true,
+    isLoading: false,
     integrationFilterOptions: [],
     limit: 10,
     page: 0,
@@ -208,9 +208,10 @@ class Flows extends Component {
       serverSideFilterList,
       anchorEl
     } = this.state;
-    const { pagination, data } = flows;
+    const pagination = flows.get('pagination');
+    const data = flows.get('data').toJS();
     const count = get(pagination, 'total', 0);
-
+    
     const columns = [
       {
         name: 'id',
@@ -365,19 +366,20 @@ class Flows extends Component {
             break;
         }
       },
-      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+      customSort: (customSortData, colIndex, order) =>
+        customSortData.sort((a, b) => {
           switch (colIndex) {
             case 3:
               return (
-                (parseFloat(a.customSortData[colIndex])
-                < parseFloat(b.customSortData[colIndex])
+                (parseFloat(a.customSortData[colIndex]) <
+                parseFloat(b.customSortData[colIndex])
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
             case 4:
               return (
-                (a.customSortData[colIndex].name.toLowerCase()
-                < b.customSortData[colIndex].name.toLowerCase()
+                (a.customSortData[colIndex].name.toLowerCase() <
+                b.customSortData[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
@@ -438,8 +440,8 @@ Flows.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  loading: state.getIn(['integration', 'loading']),
-  flows: state.getIn(['flows', 'flows']),
+  loading: state.getIn(['flow', 'loading']),
+  flows: state.getIn(['flow', 'flows']),
   integrations: state.getIn(['integration', 'integrations'])
 });
 
