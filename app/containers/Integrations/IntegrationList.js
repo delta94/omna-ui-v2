@@ -150,7 +150,8 @@ class IntegrationList extends Component {
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm
+      term: searchTerm,
+      with_details: true
     };
 
     onGetIntegrations(params);
