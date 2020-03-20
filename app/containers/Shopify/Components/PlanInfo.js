@@ -20,7 +20,28 @@ const useStyles = makeStyles(() => ({
     marginLeft: '1.5% !important',
     marginRight: '1.5% !important'
   },
+  cardSelected: {
+    display: 'inline-block',
+    width: '30%',
+    minWidth: '250px',
+    maxWidth: 'unset !important',
+    marginLeft: '1.5% !important',
+    marginRight: '1.5% !important',
+    border: 1
+  },
   monthly: {
+    fontSize: '18px'
+  },
+  buttonProgress: {
+    // color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  },
+  planSelected: {
+    color: '#070038',
     fontSize: '18px'
   }
 }));
@@ -31,11 +52,18 @@ function PlanInfo(props) {
     price,
     costByOrder,
     orderLimit,
-    cappedAmount,
-    trialDays,
     actionLabel,
-    classes
+    classes,
+    CreatePlanAction,
+    ActivatePlanAction,
+    planCurrentStatus,
+    planCurrent,
+    ConfirmPlanAction,
+    CancelPlanAction
   } = props;
+
+  // const [loading, setLoading] = useState(false);
+  // const [success, setSuccess] = useState(false);
 
   const planStyles = useStyles();
 
@@ -54,41 +82,158 @@ function PlanInfo(props) {
 
   return (
     <Card
-      className={classNames(classes.priceCard, getType(name), planStyles.card)}
+      className={classNames(
+        classes.priceCard,
+        getType(name),
+        planCurrent.name === name ? planStyles.cardSelected : planStyles.card
+      )}
     >
       <div className={classes.priceHead}>
         <Typography variant="h5">{name}</Typography>
+        {planCurrent.name === name && (
+          <span className={planStyles.planSelected}>-Plan Selected-</span>
+        )}
         <Typography component="h4" variant="h2">
-          ${price}
+          $
+          {price}
         </Typography>
         <span className={planStyles.monthly}>monthly</span>
       </div>
       <CardContent className={classes.featureList}>
         <ul>
+          <li>Unlimited Marketplaces</li>
+          <li>Unlimited Products Sync</li>
+          <li>Real-Time Inventory Sync</li>
+          <li>
+            Includes
+            {orderLimit}
+            {' '}
+            orders per month
+          </li>
+          <li>
+            Additional order at US$
+            {costByOrder}
+            /order
+          </li>
+          {/* <li>${costByOrder} per Order</li>
           <li>${costByOrder} per Order</li>
-          <li>Manage until {orderLimit} orders</li>
+          <li>
+            Manage until
+            {orderLimit} orders
+          </li>
           <li>Maximum price of ${cappedAmount}</li>
-          <li>{trialDays} trial days</li>
+          <li>{trialDays} trial days</li> */}
         </ul>
       </CardContent>
       <CardActions className={classes.btnArea}>
-        <Button variant="outlined" size="large" className={classes.lightButton}>
-          {actionLabel}
-        </Button>
+        {planCurrent.name !== name && (
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.lightButton}
+            onClick={() => {
+              CreatePlanAction(name);
+            }}
+          >
+            {actionLabel}
+          </Button>
+        )}
+
+        {planCurrent.name === name && planCurrent.status === 'cancelled' && (
+          <Button
+            variant="outlined"
+            size="large"
+            className={classes.lightButton}
+            onClick={() => {
+              CreatePlanAction(name);
+            }}
+          >
+            {actionLabel}
+          </Button>
+        )}
+
+        {planCurrentStatus === 'pending' && planCurrent.name === name && (
+          <div>
+            <Button
+              variant="outlined"
+              size="large"
+              className={classes.lightButton}
+              onClick={() => {
+                ConfirmPlanAction(name);
+              }}
+            >
+              Confirm it
+            </Button>
+          </div>
+        )}
+
+        {planCurrentStatus === 'accepted' && planCurrent.name === name && (
+          <div>
+            {' '}
+            <Button
+              variant="outlined"
+              size="small"
+              className={classes.lightButton}
+              onClick={() => {
+                ActivatePlanAction(planCurrent.id);
+              }}
+            >
+              Activate it
+            </Button>
+          </div>
+        )}
+
+        {planCurrentStatus === 'active' && planCurrent.name === name && (
+          <div>
+            {' '}
+            <Button
+              variant="outlined"
+              size="small"
+              color="secondary"
+              className={classes.lightButton}
+              onClick={() => {
+                // setLoadingBtn(true);
+                const resp = CancelPlanAction(planCurrent.id);
+                if (resp) {
+                  // setLoadingBtn(false);
+                }
+              }}
+            >
+              {/* {loadingBtn && ( */}
+              {/* <CircularProgress size={24} className={classes.buttonProgress} /> */}
+              {/* )}{' '} */}
+              Cancel it
+            </Button>
+          </div>
+        )}
       </CardActions>
     </Card>
   );
 }
-
-export default withStyles(styles)(PlanInfo);
 
 PlanInfo.propTypes = {
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   costByOrder: PropTypes.number.isRequired,
   orderLimit: PropTypes.number.isRequired,
-  cappedAmount: PropTypes.number.isRequired,
-  trialDays: PropTypes.number.isRequired,
   actionLabel: PropTypes.string,
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  CreatePlanAction: PropTypes.function,
+  ActivatePlanAction: PropTypes.function,
+  planCurrent: PropTypes.object,
+  planCurrentStatus: PropTypes.string,
+  ConfirmPlanAction: PropTypes.function,
+  CancelPlanAction: PropTypes.function
 };
+
+PlanInfo.defaultProps = {
+  actionLabel: '',
+  planCurrent: {},
+  planCurrentStatus: '',
+  CreatePlanAction: () => {},
+  ActivatePlanAction: () => {},
+  ConfirmPlanAction: () => {},
+  CancelPlanAction: () => {}
+};
+
+export default withStyles(styles)(PlanInfo);
