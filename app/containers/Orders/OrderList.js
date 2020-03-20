@@ -1,25 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-// import classNames from 'classnames';
 import moment from 'moment';
-// import { connect } from 'react-redux';
-// import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
-import API from '../Utils/api';
+import { getOrders } from 'dan-actions/orderActions';
+import { getIntegrations } from 'dan-actions/integrationActions';
 import Utils from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
-// const variantIcon = Utils.iconVariants();
-// import { getOrders } from '../../actions/orderActions';
 
 const styles = theme => ({
   table: {
@@ -40,11 +33,8 @@ const styles = theme => ({
   }
 });
 
-class OrderList extends React.Component {
+class OrderList extends Component {
   state = {
-    isLoading: true,
-    orders: { data: [], pagination: {} },
-    integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -55,55 +45,14 @@ class OrderList extends React.Component {
     this.callAPI();
   }
 
-  getMuiTheme = () => createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
-        }
-      }
-    });
-
-  getOrders(params) {
-    const { enqueueSnackbar } = this.props;
-    API.get('/orders', { params })
-      .then(response => {
-        this.setState({
-          orders: get(response, 'data', { data: [], pagination: {} }),
-          limit: get(response, 'data.pagination.limit', 0)
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .finally(() => {
-        this.setState({ isLoading: false });
-      });
-  }
-
-  getIntegrations() {
-    const { enqueueSnackbar } = this.props;
-    API.get('/integrations', { params: { limit: 100, offset: 0 } })
-      .then(response => {
-        const { data } = response.data;
-        const integrations = data.map(item => item.id);
-        this.setState({ integrationFilterOptions: integrations });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      });
-  }
-
   callAPI = () => {
-    // const { onGetOrders } = this.props;
     const {
- searchTerm, limit, page, serverSideFilterList 
-} = this.state;
+      enqueueSnackbar,
+      error,
+      onGetIntegrations,
+      onGetOrders
+    } = this.props;
+    const { searchTerm, limit, page, serverSideFilterList } = this.state;
     const params = {
       offset: page * limit,
       limit,
@@ -111,10 +60,13 @@ class OrderList extends React.Component {
       integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
 
-    this.setState({ isLoading: true });
-    this.getIntegrations();
-    this.getOrders(params);
-    // onGetOrders(params);
+    onGetIntegrations({ limit: 100, offset: 0 });
+    onGetOrders(params);
+
+    if (error)
+      enqueueSnackbar(error, {
+        variant: 'error'
+      });
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -169,21 +121,15 @@ class OrderList extends React.Component {
   };
 
   render() {
-    const { classes, history } = this.props;
-    const {
-      integrationFilterOptions,
-      isLoading,
-      limit,
-      orders,
-      page,
-      serverSideFilterList,
-      searchTerm
-    } = this.state;
-    const { pagination, data } = orders;
+    const { classes, history, orders, loading, integrations } = this.props;
+    const { limit, page, serverSideFilterList, searchTerm } = this.state;
+    const pagination = orders.get('pagination');
+    const data = orders.get('data').toJS();
+    const count = pagination.get('total');
 
-    const count = get(pagination, 'total', 0);
-
-    console.log(orders);
+    const integrationFilterOptions = integrations.data
+      ? integrations.data.map(integration => integration.id)
+      : [];
 
     const columns = [
       {
@@ -216,7 +162,7 @@ class OrderList extends React.Component {
         name: 'currency',
         options: {
           filter: false,
-          display: 'exclude'
+          display: 'excluded'
         }
       },
       {
@@ -225,7 +171,8 @@ class OrderList extends React.Component {
         options: {
           filter: false,
           customBodyRender: (value, tableMeta) => {
-            const { currency } = tableMeta.rowData;
+            const currency = tableMeta.rowData[3];
+
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}
@@ -327,10 +274,11 @@ class OrderList extends React.Component {
       <div>
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
-          {isLoading ? <Loading /> : null}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
+          {loading ? (
+            <Loading />
+          ) : (
             <MUIDataTable columns={columns} data={data} options={options} />
-          </MuiThemeProvider>
+          )}
         </div>
       </div>
     );
@@ -338,8 +286,12 @@ class OrderList extends React.Component {
 }
 
 OrderList.propTypes = {
-  // orders: PropTypes.array.isRequired,
-  // onGetOrders: PropTypes.func.isRequired,
+  orders: PropTypes.object.isRequired,
+  onGetOrders: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.object.isRequired,
+  integrations: PropTypes.object.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
@@ -347,17 +299,21 @@ OrderList.propTypes = {
   }).isRequired
 };
 
-// const mapStateToProps = state => ({
-//   orders: state.getIn(['orders'])
-// });
+const mapStateToProps = state => ({
+  orders: state.getIn(['order', 'orders']),
+  loading: state.getIn(['order', 'loading']),
+  error: state.getIn(['order', 'error']),
+  integrations: state.getIn(['integration', 'integrations'])
+});
 
-// const mapDispatchToProps = dispatch => ({
-//   onGetOrders: bindActionCreators(params => getOrders(params), dispatch)
-// });
+const mapDispatchToProps = dispatch => ({
+  onGetOrders: params => dispatch(getOrders(params)),
+  onGetIntegrations: params => dispatch(getIntegrations(params))
+});
 
-// const OrderListMapped = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(OrderList);
+const OrderListMapped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(OrderList);
 
-export default withSnackbar(withStyles(styles)(OrderList));
+export default withSnackbar(withStyles(styles)(OrderListMapped));

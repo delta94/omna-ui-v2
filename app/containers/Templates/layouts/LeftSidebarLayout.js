@@ -1,12 +1,11 @@
 import React, { Fragment } from 'react';
 import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 import classNames from 'classnames';
-import Fade from '@material-ui/core/Fade';
+import { Fade, Link } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
-import Link from '@material-ui/core/Link';
-import { Link as RouterLink } from 'react-router-dom';
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
@@ -23,7 +22,6 @@ const subscribeAction = (
         window.open('https://cenit.io/billing');
       }}
     >
-
       subscribe for Tenant Activation
     </Link>
   </div>
@@ -37,7 +35,6 @@ const action = (
       component={RouterLink}
       to="/app/add-tenant"
     >
-
       Create new Tenant
     </Link>
   </div>

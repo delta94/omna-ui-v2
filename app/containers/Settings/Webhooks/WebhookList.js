@@ -2,12 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { withSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
-
-/* material-ui */
 import Tooltip from '@material-ui/core/Tooltip';
-import Ionicon from 'react-ionicons';
-import { Button, IconButton } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import {
   withStyles,
   createMuiTheme,

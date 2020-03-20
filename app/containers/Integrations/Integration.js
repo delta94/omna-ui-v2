@@ -16,12 +16,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import BlockIcon from '@material-ui/icons/Block';
 
-import Utils from 'dan-containers/Common/Utils';
-
 const Integration = props => {
   const {
     name,
-    channel,
     group,
     logo,
     authorized,
@@ -32,6 +29,9 @@ const Integration = props => {
     noActions,
     handleAddIntegration
   } = props;
+
+  let subtitle = group.replace('[', '');
+  subtitle = subtitle.replace(']', '');
 
   return (
     <Card
@@ -65,7 +65,7 @@ const Integration = props => {
             </Typography>
           }
           style={{ padding: '48px 16px' }}
-          subheader={Utils.fullChannelName(channel)}
+          subheader={subtitle}
         />
       ) : (
         <img
@@ -149,18 +149,19 @@ Integration.defaultProps = {
   authorized: false,
   onIntegrationAuthorized: () => {},
   onIntegrationUnauthorized: () => {},
-  onIntegrationDeleted: () => {}
+  onIntegrationDeleted: () => {},
+  handleAddIntegration: () => {}
 };
 
 Integration.propTypes = {
   name: PropTypes.string,
   logo: PropTypes.string,
-  channel: PropTypes.string,
   authorized: PropTypes.bool,
   classes: PropTypes.object.isRequired,
   onIntegrationAuthorized: PropTypes.func,
   onIntegrationUnauthorized: PropTypes.func,
-  onIntegrationDeleted: PropTypes.func
+  onIntegrationDeleted: PropTypes.func,
+  handleAddIntegration: PropTypes.func
 };
 
 export default Integration;

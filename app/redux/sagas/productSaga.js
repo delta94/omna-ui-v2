@@ -1,12 +1,15 @@
 import { takeLatest, put } from 'redux-saga/effects';
-import API from '../containers/Utils/api';
+import api from 'dan-containers/Utils/api';
 
 function* prodVariantsAsync(dispatch) {
   const { integrationId, remoteProductId } = dispatch.payload;
   const params = { with_details: true };
   try {
     yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC_LOADING', loading: true });
-    const response = yield API.get(`/integrations/${integrationId}/products/${remoteProductId}/variants`, { params });
+    const response = yield api.get(
+      `/integrations/${integrationId}/products/${remoteProductId}/variants`,
+      { params }
+    );
     const { data } = response.data;
     yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC', data });
   } catch (error) {

@@ -28,15 +28,20 @@ module.exports = [
     icon: 'md-git-pull-request',
     child: [
       {
-        key: 'my-integrations',
-        name: 'My Integrations',
-        link: '/app/integrations'
+        key: 'channels',
+        name: 'Channels',
+        link: '/app/channels'
       },
       {
         key: 'available-integrations',
         name: 'Available Integrations',
         link: '/app/available-integrations'
-      }
+      },
+      {
+        key: 'installed-integrations',
+        name: 'Installed Integrations',
+        link: '/app/installed-integrations'
+      },
     ]
   },
   {

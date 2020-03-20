@@ -14,7 +14,10 @@ import initval from './modules/initForm';
 import auth from './modules/auth';
 import flowsReducer from './modules/flows';
 import ordersReducer from './modules/orders';
+import productsReducer from './modules/products';
 import integrationsReducer from './modules/integrations';
+import availableIntegrationsReducer from './modules/availableIntegrations';
+import notificationsReducer from './modules/notifications';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -22,16 +25,19 @@ import integrationsReducer from './modules/integrations';
 export default function createReducer(injectedReducers = {}) {
   const rootReducer = combineReducers({
     auth,
-    orders: ordersReducer,
+    order: ordersReducer,
     form,
     login,
     ui: uiReducer,
     tenant: tenantReducer,
-    integrations: integrationsReducer,
+    integration: integrationsReducer,
+    notification: notificationsReducer,
+    product: productsReducer,
+    availableIntegration: availableIntegrationsReducer,
     initval,
     language: languageProviderReducer,
+    flow: flowsReducer,
     router: connectRouter(history),
-    flows: flowsReducer,
     ...injectedReducers
   });
 

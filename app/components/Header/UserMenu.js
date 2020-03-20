@@ -46,7 +46,10 @@ class UserMenu extends React.Component {
     return (
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
-          <Avatar alt={user} src={user ? user.picture : dummy.user.avatar} />
+          <Avatar
+            alt={user ? user.name : 'user-avatar'}
+            src={user ? user.picture : dummy.user.avatar}
+          />
           <Hidden xsDown>
             <div style={{ color: 'white', marginLeft: 8 }}>
               {user ? user.name : ''}

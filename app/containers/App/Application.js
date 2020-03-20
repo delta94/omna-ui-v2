@@ -14,7 +14,8 @@ import {
   EditProduct,
   AddProduct,
   AvailableIntegrations,
-  Integrations,
+  Channels,
+  InstalledIntegrations,
   AddIntegrationForm,
   Workflows,
   AddWorkflow,
@@ -73,8 +74,13 @@ class Application extends React.Component {
             />
             <AuthGuardRoute
               exact
-              path="/app/integrations"
-              component={Integrations}
+              path="/app/channels"
+              component={Channels}
+            />
+            <AuthGuardRoute
+              exact
+              path="/app/installed-integrations"
+              component={InstalledIntegrations}
             />
             <AuthGuardRoute
               exact

@@ -1,26 +1,22 @@
 import React, { Component } from 'react';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-
-// material-ui
+import { connect } from 'react-redux';
 import {
+  Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  MenuItem,
+  TextField,
   withStyles
 } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Divider from '@material-ui/core/Divider';
-//
 import Loading from 'dan-components/Loading';
-//
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
 import Utils from 'dan-containers/Common/Utils';
-import PageHeader from 'dan-containers/Common/PageHeader';
+import { getChannels } from 'dan-actions/integrationActions';
 
 const styles = () => ({
   inputWidth: {
@@ -37,26 +33,12 @@ class AddIntegrationForm extends Component {
     selectedChannel: '',
     authorized: true,
     errors: {},
-    loadingState: false,
-    channels: []
+    loadingState: false
   };
 
   componentDidMount() {
-    this.getChannels();
-  }
-
-  getChannels() {
-    API.get('integrations/channels')
-      .then(response => {
-        this.setState({ channels: response.data, loadingState: false });
-      })
-      .catch(error => {
-        // handle error
-        console.log(error);
-      })
-      .then(() => {
-        this.setState({ loadingState: false });
-      });
+    const { onGetChannels } = this.props;
+    onGetChannels();
   }
 
   onInputChange = e => {
@@ -68,11 +50,10 @@ class AddIntegrationForm extends Component {
   };
 
   onSubmit = e => {
-    const { enqueueSnackbar, history } = this.props;
     e.preventDefault();
+    const { enqueueSnackbar, handleClose } = this.props;
     const { integration: name, selectedChannel, authorized } = this.state;
 
-    // validate form
     if (!name) {
       this.setState({ errors: { integration: 'Integration is required' } });
     } else if (!selectedChannel) {
@@ -85,7 +66,6 @@ class AddIntegrationForm extends Component {
             variant: 'success'
           });
           const { data } = response.data;
-          //history.goBack();
           if (authorized && data.id) {
             this.handleAuthorization(data.id);
           }
@@ -98,7 +78,7 @@ class AddIntegrationForm extends Component {
           }
         })
         .then(() => {
-          this.props.handleClose();
+          handleClose();
           this.setState({ loadingState: false });
         });
     }
@@ -110,19 +90,26 @@ class AddIntegrationForm extends Component {
   };
 
   handleClose = () => {
+    const { handleClose } = this.props;
     this.setState({ selectedChannel: '' });
-    this.props.handleClose();
+    handleClose();
   };
 
   render() {
-    const { channel, classes, handleClose, open } = this.props;
+    const {
+      channel,
+      channels,
+      classes,
+      handleClose,
+      loading,
+      open
+    } = this.props;
     const {
       integration,
       selectedChannel,
-      channels,
       authorized,
-      errors,
-      loadingState
+      loadingState,
+      errors
     } = this.state;
 
     if (selectedChannel === '' && open) {
@@ -131,7 +118,7 @@ class AddIntegrationForm extends Component {
 
     return (
       <div>
-        {loadingState && <Loading />}
+        {loading && <Loading />}
         <Dialog aria-labelledby="form-dialog" onClose={handleClose} open={open}>
           <DialogTitle id="form-dialog-title">Add Integration</DialogTitle>
           <DialogContent className={classes.formContainer}>
@@ -206,8 +193,29 @@ class AddIntegrationForm extends Component {
 
 AddIntegrationForm.propTypes = {
   classes: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired
+  channel: PropTypes.object.isRequired,
+  channels: PropTypes.object.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  onGetChannels: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(AddIntegrationForm));
+const mapStateToProps = state => ({
+  loading: state.getIn(['integration', 'loading']),
+  channels: state.getIn(['integration', 'channels'])
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetChannels: query => dispatch(getChannels(query))
+});
+
+const AddIntegrationFormMapped = withSnackbar(
+  withStyles(styles)(AddIntegrationForm)
+);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddIntegrationFormMapped);

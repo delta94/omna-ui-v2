@@ -35,6 +35,7 @@ class OrderItems extends Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const { currency } = tableMeta.rowData;
+
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}

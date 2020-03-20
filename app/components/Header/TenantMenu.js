@@ -11,7 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
@@ -27,6 +27,10 @@ import {
   setEnabledTenant,
   setTenantName
 } from '../../actions/TenantActions';
+import { pushNotification, setNotificationList } from '../../actions/NotificationActions';
+import { TENANT_NOT_READY_INFO, DISABLED_TENANT_INFO, SUBSCRIBE_INFO } from '../Notification/AlertConstants';
+import { installOv2AvailableIntegrationAction, subscribeAction } from '../Notification/AlertActions';
+import { installAvailableIntegration } from '../../actions/AvailableIntegrationsActions';
 
 const styles = () => ({
   root: {
@@ -45,13 +49,27 @@ const styles = () => ({
   }
 });
 
+
 function TenantMenu(props) {
-  const { classes, reloadTenants } = props;
+  const { classes, reloadTenants, onSetNotifications } = props;
   const [name, setName] = useState('');
   const [tenantList, setTenantList] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+
+  const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
+    const { onPushNotification, onInstall, enqueueSnackbar } = props;
+    const isEnabled = Utils.isTenantEnabled(deactivationDate);
+    const subscribeNotif = { message: SUBSCRIBE_INFO`${tenantName}`, variant: 'error', action: subscribeAction };
+    !isEnabled ? onPushNotification(subscribeNotif) : null;
+    const deactivation = Utils.getDeactivationDate(deactivationDate);
+    const deactivationNotif = { message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`, variant: 'info', action: subscribeAction };
+    deactivation >= 1 ? onPushNotification(deactivationNotif) : null;
+    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2AvailableIntegrationAction(() => onInstall('omna_v2', enqueueSnackbar))};
+    !isReadyToOmna ? onPushNotification(tenantNotReadyNotif) : null;
+  }
 
   useEffect(() => {
     async function changeTenant() {
@@ -64,8 +82,10 @@ function TenantMenu(props) {
           changeReloadTenants(false);
           data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
-          const found = data.find(element => element.id === tenantId);
-          setName(found.name);
+          const tenant = data.find(element => element.id === tenantId);
+          setName(tenant.name);
+          const { name: tenantName, is_ready_to_omna: isReadyToOmna, deactivation } = tenant;
+          loadNotications(tenantName, isReadyToOmna, deactivation);
         } catch (error) {
           enqueueSnackbar(
             get(error, 'response.data.message', 'Unknown error'),
@@ -81,7 +101,7 @@ function TenantMenu(props) {
 
   useEffect(() => {
     async function getTenants() {
-      const { enqueueSnackbar, tenantId } = props;
+      const { tenantId, enqueueSnackbar } = props;
       try {
         // TO DO: adjust total of elements to show in combobox
         const params = { limit: 100, offset: 0 };
@@ -92,8 +112,10 @@ function TenantMenu(props) {
         const found = data.findIndex(element => element.id === tenantId);
         setSelectedIndex(found);
         // const found = data.find(element => element.id === tenantId);
-        const element = data[found];
-        setName(element.name);
+        const tenant = data[found];
+        const { name: tenantName, is_ready_to_omna: isReadyToOmna, deactivation } = tenant;
+        setName(tenantName);
+        loadNotications(tenantName, isReadyToOmna, deactivation);
       } catch (error) {
         enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
           variant: 'error'
@@ -120,25 +142,24 @@ function TenantMenu(props) {
       setAnchorEl(null);
       const response = await API.get(`tenants/${tenantId}`);
       const { data } = response.data;
+      const { id, name: tenantName, token, secret, is_ready_to_omna: isReadyToOmna, deactivation } = data;
       const tenant = Utils.getTenant();
-      tenant.name = data.name;
-      tenant.token = data.token;
-      tenant.secret = data.secret;
-      tenant.isReadyToOmna = data.is_ready_to_omna;
-      tenant.tenantId = data.id;
-      tenant.enabled = Utils.isTenantEnabled(data.deactivation);
+      tenant.name = tenantName;
+      tenant.token = token;
+      tenant.secret = secret;
+      tenant.isReadyToOmna = isReadyToOmna;
+      tenant.tenantId = id;
+      tenant.enabled = Utils.isTenantEnabled(deactivation);
       Utils.setTenant(tenant);
-      changeTenantStatus(data.is_ready_to_omna);
-      changeTenantId(data.id);
-      changeDeactivationDate(data.deactivation);
+      changeTenantStatus(isReadyToOmna);
+      changeTenantId(id);
+      changeDeactivationDate(deactivation);
+      changeTenantName(tenantName);
       changeEnabledTenant(tenant.enabled);
-      changeTenantName(data.name);
-      if (!data.is_ready_to_omna) {
-        history.push('/app/tenant-configuration');
-      } else {
-        changeReloadLandingPage(true);
-        history.push('/app');
-      }
+      onSetNotifications([]);
+      loadNotications(tenantName, isReadyToOmna, deactivation);
+      changeReloadLandingPage(true);
+      history.push('/app');
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -210,6 +231,9 @@ TenantMenu.propTypes = {
   changeEnabledTenant: PropTypes.func.isRequired,
   changeTenantId: PropTypes.func.isRequired,
   changeTenantName: PropTypes.func.isRequired,
+  onSetNotifications: PropTypes.func.isRequired,
+  onPushNotification: PropTypes.func.isRequired,
+  onInstall: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
@@ -227,7 +251,10 @@ const mapDispatchToProps = dispatch => ({
   changeReloadLandingPage: bindActionCreators(setReloadLandingPage, dispatch),
   changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
   changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
-  changeTenantName: bindActionCreators(setTenantName, dispatch)
+  changeTenantName: bindActionCreators(setTenantName, dispatch),
+  onPushNotification: bindActionCreators(pushNotification, dispatch),
+  onInstall: bindActionCreators(installAvailableIntegration, dispatch),
+  onSetNotifications: bindActionCreators(setNotificationList, dispatch),
 });
 
 const TenantMenuMapped = withSnackbar(withStyles(styles)(TenantMenu));

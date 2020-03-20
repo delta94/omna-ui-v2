@@ -1,55 +1,48 @@
-import { fromJS, List } from 'immutable';
-import * as types from '../../actions/actionConstants';
+import { fromJS } from 'immutable';
+import * as actionConstants from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
-  product: null,
-  name: '',
-  description: '',
-  price: null,
-  variants: null,
-  integrations: [],
-  properties: [],
-  productVariants: [],
-  loadingState: false,
-  disabledForm: false,
-
+  integrations: { data: [], pagination: {} },
+  channels: { data: [], pagination: {} },
+  loading: false,
+  error: ''
 });
 
-export default function integrationsReducer(state = initialState, action) {
+export default (state = initialState, action = {}) => {
   switch (action.type) {
-    case 'GET_PRODUCT_VARIANTS_ASYNC':
-      return state.withMutations((mutableState) => {
-        mutableState.set('productVariants', List(action.data));
+    case actionConstants.GET_INTEGRATIONS_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', true);
       });
-    case 'GET_PRODUCT_VARIANTS_ASYNC_LOADING':
-      return state.withMutations((mutableState) => {
-        mutableState.set('loadingState', action.loading);
+    case actionConstants.GET_INTEGRATIONS_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('integrations', action.data);
+        mutableState.set('loading', false);
       });
-    case types.SET_PRODUCT:
-      return state.withMutations((mutableState) => {
-        mutableState.set('product', action.product);
+    case actionConstants.GET_INTEGRATIONS_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error);
+        mutableState.set('loading', false);
       });
-    case types.SET_PRODUCT_NAME:
-      return state.withMutations((mutableState) => {
-        mutableState.set('name', action.name);
+    case actionConstants.GET_CHANNELS_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', true);
       });
-    case types.SET_PRODUCT_DESCRIPTION:
-      return state.withMutations((mutableState) => {
-        mutableState.set('description', action.description);
+    case actionConstants.GET_CHANNELS_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('channels', action.data);
+        mutableState.set('loading', false);
       });
-    case types.SET_PRODUCT_PRICE:
-      return state.withMutations((mutableState) => {
-        mutableState.set('price', action.price);
+    case actionConstants.GET_CHANNELS_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error);
+        mutableState.set('loading', false);
       });
-    case types.SET_PRODUCT_INTEGRATIONS:
-      return state.withMutations((mutableState) => {
-        mutableState.set('integrations', action.integrations);
-      });
-    case types.SET_PRODUCT_PROPERTIES:
-      return state.withMutations((mutableState) => {
-        mutableState.set('properties', action.properties);
+    case actionConstants.SET_LOADING:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.loading);
       });
     default:
       return state;
   }
-}
+};
