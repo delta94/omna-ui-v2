@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import Loading from 'dan-components/Loading';
 import PlanInfo from './PlanInfo';
 import ShopifyService from '../Services/ShopifyService';
-import LoadingState from '../../Common/LoadingState';
-
 const useStyles = makeStyles(() => ({
   container: {
     padding: '20px',
@@ -31,10 +30,12 @@ function PlansBoard(props) {
 
   async function handleCreatePlan(name) {
 
+    setLoading(true);
     const result = await ShopifyService.CreatePlan(name, store);
     if (result) {
       currentPlanAction(result);
       currentPlanStatusAction(result.status);
+      setLoading(false);
     }
   }
 
@@ -42,26 +43,29 @@ function PlansBoard(props) {
     window.location.replace(planCurrent.confirmation_url);
   }
   async function handleActivatePlan(id) {
-
+    setLoading(true);
     const planAccepted = await ShopifyService.ActivatePlan(id, store);
     if (planAccepted) {
       currentPlanAction(planAccepted);
       currentPlanStatusAction(planAccepted.status);
+      setLoading(false);
     }
   }
 
   async function handelCancelPlan(planId) {
+    setLoading(true);
     const planCancelled = await ShopifyService.CancelPlan(planId, store);
     if (planCancelled) {
       currentPlanAction(planCancelled);
       currentPlanStatusAction(planCancelled.status);
+      setLoading(false);
     }
   }
   return (
     <div className={containerStyles.container}>
-      {loading && <LoadingState loading={loading} text="Loading Plan info" />}
+      {loading && <Loading />}
 
-      {!loading && (plansAvailable
+      {plansAvailable
         && plansAvailable.map(item => (
           <PlanInfo
             key={item.id}
@@ -80,7 +84,7 @@ function PlansBoard(props) {
             ConfirmPlanAction={handleConfirmPlan}
             CancelPlanAction={handelCancelPlan}
           />
-        )))
+        ))
       }
     </div>
   );
