@@ -63,44 +63,43 @@ function CurrentPlan({ planCurrent }) {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             {/* <Typography > */}
-              {/* <Grid> */}
-                {/* <div> */}
-                  <List className={classes.bodyPanel}>
-                      <ListItem>
-                        <ListItemText
-                          primary={`Price: ${planCurrent.price}`}
-                        />
-                      </ListItem>
-{/*
+            {/* <Grid> */}
+            {/* <div> */}
+            <List className={classes.bodyPanel}>
+              <ListItem>
+                <ListItemText primary={`Price: ${planCurrent.price}`} />
+              </ListItem>
+              {/*
                       <ListItem>
                         <ListItemText
                           primary={`Create at: ${planCurrent.created_at}`}
                         />
                       </ListItem> */}
 
-                      <ListItem>
-                        <ListItemText
-                          primary={`Activate on: ${planCurrent.activated_on}`}
-                        />
-                      </ListItem>
+              {planCurrent.activated_on && (
+                <ListItem>
+                  <ListItemText
+                    primary={`Activate on: ${planCurrent.activated_on}`}
+                  />
+                </ListItem>
+              )}
 
-                      <ListItem>
-                        <ListItemText
-                          primary={`Trial days: ${planCurrent.trial_days}`}
-                        />
-                      </ListItem>
+              <ListItem>
+                <ListItemText
+                  primary={`Trial days: ${planCurrent.trial_days}`}
+                />
+              </ListItem>
 
-                      {planCurrent.trial_ends_on
-                      && <ListItem>
-                        <ListItemText
-                          primary={`Trial days ends on: ${planCurrent.trial_ends_on}`}
-                        />
-                         </ListItem>
-                      }
-
-                  </List>
-                {/* </div> */}
-              {/* </Grid> */}
+              {planCurrent.trial_ends_on && (
+                <ListItem>
+                  <ListItemText
+                    primary={`Trial days ends on: ${planCurrent.trial_ends_on}`}
+                  />
+                </ListItem>
+              )}
+            </List>
+            {/* </div> */}
+            {/* </Grid> */}
             {/* </Typography> */}
           </ExpansionPanelDetails>
         </ExpansionPanel>
