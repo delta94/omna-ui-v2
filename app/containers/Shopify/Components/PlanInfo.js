@@ -105,7 +105,7 @@ function PlanInfo(props) {
           <li>Unlimited Products Sync</li>
           <li>Real-Time Inventory Sync</li>
           <li>
-            Includes
+            Includes {' '}
             {orderLimit}
             {' '}
             orders per month
@@ -139,7 +139,7 @@ function PlanInfo(props) {
           </Button>
         )}
 
-        {planCurrent.name === name && planCurrent.status === 'cancelled' && (
+        {planCurrent.name === name && (planCurrent.status === 'cancelled' || planCurrent.status === 'expired')&& (
           <Button
             variant="outlined"
             size="large"
