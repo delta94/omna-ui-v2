@@ -200,6 +200,10 @@ class Utils {
 
     return variantIcon;
   }
+
+  static isOmnaShopify() {
+    return JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp;
+  }
 }
 
 export default Utils;

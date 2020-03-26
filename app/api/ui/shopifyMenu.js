@@ -1,0 +1,77 @@
+module.exports = [
+  // {
+  //   key: 'dashboard',
+  //   name: 'Dashboard',
+  //   icon: 'ios-stats-outline',
+  //   link: '/app/dashboard'
+  // },
+  {
+    key: 'plans',
+    name: 'Plans Settings',
+    icon: 'ios-stats-outline',
+    link: '/app/shopify'
+  },
+  {
+    key: 'data',
+    name: 'Data',
+    icon: 'ios-apps-outline',
+    child: [
+      // {
+      //   key: 'orders',
+      //   name: 'Orders',
+      //   link: '/app/orders'
+      // },
+      {
+        key: 'products',
+        name: 'Products',
+        link: '/app/products'
+      }
+    ]
+  },
+  {
+    key: 'integrations',
+    name: 'Integrations',
+    icon: 'md-git-pull-request',
+    child: [
+      {
+        key: 'channels',
+        name: 'Channels',
+        link: '/app/channels'
+      },
+      {
+        key: 'available-integrations',
+        name: 'Available Integrations',
+        link: '/app/available-integrations'
+      },
+      {
+        key: 'installed-integrations',
+        name: 'Installed Integrations',
+        link: '/app/installed-integrations'
+      },
+    ]
+  }
+  // {
+  //   key: 'settings',
+  //   name: 'Settings',
+  //   icon: 'ios-settings',
+  //   child: [
+  //     {
+  //       key: 'workflows',
+  //       name: 'Workflows',
+  //       link: '/app/workflows'
+  //     },
+  //     {
+  //       key: 'webhooks',
+  //       name: 'Webhooks',
+  //       link: '/app/webhooks'
+  //     }
+  //   ]
+  // },
+  // {
+  //   key: 'tasks',
+  //   name: 'Tasks',
+  //   icon: 'ios-grid-outline',
+  //   link: '/app/tasks'
+  // }
+
+];

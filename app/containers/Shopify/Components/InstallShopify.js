@@ -35,7 +35,7 @@ function InstallShopify() {
   // const { store } = location.state;
 
   useEffect(() => {
-    // const storeName = JSON.parse(localStorage.getItem('currentTenant')).name;
+
     const storeName = JSON.parse(localStorage.getItem('currentTenant')).name;
 
     setStore(storeName);
@@ -61,7 +61,9 @@ function InstallShopify() {
     setPlanCurrentStatus(status);
   }
   return (
+
     <div>
+
       {loading === true && (
         <div className="item-padding">
           <LoadingState
