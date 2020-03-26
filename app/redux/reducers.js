@@ -15,6 +15,7 @@ import auth from './modules/auth';
 import flowsReducer from './modules/flows';
 import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
+import tasksReducer from './modules/tasks';
 import integrationsReducer from './modules/integrations';
 import availableIntegrationsReducer from './modules/availableIntegrations';
 import notificationsReducer from './modules/notifications';
@@ -37,6 +38,7 @@ export default function createReducer(injectedReducers = {}) {
     initval,
     language: languageProviderReducer,
     flow: flowsReducer,
+    task: tasksReducer,
     router: connectRouter(history),
     ...injectedReducers
   });

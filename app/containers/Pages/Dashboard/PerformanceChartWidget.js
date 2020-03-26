@@ -74,7 +74,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.purpleText}>
-                  {tasks.pagination.total}
+                  {tasks.getIn(['pagination', 'total'])}
                 </span>
                 <Typography>Tasks</Typography>
               </Typography>

@@ -10,7 +10,7 @@ const styles = {
     top: 0,
     left: 0,
     position: 'fixed',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    backgroundColor: 'rgba(0, 0, 0, 0.6)'
   },
   circularProgress: {
     zIndex: 1500,
@@ -26,9 +26,9 @@ function Loading(props) {
     <div className={classes.root}>
       <CircularProgress
         className={classes.circularProgress}
-        size={70}
-        thickness={2}
-        color="secondary"
+        size={60}
+        thickness={3}
+        color="primary"
       />
     </div>
   );

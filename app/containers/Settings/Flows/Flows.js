@@ -113,8 +113,8 @@ class Flows extends Component {
     const { enqueueSnackbar, onGetFlows } = this.props;
     try {
       this.setState({ isLoading: true });
-      await API.get(`flows/${id}/toggle/scheduler/status`);
-      onGetFlows();
+      await API.post(`flows/${id}/toggle/scheduler/status`);
+      // onGetFlows();
       enqueueSnackbar('Scheduler toggled successfully', {
         variant: 'success'
       });

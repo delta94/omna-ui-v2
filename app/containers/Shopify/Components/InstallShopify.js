@@ -31,7 +31,7 @@ function InstallShopify() {
   useEffect(() => {
     async function getPlans() {
       const result = await ShopifyService.getPlanInfoAvailablePlans(
-        'omnatesting2.myshopify.com'
+        'omnatesting3.myshopify.com'
       );
       if (result) {
         setPlansAvailable(result[0]);

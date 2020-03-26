@@ -4,15 +4,17 @@ import productSaga from './productSaga';
 import integrationSaga from './integrationSaga';
 import channelSaga from './channelSaga';
 import flowSaga from './flowSaga';
+import taskSaga from './taskSaga';
 import availableIntegrationSaga from './availableIntegrationSaga';
 
 export default function* rootSaga() {
   yield all([
-    channelSaga(),
     availableIntegrationSaga(),
+    channelSaga(),
     flowSaga(),
     integrationSaga(),
     orderSaga(),
-    productSaga()
+    productSaga(),
+    taskSaga()
   ]);
 }
