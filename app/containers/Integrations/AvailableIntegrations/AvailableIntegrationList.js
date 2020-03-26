@@ -81,7 +81,7 @@ function AvailableIntegrationList(props) {
 
   function handleSearch(_searchTerm) {
     if (_searchTerm) {
-      Utils.searchTermTimeout(_searchTerm, () => setSearchTerm(_searchTerm));
+      Utils.delay(_searchTerm, () => setSearchTerm(_searchTerm));
     } else if (_params.searchTerm) {
       setSearchTerm('');
     }
