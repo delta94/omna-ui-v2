@@ -4,30 +4,8 @@ import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
-import {
-  NotFound,
-  Tasks,
-  TaskDetails,
-  Orders,
-  OrderDetails,
-  Products,
-  EditProduct,
-  AddProduct,
-  AvailableIntegrations,
-  Channels,
-  InstalledIntegrations,
-  AddIntegrationForm,
-  Workflows,
-  AddWorkflow,
-  EditWorkflow,
-  Webhooks,
-  AddWebhook,
-  EditWebhook,
-  DashboardPage,
-  TenantConfiguration,
-  AddTenant,
-  InstallShopify
-} from '../pageListAsync';
+import { NotFound } from '../pageListAsync';
+import routes from './routes';
 
 class Application extends React.Component {
   render() {
@@ -39,94 +17,13 @@ class Application extends React.Component {
       >
         <Dashboard history={history} changeMode={changeMode}>
           <Switch>
-            <AuthGuardRoute
-              exact
-              path="/app/dashboard"
-              component={DashboardPage}
-            />
-            <AuthGuardRoute exact path="/app/orders" component={Orders} />
-            <AuthGuardRoute
-              exact
-              path="/app/orders/:number"
-              component={OrderDetails}
-            />
-            <AuthGuardRoute exact path="/app/tasks" component={Tasks} />
-            <AuthGuardRoute
-              exact
-              path="/app/tasks/:id"
-              component={TaskDetails}
-            />
-            <AuthGuardRoute exact path="/app/products" component={Products} />
-            <AuthGuardRoute
-              exact
-              path="/app/products/add-product"
-              component={AddProduct}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/products/:id"
-              component={EditProduct}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/available-integrations"
-              component={AvailableIntegrations}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/channels"
-              component={Channels}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/installed-integrations"
-              component={InstalledIntegrations}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/integrations/add-integration"
-              component={AddIntegrationForm}
-            />
-            <AuthGuardRoute exact path="/app/workflows" component={Workflows} />
-            <AuthGuardRoute
-              exact
-              path="/app/workflows/add-workflow"
-              component={AddWorkflow}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/workflows/:id"
-              component={EditWorkflow}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/add-tenant"
-              component={AddTenant}
-            />
-            <AuthGuardRoute exact path="/app/webhooks" component={Webhooks} />
-            <AuthGuardRoute
-              exact
-              path="/app/webhooks/add-webhook"
-              component={AddWebhook}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/webhooks/:id"
-              component={EditWebhook}
-            />
-            <AuthGuardRoute
-              exact
-              path="/app/shopify"
-              component={InstallShopify}
-            />
-            {/* Home */}
-            <AuthGuardRoute exact path="/app" component={DashboardPage} />
-            <AuthGuardRoute exact path="/" component={DashboardPage} />
-            <AuthGuardRoute
-              exact
-              path="/app/tenant-configuration"
-              component={TenantConfiguration}
-            />
+            {routes.map(route => (
+              <AuthGuardRoute
+                exact
+                path={route.link}
+                component={route.component}
+              />
+            ))}
             {/* Default */}
             <Route component={NotFound} />
           </Switch>

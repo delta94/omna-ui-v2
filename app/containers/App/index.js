@@ -14,18 +14,18 @@ class App extends React.Component {
           {changeMode => (
             <Switch>
               <Route
-                exact
+                // exact
                 path="/"
                 render={props => (
                   <Application {...props} changeMode={changeMode} />
                 )}
               />
-              <Route
+              {/* <Route
                 path="/app"
                 render={props => (
                   <Application {...props} changeMode={changeMode} />
                 )}
-              />
+              /> */}
               <Route component={Auth} />
               <Route component={NotFound} />
             </Switch>

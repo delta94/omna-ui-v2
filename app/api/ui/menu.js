@@ -9,7 +9,7 @@ export default [
     key: 'dashboard',
     name: 'Dashboard',
     icon: <DashboardIcon />,
-    link: '/app/dashboard'
+    link: '/dashboard'
   },
   {
     key: 'data',
@@ -19,12 +19,12 @@ export default [
       {
         key: 'orders',
         name: 'Orders',
-        link: '/app/orders'
+        link: '/orders'
       },
       {
         key: 'products',
         name: 'Products',
-        link: '/app/products'
+        link: '/products'
       }
     ]
   },
@@ -36,17 +36,17 @@ export default [
       {
         key: 'channels',
         name: 'Channels',
-        link: '/app/channels'
+        link: '/channels'
       },
       {
         key: 'available-integrations',
         name: 'Available Integrations',
-        link: '/app/available-integrations'
+        link: '/available-integrations'
       },
       {
         key: 'installed-integrations',
         name: 'Installed Integrations',
-        link: '/app/installed-integrations'
+        link: '/installed-integrations'
       }
     ]
   },
@@ -58,12 +58,12 @@ export default [
       {
         key: 'workflows',
         name: 'Workflows',
-        link: '/app/workflows'
+        link: '/workflows'
       },
       {
         key: 'webhooks',
         name: 'Webhooks',
-        link: '/app/webhooks'
+        link: '/webhooks'
       }
     ]
   },
@@ -71,6 +71,6 @@ export default [
     key: 'tasks',
     name: 'Tasks',
     icon: <TasksIcon />,
-    link: '/app/tasks'
+    link: '/tasks'
   }
 ];
