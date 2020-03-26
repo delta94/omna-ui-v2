@@ -8,7 +8,7 @@ import Dvr from '@material-ui/icons/Dvr';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Healing from '@material-ui/icons/Healing';
 import Avatar from '@material-ui/core/Avatar';
-import LocalActivity from '@material-ui/icons/LocalActivity';
+import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import Typography from '@material-ui/core/Typography';
 import styles from './widget-jss';
 
@@ -70,7 +70,7 @@ class PerformanceChartWidget extends PureComponent {
               <Avatar
                 className={classNames(classes.avatar, classes.purpleAvatar)}
               >
-                <LocalActivity />
+                <TasksIcon />
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.purpleText}>

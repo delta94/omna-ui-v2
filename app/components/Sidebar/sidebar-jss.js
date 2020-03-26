@@ -209,7 +209,7 @@ const styles = theme => ({
       paddingLeft: theme.spacing(3)
     },
     '& svg[class^="MuiSvgIcon"]': {
-      left: -10,
+      // left: -10,
       position: 'relative'
     }
   },
