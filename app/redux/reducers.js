@@ -6,6 +6,7 @@ import { combineReducers } from 'redux-immutable';
 import { connectRouter } from 'connected-react-router/immutable';
 import history from 'utils/history';
 
+import availableIntegrationsReducer from './modules/availableIntegrations';
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
 import login from './modules/login';
 import uiReducer from './modules/ui';
@@ -17,8 +18,8 @@ import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
 import tasksReducer from './modules/tasks';
 import integrationsReducer from './modules/integrations';
-import availableIntegrationsReducer from './modules/availableIntegrations';
 import notificationsReducer from './modules/notifications';
+import webhooksReducer from './modules/webhooks';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -39,6 +40,7 @@ export default function createReducer(injectedReducers = {}) {
     language: languageProviderReducer,
     flow: flowsReducer,
     task: tasksReducer,
+    webhook: webhooksReducer,
     router: connectRouter(history),
     ...injectedReducers
   });

@@ -71,9 +71,14 @@ export const SET_TENANT_NAME = 'SET_TENANT_NAME';
 export const GET_TENANT_ID = 'GET_TENANT_ID';
 export const SET_TENANT_ID = 'SET_TENANT_ID';
 
-
 // Tasks
 export const GET_TASKS = 'GET_TASKS';
 export const GET_TASKS_START = 'GET_TASKS_START';
 export const GET_TASKS_SUCCESS = 'GET_TASKS_SUCCESS';
 export const GET_TASKS_FAILED = 'GET_TASKS_FAILED';
+
+// Webhooks
+export const GET_WEBHOOKS = 'GET_WEBHOOKS';
+export const GET_WEBHOOKS_START = 'GET_WEBHOOKS_START';
+export const GET_WEBHOOKS_SUCCESS = 'GET_WEBHOOKS_SUCCESS';
+export const GET_WEBHOOKS_FAILED = 'GET_WEBHOOKS_FAILED';

@@ -3,22 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
-import get from 'lodash/get';
 import { PapperBlock, Loading, SalesChartWidget } from 'dan-components';
 import { withSnackbar } from 'notistack';
 import { getFlows } from 'dan-actions/flowActions';
 import { getOrders } from 'dan-actions/orderActions';
 import { getTasks } from 'dan-actions/taskActions';
+import { getWebhooks } from 'dan-actions/webhookActions';
 import { Grid } from '@material-ui/core';
-import api from '../../Utils/api';
 import PerformanceChartWidget from './PerformanceChartWidget';
 import CompossedLineBarArea from './CompossedLineBarArea';
 
 class Dashboard extends Component {
   state = {
-    webhooks: { data: [], pagination: {} },
     limit: 100,
-    page: 0,
     loadingState: false
   };
 
@@ -26,52 +23,34 @@ class Dashboard extends Component {
     this.callAPI();
   }
 
-  getWebhooks = params => {
-    const { enqueueSnackbar } = this.props;
-
-    api
-      .get('/webhooks', { params })
-      .then(response => {
-        this.setState({
-          webhooks: get(response, 'data', { data: [], pagination: {} })
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .finally(() => {
-        this.setState({ loadingState: false });
-      });
+  callAPI = () => {
+    const { onGetOrders, onGetFlows, onGetTasks, onGetWebhooks } = this.props;
+    this.setState({ loadingState: true });
+    onGetOrders(this.buildParams());
+    onGetFlows(this.buildParams());
+    onGetTasks(this.buildParams());
+    onGetWebhooks(this.buildParams());
   };
 
-  buildParams = params => {
-    const { limit, page } = this.state;
+  buildParams = () => {
+    const { limit } = this.state;
     return {
-      offset: page * limit,
-      limit,
-      params
+      offset: 0,
+      limit
     };
   };
 
-  callAPI = () => {
-    const { onGetOrders, onGetWorkflows, onGetTasks } = this.props;
-    this.setState({ loadingState: true });
-    onGetOrders(this.buildParams());
-    onGetWorkflows(this.buildParams());
-    onGetTasks(this.buildParams());
-  };
-
   render() {
-    const { webhooks, loadingState } = this.state;
+    const { loadingState } = this.state;
     const {
-      orders,
       flows,
       loadingOrders,
       loadingFlows,
       loadingTasks,
-      tasks
+      loadingWebhooks,
+      orders,
+      tasks,
+      webhooks
     } = this.props;
 
     const title = brand.name + ' - Dashboard';
@@ -103,12 +82,12 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        
-        {loadingOrders || loadingFlows || loadingTasks ? (
+
+        {loadingOrders || loadingFlows || loadingTasks || loadingWebhooks ? (
           <Loading />
         ) : (
           <PerformanceChartWidget
-            workflows={flows}
+            flows={flows}
             orders={orders}
             webhooks={webhooks}
             tasks={tasks}
@@ -140,16 +119,18 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired,
   flows: PropTypes.object.isRequired,
   loadingFlows: PropTypes.bool.isRequired,
   loadingOrders: PropTypes.bool.isRequired,
   loadingTasks: PropTypes.bool.isRequired,
+  loadingWebhooks: PropTypes.bool.isRequired,
   onGetOrders: PropTypes.func.isRequired,
+  onGetFlows: PropTypes.func.isRequired,
   onGetTasks: PropTypes.func.isRequired,
-  onGetWorkflows: PropTypes.func.isRequired,
+  onGetWebhooks: PropTypes.func.isRequired,
   orders: PropTypes.object.isRequired,
-  tasks: PropTypes.object.isRequired
+  tasks: PropTypes.object.isRequired,
+  webhooks: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -157,14 +138,17 @@ const mapStateToProps = state => ({
   loadingFlows: state.getIn(['flow', 'loading']),
   loadingOrders: state.getIn(['order', 'loading']),
   loadingTasks: state.getIn(['task', 'loading']),
+  loadingWebhooks: state.getIn(['webhook', 'loading']),
   orders: state.getIn(['order', 'orders']),
-  tasks: state.getIn(['task', 'tasks'])
+  tasks: state.getIn(['task', 'tasks']),
+  webhooks: state.getIn(['webhook', 'webhooks'])
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetOrders: params => dispatch(getOrders(params)),
-  onGetWorkflows: params => dispatch(getFlows(params)),
-  onGetTasks: params => dispatch(getTasks(params))
+  onGetFlows: params => dispatch(getFlows(params)),
+  onGetTasks: params => dispatch(getTasks(params)),
+  onGetWebhooks: params => dispatch(getWebhooks(params))
 });
 
 const DashboardMapped = withSnackbar(Dashboard);

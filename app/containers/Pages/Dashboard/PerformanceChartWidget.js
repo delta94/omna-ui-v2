@@ -14,7 +14,7 @@ import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
   render() {
-    const { classes, workflows, orders, webhooks, tasks } = this.props;
+    const { classes, flows, orders, webhooks, tasks } = this.props;
 
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
@@ -44,7 +44,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.tealText}>
-                  {webhooks.pagination.total}
+                  {webhooks.getIn(['pagination', 'total'])}
                 </span>
                 <Typography>Webhooks</Typography>
               </Typography>
@@ -59,7 +59,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.pinkText}>
-                  {workflows.getIn(['pagination', 'total'])}
+                  {flows.getIn(['pagination', 'total'])}
                 </span>
                 <Typography>Workflows</Typography>
               </Typography>
@@ -90,7 +90,7 @@ PerformanceChartWidget.propTypes = {
   classes: PropTypes.object.isRequired,
   orders: PropTypes.object,
   webhooks: PropTypes.object,
-  workflows: PropTypes.object,
+  flows: PropTypes.object,
   tasks: PropTypes.object
 };
 
