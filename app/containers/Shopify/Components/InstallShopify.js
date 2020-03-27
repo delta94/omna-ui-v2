@@ -32,23 +32,30 @@ function InstallShopify() {
   const [loading, setLoading] = useState(true);
   const [plansAvailable, setPlansAvailable] = useState([]);
   const [store, setStore] = useState('');
+  // const [isReadytoOmna, setIsReadytoOmna] = useState(false);
   // const { store } = location.state;
 
   useEffect(() => {
 
     const storeName = JSON.parse(localStorage.getItem('currentTenant')).name;
+    // const ready = JSON.parse(localStorage.getItem('currentTenant')).isReadyToOmna;
 
     setStore(storeName);
 
     async function getPlans() {
       const result = await ShopifyService.getPlanInfoAvailablePlans(storeName);
 
-      if (result) {
-        setPlansAvailable(result[0]);
-        setPlanCurrent(result[1]);
-        setPlanCurrentStatus(result[1].status);
+      if (result){
+        if (result.length > 0) {
+          setPlansAvailable(result[0]);
+          if (result[1] !== null){
+            setPlanCurrent(result[1]);
+            setPlanCurrentStatus(result[1].status);
+          }
+        }
         setLoading(false);
       }
+
     }
     getPlans();
   }, []);
@@ -74,7 +81,7 @@ function InstallShopify() {
       )}
       {loading === false && (
         <Container maxWidth="md">
-          {planCurrent && planCurrent.trial_days !== 0 && (
+          {JSON.stringify(planCurrent) !== '{}'  && (
             <div style={{ marginTop: '10px' }}>
               <MySnackBar
                 variant="info"
@@ -86,6 +93,15 @@ function InstallShopify() {
               />
             </div>
           )}
+          {JSON.stringify(planCurrent) === '{}' && (
+          <div style={{ marginTop: '10px' }}>
+              <MySnackBar
+                variant="info"
+                info
+                open
+                message="You must select an available OMNA plan to use the app"
+              />
+          </div>)}
           <CurrentPlan planCurrent={planCurrent} />
           <Divider />
           <PlansBoard

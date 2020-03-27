@@ -165,6 +165,20 @@ const ShopifyService = {
     }
     return null;
   },
+
+  async getClientSettings(){
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/client_settings`
+      );
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return [];
+  }
   // getStoreName() {
   //   const name =  JSON.parse(localStorage.getItem('currentTenant')).name;
   //   console.log(name);

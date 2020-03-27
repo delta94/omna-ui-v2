@@ -28,6 +28,7 @@ import {
   AddTenant,
   InstallShopify
 } from '../pageListAsync';
+import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
 class Application extends React.Component {
   render() {
@@ -118,6 +119,12 @@ class Application extends React.Component {
               exact
               path="/app/shopify"
               component={InstallShopify}
+            />
+
+            <AuthGuardRoute
+              exact
+              path="/app/client-settings"
+              component={ClientSettings}
             />
             {/* Home */}
             <AuthGuardRoute exact path="/app" component={DashboardPage} />
