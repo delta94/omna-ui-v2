@@ -39,11 +39,6 @@ module.exports = [
         link: '/app/channels'
       },
       {
-        key: 'available-integrations',
-        name: 'Available Integrations',
-        link: '/app/available-integrations'
-      },
-      {
         key: 'installed-integrations',
         name: 'Installed Integrations',
         link: '/app/installed-integrations'
