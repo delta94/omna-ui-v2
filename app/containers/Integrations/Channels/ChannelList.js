@@ -7,13 +7,12 @@ import get from 'lodash/get';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Grid,
-  Paper,
   Table,
   TableRow,
   TableFooter,
   TablePagination
 } from '@material-ui/core';
-import { AsyncSearch, Loading } from 'dan-components';
+import { Loading } from 'dan-components';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
@@ -100,10 +99,6 @@ class ChannelList extends Component {
     this.setState({ openForm: true });
   };
 
-  handleSearch = e => {
-    this.setState({ searchTerm: e.target.innerText }, this.makeRequest);
-  };
-
   initializeDataTable() {
     this.makeRequest();
   }
@@ -120,14 +115,6 @@ class ChannelList extends Component {
         <PageHeader title="Channels" history={history} />
         {loading ? <Loading /> : null}
         <div>
-          <Paper style={{ margin: '0 4px 8px' }}>
-            <AsyncSearch
-              label="Search integration name"
-              loading={loading}
-              options={data}
-              onChange={this.handleSearch}
-            />
-          </Paper>
           <Grid container spacing={2}>
             {data &&
               data.map(chan => (
