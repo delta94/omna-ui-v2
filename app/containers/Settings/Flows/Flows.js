@@ -87,7 +87,7 @@ class Flows extends Component {
 
   handleAddAction = () => {
     const { history } = this.props;
-    history.push('/app/workflows/add-workflow');
+    history.push('/workflows/add-workflow');
   };
 
   handleStartFlow = async id => {
@@ -106,11 +106,11 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/app/workflows/${id}`);
+    history.push(`/workflows/${id}`);
   };
 
   handleToggleScheduler = async id => {
-    const { enqueueSnackbar, onGetFlows } = this.props;
+    const { enqueueSnackbar } = this.props;
     try {
       this.setState({ isLoading: true });
       await API.post(`flows/${id}/toggle/scheduler/status`);

@@ -12,7 +12,7 @@ function ToolbarActions() {
     <div style={{ marginBottom: '5px', minWidth: '150px' }}>
       <AppBar position="static" color="default">
         <Toolbar className="flex-direction-row-inverse" disableGutters>
-          <IconButton aria-label="Add" component={Link} to="/app/settings/stores/add-store">
+          <IconButton aria-label="Add" component={Link} to="/settings/stores/add-store">
             <AddCircleOutlineIcon fontSize="large" />
           </IconButton>
         </Toolbar>

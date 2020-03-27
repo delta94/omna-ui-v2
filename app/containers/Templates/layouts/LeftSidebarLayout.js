@@ -33,7 +33,7 @@ const action = (
       variant="body2"
       style={{ marginRight: '10px' }}
       component={RouterLink}
-      to="/app/add-tenant"
+      to="/add-tenant"
     >
       Create new Tenant
     </Link>

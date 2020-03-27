@@ -22,27 +22,107 @@ import {
   InstallShopify
 } from '../pageListAsync';
 
-export default [
-  { link: '/dashboard', component: DashboardPage },
-  { link: '/orders', component: Orders },
-  { link: '/orders/:number', component: OrderDetails },
-  { link: '/tasks', component: Tasks },
-  { link: '/tasks/:id', component: TaskDetails },
-  { link: '/products', component: Products },
-  { link: '/products/add-product', component: AddProduct },
-  { link: '/products/:id', component: EditProduct },
-  { link: '/available-integrations', component: AvailableIntegrations },
-  { link: '/channels', component: Channels },
-  { link: '/installed-integrations', component: InstalledIntegrations },
-  { link: '/integrations/add-integration', component: AddIntegrationForm },
-  { link: '/workflows', component: Workflows },
-  { link: '/workflows/add-workflow', component: AddWorkflow },
-  { link: '/workflows/:id', component: EditWorkflow },
-  { link: '/add-tenant', component: AddTenant },
-  { link: '/webhooks', component: Webhooks },
-  { link: '/webhooks/add-webhook', component: AddWebhook },
-  { link: '/webhooks/:id', component: EditWebhook },
-  { link: '/shopify', component: InstallShopify },
-  { link: '/', component: DashboardPage },
-  { link: '/tenant-configuration', component: TenantConfiguration }
+export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
+
+export const OrdersRoute = { link: '/orders', component: Orders };
+
+export const OrderDetailsRoute = {
+  link: '/orders/:number',
+  component: OrderDetails
+};
+
+export const TasksRoute = { link: '/tasks', component: Tasks };
+
+export const TaskDetailsRoute = { link: '/tasks/:id', component: TaskDetails };
+
+export const ProductsRoute = { link: '/products', component: Products };
+
+export const AddProductRoute = {
+  link: '/products/add-product',
+  component: AddProduct
+};
+
+export const EditProductRoute = {
+  link: '/products/:id',
+  component: EditProduct
+};
+
+export const AvailableIntegrationsRoute = {
+  link: '/available-integrations',
+  component: AvailableIntegrations
+};
+
+export const ChannelsRoute = { link: '/channels', component: Channels };
+
+export const InstalledIntegrationsRoute = {
+  link: '/installed-integrations',
+  component: InstalledIntegrations
+};
+
+export const AddIntegrationFormRoute = {
+  link: '/integrations/add-integration',
+  component: AddIntegrationForm
+};
+
+export const WorkflowsRoute = { link: '/workflows', component: Workflows };
+
+export const AddWorkflowRoute = {
+  link: '/workflows/add-workflow',
+  component: AddWorkflow
+};
+
+export const EditWorkflowRoute = {
+  link: '/workflows/:id',
+  component: EditWorkflow
+};
+
+export const AddTenantRoute = { link: '/add-tenant', component: AddTenant };
+
+export const WebhooksRoute = { link: '/webhooks', component: Webhooks };
+
+export const AddWebhookRoute = {
+  link: '/webhooks/add-webhook',
+  component: AddWebhook
+};
+
+export const EditWebhookRoute = {
+  link: '/webhooks/:id',
+  component: EditWebhook
+};
+
+export const InstallShopifyRoute = {
+  link: '/shopify',
+  component: InstallShopify
+};
+
+export const DashboardPageRoute = { link: '/', component: DashboardPage };
+
+export const TenantConfigurationRoute = {
+  link: '/tenant-configuration',
+  component: TenantConfiguration
+};
+
+export const AllRoutes = [
+  DashboardRoute,
+  OrdersRoute,
+  OrderDetailsRoute,
+  TasksRoute,
+  TaskDetailsRoute,
+  ProductsRoute,
+  AddProductRoute,
+  EditProductRoute,
+  AvailableIntegrationsRoute,
+  ChannelsRoute,
+  InstalledIntegrationsRoute,
+  AddIntegrationFormRoute,
+  WorkflowsRoute,
+  AddWorkflowRoute,
+  EditWorkflowRoute,
+  AddTenantRoute,
+  WebhooksRoute,
+  AddWebhookRoute,
+  EditWebhookRoute,
+  InstallShopifyRoute,
+  DashboardPageRoute,
+  TenantConfigurationRoute
 ];

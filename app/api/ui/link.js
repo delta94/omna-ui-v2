@@ -1,6 +1,6 @@
 module.exports = {
   landing: '/',
-  dashboard: '/app',
+  dashboard: '/dashboard',
   login: '/login',
   market: '#',
   email: '#',

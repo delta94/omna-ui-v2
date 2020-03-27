@@ -130,7 +130,7 @@ class TaskDetails extends React.Component {
     if (action === 'remove') {
       const { history } = this.props;
       this.deleteFromAPI(id);
-      history.push('/app/tasks-list');
+      history.push('/tasks');
     } else if (action === 'run') {
       this.reRunFromAPI(id);
     }
@@ -186,7 +186,7 @@ class TaskDetails extends React.Component {
                     size="small"
                     color="primary"
                     component={Link}
-                    to="/app/tasks"
+                    to="/tasks"
                   >
                     <Ionicon
                       icon={variantIcon.arrowBack}

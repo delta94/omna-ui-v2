@@ -20,7 +20,7 @@ class PerformanceChartWidget extends PureComponent {
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
         <ul className={classes.bigResume} style={{ margin: 0 }}>
           <li>
-            <Button color="primary" component={Link} to="/app/orders">
+            <Button color="primary" component={Link} to="/orders">
               <Avatar
                 className={classNames(classes.avatar, classes.blueAvatar)}
                 onClick={this.handleClick}
@@ -36,7 +36,7 @@ class PerformanceChartWidget extends PureComponent {
             </Button>
           </li>
           <li>
-            <Button color="primary" component={Link} to="/app/webhooks">
+            <Button color="primary" component={Link} to="/webhooks">
               <Avatar
                 className={classNames(classes.avatar, classes.tealAvatar)}
               >
@@ -51,7 +51,7 @@ class PerformanceChartWidget extends PureComponent {
             </Button>
           </li>
           <li>
-            <Button color="primary" component={Link} to="/app/workflows">
+            <Button color="primary" component={Link} to="/workflows">
               <Avatar
                 className={classNames(classes.avatar, classes.pinkAvatar)}
               >
@@ -66,7 +66,7 @@ class PerformanceChartWidget extends PureComponent {
             </Button>
           </li>
           <li>
-            <Button color="primary" component={Link} to="/app/tasks">
+            <Button color="primary" component={Link} to="/tasks">
               <Avatar
                 className={classNames(classes.avatar, classes.purpleAvatar)}
               >

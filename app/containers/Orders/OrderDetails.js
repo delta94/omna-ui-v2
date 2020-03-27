@@ -6,14 +6,11 @@ import get from 'lodash/get';
 import moment from 'moment';
 import Ionicon from 'react-ionicons';
 import Tooltip from '@material-ui/core/Tooltip';
-// material-ui
-// core
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-// our
 import api from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
 import './orderDetails.css';
@@ -63,23 +60,20 @@ class OrderDetails extends Component {
   state = {
     loading: true,
     order: {},
-    success: true,
-    messageError: '',
+    // success: true,
+    // messageError: '',
     openDialog: false,
     selectedDocumentType: {},
-    documentTypes: [],
+    documentTypes: []
   };
 
   componentDidMount() {
     const order = get(this.props, 'location.state.order', null);
-    const storeId = get(order, 'data.integration.id', null);
+    // const storeId = get(order, 'data.integration.id', null);
     const number = get(this.props, 'match.params.number', null);
 
     if (order !== null && number === get(order, 'data.number', null)) {
       this.setState({ order, loading: false });
-      this.callAPI(storeId, number);
-    } else {
-      this.callAPI(storeId, number);
     }
   }
 
@@ -98,19 +92,8 @@ class OrderDetails extends Component {
     }
   };
 
-  callAPI = (storeId, number) => {
-    const params = {
-      storeId: storeId,
-      number
-    };
-  };
-
-  onClickGetAPIorder = (storeId, number) => {
-    this.callAPI(storeId, number);
-  };
-
   onPrintHandler = () => {
-    this.getOrderDocumentTypes(params);
+    this.getOrderDocumentTypes();
     this.handleClickOpen();
   };
 
@@ -151,7 +134,7 @@ class OrderDetails extends Component {
                     size="small"
                     color="primary"
                     component={Link}
-                    to="/app/orders"
+                    to="/orders"
                   >
                     <Ionicon
                       icon={variantIcon.arrowBack}
@@ -164,10 +147,9 @@ class OrderDetails extends Component {
                   </Button>
                   <Tooltip title="Reload information">
                     <Button
-                      onClick={() => this.onClickGetAPIorder(
-                        integrationId,
-                        dataNumber
-                      )}
+                      onClick={() =>
+                        this.onClickGetAPIorder(integrationId, dataNumber)
+                      }
                     >
                       <Ionicon icon={variantIcon.refresh} />
                     </Button>

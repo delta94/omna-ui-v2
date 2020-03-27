@@ -107,7 +107,7 @@ class OrderList extends React.Component {
 
   handleRowClick = id => {
     const { history } = this.props;
-    history.push(`/app/products/${id}/`);
+    history.push(`/products/${id}/`);
   };
 
   handleSearch = searchTerm => {
@@ -318,7 +318,7 @@ class OrderList extends React.Component {
           <IconButton
             aria-label="add"
             component={Link}
-            to="/app/products/add-product"
+            to="/products/add-product"
           >
             <Ionicon icon="md-add-circle" />
           </IconButton>

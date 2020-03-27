@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
@@ -18,8 +18,8 @@ const variantIcon = Utils.iconVariants();
 
 const styles = () => ({
   table: {
-    minWidth: 700,
-  },
+    minWidth: 700
+  }
 });
 
 /* ======= Principal Class ======= */
@@ -27,7 +27,7 @@ class CreateWebhook extends React.Component {
   state = {
     loading: true,
     success: true,
-    messageError: '',
+    messageError: ''
   };
 
   componentDidMount() {
@@ -36,9 +36,7 @@ class CreateWebhook extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const {
-      loading, success, messageError
-    } = this.state;
+    const { loading, success, messageError } = this.state;
 
     return (
       <Paper>
@@ -49,15 +47,23 @@ class CreateWebhook extends React.Component {
           ) : (
             <div>
               <div className="display-flex justify-content-space-between">
-                <Button variant="text" size="small" color="primary" component={Link} to="/app/settings/webhooks-list">
-                  <Ionicon icon={variantIcon.arrowBack} className={classNames(classes.leftIcon, classes.iconSmall)} />
+                <Button
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  component={Link}
+                  to="/settings/webhooks-list"
+                >
+                  <Ionicon
+                    icon={variantIcon.arrowBack}
+                    className={classNames(classes.leftIcon, classes.iconSmall)}
+                  />
                   Webhooks
                 </Button>
               </div>
               CreateWebhook
             </div>
-          )
-          }
+          )}
         </div>
       </Paper>
     );
@@ -66,8 +72,8 @@ class CreateWebhook extends React.Component {
 CreateWebhook.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func,
-  }).isRequired,
+    push: PropTypes.func
+  }).isRequired
 };
 
 export default withStyles(styles)(CreateWebhook);

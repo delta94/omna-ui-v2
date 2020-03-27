@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 import { NotFound } from '../pageListAsync';
-import routes from './routes';
+import { AllRoutes as routes } from './routes';
 
 class Application extends React.Component {
   render() {

@@ -69,7 +69,7 @@ class IntegrationList extends Component {
 
   handleAddIntegrationClick = () => {
     const { history } = this.props;
-    history.push('/app/integrations/add-integration');
+    history.push('/integrations/add-integration');
   };
 
   handleAuthorization = id => {

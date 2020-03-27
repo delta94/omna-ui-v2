@@ -202,7 +202,7 @@ class TaskList extends React.Component {
 
   handleDetailsViewClick = task => {
     const { history } = this.props;
-    history.push(`/app/tasks/${task.id}`, {
+    history.push(`/tasks/${task.id}`, {
       task: { data: task }
     });
   };

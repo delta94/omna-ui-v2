@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import Utils from './Utils';
-// const tenantconfigUrl = '/app/tenant-configuration';
-// const createTenantUrl = '/app/add-tenant';
 
 const AuthGuardRoute = ({
   component: Component, location, path, ...rest
