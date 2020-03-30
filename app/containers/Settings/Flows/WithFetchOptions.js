@@ -27,7 +27,8 @@ function withFetchOptions(WrappedComponent) {
 
     getIntegrations = async () => {
       try {
-        const response = await API.get('integrations');
+        const params = { limit: 100, offset: 0 };
+        const response = await API.get('integrations', { params });
         this.setState({ integrations: response.data.data });
       } catch (error) {
         console.log(error);
