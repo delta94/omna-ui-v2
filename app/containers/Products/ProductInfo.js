@@ -65,7 +65,7 @@ function ProductInfo(props) {
 
   return (
     <div>
-      <Paper className={classes.rootDetail} elevation={0}>
+       <Paper className={classes.rootDetail} elevation={0}>
         <Grid container className={classes.root} spacing={2}>
           <Grid item md={4} sm={12} xs={12}>
             <aside className={classes.imgGallery}>
@@ -138,7 +138,7 @@ function ProductInfo(props) {
             </section>
           </Grid>
         </Grid>
-      </Paper>
+       </Paper>
     </div>
   );
 }
