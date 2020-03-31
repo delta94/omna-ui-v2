@@ -71,10 +71,13 @@ function EditProduct(props) {
   };
 
   const editProps = async () => {
-    const integrationId = selectedIntegration || integrations[0].id;
-    const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
-    const data = { properties };
-    await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
+    const editProperties = selectedIntegration || integrations.length > 0;
+    if(editProperties){
+      const integrationId = selectedIntegration || integrations[0].id;
+      const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
+      const data = { properties };
+      await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
+     }
   };
 
   const handleEdit = async () => {
