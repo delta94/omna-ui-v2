@@ -4,15 +4,17 @@ import { CircularProgress, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const AsyncSearch = ({ label, loading, options, onChange }) => {
+const AsyncSearch = ({ id, label, value, inputValue, loading, freeSolo, required, disabled, options, onChange, onInputChange }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Autocomplete
-      freeSolo
-      id="asynchronous-search"
+      id={id}
+      required={required}
+      freeSolo={freeSolo}
+      disabled={disabled}
       disableClearable
-      size="small"
+      size="medium"
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -20,8 +22,11 @@ const AsyncSearch = ({ label, loading, options, onChange }) => {
       onClose={() => {
         setOpen(false);
       }}
+      value={value}
+      inputValue={inputValue}
       onChange={onChange}
-      getOptionSelected={(option, value) => option.name === value.name}
+      onInputChange={onInputChange}
+      getOptionSelected={(option, optionValue) => option.name === optionValue.name}
       getOptionLabel={option => option.name}
       options={options}
       loading={loading}
@@ -55,17 +60,31 @@ const AsyncSearch = ({ label, loading, options, onChange }) => {
 };
 
 AsyncSearch.defaultProps = {
+  id: 'asynchronous-search',
+  value: null,
+  inputValue: null,
   label: null,
   loading: false,
+  freeSolo: false,
+  required: false,
+  disabled: false,
   options: [],
-  onChange: () => {}
+  onChange: () => {},
+  onInputChange: () => {}
 };
 
 AsyncSearch.propTypes = {
+  id: PropTypes.string,
+  value: PropTypes.object,
+  inputValue: PropTypes.string,
   label: PropTypes.string,
   loading: PropTypes.bool,
+  freeSolo: PropTypes.bool,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool,
   options: PropTypes.array,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  onInputChange: PropTypes.func
 };
 
 export default AsyncSearch;
