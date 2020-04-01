@@ -57,25 +57,12 @@ function CurrentPlan({ planCurrent }) {
             <Typography className={classes.heading}>
               Current Plan: {planCurrent.name} - {planCurrent.status} -
             </Typography>
-            {/* <Typography className={classes.secondaryHeading}>
-              - {planCurrent.status} -
-            </Typography> */}
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            {/* <Typography > */}
-            {/* <Grid> */}
-            {/* <div> */}
             <List className={classes.bodyPanel}>
               <ListItem>
                 <ListItemText primary={`Price: ${planCurrent.price}`} />
               </ListItem>
-              {/*
-                      <ListItem>
-                        <ListItemText
-                          primary={`Create at: ${planCurrent.created_at}`}
-                        />
-                      </ListItem> */}
-
               {planCurrent.activated_on && (
                 <ListItem>
                   <ListItemText
@@ -98,9 +85,6 @@ function CurrentPlan({ planCurrent }) {
                 </ListItem>
               )}
             </List>
-            {/* </div> */}
-            {/* </Grid> */}
-            {/* </Typography> */}
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </Paper>

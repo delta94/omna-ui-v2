@@ -33,7 +33,6 @@ const useStyles = makeStyles(() => ({
     fontSize: '18px'
   },
   buttonProgress: {
-    // color: green[500],
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -61,9 +60,6 @@ function PlanInfo(props) {
     ConfirmPlanAction,
     CancelPlanAction
   } = props;
-
-  // const [loading, setLoading] = useState(false);
-  // const [success, setSuccess] = useState(false);
 
   const planStyles = useStyles();
 
@@ -115,14 +111,6 @@ function PlanInfo(props) {
             {costByOrder}
             /order
           </li>
-          {/* <li>${costByOrder} per Order</li>
-          <li>${costByOrder} per Order</li>
-          <li>
-            Manage until
-            {orderLimit} orders
-          </li>
-          <li>Maximum price of ${cappedAmount}</li>
-          <li>{trialDays} trial days</li> */}
         </ul>
       </CardContent>
       <CardActions className={classes.btnArea}>
@@ -192,16 +180,9 @@ function PlanInfo(props) {
               color="secondary"
               className={classes.lightButton}
               onClick={() => {
-                // setLoadingBtn(true);
-                const resp = CancelPlanAction(planCurrent.id);
-                if (resp) {
-                  // setLoadingBtn(false);
-                }
+                CancelPlanAction(planCurrent.id);
               }}
             >
-              {/* {loadingBtn && ( */}
-              {/* <CircularProgress size={24} className={classes.buttonProgress} /> */}
-              {/* )}{' '} */}
               Cancel it
             </Button>
           </div>

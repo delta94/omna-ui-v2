@@ -25,13 +25,6 @@ const ShopifyService = {
         changeTenantId(data.tenantId);
         changeTenantName(data.name);
         changeEnabledTenant(data.enabled);
-        // const collectionsInstalled = await this.installCollections();
-        // if (collectionsInstalled) {
-        //   const integrationInstalled = await this.installIntegration(data);
-        //   if (integrationInstalled) {
-        //     return true;
-        //   }
-        // }
 
       }
     } catch (error) {
@@ -39,66 +32,6 @@ const ShopifyService = {
     }
     return store;
   },
-
-  // async installCollections() {
-  //   // const {
-  //   //  collections, fetchCollections, total, loading, /* task */
-  //   // } = props;
-  //   // const [page, setPage] = useState(0);
-  //   // const [_params, _setParams] = useState({
-  //   //   limit: 10,
-  //   //   offset: 0,
-  //   //   searchTerm: ''
-  //   // });
-
-  //   try {
-  //     // fetchCollections({ ..._params });
-
-
-  //     let collections = await API.get('/collections', {
-  //       params: { limit: 100, offset: 0 }
-  //     });
-
-  //     // console.log(collections);
-
-  //     if (collections) {
-  //       collections = collections.data.data;
-  //       const ids = collections.filter(item => item.status === 'no_installed');
-
-  //       const collectionsInstalled = [];
-
-  //       ids.forEach(async id => {
-  //         const resp = await API.patch(`/collections/${id}`);
-  //         collectionsInstalled.push(resp);
-  //       });
-
-  //       if (collectionsInstalled.lenght === collections.lenght) {
-  //         return true;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  //   return false;
-  // },
-
-  // async installIntegration(data) {
-  //   await API.post('/integrations', {
-  //     data: { name: data.shop, channel: 'Ov2Shopify' }
-  //   }).catch(error => {
-  //     if (error) {
-  //       if (
-  //         error.response.data.message ===
-  //         'Already exists an integration with the same name'
-  //       ) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   });
-
-  //   return true;
-  // },
 
   async getPlanInfoAvailablePlans(store) {
     try {
@@ -179,31 +112,7 @@ const ShopifyService = {
     }
     return [];
   }
-  // getStoreName() {
-  //   const name =  JSON.parse(localStorage.getItem('currentTenant')).name;
-  //   console.log(name);
-  //   return name;
-  // }
 
 };
-
-// const mapStateToProps = state => ({
-//   collections: state.getIn(['collections', 'collections']).toJS(),
-//   task: state.getIn(['collections', 'task']),
-//   total: state.getIn(['collections', 'total']),
-//   loading: state.getIn(['collections', 'loading']),
-//   ...state
-// });
-
-// const mapDispatchToProps = (dispatch) => ({
-//   fetchCollections: bindActionCreators(setCollectionList, dispatch),
-//   // onInstallCollection: bindActionCreators(installCollection, dispatch),
-//   // onUninstallCollection: bindActionCreators(uninstallCollection, dispatch),
-// });
-
-// const ShopifyServiceMapped = connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(ShopifyService);
 
 export default ShopifyService;

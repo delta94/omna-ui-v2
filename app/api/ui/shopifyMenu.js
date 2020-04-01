@@ -16,11 +16,6 @@ module.exports = [
     name: 'Data',
     icon: 'ios-apps-outline',
     child: [
-      // {
-      //   key: 'orders',
-      //   name: 'Orders',
-      //   link: '/app/orders'
-      // },
       {
         key: 'products',
         name: 'Products',
@@ -45,28 +40,4 @@ module.exports = [
       },
     ]
   }
-  // {
-  //   key: 'settings',
-  //   name: 'Settings',
-  //   icon: 'ios-settings',
-  //   child: [
-  //     {
-  //       key: 'workflows',
-  //       name: 'Workflows',
-  //       link: '/app/workflows'
-  //     },
-  //     {
-  //       key: 'webhooks',
-  //       name: 'Webhooks',
-  //       link: '/app/webhooks'
-  //     }
-  //   ]
-  // },
-  // {
-  //   key: 'tasks',
-  //   name: 'Tasks',
-  //   icon: 'ios-grid-outline',
-  //   link: '/app/tasks'
-  // }
-
 ];
