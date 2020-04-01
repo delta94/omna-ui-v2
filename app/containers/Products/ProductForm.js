@@ -79,7 +79,7 @@ ProductForm.propTypes = {
 };
 
 ProductForm.defaultProps = {
-  variants: 0,
+  variants: null,
   variantList: [],
   images: [],
   integrations: [],

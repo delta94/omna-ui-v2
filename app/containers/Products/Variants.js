@@ -7,88 +7,43 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
-import MySnackBar from '../Common/SnackBar';
 import LoadingState from '../Common/LoadingState';
 import styles from './email-jss';
 
 const VariantDetails = (params) => {
   const { integrations, selectedIntegration } = params;
   const integration = integrations.find(item => item.id === selectedIntegration);
-  const properties = integration ? integration.variant.properties : null;
+  const { properties, errors } = integration ? integration.variant : null;
 
-  const onPropertyChange = () => {
-  /*     const { product } = props;
-    const { name, value } = e.target;
-    const tempProps = defaultProps.map(property => {
-      const propItem = property;
-      if (property.label === name) {
-        propItem.value = value;
-      }
-      return propItem;
-    });
-    product.integrations[tabIndex].product.properties = tempProps;
-    setDefaultProps(tempProps); */
-  };
+  const onPropertyChange = () => console.log('onPropertyChange');
 
   if (integration) {
     return (
       <Fragment>
-        {properties && properties instanceof Array ? (
-          <FormBuilder properties={properties} onChange={onPropertyChange} />
-        )
-          : (
-            <div style={{ marginTop: '10px' }}>
-              <MySnackBar
-                variant="info"
-                customStyle
-                open
-                message="There is not available properties"
-              />
-            </div>
-          )
-        }
+        {properties && !errors && <FormBuilder properties={properties} onChange={onPropertyChange} />}
+        {errors && <Alert variant="error" message={errors} />}
       </Fragment>
-
     );
   }
-  return (
-    <div style={{ marginTop: '10px' }}>
-      <MySnackBar
-        variant="error"
-        customStyle
-        open
-        message="There is something wrong at showing properties"
-      />
-    </div>
-  );
+  return <Alert variant="error" message="There is something wrong at showing properties" />
 };
 
 function Variants(props) {
   const {
     variants, variantList, selectedIntegration, classes
   } = props;
+
+  const loading = variants > 0 && (variantList.lenght === 0 || variantList.size === 0);
   return (
     <Fragment>
       <Typography variant="subtitle2" gutterBottom>
         Variants
       </Typography>
-      {variants > 0 && (variantList.lenght === 0 || variantList.size === 0) && <div style={{ margin: '25px' }}><LoadingState /></div>}
-      {variants === 0 && (
-        <div style={{ marginTop: '10px' }}>
-          <MySnackBar
-            variant="info"
-            customStyle
-            open
-            message="There is not available variants"
-          />
-        </div>
-
-      )
-      }
-      {variants && variantList.map(({
-        sku, price, images, quantity, integrations
-      }) => (
+      {loading && <div style={{ margin: '25px' }}><LoadingState /></div>}
+      {variants === 0 && <Alert variant="info" message="There is not available variants" />}
+      {!loading && variantList.map(({ sku, price, images, quantity, integrations }) => (
         <ExpansionPanel key={sku} className={classes.emailList}>
           <ExpansionPanelSummary className={classes.emailSummary} expandIcon={<ExpandMoreIcon />}>
             <div className={classes.fromHeading}>
@@ -118,13 +73,14 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  variants: PropTypes.number.isRequired,
+  variants: PropTypes.number,
   variantList: PropTypes.object,
   selectedIntegration: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 
 Variants.defaultProps = {
+  variants: null,
   variantList: []
 };
 
