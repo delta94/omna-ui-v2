@@ -61,11 +61,12 @@ class Dashboard extends Component {
       .toJS()
       .reduce((p, c) => {
         const name = c.integration.channel;
-        if (!p.hasOwnProperty(name)) {
-          p[name] = 0;
+        const result = p;
+        if (!{}.hasOwnProperty.call(result, name)) {
+          result[name] = 0;
         }
-        p[name]++;
-        return p;
+        result[name] += 1;
+        return result;
       }, {});
 
     const countsExtended = Object.keys(counts).map(k => {

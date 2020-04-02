@@ -118,7 +118,7 @@ class AddIntegrationForm extends Component {
 
     return (
       <div>
-        {loading && <Loading />}
+        {(loading || loadingState) && <Loading />}
         <Dialog aria-labelledby="form-dialog" onClose={handleClose} open={open}>
           <DialogTitle id="form-dialog-title">Add Integration</DialogTitle>
           <DialogContent className={classes.formContainer}>

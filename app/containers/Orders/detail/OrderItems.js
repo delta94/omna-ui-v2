@@ -39,7 +39,7 @@ class OrderItems extends Component {
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}
-                  ${value.toFixed(2)} ${currency ? currency : ''}`}
+                  ${value.toFixed(2)} ${currency || ''}`}
               </div>
             );
           }
@@ -62,9 +62,9 @@ class OrderItems extends Component {
             return (
               <div>
                 {`${Utils.getCurrencySymbol(currency)}
-                  ${(tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(2)} ${
-                  currency ? currency : ''
-                }`}
+                  ${(tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(
+                    2
+                  )} ${currency || ''}`}
               </div>
             );
           }

@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { Fade, Link } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
+import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
@@ -57,6 +58,7 @@ class LeftSidebarLayout extends React.Component {
       changeMode,
       place,
       handleOpenGuide,
+      notifications,
       isReadyToOmna,
       deactivationDate,
       enabledTenant,
@@ -112,6 +114,9 @@ class LeftSidebarLayout extends React.Component {
                 <BreadCrumb separator=" / " theme={bgPosition === 'header' ? 'dark' : 'light'} location={history.location} />
               </div>
             ) */}
+
+            <Notifications list={notifications} />
+
             <div>
               <MySnackBar
                 variant="info"
@@ -183,14 +188,16 @@ LeftSidebarLayout.propTypes = {
   isReadyToOmna: PropTypes.bool,
   deactivationDate: PropTypes.string,
   enabledTenant: PropTypes.bool,
-  tenantName: PropTypes.string
+  tenantName: PropTypes.string,
+  notifications: PropTypes.object
 };
 
 LeftSidebarLayout.defaultProps = {
   isReadyToOmna: true,
   deactivationDate: '',
   enabledTenant: false,
-  tenantName: ''
+  tenantName: '',
+  notifications: []
 };
 
 const mapStateToProps = state => ({
@@ -198,6 +205,7 @@ const mapStateToProps = state => ({
   deactivationDate: state.getIn(['tenant', 'deactivationDate']),
   enabledTenant: state.getIn(['tenant', 'enabled']),
   tenantName: state.getIn(['tenant', 'tenantName']),
+  notifications: state.getIn(['notification', 'notifications']),
   ...state
 });
 

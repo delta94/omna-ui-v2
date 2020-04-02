@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import classNames from 'classnames';
-
+import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -30,3 +29,9 @@ export default class OrderPayment extends Component {
     );
   }
 }
+
+OrderPayment.propTypes = {
+  classes: PropTypes.object.isRequired,
+  totalPrice: PropTypes.number,
+  status: PropTypes.string
+};

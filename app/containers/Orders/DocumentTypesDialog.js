@@ -26,6 +26,7 @@ class DocumentTypesDialog extends Component {
   };
 
   handleListItemClick = async value => {
+    const { integrationId, onClose, orderNumber } = this.props;
     onClose(value);
     const response = await api.get(
       `/integrations/${integrationId}/orders/${orderNumber}/doc/${value.type}`
@@ -39,12 +40,7 @@ class DocumentTypesDialog extends Component {
   };
 
   render() {
-    const {
-      open,
-      types,
-      integrationId,
-      orderNumber
-    } = this.props;
+    const { open, types } = this.props;
 
     return (
       <Dialog
@@ -57,7 +53,7 @@ class DocumentTypesDialog extends Component {
           {types.map(type => (
             <ListItem
               button
-              onClick={() => handleListItemClick(type)}
+              onClick={() => this.handleListItemClick(type)}
               key={type.type}
             >
               <ListItemAvatar>
