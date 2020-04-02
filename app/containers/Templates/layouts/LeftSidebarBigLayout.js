@@ -10,8 +10,10 @@ import {
   BreadCrumb,
 } from 'dan-components';
 import dataMenu from 'dan-api/ui/menu';
+import shopifyMenu from 'dan-api/ui/shopifyMenu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
+import Utils from '../../Common/Utils';
 
 class LeftSidebarBigLayout extends React.Component {
   render() {
@@ -46,7 +48,7 @@ class LeftSidebarBigLayout extends React.Component {
           openGuide={handleOpenGuide}
         />
         <SidebarBig
-          dataMenu={dataMenu}
+          dataMenu={Utils.isOmnaShopify() ? shopifyMenu : dataMenu}
           loadTransition={loadTransition}
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}

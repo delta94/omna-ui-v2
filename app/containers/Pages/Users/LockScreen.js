@@ -7,9 +7,7 @@ import Loading from 'dan-components/Loading';
 import styles from '../../../components/Forms/user-jss';
 import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
-import InstallShopify from '../../Shopify/Components/InstallShopify';
-import getSettingsInfo from '../../Shopify/Services/ShopifyService';
-
+import ShopifyService from '../../Shopify/Services/ShopifyService';
 import {
   setTenantStatus,
   setTenantId,
@@ -19,10 +17,6 @@ import {
 } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { installShopify: false };
-  }
 
   async componentDidMount() {
     const {
@@ -35,8 +29,6 @@ class LockScreen extends React.Component {
       changeTenantName
     } = this.props;
     const { redirect, code, pathname, store } = location.state;
-
-    // let plansResult = [];
 
     if (code) {
       API.post('get_access_token', { code }).then(response => {
@@ -64,16 +56,9 @@ class LockScreen extends React.Component {
     }
 
     if (store) {
-      const result = await getSettingsInfo.getSettingsInfo(this.props);
+      const result = await ShopifyService.getSettingsInfo(this.props);
       if (result) {
-        // plansResult = await getSettingsInfo.getPlanInfo(store);
-
-        // if (plansResult) {
-        this.setState({
-          installShopify: result
-        });
-        pathname ? history.push(pathname) : history.push('/');
-        // }
+        history.push('/app/shopify');
       }
     }
 
@@ -84,19 +69,9 @@ class LockScreen extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { installShopify } = this.state;
     return (
-      <div>
-        {installShopify ? (
-          <div className={classes.root}>
-            <Loading />
-          </div>
-        ) : (
-          <div>
-            {' '}
-            <InstallShopify />
-          </div>
-        )}
+      <div className={classes.root}>
+        <Loading />
       </div>
     );
   }

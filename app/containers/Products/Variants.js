@@ -34,7 +34,7 @@ const VariantDetails = (params) => {
   if (integration) {
     return (
       <Fragment>
-        {properties ? (
+        {properties && properties instanceof Array ? (
           <FormBuilder properties={properties} onChange={onPropertyChange} />
         )
           : (
@@ -98,7 +98,7 @@ function Variants(props) {
                 className={classes.bigAvatar}
               />
               <Typography className={classes.heading}>
-                {sku}
+                <span>SKU:{sku}</span>
               </Typography>
             </div>
             <div className={classes.column}>

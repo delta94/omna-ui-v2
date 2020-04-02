@@ -7,9 +7,9 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
-import styles from './product-jss';
+import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
-import MySnackBar from '../Common/SnackBar';
+import styles from './product-jss';
 
 function TabContainer({ children, dir }) {
   return (
@@ -32,30 +32,47 @@ function Properties(props) {
   const { classes, theme, tabList } = props;
 
   const [tabIndex, setTabIndex] = useState(0);
-  const defaultProps = tabList[tabIndex].product.properties instanceof Array ? tabList[tabIndex].product.properties : [];
+  const [properties, setProperties] = useState(tabList[tabIndex].product.properties);
+  const { errors } = tabList[tabIndex].product;
+
 
   const handleChange = (event, index) => {
     setTabIndex(index);
-    props.onTabChange(index);
+    props.onTabChange(tabList ? tabList[index].id : '');
   };
 
   const handleChangeIndex = index => {
     setTabIndex(index);
   };
 
-  const onPropertyChange = () => {
-    // console.log('onPropertyChange');
-    // const { name, value } = e.target;
-    /*    const { product } = props;
-      const tempProps = defaultProps.map(property => {
-        const propItem = property;
-        if (property.label === name) {
-          propItem.value = value;
-        }
-        return propItem;
-      });
-      product.integrations[tabIndex].product.properties = tempProps;
-      setDefaultProps(tempProps); */
+// handlePropertyChange to use in the future if the api makes changes on the properties
+/*   const handlePropertyChange = (e) => {
+    const { name, value } = e.target;
+    const index = properties.findIndex(item => item.id === name);
+    if(index >= 0) {
+      const property = properties[index];
+        property.value = value;
+        delete properties[index];
+        properties.splice(index, 1, property);
+        setProperties([...properties]);
+      }
+    }; */
+
+  const handlePropertyChange = (e) => {
+    const { name, value } = e.target;
+    const index = properties.findIndex(item => item.id === name);
+    if(index >= 0) {
+      const property = properties[index];
+      if(property.input_type !== 'single_select_with_remote_options') {
+        property.value = value;
+      } else {
+        property.value = value.id;
+        property.options = [value];
+      }
+      delete properties[index];
+      properties.splice(index, 1, property);
+      setProperties([...properties]);
+    }
   };
 
   return (
@@ -80,23 +97,16 @@ function Properties(props) {
           index={tabIndex}
           onChangeIndex={handleChangeIndex}
         >
-          {tabList.map(({ product }) => (
+          {tabList && tabList.map(({ product }) => (
             <TabContainer key={product.remote_product_id} dir={theme.direction}>
               <Typography variant="subtitle2" gutterBottom>
                 Properties
               </Typography>
-              {defaultProps && defaultProps.length > 0 ? (
-                <FormBuilder properties={defaultProps} onChange={onPropertyChange} />
+              {(properties && !errors) && properties.length > 0 ? (
+                <FormBuilder properties={properties} onChange={handlePropertyChange} />
               ) : (
-                <div style={{ marginTop: '10px' }}>
-                  <MySnackBar
-                    variant="info"
-                    customStyle
-                    open={defaultProps.length === 0}
-                    message="There is not available properties"
-                  />
-                </div>
-              )}
+                  <Alert variant="error" message={errors} />
+                )}
             </TabContainer>
           ))
           }
@@ -107,10 +117,10 @@ function Properties(props) {
 }
 
 Properties.propTypes = {
-  tabList: PropTypes.array,
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
-  onTabChange: PropTypes.func.isRequired
+  tabList: PropTypes.array,
+  onTabChange: PropTypes.func.isRequired,
 };
 
 Properties.defaultProps = {

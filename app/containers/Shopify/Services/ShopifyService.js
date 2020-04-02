@@ -1,5 +1,4 @@
 import axios from 'axios';
-import API from '../../Utils/api';
 import Utils from '../../Common/Utils';
 
 const ShopifyService = {
@@ -17,69 +16,21 @@ const ShopifyService = {
       const response = await axios.get(
         `https://cenit.io/app/omna-dev/request_tenant_info?search=${store}`
       );
-      const { data } = response.data;
-      Utils.setTenant(data);
-      changeTenantStatus(data.isReadyToOmna);
-      changeTenantId(data.tenantId);
-      changeTenantName(data.name);
-      changeEnabledTenant(data.enabled);
+
       if (response) {
-        const collectionsInstalled = await this.installCollections();
-        if (collectionsInstalled) {
-          const integrationInstalled = await this.installIntegration(data);
-          if (integrationInstalled) {
-            return true;
-          }
-        }
+        console.log(response);
+        const { data } = response.data;
+        Utils.setTenant(data);
+        changeTenantStatus(data.isReadyToOmna);
+        changeTenantId(data.tenantId);
+        changeTenantName(data.name);
+        changeEnabledTenant(data.enabled);
+
       }
     } catch (error) {
       console.log(error);
     }
-    return false;
-  },
-
-  async installCollections() {
-    try {
-      let collections = await API.get('/collections', {
-        params: { limit: 100, offset: 0 }
-      });
-      if (collections) {
-        collections = collections.data.data;
-        const ids = collections.filter(item => item.status === 'no_installed');
-
-        const collectionsInstalled = [];
-
-        ids.forEach(async id => {
-          const resp = await API.patch(`/collections/${id}`);
-          collectionsInstalled.push(resp);
-        });
-
-        if (collectionsInstalled.lenght === collections.lenght) {
-          return true;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    return false;
-  },
-
-  async installIntegration(data) {
-    await API.post('/integrations', {
-      data: { name: data.shop, channel: 'Ov2Shopify' }
-    }).catch(error => {
-      if (error) {
-        if (
-          error.response.data.message
-          === 'Already exists an integration with the same name'
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    return true;
+    return store;
   },
 
   async getPlanInfoAvailablePlans(store) {
@@ -96,7 +47,72 @@ const ShopifyService = {
       console.log(error);
     }
     return [];
+  },
+
+  async CreatePlan(name, store) {
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/plan?task=create&plan_name=${name}&shop=${store}`
+      );
+      if (response) {
+        console.log(response.data.plan_created);
+        return response.data.plan_created;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return false;
+  },
+
+  async ActivatePlan(planId, store) {
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/plan?task=activate&plan_id=${planId}&shop=${store}`
+      );
+      if (response) {
+        const plan = await this.getPlanInfoAvailablePlans(store);
+        if (plan) {
+          return plan[1];
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+
+  async CancelPlan(planId, store) {
+
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/plan?task=cancel&plan_id=${planId}&shop=${store}`
+      );
+      if (response) {
+        const plan = await this.getPlanInfoAvailablePlans(store);
+        if (plan) {
+          return plan[1];
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+
+  async getClientSettings(){
+    try {
+      const response = await axios.get(
+        `https://cenit.io/app/omna-dev/client_settings`
+      );
+      if (response) {
+        return response;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return [];
   }
+
 };
 
 export default ShopifyService;

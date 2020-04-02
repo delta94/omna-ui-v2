@@ -26,6 +26,7 @@ function EditProduct(props) {
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedIntegration, setSelectedIntegration] = useState('');
 
   useEffect(() => {
     async function fetchProduct() {
@@ -55,13 +56,36 @@ function EditProduct(props) {
     }
   }, [integrations]);
 
+  const onIntegrationChange = value => {
+    const obj = integrations.find(item => item.id === value);
+    if (obj) {
+      setSelectedIntegration(value);
+      const { id: _id, product: _product } = obj;
+      updateProductVariants(_id, _product.remote_product_id);
+    }
+  };
+
+  const editBasicInfo = async () => {
+    const data = { name, price: parseFloat(price), description };
+    await API.post(`products/${match.params.id}`, { data });
+  };
+
+  const editProps = async () => {
+    const editProperties = selectedIntegration || integrations.length > 0;
+    if(editProperties){
+      const integrationId = selectedIntegration || integrations[0].id;
+      const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
+      const data = { properties };
+      await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
+     }
+  };
+
   const handleEdit = async () => {
     const { enqueueSnackbar } = props;
-    const data = { name, price: parseFloat(price), description };
     setIsLoading(true);
     try {
-      await API.post(`products/${match.params.id}`, { data });
-      history.goBack();
+      await editBasicInfo();
+      await editProps();
       enqueueSnackbar('Product edited successfuly', {
         variant: 'success'
       });
@@ -71,13 +95,8 @@ function EditProduct(props) {
           variant: 'error'
         });
       }
-      setIsLoading(false);
     }
-  };
-
-  const onIntegrationsChange = index => {
-    const { id: _id, product: _product } = integrations[index];
-    updateProductVariants(_id, _product.remote_product_id);
+    setIsLoading(false);
   };
 
   return (
@@ -96,7 +115,7 @@ function EditProduct(props) {
           onNameChange={e => setName(e)}
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
-          onIntegrationsChange={onIntegrationsChange}
+          onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
           onSubmitForm={handleEdit}
         />

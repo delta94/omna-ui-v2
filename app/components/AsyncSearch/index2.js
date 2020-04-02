@@ -4,17 +4,15 @@ import { CircularProgress, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const AsyncSearch = ({ id, label, value, inputValue, loading, freeSolo, required, disabled, options, onChange, onInputChange }) => {
+const AsyncSearch = ({ label, loading, options, onChange }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Autocomplete
-      id={id}
-      required={required}
-      freeSolo={freeSolo}
-      disabled={disabled}
+      freeSolo
+      id="asynchronous-search"
       disableClearable
-      size="medium"
+      size="small"
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -22,11 +20,8 @@ const AsyncSearch = ({ id, label, value, inputValue, loading, freeSolo, required
       onClose={() => {
         setOpen(false);
       }}
-      value={value}
-      inputValue={inputValue}
       onChange={onChange}
-      onInputChange={onInputChange}
-      getOptionSelected={(option, optionValue) => option.name === optionValue.name}
+      getOptionSelected={(option, value) => option.name === value.name}
       getOptionLabel={option => option.name}
       options={options}
       loading={loading}
@@ -60,31 +55,17 @@ const AsyncSearch = ({ id, label, value, inputValue, loading, freeSolo, required
 };
 
 AsyncSearch.defaultProps = {
-  id: 'asynchronous-search',
-  value: null,
-  inputValue: null,
   label: null,
   loading: false,
-  freeSolo: false,
-  required: false,
-  disabled: false,
   options: [],
-  onChange: () => {},
-  onInputChange: () => {}
+  onChange: () => {}
 };
 
 AsyncSearch.propTypes = {
-  id: PropTypes.string,
-  value: PropTypes.object,
-  inputValue: PropTypes.string,
   label: PropTypes.string,
   loading: PropTypes.bool,
-  freeSolo: PropTypes.bool,
-  required: PropTypes.bool,
-  disabled: PropTypes.bool,
   options: PropTypes.array,
-  onChange: PropTypes.func,
-  onInputChange: PropTypes.func
+  onChange: PropTypes.func
 };
 
 export default AsyncSearch;

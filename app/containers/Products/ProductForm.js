@@ -12,13 +12,15 @@ import FormActions from '../Common/FormActions';
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations = [], variantList, onCancelClick
+    name, price, description, variants, images, integrations = [], variantList, onCancelClick,
   } = props;
 
   const [selectedIntegration, setSelectedIntegration] = useState('');
 
   useEffect(() => {
-    setSelectedIntegration(integrations && integrations.length !== 0 ? integrations[0].id : '');
+    if(!selectedIntegration) {
+      setSelectedIntegration(integrations && integrations.length !== 0 ? integrations[0].id : '');
+    }
   }, [integrations]);
 
   const handleNameChange = (value) => props.onNameChange(value);
@@ -27,9 +29,9 @@ function ProductForm(props) {
 
   const handleDescriptionChange = (value) => props.onDescriptionChange(value);
 
-  const handleIntegrationsChange = (value) => {
-    setSelectedIntegration(integrations[value].id);
-    props.onIntegrationsChange(value);
+  const handleIntegrationChange = (value) => {
+    setSelectedIntegration(value);
+    props.onIntegrationChange(value);
   };
 
   const onSubmitForm = (e) => {
@@ -42,8 +44,8 @@ function ProductForm(props) {
       <ProductInfo
         thumbnail={images.length !== 0 ? images : ['/images/image_placeholder.png']}
         name={name}
-        description={description}
         price={price}
+        description={description}
         variants={variants}
         onNameChange={handleNameChange}
         onPriceChange={handlePriceChange}
@@ -51,7 +53,7 @@ function ProductForm(props) {
       />
       {integrations && integrations.length > 0 && (
         <Fragment>
-          <Properties tabList={integrations} onTabChange={handleIntegrationsChange} />
+          <Properties tabList={integrations} onTabChange={handleIntegrationChange} />
           <Variants variants={variants} variantList={variantList} selectedIntegration={selectedIntegration} />
         </Fragment>
       )}
@@ -71,8 +73,8 @@ ProductForm.propTypes = {
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
-  onIntegrationsChange: PropTypes.func,
-  onCancelClick: PropTypes.func.isRequired,
+  onIntegrationChange: PropTypes.func,
+  onCancelClick: PropTypes.func,
   onSubmitForm: PropTypes.func.isRequired
 };
 
@@ -81,7 +83,8 @@ ProductForm.defaultProps = {
   variantList: [],
   images: [],
   integrations: [],
-  onIntegrationsChange: () => {}
+  onIntegrationChange: () => {},
+  onCancelClick: () => {},
 };
 
 export default withStyles(styles)(ProductForm);

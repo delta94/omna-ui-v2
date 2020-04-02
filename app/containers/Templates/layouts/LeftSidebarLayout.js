@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
 import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
+import shopifyMenu from 'dan-api/ui/shopifyMenu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
@@ -65,6 +66,7 @@ class LeftSidebarLayout extends React.Component {
       tenantName
     } = this.props;
 
+
     const deactivation = Utils.getDeactivationDate(deactivationDate);
 
     return (
@@ -87,7 +89,7 @@ class LeftSidebarLayout extends React.Component {
             open={sidebarOpen}
             toggleDrawerOpen={toggleDrawer}
             loadTransition={loadTransition}
-            dataMenu={dataMenu}
+            dataMenu={Utils.isOmnaShopify() ? shopifyMenu : dataMenu}
             leftSidebar
           />
         )}

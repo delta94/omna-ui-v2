@@ -169,12 +169,12 @@ class Utils {
     return false;
   }
 
-  static searchTermTimeout(_search, setSearchTerm) {
+  static delay(_search, callBack, delay = 1000) {
     if (_search) {
       const timer = setTimeout(() => {
-        setSearchTerm(_search);
+        callBack(_search);
         clearTimeout(timer);
-      }, 1000);
+      }, delay);
       window.addEventListener('keydown', () => {
         clearTimeout(timer);
       });
@@ -199,6 +199,10 @@ class Utils {
     };
 
     return variantIcon;
+  }
+
+  static isOmnaShopify() {
+    return JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp;
   }
 }
 

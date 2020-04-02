@@ -21,6 +21,7 @@ import {
   AddTenant,
   InstallShopify
 } from '../pageListAsync';
+import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
 export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
 
@@ -102,6 +103,11 @@ export const TenantConfigurationRoute = {
   component: TenantConfiguration
 };
 
+export const ClientSettingsRoute = {
+  path: '/client-settings',
+  component: ClientSettings
+}
+
 export const AllRoutes = [
   DashboardRoute,
   OrdersRoute,
@@ -124,5 +130,6 @@ export const AllRoutes = [
   EditWebhookRoute,
   InstallShopifyRoute,
   DashboardPageRoute,
-  TenantConfigurationRoute
+  TenantConfigurationRoute,
+  ClientSettingsRoute
 ];
