@@ -126,7 +126,7 @@ class ChannelList extends Component {
                     classes={classes}
                     noActions
                     handleAddIntegration={event =>
-                      this.handleAddIntegrationClick(event, channel)
+                      this.handleAddIntegrationClick(event, chan)
                     }
                   />
                 </Grid>

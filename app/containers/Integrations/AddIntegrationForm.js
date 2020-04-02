@@ -7,16 +7,20 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControlLabel,
   MenuItem,
   TextField,
-  withStyles
+  withStyles,
+  Typography
 } from '@material-ui/core';
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
 import Utils from 'dan-containers/Common/Utils';
 import { getChannels } from 'dan-actions/integrationActions';
+import ShopeeDefaultPropsForm from './ShopeeDefaultPropsForm';
+import Qoo10DefaultPropsForm from './Qoo10DefaultPropsForm';
 
 const styles = () => ({
   inputWidth: {
@@ -116,6 +120,9 @@ class AddIntegrationForm extends Component {
       this.setState({ selectedChannel: channel });
     }
 
+    const hasDefaultProperties =
+      channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
+
     return (
       <div>
         {(loading || loadingState) && <Loading />}
@@ -181,6 +188,24 @@ class AddIntegrationForm extends Component {
                 }
                 label="Authorized"
               />
+
+              {hasDefaultProperties && (
+                <div style={{ marginTop: 8 }}>
+                  <Typography component="h5" variant="subtitle2">
+                    Default Properties
+                  </Typography>
+
+                  <Divider />
+
+                  {channel.includes('Shopee') && (
+                    <ShopeeDefaultPropsForm classes={classes} />
+                  )}
+
+                  {channel.includes('Qoo10') && (
+                    <Qoo10DefaultPropsForm classes={classes} />
+                  )}
+                </div>
+              )}
 
               <FormActions onCancelClick={this.handleClose} />
             </form>
