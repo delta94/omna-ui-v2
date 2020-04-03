@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
@@ -12,16 +12,11 @@ import FormActions from '../Common/FormActions';
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations = [], variantList, onCancelClick,
+    name, price, description, variants, images, integrations = [], variantList, selectedIntegration,
+    onIntegrationChange, onCancelClick,
   } = props;
 
-  const [selectedIntegration, setSelectedIntegration] = useState('');
-
-  useEffect(() => {
-    if(!selectedIntegration) {
-      setSelectedIntegration(integrations && integrations.length !== 0 ? integrations[0].id : '');
-    }
-  }, [integrations]);
+  const [dirtyProps, setDirtyProps] = useState(false);
 
   const handleNameChange = (value) => props.onNameChange(value);
 
@@ -29,13 +24,9 @@ function ProductForm(props) {
 
   const handleDescriptionChange = (value) => props.onDescriptionChange(value);
 
-  const handleIntegrationChange = (value) => {
-    setSelectedIntegration(value);
-    props.onIntegrationChange(value);
-  };
-
   const onSubmitForm = (e) => {
     e.preventDefault();
+    setDirtyProps(false);
     props.onSubmitForm();
   };
 
@@ -53,8 +44,16 @@ function ProductForm(props) {
       />
       {integrations && integrations.length > 0 && (
         <Fragment>
-          <Properties tabList={integrations} onTabChange={handleIntegrationChange} />
-          <Variants variants={variants} variantList={variantList} selectedIntegration={selectedIntegration} />
+          <Properties
+            tabList={integrations}
+            dirtyProps={dirtyProps}
+            onChangeProps={(e) => setDirtyProps(e)}
+            onTabChange={(e) => onIntegrationChange(e)}
+          />
+          <Variants
+            variantList={variantList}
+            selectedIntegration={selectedIntegration || integrations[0]}
+          />
         </Fragment>
       )}
       <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
@@ -70,6 +69,7 @@ ProductForm.propTypes = {
   variantList: PropTypes.array,
   images: PropTypes.array,
   integrations: PropTypes.array,
+  selectedIntegration: PropTypes.object,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
@@ -83,6 +83,7 @@ ProductForm.defaultProps = {
   variantList: [],
   images: [],
   integrations: [],
+  selectedIntegration: null,
   onIntegrationChange: () => {},
   onCancelClick: () => {},
 };

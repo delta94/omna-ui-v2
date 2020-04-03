@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
@@ -14,12 +14,12 @@ import styles from './email-jss';
 
 const VariantDetails = (params) => {
   const { integrations, selectedIntegration } = params;
-  const integration = integrations.find(item => item.id === selectedIntegration);
-  const { properties, errors } = integration ? integration.variant : null;
+  const integration = integrations && selectedIntegration ? integrations.find(item => item.id === selectedIntegration.id) : null;
 
   const onPropertyChange = () => console.log('onPropertyChange');
 
   if (integration) {
+    const { properties, errors } = integration ? integration.variant : null;
     return (
       <Fragment>
         {properties && !errors && <FormBuilder properties={properties} onChange={onPropertyChange} />}
@@ -31,19 +31,29 @@ const VariantDetails = (params) => {
 };
 
 function Variants(props) {
-  const {
-    variants, variantList, selectedIntegration, classes
-  } = props;
+  const { variantList, selectedIntegration, classes } = props;
 
-  const loading = variants > 0 && (variantList.lenght === 0 || variantList.size === 0);
+  const emptyList = variantList && (variantList.lenght === 0 || variantList.size === 0);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [variantList]);
+
+  useEffect(() => {
+    setLoading(true);
+  }, [selectedIntegration]);
+
+
   return (
     <Fragment>
       <Typography variant="subtitle2" gutterBottom>
         Variants
       </Typography>
       {loading && <div style={{ margin: '25px' }}><LoadingState /></div>}
-      {variants === 0 && <Alert variant="info" message="There is not available variants" />}
-      {!loading && variantList.map(({ sku, price, images, quantity, integrations }) => (
+      {!loading && emptyList && <Alert variant="info" message="There is not available variants" />}
+      {!loading && !emptyList && variantList.map(({ sku, price, images, quantity, integrations }) => (
         <ExpansionPanel key={sku} className={classes.emailList}>
           <ExpansionPanelSummary className={classes.emailSummary} expandIcon={<ExpandMoreIcon />}>
             <div className={classes.fromHeading}>
@@ -73,14 +83,12 @@ function Variants(props) {
 }
 
 Variants.propTypes = {
-  variants: PropTypes.number,
   variantList: PropTypes.object,
   selectedIntegration: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired
 };
 
 Variants.defaultProps = {
-  variants: null,
   variantList: []
 };
 

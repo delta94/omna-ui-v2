@@ -12,7 +12,7 @@ import 'dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css';
 import styles from './email-jss';
 
 function RichEditor(props) {
-  const { label, text, classes } = props;
+  const { id, label, text, classes } = props;
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [deliveredText, setDeliveredText] = useState(false);
 
@@ -34,7 +34,7 @@ function RichEditor(props) {
   const onEditorStateChange = _editorState => {
     const { onTextEditorChange } = props;
     setEditorState(_editorState);
-    onTextEditorChange({ target: { name: label, value: draftToHtml(convertToRaw(editorState.getCurrentContent())) } });
+    onTextEditorChange({ target: { name: id, value: draftToHtml(convertToRaw(editorState.getCurrentContent())) } });
   };
 
   return (
@@ -51,14 +51,16 @@ function RichEditor(props) {
 }
 
 RichEditor.propTypes = {
+  id: PropTypes.string,
+  label: PropTypes.string,
   classes: PropTypes.object.isRequired,
   text: PropTypes.string.isRequired,
-  label: PropTypes.string,
   onTextEditorChange: PropTypes.func
 
 };
 
 RichEditor.defaultProps = {
+  id: 'description',
   label: 'Description',
   onTextEditorChange: () => { }
 };
