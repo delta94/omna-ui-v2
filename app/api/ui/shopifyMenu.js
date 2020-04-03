@@ -3,13 +3,13 @@ module.exports = [
   //   key: 'dashboard',
   //   name: 'Dashboard',
   //   icon: 'ios-stats-outline',
-  //   link: '/app/dashboard'
+  //   link: '/dashboard'
   // },
   {
     key: 'plans',
     name: 'Plans Settings',
     icon: 'ios-stats-outline',
-    link: '/app/shopify'
+    link: '/shopify'
   },
   {
     key: 'data',
@@ -19,7 +19,7 @@ module.exports = [
       {
         key: 'products',
         name: 'Products',
-        link: '/app/products'
+        link: '/products'
       }
     ]
   },
@@ -31,12 +31,12 @@ module.exports = [
       {
         key: 'channels',
         name: 'Channels',
-        link: '/app/channels'
+        link: '/channels'
       },
       {
         key: 'installed-integrations',
         name: 'Installed Integrations',
-        link: '/app/installed-integrations'
+        link: '/installed-integrations'
       },
     ]
   }
