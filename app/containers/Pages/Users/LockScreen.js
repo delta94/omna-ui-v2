@@ -58,7 +58,7 @@ class LockScreen extends React.Component {
     if (store) {
       const result = await ShopifyService.getSettingsInfo(this.props);
       if (result) {
-        history.push('/app/shopify');
+        history.push('/shopify');
       }
     }
 

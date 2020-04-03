@@ -66,7 +66,6 @@ class LeftSidebarLayout extends React.Component {
       tenantName
     } = this.props;
 
-
     const deactivation = Utils.getDeactivationDate(deactivationDate);
 
     return (

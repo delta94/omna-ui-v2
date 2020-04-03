@@ -104,7 +104,7 @@ export const TenantConfigurationRoute = {
 };
 
 export const ClientSettingsRoute = {
-  path: '/client-settings',
+  link: '/client-settings',
   component: ClientSettings
 }
 
