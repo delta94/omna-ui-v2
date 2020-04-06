@@ -125,6 +125,9 @@ const applicationTheme = (color, mode) => ({
     MuiTypography: {
       button: {
         fontWeight: 600
+      },
+      body1: {
+        fontSize: '.875rem'
       }
     },
     MuiInput: {
@@ -158,34 +161,34 @@ const applicationTheme = (color, mode) => ({
         paddingTop: 24
       }
     },
-    MuiInputLabel: {
-      formControl: {
-        top: 12,
-        left: 10,
-        transform: 'translate(0, 22px) scale(1)'
-      },
-      shrink: {
-        zIndex: 1,
-        transform: 'translate(0, 13px) scale(0.7)'
-      },
-      filled: {
-        transform: 'translate(2px, 6px) scale(1)',
-        '&$shrink': {
-          transform: 'translate(0px, -6px) scale(0.75)'
-        }
-      },
-      outlined: {
-        transform: 'translate(2px, 6px) scale(1)',
-        '&$shrink': {
-          transform: 'translate(4px, -16px) scale(0.75)'
-        }
-      }
-    },
-    MuiFormLabel: {
-      root: {
-        fontSize: 14
-      }
-    },
+    // MuiInputLabel: {
+    //   formControl: {
+    //     top: 12,
+    //     left: 10,
+    //     transform: 'translate(0, 22px) scale(1)'
+    //   },
+    //   shrink: {
+    //     zIndex: 1,
+    //     transform: 'translate(0, 13px) scale(0.7)'
+    //   },
+    //   filled: {
+    //     transform: 'translate(2px, 6px) scale(1)',
+    //     '&$shrink': {
+    //       transform: 'translate(0px, -6px) scale(0.75)'
+    //     }
+    //   },
+    //   outlined: {
+    //     transform: 'translate(2px, 6px) scale(1)',
+    //     '&$shrink': {
+    //       transform: 'translate(4px, -16px) scale(0.75)'
+    //     }
+    //   }
+    // },
+    // MuiFormLabel: {
+    //   root: {
+    //     fontSize: 14
+    //   }
+    // },
     MuiFormHelperText: {
       root: {
         paddingLeft: 5

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import {
   Checkbox,
   Dialog,
@@ -24,7 +25,8 @@ import Qoo10DefaultPropsForm from './Qoo10DefaultPropsForm';
 
 const styles = () => ({
   inputWidth: {
-    width: '300px'
+    width: 300,
+    margin: '8px 0'
   },
   margin: {
     margin: '10px'
@@ -37,13 +39,27 @@ class AddIntegrationForm extends Component {
     selectedChannel: '',
     authorized: true,
     errors: {},
-    loadingState: false
+    loadingState: false,
+    locations: {},
+    location: ''
   };
 
   componentDidMount() {
     const { onGetChannels } = this.props;
     onGetChannels();
+    this.getLocations();
   }
+
+  getLocations = async () => {
+    try {
+      const locations = await axios.get(
+        'https://cenit.io/app/omna-dev/locations?shop=nutellatesting1.myshopify.com'
+      );
+      this.setState({ locations });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   onInputChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -113,14 +129,19 @@ class AddIntegrationForm extends Component {
       selectedChannel,
       authorized,
       loadingState,
-      errors
+      errors,
+      locations,
+      location
     } = this.state;
 
     if (selectedChannel === '' && open) {
       this.setState({ selectedChannel: channel });
     }
 
-    const hasDefaultProperties =
+    const isOmnaShopify = JSON.parse(localStorage.getItem('currentTenant'))
+      .shop;
+    console.log(isOmnaShopify);
+    const hasCustomDefaultProperties =
       channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
 
     return (
@@ -143,7 +164,7 @@ class AddIntegrationForm extends Component {
                 name="integration"
                 placeholder="myintegration.lazada.sg"
                 onChange={this.onInputChange}
-                margin="normal"
+                margin="dense"
                 variant="outlined"
                 className={classes.inputWidth}
                 error={!errors.integration}
@@ -163,7 +184,7 @@ class AddIntegrationForm extends Component {
                     className: classes.inputWidth
                   }
                 }}
-                margin="normal"
+                margin="dense"
                 variant="outlined"
                 className={classes.inputWidth}
                 error={!!errors.channel}
@@ -189,21 +210,50 @@ class AddIntegrationForm extends Component {
                 label="Authorized"
               />
 
-              {hasDefaultProperties && (
+              {isOmnaShopify && (
                 <div style={{ marginTop: 8 }}>
                   <Typography component="h5" variant="subtitle2">
                     Default Properties
                   </Typography>
-
                   <Divider />
+                  <TextField
+                    required
+                    id="locations"
+                    select
+                    label="Locations"
+                    value={location}
+                    name="location"
+                    onChange={this.onInputChange}
+                    SelectProps={{
+                      MenuProps: {
+                        className: classes.inputWidth
+                      }
+                    }}
+                    margin="dense"
+                    variant="outlined"
+                    className={classes.inputWidth}
+                    error={!!errors.channel}
+                    helperText={errors.channel}
+                  >
+                    {locations.data &&
+                      locations.data.items.map(option => (
+                        <MenuItem key={option.name} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                  </TextField>
 
-                  {channel.includes('Shopee') && (
-                    <ShopeeDefaultPropsForm classes={classes} />
-                  )}
+                  {hasCustomDefaultProperties ? (
+                    <div>
+                      {channel.includes('Shopee') && (
+                        <ShopeeDefaultPropsForm classes={classes} />
+                      )}
 
-                  {channel.includes('Qoo10') && (
-                    <Qoo10DefaultPropsForm classes={classes} />
-                  )}
+                      {channel.includes('Qoo10') && (
+                        <Qoo10DefaultPropsForm classes={classes} />
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               )}
 

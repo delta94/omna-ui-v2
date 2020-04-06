@@ -21,7 +21,7 @@ const ShopeeDefaultPropsForm = ({ classes }) => {
         value={defaultProps.daysToShip}
         name="daysToShip"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />

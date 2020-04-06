@@ -25,7 +25,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.productionPlace}
         name="productionPlace"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
@@ -36,7 +36,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.daysToShip}
         name="daysToShip"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
@@ -47,7 +47,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.industrialCodeType}
         name="industrialCodeType"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
@@ -58,7 +58,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.contactTel}
         name="contactTel"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
@@ -69,7 +69,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.contactEmail}
         name="contactEmail"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
@@ -80,7 +80,7 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
         value={defaultProps.shippingNo}
         name="shippingNo"
         onChange={onInputChange}
-        margin="normal"
+        margin="dense"
         variant="outlined"
         className={classes.inputWidth}
       />
