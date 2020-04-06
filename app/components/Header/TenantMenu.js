@@ -159,7 +159,7 @@ function TenantMenu(props) {
       onSetNotifications([]);
       loadNotications(tenantName, isReadyToOmna, deactivation);
       changeReloadLandingPage(true);
-      history.push('/app');
+      history.push('/');
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'

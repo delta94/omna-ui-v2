@@ -15,7 +15,7 @@ class Login extends React.Component {
     const { valueForm } = this.state;
     setTimeout(() => {
       this.setState({ valueForm: values });
-      window.location.href = '/app';
+      window.location.href = '/';
     }, 500); // simulate server latency
   }
 
