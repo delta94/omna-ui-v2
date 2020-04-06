@@ -4,7 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
-import { NotFound } from '../pageListAsync';
+import { LockScreen, Logout, NotFound } from '../pageListAsync';
 import { AllRoutes as routes } from './routes';
 
 class Application extends React.Component {
@@ -24,6 +24,12 @@ class Application extends React.Component {
                 component={route.component}
               />
             ))}
+            <Route
+              path="/lock-screen"
+              history={history}
+              component={LockScreen}
+            />
+            <Route path="/logout" component={Logout} />
             {/* Default */}
             <Route component={NotFound} />
           </Switch>
