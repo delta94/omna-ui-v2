@@ -15,9 +15,10 @@ import API from '../Utils/api';
 import PageHeader from '../Common/PageHeader';
 import ProductForm from './ProductForm';
 import styles from './product-jss';
+import AlertDialog from '../Common/AlertDialog';
 
 function EditProduct(props) {
-  const { match, productVariants, updateProductVariants, history } = props;
+  const { match, productVariants, updateProductVariants, history, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -26,7 +27,9 @@ function EditProduct(props) {
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedIntegration, setSelectedIntegration] = useState('');
+  const [selectedIntegration, setSelectedIntegration] = useState();
+  const [openDialog, setOpenDialog] = useState(false);
+
 
   useEffect(() => {
     async function fetchProduct() {
@@ -41,8 +44,13 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
+        setSelectedIntegration(data.integrations.length > 0 ? data.integrations[0] : null);
       } catch (error) {
-        console.log(error);
+        if (error && error.response.data.message) {
+          enqueueSnackbar(error.response.data.message, {
+            variant: 'error'
+          });
+        }
       }
       setIsLoading(false);
     }
@@ -57,7 +65,7 @@ function EditProduct(props) {
   }, [integrations]);
 
   const onIntegrationChange = value => {
-    const obj = integrations.find(item => item.id === value);
+    const obj = integrations.find(item => item.id === value.id);
     if (obj) {
       setSelectedIntegration(value);
       const { id: _id, product: _product } = obj;
@@ -72,16 +80,15 @@ function EditProduct(props) {
 
   const editProps = async () => {
     const editProperties = selectedIntegration || integrations.length > 0;
-    if(editProperties){
-      const integrationId = selectedIntegration || integrations[0].id;
+    if (editProperties) {
+      const integrationId = selectedIntegration.id || integrations[0].id;
       const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
       const data = { properties };
       await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
-     }
+    }
   };
 
   const handleEdit = async () => {
-    const { enqueueSnackbar } = props;
     setIsLoading(true);
     try {
       await editBasicInfo();
@@ -99,6 +106,13 @@ function EditProduct(props) {
     setIsLoading(false);
   };
 
+  const handleDialogCancel = () => setOpenDialog(false);
+
+  const handleDialogConfirm = () => {
+    setOpenDialog(false);
+    handleEdit();
+  };
+
   return (
     <div>
       {isLoading ? <Loading /> : null}
@@ -112,14 +126,21 @@ function EditProduct(props) {
           variants={variants}
           integrations={integrations}
           variantList={productVariants}
+          selectedIntegration={selectedIntegration}
           onNameChange={e => setName(e)}
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
           onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
-          onSubmitForm={handleEdit}
+          onSubmitForm={() => setOpenDialog(true)}
         />
       )}
+      <AlertDialog
+        open={openDialog}
+        message={`The product will be edited under "${selectedIntegration ? selectedIntegration.name : ''}" integration`}
+        handleCancel={handleDialogCancel}
+        handleConfirm={handleDialogConfirm}
+      />
     </div>
   );
 }

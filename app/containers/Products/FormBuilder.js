@@ -203,11 +203,9 @@ const MuiAsyncSelect = (props) => {
 };
 
 const MuiRichTextEditor = (props) => {
-  const {
-    label, value = '', onChange
-  } = props;
+  const { id, label, value = '', onChange } = props;
   return (
-    <RichEditor label={label} text={value} onTextEditorChange={onChange} />
+    <RichEditor id={id} label={label} text={value} onTextEditorChange={onChange} />
   );
 };
 
@@ -313,6 +311,7 @@ MuiAsyncSelect.propTypes = {
 };
 
 MuiRichTextEditor.propTypes = {
+  id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired
