@@ -1,20 +1,25 @@
+import 'babel-polyfill';
+
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { configure, shallow, mount } from 'enzyme';
 import { FormattedMessage, defineMessages } from 'react-intl';
 import { Provider } from 'react-redux';
 import { browserHistory } from 'react-router-dom';
+import Adapter from 'enzyme-adapter-react-16';
 
 import ConnectedLanguageProvider, { LanguageProvider } from '../index';
-import configureStore from '../../../configureStore';
+import configureStore from '../../../redux/configureStore';
 
 import { translationMessages } from '../../../i18n';
+
+configure({ adapter: new Adapter() });
 
 const messages = defineMessages({
   someMessage: {
     id: 'some.id',
     defaultMessage: 'This is some default message',
-    en: 'This is some en message',
-  },
+    en: 'This is some en message'
+  }
 });
 
 describe('<LanguageProvider />', () => {
@@ -23,7 +28,7 @@ describe('<LanguageProvider />', () => {
     const renderedComponent = shallow(
       <LanguageProvider messages={messages} locale="en">
         {children}
-      </LanguageProvider>,
+      </LanguageProvider>
     );
     expect(renderedComponent.contains(children)).toBe(true);
   });
@@ -42,12 +47,10 @@ describe('<ConnectedLanguageProvider />', () => {
         <ConnectedLanguageProvider messages={translationMessages}>
           <FormattedMessage {...messages.someMessage} />
         </ConnectedLanguageProvider>
-      </Provider>,
+      </Provider>
     );
     expect(
-      renderedComponent.contains(
-        <FormattedMessage {...messages.someMessage} />,
-      ),
+      renderedComponent.contains(<FormattedMessage {...messages.someMessage} />)
     ).toBe(true);
   });
 });

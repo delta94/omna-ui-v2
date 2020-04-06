@@ -4,10 +4,9 @@
 import { reducer as form } from 'redux-form/immutable';
 import { combineReducers } from 'redux-immutable';
 import { connectRouter } from 'connected-react-router/immutable';
-import history from 'utils/history';
-
+import languageProviderReducer from '../containers/LanguageProvider/reducer';
+import history from '../utils/history';
 import availableIntegrationsReducer from './modules/availableIntegrations';
-import languageProviderReducer from 'containers/LanguageProvider/reducer';
 import login from './modules/login';
 import uiReducer from './modules/ui';
 import tenantReducer from './modules/tenant';

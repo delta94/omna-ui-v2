@@ -2,7 +2,9 @@
   "extends": [
     "eslint-config-airbnb",
     "eslint-config-prettier",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
   ],
   "env": {
     "browser": true,
@@ -57,9 +59,14 @@
           "every": ["id"]
         }
       }
-    ]
+    ],
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error"
   },
-  "plugins": ["react", "import", "flowtype"],
+  "plugins": ["react", "import", "flowtype", "jest"],
   "settings": {
     "import/parser": "babel-eslint",
     "import/resolve": {
