@@ -40,7 +40,7 @@ class DropMenuLayout extends React.Component {
           toggleDrawerOpen={toggleDrawer}
           openMobileNav={sidebarOpen}
           loadTransition={loadTransition}
-          logoLink="/app"
+          logoLink="/"
         />
         <main
           className={

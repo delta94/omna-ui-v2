@@ -5,15 +5,15 @@ const lightPalette = {
         light: '#EDE7F6',
         main: '#673AB7',
         dark: '#512DA8',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FCE4EC',
         main: '#EC407A',
         dark: '#C2185B',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   greenOrangeTheme: {
     palette: {
@@ -21,15 +21,15 @@ const lightPalette = {
         light: '#F1F8E9',
         main: '#689F38',
         dark: '#33691E',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FFF8E1',
         main: '#FF8F00',
         dark: '#E65100',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   magentaTheme: {
     palette: {
@@ -37,15 +37,15 @@ const lightPalette = {
         light: '#FCE4EC',
         main: '#EC407A',
         dark: '#D81B60',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FFF8E1',
         main: '#FFA000',
         dark: '#FF6F00',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   purpleTheme: {
     palette: {
@@ -53,15 +53,15 @@ const lightPalette = {
         light: '#EDE7F6',
         main: '#AB47BC',
         dark: '#8E24AA',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E0F7FA',
         main: '#00BCD4',
         dark: '#006064',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   blueTheme: {
     palette: {
@@ -69,15 +69,15 @@ const lightPalette = {
         light: '#E8EAF6',
         main: '#3F51B5',
         dark: '#283593',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E1F5FE',
         main: '#03A9F4',
         dark: '#0277BD',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   orangeTheme: {
     palette: {
@@ -85,15 +85,15 @@ const lightPalette = {
         light: '#FFF3E0',
         main: '#EF6C00',
         dark: '#E65100',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#F3E5F5',
         main: '#9C27B0',
         dark: '#7B1FA2',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   cyanTheme: {
     palette: {
@@ -101,15 +101,15 @@ const lightPalette = {
         light: '#E0F7FA',
         main: '#009688',
         dark: '#00695C',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#F1F8E9',
         main: '#689F38',
         dark: '#33691E',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   redTheme: {
     palette: {
@@ -117,15 +117,15 @@ const lightPalette = {
         light: '#FFEBEE',
         main: '#EF5350',
         dark: '#E53935',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#ECEFF1',
         main: '#607D8B',
         dark: '#455A64',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   skyBlueTheme: {
     palette: {
@@ -133,15 +133,15 @@ const lightPalette = {
         light: '#E3F2FD',
         main: '#2196F3',
         dark: '#1565C0',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E0F2F1',
         main: '#00BFA5',
         dark: '#00796B',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   greyTheme: {
     palette: {
@@ -149,15 +149,15 @@ const lightPalette = {
         light: '#ECEFF1',
         main: '#607D8B',
         dark: '#455A64',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E0E0E0',
         main: '#757575',
         dark: '#424242',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   yellowBlueTheme: {
     palette: {
@@ -165,15 +165,15 @@ const lightPalette = {
         light: '#E1F5FE',
         main: '#039BE5',
         dark: '#01579B',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FFF3E0',
         main: '#FF9800',
         dark: '#E65100',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   pinkBlueTheme: {
     palette: {
@@ -181,15 +181,15 @@ const lightPalette = {
         light: '#E0F7FA',
         main: '#00BCD4',
         dark: '#006064',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FCE4EC',
         main: '#F06292',
         dark: '#AD1457',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   yellowCyanTheme: {
     palette: {
@@ -197,15 +197,15 @@ const lightPalette = {
         light: '#FFF3E0',
         main: '#F9A825',
         dark: '#F57F17',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E0F7FA',
         main: '#00BCD4',
         dark: '#006064',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   blueCyanTheme: {
     palette: {
@@ -213,15 +213,15 @@ const lightPalette = {
         light: '#E1F5FE',
         main: '#039BE5',
         dark: '#01579B',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E0F7FA',
         main: '#00BCD4',
         dark: '#00838F',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   greenPurpleTheme: {
     palette: {
@@ -229,15 +229,15 @@ const lightPalette = {
         light: '#EDE7F6',
         main: '#7C4DFF',
         dark: '#311B92',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#E8F5E9',
         main: '#00C853',
         dark: '#1B5E20',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   pinkGreenTheme: {
     palette: {
@@ -245,15 +245,15 @@ const lightPalette = {
         light: '#DCEDC8',
         main: '#689F38',
         dark: '#33691E',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#FCE4EC',
         main: '#F06292',
         dark: '#AD1457',
-        contrastText: '#fff',
-      },
-    },
+        contrastText: '#fff'
+      }
+    }
   },
   goldTheme: {
     palette: {
@@ -261,15 +261,31 @@ const lightPalette = {
         light: '#FFF9C4',
         main: '#FF9100',
         dark: '#FF6D00',
-        contrastText: '#fff',
+        contrastText: '#fff'
       },
       secondary: {
         light: '#EFEBE9',
         main: '#8D6E63',
         dark: '#4E342E',
-        contrastText: '#fff',
+        contrastText: '#fff'
+      }
+    }
+  },
+  omnaTheme: {
+    palette: {
+      primary: {
+        light: '#E1F5FE',
+        main: '#1b6281',
+        dark: '#01579B',
+        contrastText: '#fff'
       },
-    },
+      secondary: {
+        light: '#FFF3E0',
+        main: '#1b6281',
+        dark: '#E65100',
+        contrastText: '#fff'
+      }
+    }
   }
 };
 

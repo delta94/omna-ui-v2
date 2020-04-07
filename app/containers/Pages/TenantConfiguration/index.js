@@ -106,7 +106,7 @@ class TenantConfiguration extends React.Component {
           if (data.status === 'completed') {
             this.setState({ loading: false });
             clearInterval(intervalObj);
-            history.push('/app');
+            history.push('/');
           }
         }, 8000);
       } catch (error) {

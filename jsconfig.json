@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "allowSyntheticDefaultImports": false,
+    "baseUrl": "./",
+    "paths": {
+      "dan-components/*": ["app/components/*"],
+      "dan-containers/*": ["app/containers/*"],
+      "dan-actions/*": ["app/store/actions/*"],
+      "dan-styles/*": ["app/styles/components/*"],
+      "dan-api/*": ["app/api/*"],
+      "dan-images/*": ["public/images/*"],
+      "dan-vendor/*": ["node_modules/*"]
+    }
+  },
+  "exclude": ["node_modules", "build"]
+}

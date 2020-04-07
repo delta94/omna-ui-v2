@@ -11,13 +11,13 @@ import {
   CHANGE_BG_POSITION,
   CHANGE_LAYOUT,
   LOAD_PAGE
-} from '../../actions/actionConstants';
+} from 'dan-actions/actionConstants';
 
 const initialState = {
   /* Settings for Themes and layout */
   theme: 'blueTheme',
   type: 'light', // light or dark
-  gradient: true, // true or false
+  gradient: false, // true or false
   decoration: true, // true or false
   bgPosition: 'header', // half, header, full
   layout: 'left-sidebar', // left-sidebar, right-sidebar, top-navigation, mega-menu
@@ -40,6 +40,7 @@ const initialState = {
     { name: 'Ruby', value: 'redTheme' },
     { name: 'Sultan', value: 'goldTheme' },
     { name: 'Monochrome', value: 'greyTheme' },
+    { name: 'OmnaApp', value: 'omnaTheme' },
   ]),
   sidebarOpen: true,
   pageLoaded: false,

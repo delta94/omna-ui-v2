@@ -19,6 +19,7 @@ class Application extends React.Component {
           <Switch>
             {routes.map(route => (
               <AuthGuardRoute
+                key={route.link}
                 exact
                 path={route.link}
                 component={route.component}

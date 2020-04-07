@@ -32,7 +32,7 @@ function AddTenant(props) {
       enqueueSnackbar('Tenant created successfuly', {
         variant: 'success'
       });
-      history.push('/app');
+      history.push('/');
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'

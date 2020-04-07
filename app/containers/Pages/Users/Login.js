@@ -9,13 +9,13 @@ import styles from 'dan-components/Forms/user-jss';
 class Login extends React.Component {
   state = {
     valueForm: []
-  }
+  };
 
   submitForm(values) {
     const { valueForm } = this.state;
     setTimeout(() => {
       this.setState({ valueForm: values });
-      window.location.href = '/app';
+      window.location.href = '/';
     }, 500); // simulate server latency
   }
 
@@ -35,7 +35,7 @@ class Login extends React.Component {
         </Helmet>
         <div className={classes.container}>
           <div className={classes.userFormWrap}>
-            <LoginForm onSubmit={(values) => this.submitForm(values)} />
+            <LoginForm onSubmit={values => this.submitForm(values)} />
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(Login);

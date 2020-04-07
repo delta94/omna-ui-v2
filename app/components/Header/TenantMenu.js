@@ -15,8 +15,8 @@ import {
 } from '@material-ui/core';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
-import API from '../../containers/Utils/api';
-import Utils from '../../containers/Common/Utils';
+import Utils from 'dan-containers/Common/Utils';
+import API from 'dan-containers/Utils/api';
 import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
   setTenantStatus,
@@ -159,7 +159,7 @@ function TenantMenu(props) {
       onSetNotifications([]);
       loadNotications(tenantName, isReadyToOmna, deactivation);
       changeReloadLandingPage(true);
-      history.push('/app');
+      history.push('/');
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'

@@ -63,7 +63,7 @@ class SidebarContent extends React.Component {
               marginTop: transform * -0.3
             }}
           >
-            <NavLink to="/app">
+            <NavLink to="/">
               <img
                 src={drawerPaper ? logo : logoSmall}
                 alt="OMNA LTS"
@@ -109,9 +109,9 @@ SidebarContent.propTypes = {
 SidebarContent.defaultProps = {
   // turnDarker: false,
   toggleDrawerOpen: () => {},
-  loadTransition: () => {},
-  anchorEl: null,
-  isLogin: true
+  loadTransition: () => {}
+  // anchorEl: null,
+  // isLogin: true
 };
 
 export default withStyles(styles)(SidebarContent);

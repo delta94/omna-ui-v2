@@ -205,6 +205,8 @@ export const handleAuthorization = path => {
 };
 
 export const isOmnaShopify = () =>
-  JSON.parse(localStorage.getItem('currentTenant')).shop;
+  localStorage.getItem('currentTenant')
+    ? JSON.parse(localStorage.getItem('currentTenant')).shop
+    : null;
 
 export default Utils;
