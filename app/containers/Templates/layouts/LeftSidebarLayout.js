@@ -8,10 +8,10 @@ import { Header, Sidebar } from 'dan-components';
 import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
 import shopifyMenu from 'dan-api/ui/shopifyMenu';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
-import Utils from '../../Common/Utils';
 
 class LeftSidebarLayout extends React.Component {
   render() {
@@ -30,9 +30,9 @@ class LeftSidebarLayout extends React.Component {
       changeMode,
       place,
       handleOpenGuide,
-      notifications,
+      notifications
     } = this.props;
-
+    
     return (
       <Fragment>
         <Header
@@ -46,13 +46,13 @@ class LeftSidebarLayout extends React.Component {
           history={history}
           openGuide={handleOpenGuide}
         />
-          <Sidebar
-            open={sidebarOpen}
-            toggleDrawerOpen={toggleDrawer}
-            loadTransition={loadTransition}
-            dataMenu={Utils.isOmnaShopify() ? shopifyMenu : dataMenu}
-            leftSidebar
-          />
+        <Sidebar
+          open={sidebarOpen}
+          toggleDrawerOpen={toggleDrawer}
+          loadTransition={loadTransition}
+          dataMenu={isOmnaShopify() ? shopifyMenu : dataMenu}
+          leftSidebar
+        />
         <main
           className={classNames(
             classes.content,

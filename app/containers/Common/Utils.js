@@ -88,11 +88,13 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg = url + JSON.stringify(params)
-      .replace(/["']/g, '')
-      .split('')
-      .sort()
-      .join('');
+    const msg =
+      url +
+      JSON.stringify(params)
+        .replace(/["']/g, '')
+        .split('')
+        .sort()
+        .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
@@ -200,10 +202,11 @@ class Utils {
 
     return variantIcon;
   }
-
-  static isOmnaShopify() {
-    return JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp;
-  }
 }
+
+export const isOmnaShopify = () =>
+  localStorage.getItem('currentTenant')
+    ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
+    : null;
 
 export default Utils;
