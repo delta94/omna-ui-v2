@@ -202,7 +202,10 @@ class Utils {
   }
 
   static isOmnaShopify() {
-    return JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp;
+    if (this.getTenant()) {
+      return this.getTenant().fromShopifyApp;
+    }
+    return false;
   }
 }
 
