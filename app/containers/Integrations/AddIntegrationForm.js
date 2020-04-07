@@ -18,7 +18,10 @@ import {
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
-import Utils from 'dan-containers/Common/Utils';
+import {
+  handleAuthorization,
+  isOmnaShopify
+} from 'dan-containers/Common/Utils';
 import { getChannels } from 'dan-actions/integrationActions';
 import ShopeeDefaultPropsForm from './ShopeeDefaultPropsForm';
 import Qoo10DefaultPropsForm from './Qoo10DefaultPropsForm';
@@ -41,7 +44,8 @@ class AddIntegrationForm extends Component {
     errors: {},
     loadingState: false,
     locations: {},
-    location: ''
+    defaultProperties: { location: '' }
+    // https://cenit.io/app/omna-dev/setup/default/properties?shop=nutellatesting1.myshopify.com&channel=LazadaSG&default_properties=%7B%22a%22%3A1%7D
   };
 
   componentDidMount() {
@@ -52,8 +56,9 @@ class AddIntegrationForm extends Component {
 
   getLocations = async () => {
     try {
+      const { shop } = JSON.parse(localStorage.getItem('currentTenant'));
       const locations = await axios.get(
-        'https://cenit.io/app/omna-dev/locations?shop=nutellatesting1.myshopify.com'
+        `https://cenit.io/app/omna-dev/locations?shop=${shop}`
       );
       this.setState({ locations });
     } catch (error) {
@@ -87,7 +92,7 @@ class AddIntegrationForm extends Component {
           });
           const { data } = response.data;
           if (authorized && data.id) {
-            this.handleAuthorization(data.id);
+            this.handleIntegrationAuthorization(data.id);
           }
         })
         .catch(error => {
@@ -104,9 +109,9 @@ class AddIntegrationForm extends Component {
     }
   };
 
-  handleAuthorization = id => {
+  handleIntegrationAuthorization = id => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAuthorization(path);
+    handleAuthorization(path);
   };
 
   handleClose = () => {
@@ -131,16 +136,13 @@ class AddIntegrationForm extends Component {
       loadingState,
       errors,
       locations,
-      location
+      defaultProperties
     } = this.state;
 
     if (selectedChannel === '' && open) {
       this.setState({ selectedChannel: channel });
     }
 
-    const isOmnaShopify = JSON.parse(localStorage.getItem('currentTenant'))
-      .shop;
-    console.log(isOmnaShopify);
     const hasCustomDefaultProperties =
       channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
 
@@ -210,7 +212,7 @@ class AddIntegrationForm extends Component {
                 label="Authorized"
               />
 
-              {isOmnaShopify && (
+              {isOmnaShopify() && (
                 <div style={{ marginTop: 8 }}>
                   <Typography component="h5" variant="subtitle2">
                     Default Properties
@@ -221,7 +223,7 @@ class AddIntegrationForm extends Component {
                     id="locations"
                     select
                     label="Locations"
-                    value={location}
+                    value={defaultProperties.location}
                     name="location"
                     onChange={this.onInputChange}
                     SelectProps={{

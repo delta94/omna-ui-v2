@@ -9,11 +9,11 @@ import { Header, Sidebar } from 'dan-components';
 import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
 import shopifyMenu from 'dan-api/ui/shopifyMenu';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 import { GET_TENANT } from '../../../actions/actionConstants';
 import MySnackBar from '../../Common/SnackBar';
-import Utils from '../../Common/Utils';
 
 const subscribeAction = (
   <div>
@@ -66,7 +66,7 @@ class LeftSidebarLayout extends React.Component {
       tenantName
     } = this.props;
 
-    const deactivation = Utils.getDeactivationDate(deactivationDate);
+    // const deactivation = Utils.getDeactivationDate(deactivationDate);
 
     return (
       <Fragment>
@@ -88,7 +88,7 @@ class LeftSidebarLayout extends React.Component {
             open={sidebarOpen}
             toggleDrawerOpen={toggleDrawer}
             loadTransition={loadTransition}
-            dataMenu={Utils.isOmnaShopify() ? shopifyMenu : dataMenu}
+            dataMenu={isOmnaShopify() ? shopifyMenu : dataMenu}
             leftSidebar
           />
         )}

@@ -88,11 +88,13 @@ class Utils {
 
     // Join the service path and the ordered sequence of characters, excluding the quotes,
     // corresponding to the JSON of the parameters that will be sent.
-    const msg = url + JSON.stringify(params)
-      .replace(/["']/g, '')
-      .split('')
-      .sort()
-      .join('');
+    const msg =
+      url +
+      JSON.stringify(params)
+        .replace(/["']/g, '')
+        .split('')
+        .sort()
+        .join('');
 
     // Generate the corresponding hmac using the js-sha256 or similar library.
     params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
@@ -111,14 +113,6 @@ class Utils {
     }
     window.location.replace(
       `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
-    );
-  }
-
-  static handleAuthorization(path) {
-    window.location.replace(
-      `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
-        path
-      )}`
     );
   }
 
@@ -200,10 +194,17 @@ class Utils {
 
     return variantIcon;
   }
-
-  static isOmnaShopify() {
-    return JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp;
-  }
 }
+
+export const handleAuthorization = path => {
+  window.location.replace(
+    `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
+      path
+    )}`
+  );
+};
+
+export const isOmnaShopify = () =>
+  JSON.parse(localStorage.getItem('currentTenant')).shop;
 
 export default Utils;
