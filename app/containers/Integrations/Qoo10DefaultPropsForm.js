@@ -1,30 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { TextField } from '@material-ui/core';
 
-const Qoo10DefaultPropsForm = ({ classes }) => {
-  const [defaultProps, setDefaultProps] = useState({
-    productionPlace: '',
-    adultYN: true,
-    industrialCodeType: '',
-    contactTel: '',
-    contactEmail: '',
-    shippingNo: ''
-  });
-
-  const onInputChange = e => {
-    const { name, value } = e.target;
-    setDefaultProps({ ...defaultProps, [name]: value });
-  };
-
+const Qoo10DefaultPropsForm = ({
+  classes,
+  defaultProperties,
+  handleChange
+}) => {
   return (
     <div>
       <TextField
         required
         label="Production Place"
-        value={defaultProps.productionPlace}
-        name="productionPlace"
-        onChange={onInputChange}
+        value={defaultProperties.productionPlace}
+        name="defaultProperties.productionPlace"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -33,9 +23,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
       <TextField
         required
         label="Days to ship"
-        value={defaultProps.daysToShip}
-        name="daysToShip"
-        onChange={onInputChange}
+        value={defaultProperties.adultYN}
+        name="defaultProperties.adultYN"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -44,9 +34,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
       <TextField
         required
         label="Industrial Code Type"
-        value={defaultProps.industrialCodeType}
-        name="industrialCodeType"
-        onChange={onInputChange}
+        value={defaultProperties.industrialCodeType}
+        name="defaultProperties.industrialCodeType"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -55,9 +45,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
       <TextField
         required
         label="Contact Tel"
-        value={defaultProps.contactTel}
-        name="contactTel"
-        onChange={onInputChange}
+        value={defaultProperties.contactTel}
+        name="defaultProperties.contactTel"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -66,9 +56,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
       <TextField
         required
         label="Contact Email"
-        value={defaultProps.contactEmail}
-        name="contactEmail"
-        onChange={onInputChange}
+        value={defaultProperties.contactEmail}
+        name="defaultProperties.contactEmail"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -77,9 +67,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
       <TextField
         required
         label="Shipping No."
-        value={defaultProps.shippingNo}
-        name="shippingNo"
-        onChange={onInputChange}
+        value={defaultProperties.shippingNo}
+        name="defaultProperties.shippingNo"
+        onChange={handleChange}
         margin="dense"
         variant="outlined"
         className={classes.inputWidth}
@@ -89,7 +79,9 @@ const Qoo10DefaultPropsForm = ({ classes }) => {
 };
 
 Qoo10DefaultPropsForm.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  defaultProperties: PropTypes.object.isRequired,
+  handleChange: PropTypes.func.isRequired
 };
 
 export default Qoo10DefaultPropsForm;

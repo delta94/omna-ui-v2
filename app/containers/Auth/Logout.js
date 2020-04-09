@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { baseApiUrl, baseAppUrl } from 'dan-containers/Common/Utils';
 import logout from '../../actions/auth';
-import Utils from '../Common/Utils';
 
 class Logout extends Component {
   componentDidMount() {
@@ -21,7 +21,7 @@ class Logout extends Component {
         to={{
           pathname: '/lock-screen',
           state: {
-            redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${
+            redirect: `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl()}${
               location.pathname
             }`
           }

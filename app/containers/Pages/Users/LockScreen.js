@@ -4,9 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Loading from 'dan-components/Loading';
-import styles from '../../../components/Forms/user-jss';
-import API from '../../Utils/api';
-import Utils from '../../Common/Utils';
+import { isTenantEnabled, setTenant } from 'dan-containers/Common/Utils';
+import styles from 'dan-components/Forms/user-jss';
+import API from 'dan-containers/Utils/api';
 import ShopifyService from '../../Shopify/Services/ShopifyService';
 import {
   setTenantStatus,
@@ -17,7 +17,6 @@ import {
 } from '../../../actions/TenantActions';
 
 class LockScreen extends React.Component {
-
   async componentDidMount() {
     const {
       history,
@@ -42,10 +41,10 @@ class LockScreen extends React.Component {
             picture: data.user.picture
           },
           isReadyToOmna: data.is_ready_to_omna,
-          enabled: Utils.isTenantEnabled(data.deactivation),
+          enabled: isTenantEnabled(data.deactivation),
           tenantId: data.id
         };
-        Utils.setTenant(currentTenant);
+        setTenant(currentTenant);
         changeTenantStatus(currentTenant.isReadyToOmna);
         changeTenantId(data.id);
         changeTenantName(data.name);

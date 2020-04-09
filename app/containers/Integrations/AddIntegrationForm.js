@@ -45,7 +45,6 @@ class AddIntegrationForm extends Component {
     loadingState: false,
     locations: {},
     defaultProperties: { location: '' }
-    // https://cenit.io/app/omna-dev/setup/default/properties?shop=nutellatesting1.myshopify.com&channel=LazadaSG&default_properties=%7B%22a%22%3A1%7D
   };
 
   componentDidMount() {
@@ -67,7 +66,17 @@ class AddIntegrationForm extends Component {
   };
 
   onInputChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name.includes('defaultProperties')) {
+      const prop = name.substring(name.indexOf('.') + 1);
+      const { defaultProperties } = this.state;
+      const defaultProps = { ...defaultProperties };
+      defaultProps[prop] = value;
+      this.setState({ defaultProperties: defaultProps });
+    } else {
+      this.setState({ [name]: value });
+    }
   };
 
   onCheckBoxChange = e => {
@@ -77,7 +86,13 @@ class AddIntegrationForm extends Component {
   onSubmit = e => {
     e.preventDefault();
     const { enqueueSnackbar, handleClose } = this.props;
-    const { integration: name, selectedChannel, authorized } = this.state;
+    const {
+      integration: name,
+      selectedChannel,
+      authorized,
+      defaultProperties
+    } = this.state;
+    const { shop } = JSON.parse(localStorage.getItem('currentTenant'));
 
     if (!name) {
       this.setState({ errors: { integration: 'Integration is required' } });
@@ -94,13 +109,30 @@ class AddIntegrationForm extends Component {
           if (authorized && data.id) {
             this.handleIntegrationAuthorization(data.id);
           }
+
+          axios
+            .post(
+              `https://cenit.io/app/omna-dev/setup/default/properties?shop=${shop}&channel=${selectedChannel}&default_properties=${defaultProperties}`
+            )
+            .then(res => {
+              enqueueSnackbar(res, {
+                variant: 'success'
+              });
+            })
+            .catch(error => {
+              console.log(error);
+              enqueueSnackbar(error, {
+                variant: 'error'
+              });
+            });
         })
         .catch(error => {
-          if (error && error.response.data.message) {
-            enqueueSnackbar(error.response.data.message, {
-              variant: 'error'
-            });
-          }
+          console.log(error)
+          // if (error && error.response.data.message) {
+          //   enqueueSnackbar(error.response.data.message, {
+          //     variant: 'error'
+          //   });
+          // }
         })
         .then(() => {
           handleClose();
@@ -138,6 +170,7 @@ class AddIntegrationForm extends Component {
       locations,
       defaultProperties
     } = this.state;
+    console.log(this.state);
 
     if (selectedChannel === '' && open) {
       this.setState({ selectedChannel: channel });
@@ -169,7 +202,7 @@ class AddIntegrationForm extends Component {
                 margin="dense"
                 variant="outlined"
                 className={classes.inputWidth}
-                error={!errors.integration}
+                error={errors.integration}
                 helperText={errors.integration}
               />
 
@@ -219,12 +252,11 @@ class AddIntegrationForm extends Component {
                   </Typography>
                   <Divider />
                   <TextField
-                    required
                     id="locations"
                     select
                     label="Locations"
                     value={defaultProperties.location}
-                    name="location"
+                    name="defaultProperties.location"
                     onChange={this.onInputChange}
                     SelectProps={{
                       MenuProps: {
@@ -248,11 +280,19 @@ class AddIntegrationForm extends Component {
                   {hasCustomDefaultProperties ? (
                     <div>
                       {channel.includes('Shopee') && (
-                        <ShopeeDefaultPropsForm classes={classes} />
+                        <ShopeeDefaultPropsForm
+                          classes={classes}
+                          defaultProperties={defaultProperties}
+                          handleChange={this.onInputChange}
+                        />
                       )}
 
                       {channel.includes('Qoo10') && (
-                        <Qoo10DefaultPropsForm classes={classes} />
+                        <Qoo10DefaultPropsForm
+                          classes={classes}
+                          defaultProperties={defaultProperties}
+                          handleChange={this.onInputChange}
+                        />
                       )}
                     </div>
                   ) : null}

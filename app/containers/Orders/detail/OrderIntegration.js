@@ -10,12 +10,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import Utils from '../../Common/Utils';
+import { getLogo } from 'dan-containers/Common/Utils';
 
 class OrderIntegration extends Component {
   render() {
     const { classes, integration } = this.props;
-    const logo = Utils.getLogo(integration.channel);
+    const logo = getLogo(integration.channel);
 
     return (
       <Card className={classes.subRoot} style={{ flex: '1 1 auto' }}>

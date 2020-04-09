@@ -22,7 +22,7 @@ import { getIntegrations, setLoading } from 'dan-actions/integrationActions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
-import Utils from 'dan-containers/Common/Utils';
+import { getLogo, handleAuthorization } from 'dan-containers/Common/Utils';
 import AddIntegrationForm from './AddIntegrationForm';
 import Integration from './Integration';
 
@@ -75,7 +75,7 @@ class IntegrationList extends Component {
 
   handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAuthorization(path);
+    handleAuthorization(path);
   };
 
   handleUnAuthorization = id => {
@@ -200,7 +200,10 @@ class IntegrationList extends Component {
                 onChange={this.handleSearch}
               />
               <Tooltip title="add">
-                <IconButton aria-label="add" onClick={this.handleAddIntegrationClick}>
+                <IconButton
+                  aria-label="add"
+                  onClick={this.handleAddIntegrationClick}
+                >
                   <Ionicon icon="md-add-circle" />
                 </IconButton>
               </Tooltip>
@@ -211,7 +214,6 @@ class IntegrationList extends Component {
               >
                 Add Integration
               </Button> */}
-
             </div>
           </Paper>
           <Grid container>
@@ -221,7 +223,7 @@ class IntegrationList extends Component {
                   id,
                   name,
                   channel,
-                  logo = Utils.getLogo(channel),
+                  logo = getLogo(channel),
                   authorized,
                   channel_title: channelTitle
                 }) => (
