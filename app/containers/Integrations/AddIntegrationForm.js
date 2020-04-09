@@ -112,9 +112,13 @@ class AddIntegrationForm extends Component {
 
           axios
             .post(
+<<<<<<< HEAD
               `https://cenit.io/app/omna-dev/setup/default/properties?shop=${shop}&channel=${selectedChannel}&default_properties=${JSON.stringify(
                 defaultProperties
               )}`
+=======
+              `https://cenit.io/app/omna-dev/setup/default/properties?shop=${shop}&channel=${selectedChannel}&default_properties=${defaultProperties}`
+>>>>>>> cd4a3c3... send default props to Shopify and refactor Utils
             )
             .then(res => {
               enqueueSnackbar(res, {
@@ -129,7 +133,11 @@ class AddIntegrationForm extends Component {
             });
         })
         .catch(error => {
+<<<<<<< HEAD
           console.log(error);
+=======
+          console.log(error)
+>>>>>>> cd4a3c3... send default props to Shopify and refactor Utils
           // if (error && error.response.data.message) {
           //   enqueueSnackbar(error.response.data.message, {
           //     variant: 'error'
