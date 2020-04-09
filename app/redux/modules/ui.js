@@ -15,7 +15,7 @@ import {
 
 const initialState = {
   /* Settings for Themes and layout */
-  theme: 'omnaTheme',
+  theme: 'blueTheme',
   type: 'light', // light or dark
   gradient: false, // true or false
   decoration: true, // true or false

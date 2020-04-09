@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-// material-ui
 import { withStyles } from '@material-ui/core/styles';
 import {
   Grid,
@@ -17,6 +16,7 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import Integration from '../Integration';
 import AddIntegrationForm from '../AddIntegrationForm';
 
@@ -103,6 +103,21 @@ class ChannelList extends Component {
     this.makeRequest();
   }
 
+  renderIntegrationItem = (chan, classes) => (
+    <Grid item md={3} xs={12}>
+      <Integration
+        key={chan.id}
+        name={chan.name}
+        group={chan.group}
+        classes={classes}
+        noActions
+        handleAddIntegration={event =>
+          this.handleAddIntegrationClick(event, chan)
+        }
+      />
+    </Grid>
+  );
+
   render() {
     const { classes, history, channels, loading } = this.props;
     const { alertDialog, channel, limit, openForm, page } = this.state;
@@ -117,20 +132,12 @@ class ChannelList extends Component {
         <div>
           <Grid container spacing={2}>
             {data &&
-              data.map(chan => (
-                <Grid item md={3} xs={12}>
-                  <Integration
-                    key={chan.id}
-                    name={chan.name}
-                    group={chan.group}
-                    classes={classes}
-                    noActions
-                    handleAddIntegration={event =>
-                      this.handleAddIntegrationClick(event, chan)
-                    }
-                  />
-                </Grid>
-              ))}
+              data.map(chan =>
+                isOmnaShopify()
+                  ? !chan.name.includes('Shopify') &&
+                    this.renderIntegrationItem(chan, classes)
+                  : this.renderIntegrationItem(chan, classes)
+              )}
           </Grid>
           <Table>
             <TableFooter>
@@ -187,9 +194,7 @@ const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query))
 });
 
-const ChannelsMapped = withSnackbar(
-  withStyles(styles)(ChannelList)
-);
+const ChannelsMapped = withSnackbar(withStyles(styles)(ChannelList));
 
 export default connect(
   mapStateToProps,
