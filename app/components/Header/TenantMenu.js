@@ -11,13 +11,13 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
-import API from '../../containers/Utils/api';
-import Utils from '../../containers/Common/Utils';
-import { GET_TENANT_ID } from '../../actions/actionConstants';
+import API from 'dan-containers/Utils/api';
+import Utils from 'dan-containers/Common/Utils';
+// import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
   setTenantStatus,
   setTenantId,
@@ -27,9 +27,19 @@ import {
   setEnabledTenant,
   setTenantName
 } from '../../actions/TenantActions';
-import { pushNotification, setNotificationList } from '../../actions/NotificationActions';
-import { TENANT_NOT_READY_INFO, DISABLED_TENANT_INFO, SUBSCRIBE_INFO } from '../Notification/AlertConstants';
-import { installOv2AvailableIntegrationAction, subscribeAction } from '../Notification/AlertActions';
+import {
+  pushNotification,
+  setNotificationList
+} from '../../actions/NotificationActions';
+import {
+  TENANT_NOT_READY_INFO,
+  DISABLED_TENANT_INFO,
+  SUBSCRIBE_INFO
+} from '../Notification/AlertConstants';
+import {
+  installOv2AvailableIntegrationAction,
+  subscribeAction
+} from '../Notification/AlertActions';
 import { installAvailableIntegration } from '../../actions/AvailableIntegrationsActions';
 
 const styles = () => ({
@@ -49,8 +59,7 @@ const styles = () => ({
   }
 });
 
-
-function TenantMenu(props) {
+const TenantMenu = props => {
   const { classes, reloadTenants, onSetNotifications } = props;
   const [name, setName] = useState('');
   const [tenantList, setTenantList] = useState([]);
@@ -58,22 +67,37 @@ function TenantMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
+  const currentTenant = Utils.getTenant();
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
     const { onPushNotification, onInstall, enqueueSnackbar } = props;
     const isEnabled = Utils.isTenantEnabled(deactivationDate);
-    const subscribeNotif = { message: SUBSCRIBE_INFO`${tenantName}`, variant: 'error', action: subscribeAction };
+    const subscribeNotif = {
+      message: SUBSCRIBE_INFO`${tenantName}`,
+      variant: 'error',
+      action: subscribeAction
+    };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
     const deactivation = Utils.getDeactivationDate(deactivationDate);
-    const deactivationNotif = { message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`, variant: 'info', action: subscribeAction };
+    const deactivationNotif = {
+      message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`,
+      variant: 'info',
+      action: subscribeAction
+    };
     deactivation >= 1 ? onPushNotification(deactivationNotif) : null;
-    const tenantNotReadyNotif = { message: TENANT_NOT_READY_INFO, variant: 'warning', action: installOv2AvailableIntegrationAction(() => onInstall('omna_v2', enqueueSnackbar))};
+    const tenantNotReadyNotif = {
+      message: TENANT_NOT_READY_INFO,
+      variant: 'warning',
+      action: installOv2AvailableIntegrationAction(() =>
+        onInstall('omna_v2', enqueueSnackbar)
+      )
+    };
     !isReadyToOmna ? onPushNotification(tenantNotReadyNotif) : null;
-  }
+  };
 
   useEffect(() => {
     async function changeTenant() {
-      const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
+      const { changeReloadTenants, enqueueSnackbar } = props;
       if (reloadTenants) {
         try {
           const params = { limit: 100, offset: 0 };
@@ -82,9 +106,15 @@ function TenantMenu(props) {
           changeReloadTenants(false);
           data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
-          const tenant = data.find(element => element.id === tenantId);
+          const tenant = data.find(
+            element => element.id === currentTenant.tenantId
+          );
           setName(tenant.name);
-          const { name: tenantName, is_ready_to_omna: isReadyToOmna, deactivation } = tenant;
+          const {
+            name: tenantName,
+            is_ready_to_omna: isReadyToOmna,
+            deactivation
+          } = tenant;
           loadNotications(tenantName, isReadyToOmna, deactivation);
         } catch (error) {
           enqueueSnackbar(
@@ -101,7 +131,7 @@ function TenantMenu(props) {
 
   useEffect(() => {
     async function getTenants() {
-      const { tenantId, enqueueSnackbar } = props;
+      const { enqueueSnackbar } = props;
       try {
         // TO DO: adjust total of elements to show in combobox
         const params = { limit: 100, offset: 0 };
@@ -109,11 +139,16 @@ function TenantMenu(props) {
         const { data } = response.data;
         data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
-        const found = data.findIndex(element => element.id === tenantId);
+        const found = data.findIndex(
+          element => element.id === currentTenant.tenantId
+        );
         setSelectedIndex(found);
-        // const found = data.find(element => element.id === tenantId);
         const tenant = data[found];
-        const { name: tenantName, is_ready_to_omna: isReadyToOmna, deactivation } = tenant;
+        const {
+          name: tenantName,
+          is_ready_to_omna: isReadyToOmna,
+          deactivation
+        } = tenant;
         setName(tenantName);
         loadNotications(tenantName, isReadyToOmna, deactivation);
       } catch (error) {
@@ -142,7 +177,14 @@ function TenantMenu(props) {
       setAnchorEl(null);
       const response = await API.get(`tenants/${tenantId}`);
       const { data } = response.data;
-      const { id, name: tenantName, token, secret, is_ready_to_omna: isReadyToOmna, deactivation } = data;
+      const {
+        id,
+        name: tenantName,
+        token,
+        secret,
+        is_ready_to_omna: isReadyToOmna,
+        deactivation
+      } = data;
       const tenant = Utils.getTenant();
       tenant.name = tenantName;
       tenant.token = token;
@@ -188,12 +230,12 @@ function TenantMenu(props) {
           <ListItemIcon style={{ margin: 0 }}>
             <HomeIcon className={classes.icon} />
           </ListItemIcon>
-          <ListItemText
-            primary={name}
-            className={classes.selectedTenant}
-          />
+          <ListItemText primary={name} className={classes.selectedTenant} />
           <ListItemIcon style={{ margin: 0 }}>
-            <ArrowDownIcon className={classes.icon} />
+            <ArrowDownIcon
+              className={classes.icon}
+              style={{ marginLeft: 36, minWidth: 16 }}
+            />
           </ListItemIcon>
         </ListItem>
       </List>
@@ -210,7 +252,8 @@ function TenantMenu(props) {
             value={option.id}
             disabled={index === 0}
             selected={index === selectedIndex}
-            onClick={event => handleTenantChange(event, option.id, option.name, index)
+            onClick={event =>
+              handleTenantChange(event, option.id, option.name, index)
             }
           >
             {option.name}
@@ -219,7 +262,7 @@ function TenantMenu(props) {
       </Menu>
     </div>
   );
-}
+};
 
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -238,13 +281,11 @@ TenantMenu.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  tenantId: state.getIn(['tenant', 'tenantId']),
   reloadTenants: state.getIn(['tenant', 'reloadTenants']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeReloadTenants: bindActionCreators(setReloadTenants, dispatch),
@@ -254,7 +295,7 @@ const mapDispatchToProps = dispatch => ({
   changeTenantName: bindActionCreators(setTenantName, dispatch),
   onPushNotification: bindActionCreators(pushNotification, dispatch),
   onInstall: bindActionCreators(installAvailableIntegration, dispatch),
-  onSetNotifications: bindActionCreators(setNotificationList, dispatch),
+  onSetNotifications: bindActionCreators(setNotificationList, dispatch)
 });
 
 const TenantMenuMapped = withSnackbar(withStyles(styles)(TenantMenu));
