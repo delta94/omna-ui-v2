@@ -7,7 +7,7 @@ function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
   const currentTenant = Utils.getTenant();
-  if (config.method === 'post' || config.method === 'delete') {
+  if (config.data) {
     if (config.url !== 'get_access_token') {
       data.token = currentTenant.token;
       data.timestamp = Date.now();

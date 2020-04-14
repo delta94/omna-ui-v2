@@ -1,24 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-import { Link } from 'react-router-dom';
-import Tooltip from '@material-ui/core/Tooltip';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import { withSnackbar } from 'notistack';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import PublishIcon from '@material-ui/icons/Publish';
+import { Link } from 'react-router-dom';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import { Avatar, Typography } from '@material-ui/core';
+import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
 import {
   withStyles,
   createMuiTheme,
   MuiThemeProvider
 } from '@material-ui/core/styles';
 
+
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
-import API from '../Utils/api';
-import Utils from '../Common/Utils';
-import PageHeader from '../Common/PageHeader';
+import { getIntegrations } from 'dan-actions/integrationActions';
+
+import Publisher from 'dan-components/Products/Publisher';
+import { linkProduct, unLinkProduct } from 'dan-actions/productActions';
+import API from 'dan-containers/Utils/api';
+import Utils from 'dan-containers/Common/Utils';
+import PageHeader from 'dan-containers/Common/PageHeader';
 
 const styles = theme => ({
   table: {
@@ -36,7 +47,7 @@ const styles = theme => ({
   }
 });
 
-class OrderList extends React.Component {
+class ProductList extends React.Component {
   state = {
     isLoading: true,
     products: { data: [], pagination: {} },
@@ -44,11 +55,13 @@ class OrderList extends React.Component {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
-    searchTerm: ''
+    searchTerm: '',
+    anchorEl: null,
+    selectedItem: null,
+    openPublishDlg: false
   };
 
   componentDidMount() {
-    // this.getIntegrations();
     this.callAPI();
   }
 
@@ -105,11 +118,6 @@ class OrderList extends React.Component {
     this.setState({ limit: rowsPerPage }, this.callAPI);
   };
 
-  handleRowClick = id => {
-    const { history } = this.props;
-    history.push(`/products/${id}/`);
-  };
-
   handleSearch = searchTerm => {
     if (searchTerm) {
       const timer = setTimeout(() => {
@@ -146,23 +154,57 @@ class OrderList extends React.Component {
     }
   };
 
+  handlePublish = async (value) => {
+    const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
+    const { id, linkedList, unlinkedList } = value;
+    linkedList.length > 0 ? await onLinkProduct(id, linkedList, enqueueSnackbar) : null;
+    unlinkedList.length > 0 ? await onUnlinkProduct(id, unlinkedList, enqueueSnackbar) : null;
+    this.setState({ openPublishDlg: false });
+  };
+
+  handleMenu = (event) => this.setState({ anchorEl: event.currentTarget });
+
+  handleClose = () => this.setState({ anchorEl: null });
+
+  renderTableActionsMenu = () => {
+    const { anchorEl } = this.state;
+    return (
+      <div>
+        <Menu
+          id="long-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
+        >
+          <MenuItem onClick={() => this.setState({ openPublishDlg: true }, this.handleClose)}>
+            <ListItemIcon>
+              <PublishIcon />
+            </ListItemIcon>
+             Publish/Unpublish
+          </MenuItem>
+        </Menu>
+      </div>)
+  };
+
   render() {
-    const { classes, history } = this.props;
+    const { classes, history, loading } = this.props;
     const {
       isLoading,
       limit,
       products,
       page,
       serverSideFilterList,
-      searchTerm
+      searchTerm,
+      openPublishDlg,
+      selectedItem
     } = this.state;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
     const columns = [
       {
-        name: 'images',
-        label: ' ',
+        name: 'id',
         options: {
           filter: false,
           display: 'excluded'
@@ -195,15 +237,6 @@ class OrderList extends React.Component {
               </div>
             );
           }
-        }
-      },
-      {
-        name: 'description',
-        label: 'Description',
-        options: {
-          display: 'exclude',
-          filter: false,
-          sort: false
         }
       },
       {
@@ -242,10 +275,20 @@ class OrderList extends React.Component {
         }
       },
       {
-        name: 'id',
+        name: 'Actions',
         options: {
           filter: false,
-          display: 'excluded'
+          sort: false,
+          empty: true,
+          customBodyRender: () => (
+            <IconButton
+              aria-label="more"
+              aria-controls="long-menu"
+              aria-haspopup="true"
+              onClick={this.handleMenu}>
+              <MoreVertIcon />
+            </IconButton>
+          )
         }
       }
     ];
@@ -284,9 +327,11 @@ class OrderList extends React.Component {
             break;
         }
       },
-      onRowClick: (rowData, { dataIndex }) => {
-        const product = data[dataIndex];
-        this.handleRowClick(product.id);
+      onCellClick: (rowData, { colIndex, dataIndex }) => {
+        this.setState({ selectedItem: data[dataIndex] });
+        if (colIndex !== 5) {
+          history.push(`/products/${data[dataIndex].id}/`);
+        }
       },
       customSort: (customSortData, colIndex, product) =>
         customSortData.sort((a, b) => {
@@ -294,14 +339,14 @@ class OrderList extends React.Component {
             case 3:
               return (
                 (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
+                  parseFloat(b.customSortData[colIndex])
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
             case 4:
               return (
                 (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
+                  b.customSortData[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
@@ -330,22 +375,45 @@ class OrderList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
-          {isLoading ? <Loading /> : null}
+          {isLoading || loading ? <Loading /> : null}
           <MuiThemeProvider theme={this.getMuiTheme()}>
             <MUIDataTable columns={columns} data={data} options={options} />
           </MuiThemeProvider>
+          {this.renderTableActionsMenu()}
+          <Publisher
+            product={selectedItem}
+            open={openPublishDlg}
+            onClose={() => this.setState({ openPublishDlg: false })}
+            onSave={this.handlePublish} />
         </div>
       </div>
     );
   }
 }
 
-OrderList.propTypes = {
-  classes: PropTypes.shape({}).isRequired,
-  enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func
-  }).isRequired
+const mapStateToProps = state => ({
+  loading: state.getIn(['product', 'loading']),
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
+  onLinkProduct: bindActionCreators(linkProduct, dispatch),
+  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch)
+});
+
+const ProductListMapped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProductList);
+
+ProductList.propTypes = {
+  classes: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
+  onLinkProduct: PropTypes.func.isRequired,
+  onUnlinkProduct: PropTypes.func.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(OrderList));
+export default withSnackbar(withStyles(styles)(ProductListMapped));

@@ -2,17 +2,11 @@ import { fromJS, List } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
-  product: null,
-  name: '',
-  description: '',
-  price: null,
-  variants: null,
-  integrations: [],
-  properties: [],
   productVariants: [],
-  loadingState: false,
+  loading: false,
   disabledForm: false,
-
+  linkProduct: null,
+  unLinkProduct: null
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -23,31 +17,19 @@ export default function integrationsReducer(state = initialState, action) {
       });
     case 'GET_PRODUCT_VARIANTS_ASYNC_LOADING':
       return state.withMutations((mutableState) => {
-        mutableState.set('loadingState', action.loading);
+        mutableState.set('loading', action.loading);
       });
-    case types.SET_PRODUCT:
+    case types.LINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('product', action.product);
+        mutableState.set('linkProduct', action.data);
       });
-    case types.SET_PRODUCT_NAME:
+    case types.UNLINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('name', action.name);
+        mutableState.set('unLinkProduct', action.data);
       });
-    case types.SET_PRODUCT_DESCRIPTION:
+    case types.SET_LOADING:
       return state.withMutations((mutableState) => {
-        mutableState.set('description', action.description);
-      });
-    case types.SET_PRODUCT_PRICE:
-      return state.withMutations((mutableState) => {
-        mutableState.set('price', action.price);
-      });
-    case types.SET_PRODUCT_INTEGRATIONS:
-      return state.withMutations((mutableState) => {
-        mutableState.set('integrations', action.integrations);
-      });
-    case types.SET_PRODUCT_PROPERTIES:
-      return state.withMutations((mutableState) => {
-        mutableState.set('properties', action.properties);
+        mutableState.set('loading', action.loading);
       });
     default:
       return state;
