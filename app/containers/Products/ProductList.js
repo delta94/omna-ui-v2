@@ -170,26 +170,20 @@ class ProductList extends React.Component {
     const { anchorEl } = this.state;
     return (
       <div>
-      <Menu
-         id="long-menu"
-         anchorEl={anchorEl}
-         keepMounted
-         open={Boolean(anchorEl)}
-         onClose={this.handleClose}
-       >
-         <MenuItem onClick={() => this.setState({ openPublishDlg: true }, this.handleClose)}>
-           <ListItemIcon>
-             <PublishIcon />
-           </ListItemIcon>
+        <Menu
+          id="long-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
+        >
+          <MenuItem onClick={() => this.setState({ openPublishDlg: true }, this.handleClose)}>
+            <ListItemIcon>
+              <PublishIcon />
+            </ListItemIcon>
              Publish/Unpublish
-         </MenuItem>
-         <MenuItem>
-           <ListItemIcon>
-             <Ionicon icon="md-trash" />
-           </ListItemIcon>
-           Delete
-         </MenuItem>
-      </Menu>
+          </MenuItem>
+        </Menu>
       </div>)
   };
 
@@ -382,15 +376,15 @@ class ProductList extends React.Component {
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
           {isLoading || loading ? <Loading /> : null}
-         <MuiThemeProvider theme={this.getMuiTheme()}>
+          <MuiThemeProvider theme={this.getMuiTheme()}>
             <MUIDataTable columns={columns} data={data} options={options} />
-         </MuiThemeProvider>
-         {this.renderTableActionsMenu()}
-         <Publisher
-           product={selectedItem}
-           open={openPublishDlg}
-           onClose={() => this.setState({ openPublishDlg: false })}
-           onSave={this.handlePublish} />
+          </MuiThemeProvider>
+          {this.renderTableActionsMenu()}
+          <Publisher
+            product={selectedItem}
+            open={openPublishDlg}
+            onClose={() => this.setState({ openPublishDlg: false })}
+            onSave={this.handlePublish} />
         </div>
       </div>
     );
