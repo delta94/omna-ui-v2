@@ -18,3 +18,13 @@ export const unLinkProduct = (productId ,integrationIds, enqueueSnackbar) => ({
   integrationIds,
   enqueueSnackbar
 });
+
+export const deleteProduct = (productId, enqueueSnackbar) => ({
+  type: types.DELETE_PRODUCT_ASYNC,
+  productId,
+  enqueueSnackbar
+});
+
+export const resetDeleteProductFlag = () => ({
+  type: types.RESET_DELETE_PRODUCT_FLAG
+});
