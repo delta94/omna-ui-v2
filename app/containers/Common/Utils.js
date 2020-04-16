@@ -209,4 +209,9 @@ export const isOmnaShopify = () =>
     ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
     : null;
 
+export const getResourceOptions = () => {
+  const options = [{ value: 'products', name: 'Products' }, { value: 'orders', name: 'Orders' }];
+  return options;
+};
+
 export default Utils;

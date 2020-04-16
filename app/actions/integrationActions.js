@@ -14,6 +14,11 @@ export const getChannels = query => {
   };
 };
 
+export const importResource = (query) => ({
+  type: actionConstants.IMPORT_RESOURCE_ASYNC,
+  query
+});
+
 export const setLoading = (query) => ({
   type: actionConstants.SET_LOADING,
   query
