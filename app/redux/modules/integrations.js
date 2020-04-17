@@ -45,7 +45,7 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.SET_LOADING:
       return state.withMutations(mutableState => {
-        mutableState.set('error', action.loading);
+        mutableState.set('loading', action.loading);
       });
     default:
       return state;
