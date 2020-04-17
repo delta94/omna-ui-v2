@@ -14,9 +14,12 @@ export const getChannels = query => {
   };
 };
 
-export const setLoading = (query) => ({
+export const setLoading = query => ({
   type: actionConstants.SET_LOADING,
   query
 });
 
-export const getIntegration = () => {};
+export const deleteIntegration = integrationId => ({
+  type: actionConstants.DELETE_INTEGRATION,
+  integrationId
+});

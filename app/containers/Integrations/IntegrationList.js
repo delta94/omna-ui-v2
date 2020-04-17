@@ -18,7 +18,7 @@ import Ionicon from 'react-ionicons';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import { getIntegrations, setLoading } from 'dan-actions/integrationActions';
+import { deleteIntegration, getIntegrations, setLoading } from 'dan-actions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
@@ -56,7 +56,6 @@ class IntegrationList extends Component {
     alertDialog: {
       open: false,
       integrationId: '',
-      integrationName: '',
       message: ''
     },
     limit: 5,
@@ -104,19 +103,12 @@ class IntegrationList extends Component {
     this.setState({ alertDialog: false });
   };
 
-  handleDeleteIntegration = async () => {
-    const { enqueueSnackbar } = this.props;
+  handleDeleteIntegration = () => {
+    const { onDeleteIntegration, enqueueSnackbar } = this.props;
+    const { alertDialog } = this.state;
+
     try {
-      const { alertDialog } = this.state;
-      const response = await API.delete(
-        `/integrations/${alertDialog.integrationId}`
-      );
-      if (response && response.data.success) {
-        enqueueSnackbar('Integration deleted successfully', {
-          variant: 'success'
-        });
-      }
-      this.getIntegrations();
+      onDeleteIntegration(alertDialog.integrationId);
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -124,7 +116,7 @@ class IntegrationList extends Component {
     }
   };
 
-  handleDialogConfirm = async () => {
+  handleDialogConfirm = () => {
     this.handleDeleteIntegration();
     this.setState({ alertDialog: false });
   };
@@ -134,7 +126,6 @@ class IntegrationList extends Component {
       alertDialog: {
         open: true,
         integrationId: id,
-        integrationName: name,
         message: `Are you sure you want to remove "${name}" integration?`
       }
     });
@@ -184,7 +175,7 @@ class IntegrationList extends Component {
   render() {
     const { classes, history, integrations, loading } = this.props;
     const { alertDialog, limit, openForm, page } = this.state;
-    const { pagination, data } = integrations;
+    const { pagination, data } = integrations.toJS();
     const count = get(pagination, 'total', 0);
 
     return (
@@ -200,18 +191,13 @@ class IntegrationList extends Component {
                 onChange={this.handleSearch}
               />
               <Tooltip title="add">
-                <IconButton aria-label="add" onClick={this.handleAddIntegrationClick}>
+                <IconButton
+                  aria-label="add"
+                  onClick={this.handleAddIntegrationClick}
+                >
                   <Ionicon icon="md-add-circle" />
                 </IconButton>
               </Tooltip>
-              {/* <Button
-                variant="outlined"
-                color="primary"
-                onClick={this.handleAddIntegrationClick}
-              >
-                Add Integration
-              </Button> */}
-
             </div>
           </Paper>
           <Grid container>
@@ -221,7 +207,6 @@ class IntegrationList extends Component {
                   id,
                   name,
                   channel,
-                  logo = Utils.getLogo(channel),
                   authorized,
                   channel_title: channelTitle
                 }) => (
@@ -230,7 +215,7 @@ class IntegrationList extends Component {
                       key={id}
                       name={name}
                       group={channelTitle}
-                      logo={logo}
+                      logo={Utils.getLogo(channel)}
                       channel={channel}
                       authorized={authorized}
                       onIntegrationAuthorized={() =>
@@ -289,6 +274,7 @@ IntegrationList.propTypes = {
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
+  onDeleteIntegration: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
   onSetLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
@@ -300,6 +286,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  onDeleteIntegration: id => dispatch(deleteIntegration(id)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
   onSetLoading: query => dispatch(setLoading(query))
 });

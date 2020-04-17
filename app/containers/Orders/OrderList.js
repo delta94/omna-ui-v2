@@ -123,12 +123,11 @@ class OrderList extends Component {
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
     const { limit, page, serverSideFilterList, searchTerm } = this.state;
-    const pagination = orders.get('pagination');
-    const data = orders.get('data').toJS();
+    const { data, pagination } = orders.toJS();
     const count = pagination.get('total');
 
-    const integrationFilterOptions = integrations.data
-      ? integrations.data.map(integration => integration.id)
+    const integrationFilterOptions = integrations.get('data')
+      ? integrations.get('data').map(integration => integration.id)
       : [];
 
     const columns = [

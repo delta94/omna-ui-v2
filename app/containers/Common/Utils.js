@@ -117,7 +117,7 @@ class Utils {
   }
 
   static handleAuthorization(path) {
-    window.location.replace(
+    window.open(
       `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
         path
       )}`

@@ -29,14 +29,20 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
+      width: 250
+    }
+  }
 };
 
 function Publisher(props) {
-  const { classes, open, product, integrations, onClose, onGetIntegrations  } = props;
-
+  const {
+    classes,
+    open,
+    product,
+    integrations,
+    onClose,
+    onGetIntegrations
+  } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [labelWidth] = useState(0);
@@ -51,9 +57,9 @@ function Publisher(props) {
 
   useEffect(() => {
     onGetIntegrations({ limit: 100, offset: 0, with_details: true });
-  }, [])
+  }, []);
 
-  const handleOnChange = (e) => setSelectedItems(e.target.value);
+  const handleOnChange = e => setSelectedItems(e.target.value);
 
   const handleOnSave = async () => {
     const { onSave } = props;
@@ -64,7 +70,7 @@ function Publisher(props) {
       index === -1 ? unlinkedList.push(element.id) : null;
     });
 
-    onSave({id: product.id, linkedList, unlinkedList});
+    onSave({ id: product.id, linkedList, unlinkedList });
   };
 
   return (
@@ -90,12 +96,17 @@ function Publisher(props) {
             renderValue={selected => selected.join(', ')}
             MenuProps={MenuProps}
           >
-            {integrations.data && integrations.data.map(option => (
-              <MenuItem key={option.id} value={option.id} disabled={!option.authorized}>
-                <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
-                <ListItemText primary={option.name} />
-              </MenuItem>
-            ))}
+            {integrations.get('data') &&
+              integrations.get('data').map(option => (
+                <MenuItem
+                  key={option.id}
+                  value={option.id}
+                  disabled={!option.authorized}
+                >
+                  <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
+                  <ListItemText primary={option.name} />
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       </DialogContent>
@@ -103,9 +114,9 @@ function Publisher(props) {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-          <Button onClick={handleOnSave} color="primary">
-            Save
-          </Button>
+        <Button onClick={handleOnSave} color="primary">
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -117,7 +128,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
+  onGetIntegrations: bindActionCreators(getIntegrations, dispatch)
 });
 
 const PublisherMapped = connect(
@@ -132,7 +143,7 @@ Publisher.propTypes = {
   integrations: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(PublisherMapped);
