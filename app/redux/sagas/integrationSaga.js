@@ -18,6 +18,7 @@ function* fetchIntegrations(params) {
 function* importResource(params) {
   const { id, resource, enqueueSnackbar } = params.query;
   try {
+    yield put({ type: actionConstants.SET_LOADING, loading: true });
     const response = yield api.get(`/integrations/${id}/${resource}/import`);
     const { data } = response.data;
     yield put({ type: actionConstants.IMPORT_RESOURCE, data });
@@ -27,6 +28,7 @@ function* importResource(params) {
       variant: 'error'
     });
   }
+  yield put({ type: actionConstants.SET_LOADING, loading: false });
 }
 
 export function* fetchIntegrationsWatcher() {
