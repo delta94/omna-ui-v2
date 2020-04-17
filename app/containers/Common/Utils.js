@@ -210,7 +210,12 @@ export const isOmnaShopify = () =>
     : null;
 
 export const getResourceOptions = () => {
-  const options = [{ value: 'products', name: 'Products' }, { value: 'orders', name: 'Orders' }];
+  const options = [
+    { value: 'products', name: 'Products' },
+    { value: 'orders', name: 'Orders' },
+    { value: 'brands', name: 'Brands' },
+    { value: 'categories', name: 'Categories' }
+  ];
   return options;
 };
 
