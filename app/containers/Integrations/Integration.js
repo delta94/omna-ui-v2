@@ -39,6 +39,11 @@ const Integration = props => {
 
   const [anchorEl, setAnchorEl] = useState();
 
+  const handleImportResource = (value) => {
+    setAnchorEl(null);
+    onImportResource(value);
+  };
+
 
   let subtitle = group.replace('[', '');
   subtitle = subtitle.replace(']', '');
@@ -161,7 +166,7 @@ const Integration = props => {
               onClose={() => setAnchorEl(null)}
             >
               {resourceOptions && resourceOptions.map(({ name: _name, value }) =>
-                <MenuItem key={value} onClick={() => onImportResource(value)}>
+                <MenuItem key={value} onClick={() => handleImportResource(value)}>
                    {_name}
                 </MenuItem>
               )}
