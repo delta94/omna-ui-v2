@@ -51,23 +51,6 @@ class Utils {
     }
   };
 
-  static getLogo(channel) {
-    switch (channel && channel.replace(/[A-Z]{2}$/, '')) {
-      case 'Lazada':
-        return '/images/logo/lazada_logo.png';
-      case 'Qoo10':
-        return '/images/logo/qoo10_logo.png';
-      case 'Shopee':
-        return '/images/logo/shopee_logo.png';
-      case 'Shopify':
-        return '/images/logo/shopify_logo.png';
-      case 'MercadoLibre':
-        return '/images/logo/mercadolibre_logo.png';
-      default:
-        return '/images/logo/marketplace_placeholder.jpg';
-    }
-  }
-
   getURL() {
     const url = window.location.href;
     if (url.includes('app.omna.io')) {
@@ -208,5 +191,25 @@ export const isOmnaShopify = () =>
   localStorage.getItem('currentTenant')
     ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
     : null;
+
+export const getLogo = channel => {
+  const option = channel.replace(/[A-Z]{2}$/, '');
+  switch (option) {
+    case 'Amazon':
+      return '/images/logo/amazon_logo.png';
+    case 'Lazada':
+      return '/images/logo/lazada_logo.png';
+    case 'Qoo10':
+      return '/images/logo/qoo10_logo.png';
+    case 'Shopee':
+      return '/images/logo/shopee_logo.png';
+    case 'Shopify':
+      return '/images/logo/shopify_logo.png';
+    case 'MercadoLibre':
+      return '/images/logo/mercadolibre_logo.png';
+    default:
+      return '/images/logo/marketplace_placeholder.jpg';
+  }
+};
 
 export default Utils;

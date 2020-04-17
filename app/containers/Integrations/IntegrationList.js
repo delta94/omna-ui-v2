@@ -63,8 +63,8 @@ class IntegrationList extends Component {
     searchTerm: ''
   };
 
-  async componentDidMount() {
-    this.initializeDataTable();
+  componentDidMount() {
+    this.makeRequest();
   }
 
   handleAddIntegrationClick = () => {
@@ -132,8 +132,7 @@ class IntegrationList extends Component {
   };
 
   handleChangePage = (e, page) => {
-    this.setState({ page });
-    this.makeRequest();
+    this.setState({ page }, this.makeRequest());
   };
 
   makeRequest = () => {
@@ -165,12 +164,8 @@ class IntegrationList extends Component {
   };
 
   handleSearch = e => {
-    this.setState({ searchTerm: e.target.value }, this.makeRequest);
+    this.setState({ searchTerm: e.target.value }, this.makeRequest());
   };
-
-  initializeDataTable() {
-    this.makeRequest();
-  }
 
   render() {
     const { classes, history, integrations, loading } = this.props;
@@ -215,7 +210,7 @@ class IntegrationList extends Component {
                       key={id}
                       name={name}
                       group={channelTitle}
-                      logo={Utils.getLogo(channel)}
+                      logo
                       channel={channel}
                       authorized={authorized}
                       onIntegrationAuthorized={() =>
@@ -259,6 +254,7 @@ class IntegrationList extends Component {
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
         />
+
         <AddIntegrationForm
           classes={classes}
           handleClose={this.handleCloseForm}
