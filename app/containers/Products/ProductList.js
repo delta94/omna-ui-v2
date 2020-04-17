@@ -20,16 +20,16 @@ import {
   MuiThemeProvider
 } from '@material-ui/core/styles';
 
-
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import Publisher from 'dan-components/Products/Publisher';
-import { linkProduct, unLinkProduct } from 'dan-actions/productActions';
+import { linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
 import API from 'dan-containers/Utils/api';
 import Utils from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import AlertDialog from 'dan-containers/Common/AlertDialog';
 
 const styles = theme => ({
   table: {
@@ -58,11 +58,20 @@ class ProductList extends React.Component {
     searchTerm: '',
     anchorEl: null,
     selectedItem: null,
-    openPublishDlg: false
+    openPublishDlg: false,
+    openConfirmDlg: false
   };
 
   componentDidMount() {
     this.callAPI();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { deleted, onResetDeleteProduct } = this.props;
+    if (deleted && deleted !== prevProps.deleted) {
+      onResetDeleteProduct();
+      this.callAPI();
+    }
   }
 
   getMuiTheme = () =>
@@ -76,23 +85,21 @@ class ProductList extends React.Component {
       }
     });
 
-  getProducts = params => {
+  getProducts = async (params) => {
     const { enqueueSnackbar } = this.props;
-    API.get('/products', { params })
-      .then(response => {
-        this.setState({
-          products: get(response, 'data', { data: [], pagination: {} }),
-          limit: get(response, 'data.pagination.limit', 0)
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .finally(() => {
-        this.setState({ isLoading: false });
+    this.setState({ isLoading: true });
+    try {
+      const response = await API.get('/products', { params });
+      this.setState({
+        products: get(response, 'data', { data: [], pagination: {} }),
+        limit: get(response, 'data.pagination.limit', 0)
       });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }
+    this.setState({ isLoading: false });
   };
 
   callAPI = () => {
@@ -104,7 +111,6 @@ class ProductList extends React.Component {
       term: searchTerm || '',
       integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
-
     this.setState({ isLoading: true });
     this.getProducts(params);
     // this.props.onGetProducts(params);
@@ -154,6 +160,15 @@ class ProductList extends React.Component {
     }
   };
 
+  handleConfirmDlg = () => {
+    const { selectedItem } = this.state;
+    const { onDeleteProduct, enqueueSnackbar } = this.props;
+    this.setState({ openConfirmDlg: false });
+    onDeleteProduct(selectedItem.id, enqueueSnackbar);
+  };
+
+  handleCancelDlg = () => this.setState({ openConfirmDlg: false });
+
   handlePublish = async (value) => {
     const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
     const { id, linkedList, unlinkedList } = value;
@@ -183,6 +198,12 @@ class ProductList extends React.Component {
             </ListItemIcon>
              Publish/Unpublish
           </MenuItem>
+          <MenuItem onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}>
+            <ListItemIcon>
+              <Ionicon icon="md-trash" />
+            </ListItemIcon>
+           Delete
+          </MenuItem>
         </Menu>
       </div>)
   };
@@ -197,6 +218,7 @@ class ProductList extends React.Component {
       serverSideFilterList,
       searchTerm,
       openPublishDlg,
+      openConfirmDlg,
       selectedItem
     } = this.state;
     const { pagination, data } = products;
@@ -380,6 +402,12 @@ class ProductList extends React.Component {
             <MUIDataTable columns={columns} data={data} options={options} />
           </MuiThemeProvider>
           {this.renderTableActionsMenu()}
+          <AlertDialog
+            open={openConfirmDlg}
+            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
+            handleCancel={this.handleCancelDlg}
+            handleConfirm={this.handleConfirmDlg}
+          />
           <Publisher
             product={selectedItem}
             open={openPublishDlg}
@@ -393,13 +421,16 @@ class ProductList extends React.Component {
 
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
+  deleted: state.getIn(['product', 'deleted']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
   onLinkProduct: bindActionCreators(linkProduct, dispatch),
-  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch)
+  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch),
+  onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
+  onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch)
 });
 
 const ProductListMapped = connect(
@@ -410,9 +441,12 @@ const ProductListMapped = connect(
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
+  deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
+  onDeleteProduct: PropTypes.func.isRequired,
+  onResetDeleteProduct: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 

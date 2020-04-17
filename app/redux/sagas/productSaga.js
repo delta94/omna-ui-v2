@@ -52,6 +52,22 @@ function* unLinkProduct(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* deleteProduct(payload) {
+  const { productId, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response =  yield api.delete(`/products/${productId}`);
+    const { success } = response.data;
+    enqueueSnackbar('Deleted product successfully', { variant: 'success' });
+    yield put({ type: types.DELETE_PRODUCT, data: success });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 export function* watchProdVariants() {
   yield takeLatest('GET_PRODUCT_VARIANTS', prodVariantsAsync);
 }
@@ -64,6 +80,10 @@ export function* watchUnLinkProduct() {
   yield takeLatest(types.UNLINK_PRODUCT_ASYNC, unLinkProduct);
 }
 
+export function* watchDeleteProduct() {
+  yield takeLatest(types.DELETE_PRODUCT_ASYNC, deleteProduct);
+}
+
 export default function* productSaga() {
-  yield all([watchLinkProduct(), watchProdVariants(), watchUnLinkProduct()]);
+  yield all([watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
 }

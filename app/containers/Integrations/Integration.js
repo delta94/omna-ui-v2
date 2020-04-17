@@ -16,7 +16,7 @@ import {
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Block';
-import { getLogo } from 'dan-containers/Common/Utils';
+import { getLogo, getResourceOptions } from 'dan-containers/Common/Utils';
 
 const Integration = props => {
   const [anchorEl, setAnchorEl] = useState();
@@ -30,11 +30,13 @@ const Integration = props => {
     onIntegrationUnauthorized,
     onIntegrationDeleted,
     onEditIntegration,
+    onImportResource,
     noActions,
     handleAddIntegration
   } = props;
 
   const subtitle = group.replace(/\[|\]/g, '');
+  const resourceOptions = getResourceOptions();
 
   const handleOpenMenu = event => {
     setAnchorEl(event.currentTarget);
@@ -42,6 +44,12 @@ const Integration = props => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleImportResource = value => {
+    onImportResource(value);
+    console.log('CLICK');
+    handleClose();
   };
 
   const handleOptionClick = option => {
@@ -115,6 +123,7 @@ const Integration = props => {
           />
         )}
         <Divider />
+
         {noActions ? (
           <div
             style={{
@@ -195,6 +204,18 @@ const Integration = props => {
             Authorize
           </MenuItem>
         )}
+
+        <Divider />
+
+        {resourceOptions &&
+          resourceOptions.map(({ name: _name, value }) => (
+            <MenuItem key={value} onClick={() => handleImportResource(value)}>
+              {`Import ${_name}`}
+            </MenuItem>
+          ))}
+
+        <Divider />
+
         <MenuItem aria-label="edit" onClick={() => handleOptionClick('edit')}>
           Edit
         </MenuItem>
@@ -231,6 +252,7 @@ Integration.propTypes = {
   noActions: PropTypes.bool,
   onIntegrationAuthorized: PropTypes.func,
   onIntegrationUnauthorized: PropTypes.func,
+  onImportResource: PropTypes.func.isRequired,
   onIntegrationDeleted: PropTypes.func,
   onEditIntegration: PropTypes.func,
   handleAddIntegration: PropTypes.func

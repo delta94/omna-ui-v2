@@ -5,6 +5,7 @@ const initialState = fromJS({
   productVariants: [],
   loading: false,
   disabledForm: false,
+  deleted: false,
   linkProduct: null,
   unLinkProduct: null
 });
@@ -26,6 +27,14 @@ export default function integrationsReducer(state = initialState, action) {
     case types.UNLINK_PRODUCT:
       return state.withMutations((mutableState) => {
         mutableState.set('unLinkProduct', action.data);
+      });
+    case types.DELETE_PRODUCT:
+      return state.withMutations((mutableState) => {
+        mutableState.set('deleted', action.data);
+      });
+    case types.RESET_DELETE_PRODUCT_FLAG:
+      return state.withMutations((mutableState) => {
+        mutableState.set('deleted', false);
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

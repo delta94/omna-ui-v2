@@ -4,6 +4,7 @@ import * as actionConstants from 'dan-actions/actionConstants';
 const initialState = fromJS({
   integrations: { data: [], pagination: {} },
   channels: { data: [], pagination: {} },
+  task: null,
   loading: false,
   error: ''
 });
@@ -56,9 +57,13 @@ export default (state = initialState, action = {}) => {
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
       });
+    case actionConstants.IMPORT_RESOURCE:
+      return state.withMutations(mutableState => {
+        mutableState.set('task', action.data);
+      });
     case actionConstants.SET_LOADING:
       return state.withMutations(mutableState => {
-        mutableState.set('error', action.loading);
+        mutableState.set('loading', action.loading);
       });
     default:
       return state;

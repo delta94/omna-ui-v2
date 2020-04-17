@@ -9,34 +9,29 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 
 const AlertDialog = props => {
-  const handleCancel = () => {
-    this.props.handleCancel();
-  };
-
-  const handleConfirm = () => {
-    this.props.handleConfirm();
-  };
+  const {
+    open, title, message, cancelButtonLabel, confirmButtonLabel, handleCancel, handleConfirm
+  } = props;
 
   return (
     <div>
       <Dialog
-        open={props.open}
-        onClose={props.handleClose}
+        open={open}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {props.message}
+            {message}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.handleCancel} color="primary">
-            {props.cancelButtonLabel}
+          <Button onClick={handleCancel} color="primary">
+            {cancelButtonLabel}
           </Button>
-          <Button onClick={props.handleConfirm} color="primary" autoFocus>
-            {props.confirmButtonLabel}
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            {confirmButtonLabel}
           </Button>
         </DialogActions>
       </Dialog>
@@ -57,7 +52,9 @@ AlertDialog.propTypes = {
   title: PropTypes.string,
   message: PropTypes.string,
   cancelButtonLabel: PropTypes.string,
-  confirmButtonLabel: PropTypes.string
+  confirmButtonLabel: PropTypes.string,
+  handleCancel: PropTypes.func.isRequired,
+  handleConfirm: PropTypes.func.isRequired
 };
 
 export default AlertDialog;

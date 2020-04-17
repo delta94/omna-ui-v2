@@ -1,6 +1,7 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actionConstants from 'dan-actions/actionConstants';
 import api from 'dan-containers/Utils/api';
+import get from 'lodash/get';
 
 const url = '/integrations';
 
@@ -32,9 +33,26 @@ function* deleteIntegration(params) {
   }
 }
 
+function* importResource(params) {
+  const { id, resource, enqueueSnackbar } = params.query;
+  try {
+    yield put({ type: actionConstants.SET_LOADING, loading: true });
+    const response = yield api.get(`/integrations/${id}/${resource}/import`);
+    const { data } = response.data;
+    yield put({ type: actionConstants.IMPORT_RESOURCE, data });
+    enqueueSnackbar(`Importing ${resource}`, { variant: 'info' });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: actionConstants.SET_LOADING, loading: false });
+}
+
 export default function* rootSaga() {
   yield all([
     takeLatest(actionConstants.GET_INTEGRATIONS, fetchIntegrations),
+    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource),
     takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration)
   ]);
 }

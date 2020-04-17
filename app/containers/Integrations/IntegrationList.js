@@ -18,7 +18,12 @@ import Ionicon from 'react-ionicons';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import { deleteIntegration, getIntegrations, setLoading } from 'dan-actions';
+import {
+  deleteIntegration,
+  getIntegrations,
+  importResource,
+  setLoading
+} from 'dan-actions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
@@ -65,6 +70,13 @@ class IntegrationList extends Component {
 
   componentDidMount() {
     this.makeRequest();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { task, history } = this.props;
+    if (task !== prevProps.task) {
+      history.push(`tasks/${task.id}`);
+    }
   }
 
   handleAddIntegrationClick = () => {
@@ -114,6 +126,11 @@ class IntegrationList extends Component {
         variant: 'error'
       });
     }
+  };
+
+  handleImportResource = (id, resource) => {
+    const { onImportResource, enqueueSnackbar } = this.props;
+    onImportResource({ id, resource, enqueueSnackbar });
   };
 
   handleDialogConfirm = () => {
@@ -222,6 +239,9 @@ class IntegrationList extends Component {
                       onIntegrationDeleted={() =>
                         this.handleDeleteClick(id, name)
                       }
+                      onImportResource={resource =>
+                        this.handleImportResource(id, resource)
+                      }
                       classes={classes}
                     />
                   </Grid>
@@ -268,22 +288,26 @@ class IntegrationList extends Component {
 IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
   onDeleteIntegration: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
+  onImportResource: PropTypes.func.isRequired,
   onSetLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
-  integrations: state.getIn(['integration', 'integrations'])
+  integrations: state.getIn(['integration', 'integrations']),
+  task: state.getIn(['integration', 'task'])
 });
 
 const mapDispatchToProps = dispatch => ({
   onDeleteIntegration: id => dispatch(deleteIntegration(id)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
+  onImportResource: query => dispatch(importResource(query)),
   onSetLoading: query => dispatch(setLoading(query))
 });
 
