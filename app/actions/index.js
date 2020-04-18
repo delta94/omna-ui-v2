@@ -3,5 +3,6 @@ export {
   getChannels,
   importResource,
   setLoading,
-  deleteIntegration
+  deleteIntegration,
+  updateIntegration
 } from './integrationActions';

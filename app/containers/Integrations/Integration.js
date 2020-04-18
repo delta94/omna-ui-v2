@@ -26,9 +26,9 @@ const Integration = props => {
     logo,
     authorized,
     classes,
-    onIntegrationAuthorized,
-    onIntegrationUnauthorized,
-    onIntegrationDeleted,
+    onAuthorizeIntegration,
+    onUnauthorizeIntegration,
+    onDeleteIntegration,
     onEditIntegration,
     onImportResource,
     noActions,
@@ -55,13 +55,13 @@ const Integration = props => {
   const handleOptionClick = option => {
     switch (option) {
       case 'authorize':
-        onIntegrationAuthorized();
+        onAuthorizeIntegration();
         break;
       case 'unauthorize':
-        onIntegrationUnauthorized();
+        onUnauthorizeIntegration();
         break;
       case 'delete':
-        onIntegrationDeleted();
+        onDeleteIntegration();
         break;
       case 'edit':
         onEditIntegration();
@@ -231,31 +231,31 @@ const Integration = props => {
 };
 
 Integration.defaultProps = {
-  name: '',
-  logo: false,
-  group: '',
   authorized: false,
-  noActions: false,
-  onIntegrationAuthorized: () => {},
-  onIntegrationUnauthorized: () => {},
-  onIntegrationDeleted: () => {},
+  group: '',
   handleAddIntegration: () => {},
-  onEditIntegration: () => {}
+  logo: false,
+  name: '',
+  noActions: false,
+  onAuthorizeIntegration: () => {},
+  onDeleteIntegration: () => {},
+  onEditIntegration: () => {},
+  onUnauthorizeIntegration: () => {}
 };
 
 Integration.propTypes = {
-  name: PropTypes.string,
-  logo: PropTypes.bool,
-  group: PropTypes.string,
   authorized: PropTypes.bool,
   classes: PropTypes.object.isRequired,
+  group: PropTypes.string,
+  handleAddIntegration: PropTypes.func,
+  logo: PropTypes.bool,
+  name: PropTypes.string,
   noActions: PropTypes.bool,
-  onIntegrationAuthorized: PropTypes.func,
-  onIntegrationUnauthorized: PropTypes.func,
+  onAuthorizeIntegration: PropTypes.func,
   onImportResource: PropTypes.func.isRequired,
-  onIntegrationDeleted: PropTypes.func,
+  onDeleteIntegration: PropTypes.func,
   onEditIntegration: PropTypes.func,
-  handleAddIntegration: PropTypes.func
+  onUnauthorizeIntegration: PropTypes.func,
 };
 
 export default Integration;

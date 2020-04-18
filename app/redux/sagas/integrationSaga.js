@@ -17,6 +17,23 @@ function* fetchIntegrations(params) {
   }
 }
 
+function* updateIntegration(params) {
+  yield put({ type: actionConstants.UPDATE_INTEGRATION_START });
+  const { integration } = params;
+
+  try {
+    yield api.put(`${url}/${integration.id}`, {
+      data: integration
+    });
+    yield put({
+      type: actionConstants.UPDATE_INTEGRATION_SUCCESS,
+      integration
+    });
+  } catch (error) {
+    yield put({ type: actionConstants.UPDATE_INTEGRATION_FAILED, error });
+  }
+}
+
 function* deleteIntegration(params) {
   yield put({ type: actionConstants.DELETE_INTEGRATION_START });
   const { integrationId } = params;
@@ -28,7 +45,6 @@ function* deleteIntegration(params) {
       integrationId
     });
   } catch (error) {
-    console.log(error);
     yield put({ type: actionConstants.DELETE_INTEGRATION_FAILED, error });
   }
 }
@@ -52,7 +68,8 @@ function* importResource(params) {
 export default function* rootSaga() {
   yield all([
     takeLatest(actionConstants.GET_INTEGRATIONS, fetchIntegrations),
-    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource),
-    takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration)
+    takeLatest(actionConstants.UPDATE_INTEGRATION, updateIntegration),
+    takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration),
+    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource)
   ]);
 }

@@ -28,7 +28,7 @@ import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
 import Utils from 'dan-containers/Common/Utils';
-import AddIntegrationForm from './AddIntegrationForm';
+import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 
 const styles = theme => ({
@@ -65,7 +65,8 @@ class IntegrationList extends Component {
     },
     limit: 5,
     page: 0,
-    searchTerm: ''
+    searchTerm: '',
+    editableIntegration: null
   };
 
   componentDidMount() {
@@ -138,6 +139,10 @@ class IntegrationList extends Component {
     this.setState({ alertDialog: false });
   };
 
+  handleEditClick = editableIntegration => {
+    this.setState({ editableIntegration, openForm: true });
+  };
+
   handleDeleteClick = (id, name) => {
     this.setState({
       alertDialog: {
@@ -186,14 +191,20 @@ class IntegrationList extends Component {
 
   render() {
     const { classes, history, integrations, loading } = this.props;
-    const { alertDialog, limit, openForm, page } = this.state;
+    const {
+      alertDialog,
+      editableIntegration,
+      limit,
+      openForm,
+      page
+    } = this.state;
     const { pagination, data } = integrations.toJS();
     const count = get(pagination, 'total', 0);
 
     return (
       <div>
         <PageHeader title="Installed integrations" history={history} />
-        {loading ? <Loading /> : null}
+        {loading && <Loading />}
         <div>
           <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
             <div className={classes.actions}>
@@ -214,39 +225,32 @@ class IntegrationList extends Component {
           </Paper>
           <Grid container>
             {data &&
-              data.map(
-                ({
-                  id,
-                  name,
-                  channel,
-                  authorized,
-                  channel_title: channelTitle
-                }) => (
-                  <Grid item md={3} xs={12}>
-                    <Integration
-                      key={id}
-                      name={name}
-                      group={channelTitle}
-                      logo
-                      channel={channel}
-                      authorized={authorized}
-                      onIntegrationAuthorized={() =>
-                        this.handleAuthorization(id)
-                      }
-                      onIntegrationUnauthorized={() =>
-                        this.handleUnAuthorization(id)
-                      }
-                      onIntegrationDeleted={() =>
-                        this.handleDeleteClick(id, name)
-                      }
-                      onImportResource={resource =>
-                        this.handleImportResource(id, resource)
-                      }
-                      classes={classes}
-                    />
-                  </Grid>
-                )
-              )}
+              data.map(integration => (
+                <Grid item md={3} xs={12}>
+                  <Integration
+                    key={integration.id}
+                    name={integration.name}
+                    group={integration.channel_title}
+                    logo
+                    channel={integration.channel}
+                    authorized={integration.authorized}
+                    onAuthorizeIntegration={() =>
+                      this.handleAuthorization(integration.id)
+                    }
+                    onEditIntegration={() => this.handleEditClick(integration)}
+                    onUnauthorizeIntegration={() =>
+                      this.handleUnAuthorization(integration.id)
+                    }
+                    onDeleteIntegration={() =>
+                      this.handleDeleteClick(integration.id, integration.name)
+                    }
+                    onImportResource={resource =>
+                      this.handleImportResource(integration.id, resource)
+                    }
+                    classes={classes}
+                  />
+                </Grid>
+              ))}
           </Grid>
           <Table>
             <TableFooter>
@@ -275,7 +279,8 @@ class IntegrationList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
 
-        <AddIntegrationForm
+        <IntegrationForm
+          editableIntegration={editableIntegration}
           classes={classes}
           handleClose={this.handleCloseForm}
           open={openForm}

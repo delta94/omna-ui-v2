@@ -18,7 +18,7 @@ import GenericTablePagination from 'dan-containers/Common/GenericTablePagination
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
 import Integration from '../Integration';
-import AddIntegrationForm from '../AddIntegrationForm';
+import IntegrationForm from '../IntegrationForm';
 
 const styles = theme => ({
   cardList: {
@@ -126,7 +126,7 @@ class ChannelList extends Component {
                     classes={classes}
                     noActions
                     handleAddIntegration={event =>
-                      this.handleAddIntegrationClick(event, channel)
+                      this.handleAddIntegrationClick(event, chan)
                     }
                   />
                 </Grid>
@@ -159,7 +159,7 @@ class ChannelList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
 
-        <AddIntegrationForm
+        <IntegrationForm
           channel={channel.name}
           classes={classes}
           handleClose={this.handleCloseForm}
