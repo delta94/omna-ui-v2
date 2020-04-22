@@ -106,8 +106,11 @@ class OrderList extends Component {
   };
 
   handleFilterChange = filterList => {
+    console.log(filterList);
+
     if (filterList) {
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+      const mappedList = filterList.map(i => i.name);
+      this.setState({ serverSideFilterList: mappedList }, this.callAPI);
     } else {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -124,7 +127,7 @@ class OrderList extends Component {
     const { classes, history, orders, loading, integrations } = this.props;
     const { limit, page, serverSideFilterList, searchTerm } = this.state;
     const { data, pagination } = orders.toJS();
-    const count = pagination.get('total');
+    const { total: count } = pagination;
 
     const integrationFilterOptions = integrations.get('data')
       ? integrations.get('data').map(integration => integration.id)
@@ -139,8 +142,8 @@ class OrderList extends Component {
         }
       },
       {
-        name: 'updated_date',
-        label: 'Date',
+        name: 'created_date',
+        label: 'Created at',
         options: {
           filter: false,
           customBodyRender: value => (

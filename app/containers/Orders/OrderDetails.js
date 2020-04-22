@@ -182,9 +182,9 @@ class OrderDetails extends Component {
                     <strong>
                       {get(order, 'data.updated_date', null) != null
                         ? moment(order.data.updated_date).format(
-                            'Y-MM-DD H:mm:ss'
+                            'Y-MM-DD H:mm'
                           )
-                        : '--'}
+                        : ''}
                     </strong>
                   </Typography>
                 </div>
