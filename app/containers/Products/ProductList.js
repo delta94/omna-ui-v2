@@ -26,8 +26,7 @@ import Loading from 'dan-components/Loading';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import Publisher from 'dan-components/Products/Publisher';
-import { linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
-import API from 'dan-containers/Utils/api';
+import { getProducts, linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
 import Utils from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
@@ -50,8 +49,6 @@ const styles = theme => ({
 
 class ProductList extends React.Component {
   state = {
-    isLoading: true,
-    products: { data: [], pagination: {} },
     // integrationFilterOptions: [],
     limit: 10,
     page: 0,
@@ -90,35 +87,18 @@ class ProductList extends React.Component {
       }
     });
 
-  getProducts = async (params) => {
-    const { enqueueSnackbar } = this.props;
-    this.setState({ isLoading: true });
-    try {
-      const response = await API.get('/products', { params });
-      this.setState({
-        products: get(response, 'data', { data: [], pagination: {} }),
-        limit: get(response, 'data.pagination.limit', 0)
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
-    this.setState({ isLoading: false });
-  };
-
   callAPI = () => {
+    const { onGetProducts, enqueueSnackbar } = this.props;
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
+      with_details: true,
       integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
-    this.setState({ isLoading: true });
-    this.getProducts(params);
-    // this.props.onGetProducts(params);
+    onGetProducts({ params, enqueueSnackbar });
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -228,11 +208,8 @@ class ProductList extends React.Component {
   };
 
   render() {
-    const { classes, history, loading } = this.props;
     const {
-      isLoading,
       limit,
-      products,
       page,
       serverSideFilterList,
       searchTerm,
@@ -241,12 +218,13 @@ class ProductList extends React.Component {
       openConfirmDlg,
       selectedItem
     } = this.state;
+    const { classes, history, products, loading } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
     const columns = [
       {
-        name: 'id',
+        name: 'images',
         options: {
           filter: false,
           display: 'excluded'
@@ -259,8 +237,7 @@ class ProductList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
-            const imgSrc =
-              images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
@@ -299,18 +276,7 @@ class ProductList extends React.Component {
         }
       },
       {
-        name: 'last_import_date',
-        label: 'Last import',
-        options: {
-          sort: true,
-          display: 'excluded'
-          // customBodyRender: value => (
-          //   <div>{moment(value).format('Y-MM-DD')}</div>
-          // )
-        }
-      },
-      {
-        name: 'currency',
+        name: 'id',
         options: {
           filter: false,
           display: 'excluded'
@@ -371,8 +337,8 @@ class ProductList extends React.Component {
       },
       onCellClick: (rowData, { colIndex, dataIndex }) => {
         this.setState({ selectedItem: data[dataIndex] });
-        if (colIndex !== 5) {
-          history.push(`/products/${data[dataIndex].id}/`);
+        if (colIndex !== 4) {
+          history.push(`/products/${data[dataIndex].id}`);
         }
       },
       customSort: (customSortData, colIndex, product) =>
@@ -417,7 +383,7 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
-          {isLoading || loading ? <Loading /> : null}
+          {loading ? <Loading /> : null}
           <MuiThemeProvider theme={this.getMuiTheme()}>
             <MUIDataTable columns={columns} data={data} options={options} />
           </MuiThemeProvider>
@@ -441,6 +407,7 @@ class ProductList extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  products: state.getIn(['product', 'products']),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
@@ -452,6 +419,7 @@ const mapDispatchToProps = dispatch => ({
   onLinkProduct: bindActionCreators(linkProduct, dispatch),
   onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
+  onGetProducts: bindActionCreators(getProducts, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch)
 });
 
@@ -462,10 +430,12 @@ const ProductListMapped = connect(
 
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
+  products: PropTypes.object.isRequired,
   task: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
+  onGetProducts: PropTypes.func.isRequired,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,

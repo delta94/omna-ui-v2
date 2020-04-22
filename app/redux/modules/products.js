@@ -2,6 +2,7 @@ import { fromJS, List } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
+  products: { data: [], pagination: {} },
   productVariants: [],
   loading: false,
   disabledForm: false,
@@ -18,6 +19,10 @@ export default function integrationsReducer(state = initialState, action) {
     case 'GET_PRODUCT_VARIANTS_ASYNC_LOADING':
       return state.withMutations((mutableState) => {
         mutableState.set('loading', action.loading);
+      });
+    case types.GET_PRODUCTS:
+      return state.withMutations((mutableState) => {
+        mutableState.set('products', action.data);
       });
     case types.LINK_PRODUCT:
       return state.withMutations((mutableState) => {

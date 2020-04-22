@@ -5,6 +5,12 @@ export const getProductVariantList = (integrationId, remoteProductId) => ({
   payload: { integrationId, remoteProductId }
 });
 
+export const getProducts = (payload) => ({
+  type: types.GET_PRODUCTS_ASYNC,
+  params: payload.params,
+  enqueueSnackbar: payload.enqueueSnackbar
+});
+
 export const linkProduct = (productId, integrationIds, enqueueSnackbar) => ({
   type: types.LINK_PRODUCT_ASYNC,
   productId,

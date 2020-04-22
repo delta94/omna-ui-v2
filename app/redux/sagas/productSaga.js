@@ -20,6 +20,21 @@ function* prodVariantsAsync(dispatch) {
   yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC_LOADING', loading: false });
 }
 
+function* getProducts(payload) {
+  const { params, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.get(`/products`, { params });
+    const { data } = response;
+    yield put({ type: types.GET_PRODUCTS, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* linkProduct(payload) {
   const { productId, integrationIds, enqueueSnackbar } = payload;
   try {
@@ -84,6 +99,10 @@ export function* watchDeleteProduct() {
   yield takeLatest(types.DELETE_PRODUCT_ASYNC, deleteProduct);
 }
 
+export function* watchGetProducts() {
+  yield takeLatest(types.GET_PRODUCTS_ASYNC, getProducts);
+}
+
 export default function* productSaga() {
-  yield all([watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
+  yield all([watchGetProducts(), watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
 }
