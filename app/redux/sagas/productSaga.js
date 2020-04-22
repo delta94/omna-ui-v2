@@ -26,7 +26,7 @@ function* linkProduct(payload) {
     yield put({ type: types.SET_LOADING, loading: true });
     const response = yield api.put(`/products/${productId}`, { data: { integration_ids: integrationIds, link_with_its_variants: "All" } });
     const { data } = response.data;
-    enqueueSnackbar('Link product started', { variant: 'success' });
+    enqueueSnackbar('Linking product', { variant: 'info' });
     yield put({ type: types.LINK_PRODUCT, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -37,12 +37,12 @@ function* linkProduct(payload) {
 }
 
 function* unLinkProduct(payload) {
-  const { productId, integrationIds, enqueueSnackbar } = payload;
+  const { productId, integrationIds, deleteFromIntegration, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
-    const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds } });
+    const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
     const { data } = response.data;
-    enqueueSnackbar('Unlink product started', { variant: 'success' });
+    enqueueSnackbar('Unlinking product', { variant: 'info' });
     yield put({ type: types.UNLINK_PRODUCT, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {

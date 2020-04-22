@@ -12,10 +12,11 @@ export const linkProduct = (productId, integrationIds, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
-export const unLinkProduct = (productId ,integrationIds, enqueueSnackbar) => ({
+export const unLinkProduct = (productId ,integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
   type: types.UNLINK_PRODUCT_ASYNC,
   productId,
   integrationIds,
+  deleteFromIntegration,
   enqueueSnackbar
 });
 

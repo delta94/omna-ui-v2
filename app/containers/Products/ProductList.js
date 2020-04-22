@@ -6,10 +6,11 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
+import LinkIcon from '@material-ui/icons/Link';
+import LinkOffIcon from '@material-ui/icons/LinkOff';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import PublishIcon from '@material-ui/icons/Publish';
 import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -58,7 +59,8 @@ class ProductList extends React.Component {
     searchTerm: '',
     anchorEl: null,
     selectedItem: null,
-    openPublishDlg: false,
+    publisherAction: 'link',
+    openPublisherDlg: false,
     openConfirmDlg: false
   };
 
@@ -67,10 +69,13 @@ class ProductList extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { deleted, onResetDeleteProduct } = this.props;
+    const { deleted, onResetDeleteProduct, task, history } = this.props;
     if (deleted && deleted !== prevProps.deleted) {
       onResetDeleteProduct();
       this.callAPI();
+    }
+    if (task && task !== prevProps.task) {
+      history.push(`tasks/${task.id}`);
     }
   }
 
@@ -169,17 +174,25 @@ class ProductList extends React.Component {
 
   handleCancelDlg = () => this.setState({ openConfirmDlg: false });
 
-  handlePublish = async (value) => {
+  handleLinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'link' }, this.handleCloseMenu);
+
+  handleUnlinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'unlink' }, this.handleCloseMenu);
+
+  handlePublisherAction = async (value) => {
     const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
-    const { id, linkedList, unlinkedList } = value;
-    linkedList.length > 0 ? await onLinkProduct(id, linkedList, enqueueSnackbar) : null;
-    unlinkedList.length > 0 ? await onUnlinkProduct(id, unlinkedList, enqueueSnackbar) : null;
-    this.setState({ openPublishDlg: false });
+    const { publisherAction } = this.state;
+    const { productId, list, deleteFromIntegration } = value;
+    if (publisherAction === 'link') {
+      list.length > 0 ? await onLinkProduct(productId, list, enqueueSnackbar) : null;
+    } else {
+      list.length > 0 ? await onUnlinkProduct(productId, list, deleteFromIntegration, enqueueSnackbar) : null;
+    }
+    this.setState({ openPublisherDlg: false });
   };
 
   handleMenu = (event) => this.setState({ anchorEl: event.currentTarget });
 
-  handleClose = () => this.setState({ anchorEl: null });
+  handleCloseMenu = () => this.setState({ anchorEl: null });
 
   renderTableActionsMenu = () => {
     const { anchorEl } = this.state;
@@ -190,19 +203,25 @@ class ProductList extends React.Component {
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}
-          onClose={this.handleClose}
+          onClose={this.handleCloseMenu}
         >
-          <MenuItem onClick={() => this.setState({ openPublishDlg: true }, this.handleClose)}>
+          <MenuItem onClick={this.handleLinkClick}>
             <ListItemIcon>
-              <PublishIcon />
+              <LinkIcon />
             </ListItemIcon>
-             Publish/Unpublish
+            Link
+          </MenuItem>
+          <MenuItem onClick={this.handleUnlinkClick}>
+            <ListItemIcon>
+              <LinkOffIcon />
+            </ListItemIcon>
+            Unlink
           </MenuItem>
           <MenuItem onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}>
             <ListItemIcon>
               <Ionicon icon="md-trash" />
             </ListItemIcon>
-           Delete
+            Delete
           </MenuItem>
         </Menu>
       </div>)
@@ -217,7 +236,8 @@ class ProductList extends React.Component {
       page,
       serverSideFilterList,
       searchTerm,
-      openPublishDlg,
+      publisherAction,
+      openPublisherDlg: openPublishDlg,
       openConfirmDlg,
       selectedItem
     } = this.state;
@@ -409,10 +429,11 @@ class ProductList extends React.Component {
             handleConfirm={this.handleConfirmDlg}
           />
           <Publisher
+            action={publisherAction}
             product={selectedItem}
             open={openPublishDlg}
-            onClose={() => this.setState({ openPublishDlg: false })}
-            onSave={this.handlePublish} />
+            onClose={() => this.setState({ openPublisherDlg: false })}
+            onSave={this.handlePublisherAction} />
         </div>
       </div>
     );
@@ -422,6 +443,7 @@ class ProductList extends React.Component {
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
+  task: state.getIn(['product', 'task']),
   ...state
 });
 
@@ -440,6 +462,7 @@ const ProductListMapped = connect(
 
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
