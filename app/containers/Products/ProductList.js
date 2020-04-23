@@ -15,11 +15,7 @@ import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
@@ -63,7 +59,7 @@ class ProductList extends React.Component {
 
   componentDidMount() {
     this.callAPI();
-  }
+  };
 
   componentDidUpdate(prevProps) {
     const { deleted, onResetDeleteProduct, task, history } = this.props;
@@ -74,18 +70,7 @@ class ProductList extends React.Component {
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
-  }
-
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
-        }
-      }
-    });
+  };
 
   callAPI = () => {
     const { onGetProducts, enqueueSnackbar } = this.props;
@@ -384,9 +369,7 @@ class ProductList extends React.Component {
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
           {loading ? <Loading /> : null}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
             <MUIDataTable columns={columns} data={data} options={options} />
-          </MuiThemeProvider>
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
