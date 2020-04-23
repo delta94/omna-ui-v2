@@ -6,10 +6,21 @@ module.exports = [
   //   link: '/dashboard'
   // },
   {
-    key: 'plans',
-    name: 'Plans Settings',
-    icon: 'ios-stats-outline',
-    link: '/shopify'
+    key: 'settings',
+    name: 'Settings',
+    icon: 'ios-apps-outline',
+    child: [
+      {
+        key: 'plan',
+        name: 'Plans',
+        link: '/shopify'
+      },
+      {
+        key: 'client-settings',
+        name: 'Client Settings',
+        link: '/client-settings'
+      }
+    ]
   },
   {
     key: 'data',

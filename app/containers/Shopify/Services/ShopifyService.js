@@ -103,7 +103,7 @@ const ShopifyService = {
         `https://cenit.io/app/omna-dev/client_settings`
       );
       if (response) {
-        return response;
+        return response.data;
       }
     } catch (error) {
       console.log(error);
