@@ -38,7 +38,8 @@ class OrderList extends Component {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
-    searchTerm: ''
+    searchTerm: '',
+    filtering: false
   };
 
   componentDidMount() {
@@ -107,15 +108,22 @@ class OrderList extends Component {
 
   handleFilterChange = filterList => {
     if (filterList) {
-      // const mappedList = filterList.map(i => i.name);
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+      this.setState(
+        { filtering: true, serverSideFilterList: filterList },
+        this.callAPI
+      );
     } else {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
+      this.setState(
+        { filtering: true, serverSideFilterList: [] },
+        this.callAPI
+      );
     }
   };
 
   handleResetFilters = () => {
     const { serverSideFilterList } = this.state;
+    this.setState({ filtering: true });
+
     if (serverSideFilterList.length > 0) {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -123,7 +131,13 @@ class OrderList extends Component {
 
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
-    const { limit, page, serverSideFilterList, searchTerm } = this.state;
+    const {
+      filtering,
+      limit,
+      page,
+      serverSideFilterList,
+      searchTerm
+    } = this.state;
     const { data, pagination } = orders.toJS();
     const { total: count } = pagination;
 
@@ -280,7 +294,7 @@ class OrderList extends Component {
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
           {loading ? (
-            <Loading />
+            <Loading fullPage={!filtering} text={filtering && 'Filtering'} />
           ) : (
             <MUIDataTable columns={columns} data={data} options={options} />
           )}
