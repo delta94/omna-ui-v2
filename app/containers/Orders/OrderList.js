@@ -57,7 +57,7 @@ class OrderList extends Component {
       offset: page * limit,
       limit,
       term: searchTerm || '',
-      integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
+      integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
     };
 
     onGetIntegrations({ limit: 100, offset: 0 });
@@ -106,11 +106,9 @@ class OrderList extends Component {
   };
 
   handleFilterChange = filterList => {
-    console.log(filterList);
-
     if (filterList) {
-      const mappedList = filterList.map(i => i.name);
-      this.setState({ serverSideFilterList: mappedList }, this.callAPI);
+      // const mappedList = filterList.map(i => i.name);
+      this.setState({ serverSideFilterList: filterList }, this.callAPI);
     } else {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -130,7 +128,10 @@ class OrderList extends Component {
     const { total: count } = pagination;
 
     const integrationFilterOptions = integrations.get('data')
-      ? integrations.get('data').map(integration => integration.id)
+      ? integrations
+          .get('data')
+          .toJS()
+          .map(integration => integration.id)
       : [];
 
     const columns = [
@@ -190,7 +191,7 @@ class OrderList extends Component {
         options: {
           sort: true,
           filterType: 'dropdown',
-          filterList: serverSideFilterList[4],
+          filterList: serverSideFilterList[5],
           filterOptions: {
             names: integrationFilterOptions
           },
