@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 import moment from 'moment';
@@ -11,9 +12,9 @@ import { withSnackbar } from 'notistack';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { getOrder } from 'dan-actions';
 import api from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
-import './orderDetails.css';
 import Utils from '../Common/Utils';
 import OrderPayment from './detail/OrderPayment';
 import OrderCustomer from './detail/OrderCustomer';
@@ -21,45 +22,14 @@ import OrderIntegration from './detail/OrderIntegration';
 import OrderItems from './detail/OrderItems';
 import DocumentTypesDialog from './DocumentTypesDialog';
 import PageHeader from '../Common/PageHeader';
+import styles from './order-details-jss';
 
 const variantIcon = Utils.iconVariants();
-
-const styles = theme => ({
-  root: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    overflowX: 'auto'
-  },
-  subRoot: {
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-    overflowX: 'auto'
-  },
-  leftIcon: {
-    marginRight: theme.spacing.unit
-  },
-  iconSmall: {
-    fontSize: 20
-  },
-  marginLeft2u: {
-    marginLeft: theme.spacing(2)
-  },
-  marginLeft: {
-    marginLeft: theme.spacing.unit
-  },
-  marginRight: {
-    marginRight: theme.spacing.unit
-  },
-  orderDetailContainer: {
-    display: 'flex',
-    flexDirection: 'column'
-  }
-});
 
 class OrderDetails extends Component {
   state = {
     loading: true,
-    order: {},
+    orderFromState: null,
     // success: true,
     // messageError: '',
     openDialog: false,
@@ -67,13 +37,18 @@ class OrderDetails extends Component {
     documentTypes: []
   };
 
-  componentDidMount() {
-    const order = get(this.props, 'location.state.order', null);
-    // const storeId = get(order, 'data.integration.id', null);
-    const number = get(this.props, 'match.params.number', null);
+  async componentDidMount() {
+    const { location, match } = this.props;
 
-    if (order !== null && number === get(order, 'data.number', null)) {
-      this.setState({ order, loading: false });
+    const order = get(location, 'state.order', null);
+    const id = get(match, 'params.id', null);
+
+    if (order && id === get(order, 'data.id', null)) {
+      this.setState({ orderFromState: order, loading: false });
+    } else {
+      const { onGetOrder } = this.props;
+      await onGetOrder(id);
+      this.setState({ loading: false });
     }
   }
 
@@ -107,14 +82,16 @@ class OrderDetails extends Component {
   };
 
   render() {
-    const { classes, history } = this.props;
+    const { classes, history, order: orderFromProps } = this.props;
     const {
-      order,
+      orderFromState,
       loading,
       openDialog,
       selectedDocumentType,
       documentTypes
     } = this.state;
+
+    const order = orderFromState || orderFromProps.toJS();
 
     const integrationId = get(order, 'data.integration.id', null);
     const dataNumber = get(order, 'data.number', null);
@@ -123,7 +100,7 @@ class OrderDetails extends Component {
       <div>
         <PageHeader title="Order Details" history={history} />
         <div className="item-padding">
-          {loading ? (
+          {loading || !Object.keys(order).length ? (
             <LoadingState loading={loading} />
           ) : (
             <div>
@@ -181,9 +158,7 @@ class OrderDetails extends Component {
                   >
                     <strong>
                       {get(order, 'data.updated_date', null) != null
-                        ? moment(order.data.updated_date).format(
-                            'Y-MM-DD H:mm'
-                          )
+                        ? moment(order.data.updated_date).format('Y-MM-DD H:mm')
                         : ''}
                     </strong>
                   </Typography>
@@ -238,7 +213,24 @@ class OrderDetails extends Component {
 OrderDetails.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  onGetOrder: PropTypes.func.isRequired,
+  order: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(OrderDetails));
+const mapStateToProps = state => ({
+  order: state.getIn(['order', 'order'])
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetOrder: id => dispatch(getOrder(id))
+});
+
+const OrderDetailsMapped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(OrderDetails);
+
+export default withSnackbar(withStyles(styles)(OrderDetailsMapped));

@@ -24,6 +24,10 @@ export const GET_ORDERS = 'GET_ORDERS';
 export const GET_ORDERS_START = 'GET_ORDERS_START';
 export const GET_ORDERS_SUCCESS = 'GET_ORDERS_SUCCESS';
 export const GET_ORDERS_FAILED = 'GET_ORDERS_FAILED';
+export const GET_ORDER = 'GET_ORDER';
+export const GET_ORDER_START = 'GET_ORDER_START';
+export const GET_ORDER_SUCCESS = 'GET_ORDER_SUCCESS';
+export const GET_ORDER_FAILED = 'GET_ORDER_FAILED';
 
 // Integrations
 export const GET_INTEGRATIONS = 'GET_INTEGRATIONS';

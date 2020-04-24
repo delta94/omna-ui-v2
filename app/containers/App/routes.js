@@ -28,7 +28,7 @@ export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
 export const OrdersRoute = { link: '/orders', component: Orders };
 
 export const OrderDetailsRoute = {
-  link: '/orders/:number',
+  link: '/orders/:id',
   component: OrderDetails
 };
 
