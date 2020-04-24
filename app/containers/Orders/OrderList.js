@@ -187,7 +187,7 @@ class OrderList extends Component {
       },
       {
         name: 'integration',
-        label: 'Integration',
+        label: 'Channel / Integration',
         options: {
           sort: true,
           filterType: 'dropdown',
@@ -195,7 +195,9 @@ class OrderList extends Component {
           filterOptions: {
             names: integrationFilterOptions
           },
-          customBodyRender: value => <div>{value ? value.name : ''}</div>
+          customBodyRender: value => (
+            <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
+          )
         }
       },
       {
