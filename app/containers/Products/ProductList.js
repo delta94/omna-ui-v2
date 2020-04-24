@@ -6,27 +6,23 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
+import LinkIcon from '@material-ui/icons/Link';
+import LinkOffIcon from '@material-ui/icons/LinkOff';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import PublishIcon from '@material-ui/icons/Publish';
 import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
-import {
-  withStyles,
-  createMuiTheme,
-  MuiThemeProvider
-} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import Publisher from 'dan-components/Products/Publisher';
-import { linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
-import API from 'dan-containers/Utils/api';
+import { getProducts, linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
 import Utils from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
@@ -49,8 +45,6 @@ const styles = theme => ({
 
 class ProductList extends React.Component {
   state = {
-    isLoading: true,
-    products: { data: [], pagination: {} },
     // integrationFilterOptions: [],
     limit: 10,
     page: 0,
@@ -58,62 +52,38 @@ class ProductList extends React.Component {
     searchTerm: '',
     anchorEl: null,
     selectedItem: null,
-    openPublishDlg: false,
+    publisherAction: 'link',
+    openPublisherDlg: false,
     openConfirmDlg: false
   };
 
   componentDidMount() {
     this.callAPI();
-  }
+  };
 
   componentDidUpdate(prevProps) {
-    const { deleted, onResetDeleteProduct } = this.props;
+    const { deleted, onResetDeleteProduct, task, history } = this.props;
     if (deleted && deleted !== prevProps.deleted) {
       onResetDeleteProduct();
       this.callAPI();
     }
-  }
-
-  getMuiTheme = () =>
-    createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
-        }
-      }
-    });
-
-  getProducts = async (params) => {
-    const { enqueueSnackbar } = this.props;
-    this.setState({ isLoading: true });
-    try {
-      const response = await API.get('/products', { params });
-      this.setState({
-        products: get(response, 'data', { data: [], pagination: {} }),
-        limit: get(response, 'data.pagination.limit', 0)
-      });
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
+    if (task && task !== prevProps.task) {
+      history.push(`tasks/${task.id}`);
     }
-    this.setState({ isLoading: false });
   };
 
   callAPI = () => {
+    const { onGetProducts, enqueueSnackbar } = this.props;
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
+      with_details: true,
       integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
     };
-    this.setState({ isLoading: true });
-    this.getProducts(params);
-    // this.props.onGetProducts(params);
+    onGetProducts({ params, enqueueSnackbar });
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -169,17 +139,25 @@ class ProductList extends React.Component {
 
   handleCancelDlg = () => this.setState({ openConfirmDlg: false });
 
-  handlePublish = async (value) => {
+  handleLinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'link' }, this.handleCloseMenu);
+
+  handleUnlinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'unlink' }, this.handleCloseMenu);
+
+  handlePublisherAction = async (value) => {
     const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
-    const { id, linkedList, unlinkedList } = value;
-    linkedList.length > 0 ? await onLinkProduct(id, linkedList, enqueueSnackbar) : null;
-    unlinkedList.length > 0 ? await onUnlinkProduct(id, unlinkedList, enqueueSnackbar) : null;
-    this.setState({ openPublishDlg: false });
+    const { publisherAction } = this.state;
+    const { productId, list, deleteFromIntegration } = value;
+    if (publisherAction === 'link') {
+      list.length > 0 ? await onLinkProduct(productId, list, enqueueSnackbar) : null;
+    } else {
+      list.length > 0 ? await onUnlinkProduct(productId, list, deleteFromIntegration, enqueueSnackbar) : null;
+    }
+    this.setState({ openPublisherDlg: false });
   };
 
   handleMenu = (event) => this.setState({ anchorEl: event.currentTarget });
 
-  handleClose = () => this.setState({ anchorEl: null });
+  handleCloseMenu = () => this.setState({ anchorEl: null });
 
   renderTableActionsMenu = () => {
     const { anchorEl } = this.state;
@@ -190,43 +168,48 @@ class ProductList extends React.Component {
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}
-          onClose={this.handleClose}
+          onClose={this.handleCloseMenu}
         >
-          <MenuItem onClick={() => this.setState({ openPublishDlg: true }, this.handleClose)}>
+          <MenuItem onClick={this.handleLinkClick}>
             <ListItemIcon>
-              <PublishIcon />
+              <LinkIcon />
             </ListItemIcon>
-             Publish/Unpublish
+            Link
+          </MenuItem>
+          <MenuItem onClick={this.handleUnlinkClick}>
+            <ListItemIcon>
+              <LinkOffIcon />
+            </ListItemIcon>
+            Unlink
           </MenuItem>
           <MenuItem onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}>
             <ListItemIcon>
               <Ionicon icon="md-trash" />
             </ListItemIcon>
-           Delete
+            Delete
           </MenuItem>
         </Menu>
       </div>)
   };
 
   render() {
-    const { classes, history, loading } = this.props;
     const {
-      isLoading,
       limit,
-      products,
       page,
       serverSideFilterList,
       searchTerm,
-      openPublishDlg,
+      publisherAction,
+      openPublisherDlg: openPublishDlg,
       openConfirmDlg,
       selectedItem
     } = this.state;
+    const { classes, history, products, loading } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
     const columns = [
       {
-        name: 'id',
+        name: 'images',
         options: {
           filter: false,
           display: 'excluded'
@@ -239,8 +222,7 @@ class ProductList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
-            const imgSrc =
-              images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
@@ -279,18 +261,7 @@ class ProductList extends React.Component {
         }
       },
       {
-        name: 'last_import_date',
-        label: 'Last import',
-        options: {
-          sort: true,
-          display: 'excluded'
-          // customBodyRender: value => (
-          //   <div>{moment(value).format('Y-MM-DD')}</div>
-          // )
-        }
-      },
-      {
-        name: 'currency',
+        name: 'id',
         options: {
           filter: false,
           display: 'excluded'
@@ -351,8 +322,8 @@ class ProductList extends React.Component {
       },
       onCellClick: (rowData, { colIndex, dataIndex }) => {
         this.setState({ selectedItem: data[dataIndex] });
-        if (colIndex !== 5) {
-          history.push(`/products/${data[dataIndex].id}/`);
+        if (colIndex !== 4) {
+          history.push(`/products/${data[dataIndex].id}`);
         }
       },
       customSort: (customSortData, colIndex, product) =>
@@ -397,10 +368,8 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
-          {isLoading || loading ? <Loading /> : null}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
+          {loading ? <Loading /> : null}
             <MUIDataTable columns={columns} data={data} options={options} />
-          </MuiThemeProvider>
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
@@ -409,10 +378,11 @@ class ProductList extends React.Component {
             handleConfirm={this.handleConfirmDlg}
           />
           <Publisher
+            action={publisherAction}
             product={selectedItem}
             open={openPublishDlg}
-            onClose={() => this.setState({ openPublishDlg: false })}
-            onSave={this.handlePublish} />
+            onClose={() => this.setState({ openPublisherDlg: false })}
+            onSave={this.handlePublisherAction} />
         </div>
       </div>
     );
@@ -420,8 +390,10 @@ class ProductList extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  products: state.getIn(['product', 'products']),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
+  task: state.getIn(['product', 'task']),
   ...state
 });
 
@@ -430,6 +402,7 @@ const mapDispatchToProps = dispatch => ({
   onLinkProduct: bindActionCreators(linkProduct, dispatch),
   onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
+  onGetProducts: bindActionCreators(getProducts, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch)
 });
 
@@ -440,9 +413,12 @@ const ProductListMapped = connect(
 
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
+  products: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
+  onGetProducts: PropTypes.func.isRequired,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,

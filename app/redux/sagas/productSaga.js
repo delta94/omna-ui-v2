@@ -20,13 +20,28 @@ function* prodVariantsAsync(dispatch) {
   yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC_LOADING', loading: false });
 }
 
+function* getProducts(payload) {
+  const { params, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.get(`/products`, { params });
+    const { data } = response;
+    yield put({ type: types.GET_PRODUCTS, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* linkProduct(payload) {
   const { productId, integrationIds, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const response = yield api.put(`/products/${productId}`, { data: { integration_ids: integrationIds, link_with_its_variants: "All" } });
     const { data } = response.data;
-    enqueueSnackbar('Link product started', { variant: 'success' });
+    enqueueSnackbar('Linking product', { variant: 'info' });
     yield put({ type: types.LINK_PRODUCT, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -37,12 +52,12 @@ function* linkProduct(payload) {
 }
 
 function* unLinkProduct(payload) {
-  const { productId, integrationIds, enqueueSnackbar } = payload;
+  const { productId, integrationIds, deleteFromIntegration, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
-    const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds } });
+    const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
     const { data } = response.data;
-    enqueueSnackbar('Unlink product started', { variant: 'success' });
+    enqueueSnackbar('Unlinking product', { variant: 'info' });
     yield put({ type: types.UNLINK_PRODUCT, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -84,6 +99,10 @@ export function* watchDeleteProduct() {
   yield takeLatest(types.DELETE_PRODUCT_ASYNC, deleteProduct);
 }
 
+export function* watchGetProducts() {
+  yield takeLatest(types.GET_PRODUCTS_ASYNC, getProducts);
+}
+
 export default function* productSaga() {
-  yield all([watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
+  yield all([watchGetProducts(), watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
 }
