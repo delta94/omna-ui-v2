@@ -279,7 +279,7 @@ class IntegrationList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
 
-        <IntegrationForm
+        <AddIntegrationForm
           editableIntegration={editableIntegration}
           classes={classes}
           handleClose={this.handleCloseForm}

@@ -95,7 +95,7 @@ const TenantMenu = props => {
 
   useEffect(() => {
     async function changeTenant() {
-      const { changeReloadTenants, enqueueSnackbar } = props;
+      const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
       if (reloadTenants) {
         try {
           const params = { limit: 100, offset: 0 };
@@ -104,9 +104,7 @@ const TenantMenu = props => {
           changeReloadTenants(false);
           data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
-          const tenant = data.find(
-            element => element.id === currentTenant.tenantId
-          );
+          const tenant = data.find(element => element.id === tenantId);
           setName(tenant.name);
           const {
             name: tenantName,
@@ -129,7 +127,7 @@ const TenantMenu = props => {
 
   useEffect(() => {
     async function getTenants() {
-      const { enqueueSnackbar } = props;
+      const { tenantId, enqueueSnackbar } = props;
       try {
         // TO DO: adjust total of elements to show in combobox
         const params = { limit: 100, offset: 0 };
@@ -137,10 +135,9 @@ const TenantMenu = props => {
         const { data } = response.data;
         data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
-        const found = data.findIndex(
-          element => element.id === currentTenant.tenantId
-        );
+        const found = data.findIndex(element => element.id === tenantId);
         setSelectedIndex(found);
+        // const found = data.find(element => element.id === tenantId);
         const tenant = data[found];
         const {
           name: tenantName,
@@ -230,10 +227,7 @@ const TenantMenu = props => {
           </ListItemIcon>
           <ListItemText primary={name} className={classes.selectedTenant} />
           <ListItemIcon style={{ margin: 0 }}>
-            <ArrowDownIcon
-              className={classes.icon}
-              style={{ marginLeft: 36, minWidth: 16 }}
-            />
+            <ArrowDownIcon className={classes.icon} />
           </ListItemIcon>
         </ListItem>
       </List>
@@ -260,7 +254,7 @@ const TenantMenu = props => {
       </Menu>
     </div>
   );
-};
+}
 
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -279,11 +273,13 @@ TenantMenu.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  tenantId: state.getIn(['tenant', 'tenantId']),
   reloadTenants: state.getIn(['tenant', 'reloadTenants']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
+  getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeReloadTenants: bindActionCreators(setReloadTenants, dispatch),

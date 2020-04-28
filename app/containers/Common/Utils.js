@@ -3,7 +3,7 @@ import { sha256 } from 'js-sha256';
 class Utils {
   constructor() {
     this.URL_LOCAL = 'http://127.0.0.1:4000';
-    this.URL_DEV = 'https://develop.d19tdb0x4s4txh.amplifyapp.com';
+    this.URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
     this.URL_PROD = 'https://app.omna.io';
   }
 
@@ -56,7 +56,7 @@ class Utils {
     if (url.includes('app.omna.io')) {
       return this.URL_PROD;
     }
-    if (url.includes('https://develop.d19tdb0x4s4txh.amplifyapp.com')) {
+    if (url.includes('https://develop')) {
       return this.URL_DEV;
     }
     return this.URL_LOCAL;
@@ -244,7 +244,7 @@ export const logout = () => {
 
 export const isOmnaShopify = () =>
   localStorage.getItem('currentTenant')
-    ? JSON.parse(localStorage.getItem('currentTenant')).shop
+    ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
     : null;
 
 export const getLogo = channel => {

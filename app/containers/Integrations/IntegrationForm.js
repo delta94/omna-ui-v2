@@ -2,18 +2,15 @@ import React, { Component } from 'react';
 import { withSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import {
   Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
   FormControlLabel,
   MenuItem,
   TextField,
-  withStyles,
-  Typography
+  withStyles
 } from '@material-ui/core';
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
@@ -23,8 +20,7 @@ import { getChannels, updateIntegration } from 'dan-actions/integrationActions';
 
 const styles = () => ({
   inputWidth: {
-    width: 300,
-    margin: '8px 0'
+    width: '300px'
   },
   margin: {
     margin: '10px'
@@ -37,41 +33,16 @@ class IntegrationForm extends Component {
     selectedChannel: '',
     authorized: true,
     errors: {},
-    loadingState: false,
-    locations: {},
-    defaultProperties: { location: '' }
+    loadingState: false
   };
 
   componentDidMount() {
     const { onGetChannels } = this.props;
     onGetChannels();
-    this.getLocations();
   }
 
-  getLocations = async () => {
-    try {
-      const { shop } = JSON.parse(localStorage.getItem('currentTenant'));
-      const locations = await axios.get(
-        `https://cenit.io/app/omna-dev/locations?shop=${shop}`
-      );
-      this.setState({ locations });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   onInputChange = e => {
-    const { name, value } = e.target;
-
-    if (name.includes('defaultProperties')) {
-      const prop = name.substring(name.indexOf('.') + 1);
-      const { defaultProperties } = this.state;
-      const defaultProps = { ...defaultProperties };
-      defaultProps[prop] = value;
-      this.setState({ defaultProperties: defaultProps });
-    } else {
-      this.setState({ [name]: value });
-    }
+    this.setState({ [e.target.name]: e.target.value });
   };
 
   onCheckBoxChange = e => {
@@ -131,9 +102,9 @@ class IntegrationForm extends Component {
     }
   };
 
-  handleIntegrationAuthorization = id => {
+  handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
-    handleAuthorization(path);
+    Utils.handleAuthorization(path);
   };
 
   handleClose = () => {
@@ -158,11 +129,8 @@ class IntegrationForm extends Component {
       selectedChannel,
       authorized,
       loadingState,
-      errors,
-      locations,
-      defaultProperties
+      errors
     } = this.state;
-    console.log(this.state);
 
     if (selectedChannel === '' && open) {
       this.setState({ selectedChannel: channel });
@@ -205,10 +173,10 @@ class IntegrationForm extends Component {
                 name="integration"
                 placeholder="myintegration.lazada.sg"
                 onChange={this.onInputChange}
-                margin="dense"
+                margin="normal"
                 variant="outlined"
                 className={classes.inputWidth}
-                error={errors.integration}
+                error={!errors.integration}
                 helperText={errors.integration}
               />
 
@@ -225,7 +193,7 @@ class IntegrationForm extends Component {
                     className: classes.inputWidth
                   }
                 }}
-                margin="dense"
+                margin="normal"
                 variant="outlined"
                 className={classes.inputWidth}
                 error={!!errors.channel}
@@ -250,60 +218,6 @@ class IntegrationForm extends Component {
                 }
                 label="Authorized"
               />
-
-              {isOmnaShopify() && (
-                <div style={{ marginTop: 8 }}>
-                  <Typography component="h5" variant="subtitle2">
-                    Default Properties
-                  </Typography>
-                  <Divider />
-                  <TextField
-                    id="locations"
-                    select
-                    label="Locations"
-                    value={defaultProperties.location}
-                    name="defaultProperties.location"
-                    onChange={this.onInputChange}
-                    SelectProps={{
-                      MenuProps: {
-                        className: classes.inputWidth
-                      }
-                    }}
-                    margin="dense"
-                    variant="outlined"
-                    className={classes.inputWidth}
-                    error={!!errors.channel}
-                    helperText={errors.channel}
-                  >
-                    {locations.data &&
-                      locations.data.items.map(option => (
-                        <MenuItem key={option.name} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                  </TextField>
-
-                  {hasCustomDefaultProperties ? (
-                    <div>
-                      {channel.includes('Shopee') && (
-                        <ShopeeDefaultPropsForm
-                          classes={classes}
-                          defaultProperties={defaultProperties}
-                          handleChange={this.onInputChange}
-                        />
-                      )}
-
-                      {channel.includes('Qoo10') && (
-                        <Qoo10DefaultPropsForm
-                          classes={classes}
-                          defaultProperties={defaultProperties}
-                          handleChange={this.onInputChange}
-                        />
-                      )}
-                    </div>
-                  ) : null}
-                </div>
-              )}
 
               <FormActions onCancelClick={this.handleClose} />
             </form>
