@@ -15,7 +15,7 @@ import Hidden from '@material-ui/core/Hidden';
 import Settings from '@material-ui/icons/SettingsApplications';
 import Warning from '@material-ui/icons/Warning';
 import Loading from 'dan-components/Loading';
-import Utils, {getTenant} from 'dan-containers/Common/Utils';
+import Utils, { currentTenant } from 'dan-containers/Common/Utils';
 import { GET_TENANT_ID } from 'dan-actions/actionConstants';
 import { setTenantStatus } from 'dan-actions/TenantActions';
 import API from '../../Utils/api';
@@ -42,7 +42,7 @@ const styles = theme => ({
     width: '90%',
     [theme.breakpoints.up('sm')]: {
       width: 600,
-      height: 300,
+      height: 300
     },
     textAlign: 'center'
   },
@@ -54,14 +54,17 @@ const styles = theme => ({
   icon: {
     margin: '10px 20px',
     background: 'rgba(255,255,255,0.6)',
-    color: theme.palette.type === 'dark' ? theme.palette.primary.dark : theme.palette.primary.main,
+    color:
+      theme.palette.type === 'dark'
+        ? theme.palette.primary.dark
+        : theme.palette.primary.main,
     width: 100,
     height: 100,
     boxShadow: theme.shadows[4],
     '& svg': {
-      fontSize: 64,
-    },
-  },
+      fontSize: 64
+    }
+  }
 });
 
 class TenantConfiguration extends React.Component {
@@ -69,15 +72,15 @@ class TenantConfiguration extends React.Component {
     loading: false
   };
 
-  updateTenant = (status) => {
+  updateTenant = status => {
     const { changeTenantStatus } = this.props;
     changeTenantStatus(status);
-    const tenant = getTenant();
+    const tenant = currentTenant;
     if (tenant) {
       tenant.isReadyToOmna = status;
       Utils.setTenant(tenant);
     }
-  }
+  };
 
   /*   startUpTenant = async () => {
       const { enqueueSnackbar, history } = this.props;
@@ -144,7 +147,7 @@ class TenantConfiguration extends React.Component {
         variant: 'error'
       });
     }
-  }
+  };
 
   render() {
     const title = brand.name + ' - Tenant Configuration';
@@ -165,25 +168,41 @@ class TenantConfiguration extends React.Component {
           </Helmet>
           <div className={classes.container}>
             <div className={classes.artwork}>
-              <Avatar className={classes.icon}><Build /></Avatar>
+              <Avatar className={classes.icon}>
+                <Build />
+              </Avatar>
               <Hidden xsDown>
-                <Avatar className={classes.icon}><Warning /></Avatar>
+                <Avatar className={classes.icon}>
+                  <Warning />
+                </Avatar>
               </Hidden>
               <Hidden xsDown>
-                <Avatar className={classes.icon}><Settings /></Avatar>
+                <Avatar className={classes.icon}>
+                  <Settings />
+                </Avatar>
               </Hidden>
             </div>
-            <Typography variant="h4" gutterBottom>Configuration</Typography>
-            <Typography variant="subtitle1" gutterBottom style={{ marginBottom: '10px' }}>
-              {!enabledTenant ? 'Subscribe to a plan for Tenant Activation.' : 'Get your tenant ready to use OMNA application.'}
+            <Typography variant="h4" gutterBottom>
+              Configuration
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              style={{ marginBottom: '10px' }}
+            >
+              {!enabledTenant
+                ? 'Subscribe to a plan for Tenant Activation.'
+                : 'Get your tenant ready to use OMNA application.'}
             </Typography>
             {loading && (
-              <Typography variant="subtitle1">
-                Preparing tenant ...
-              </Typography>
+              <Typography variant="subtitle1">Preparing tenant ...</Typography>
             )}
             {!enabledTenant ? null : (
-              <Button variant="contained" color="primary" onClick={this.startUpTenant}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.startUpTenant}
+              >
                 Start
               </Button>
             )}
@@ -203,15 +222,15 @@ TenantConfiguration.propTypes = {
   changeTenantStatus: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   tenantId: state.getIn(['tenant', 'tenantId']),
   enabledTenant: state.getIn(['tenant', 'enabled']),
-  ...state,
+  ...state
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   getTenantId: () => dispatch({ type: GET_TENANT_ID }),
-  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
+  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch)
 });
 
 const TenantConfigurationMaped = connect(

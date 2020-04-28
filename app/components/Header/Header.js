@@ -8,7 +8,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 import MenuIcon from '@material-ui/icons/Menu';
-import { getTenant } from 'dan-containers/Common/Utils';
+import { currentTenant } from 'dan-containers/Common/Utils';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
 // import SearchUi from '../Search/SearchUi';
@@ -105,8 +105,6 @@ class Header extends React.Component {
       }
       return classes.left;
     };
-
-    const currentTenant = getTenant();
 
     return (
       <AppBar

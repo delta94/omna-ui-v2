@@ -16,7 +16,7 @@ import {
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
 import API from 'dan-containers/Utils/api';
-import Utils, { getTenant } from 'dan-containers/Common/Utils';
+import Utils, { currentTenant } from 'dan-containers/Common/Utils';
 // import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
   setTenantStatus,
@@ -66,8 +66,6 @@ const TenantMenu = props => {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-  const currentTenant = getTenant();
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
     const { onPushNotification, onInstall, enqueueSnackbar } = props;
@@ -185,7 +183,7 @@ const TenantMenu = props => {
         is_ready_to_omna: isReadyToOmna,
         deactivation
       } = data;
-      const tenant = getTenant();
+      const tenant = currentTenant;
       tenant.name = tenantName;
       tenant.token = token;
       tenant.secret = secret;

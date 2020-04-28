@@ -90,15 +90,6 @@ class Utils {
     return queryString;
   }
 
-  static logout() {
-    if (localStorage.getItem('currentTenant')) {
-      localStorage.removeItem('currentTenant');
-    }
-    window.location.replace(
-      `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
-    );
-  }
-
   static handleAuthorization(path) {
     window.open(
       `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
@@ -180,17 +171,23 @@ class Utils {
   }
 }
 
+export const currentTenant = localStorage.getItem('currentTenant')
+  ? JSON.parse(localStorage.getItem('currentTenant'))
+  : null;
+
+export const logout = () => {
+  if (currentTenant) {
+    localStorage.removeItem('currentTenant');
+  }
+  window.location.replace(
+    `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
+  );
+};
+
 export const isOmnaShopify = () =>
   localStorage.getItem('currentTenant')
     ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
     : null;
-
-export const getTenant = () => {
-  if (localStorage.getItem('currentTenant')) {
-    return JSON.parse(localStorage.getItem('currentTenant'));
-  }
-  return null;
-};
 
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');
