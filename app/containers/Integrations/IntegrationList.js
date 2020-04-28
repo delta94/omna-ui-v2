@@ -27,7 +27,6 @@ import {
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
-import Utils from 'dan-containers/Common/Utils';
 import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 
@@ -279,7 +278,7 @@ class IntegrationList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
 
-        <AddIntegrationForm
+        <IntegrationForm
           editableIntegration={editableIntegration}
           classes={classes}
           handleClose={this.handleCloseForm}
