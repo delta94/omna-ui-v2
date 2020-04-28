@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import classNames from 'classnames';
-
+import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -11,12 +11,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import styles from './order-detail-jss';
 
 class OrderCustomer extends Component {
   render() {
-    const {
-      classes, customerFirstName, shipAddress, billAddress
-    } = this.props;
+    const { classes, customerFirstName, shipAddress, billAddress } = this.props;
 
     return (
       <Card
@@ -32,70 +31,166 @@ class OrderCustomer extends Component {
           <List
             className={classes.root}
             dense
-            subheader={(
+            subheader={
               <ListSubheader component="div" id="nested-list-subheader">
                 Shipping Address
               </ListSubheader>
-            )}
+            }
           >
             <ListItem>
-              <Typography variant="subtitle2">Country:</Typography>
-              <ListItemText primary={shipAddress.country} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`Country: `}
+                    </Typography>
+                    {shipAddress.country}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">State:</Typography>
-              <ListItemText primary={shipAddress.state} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography classNanme={classes.inline} variant="subtitle2">
+                      {`State: `}
+                    </Typography>
+                    {shipAddress.state}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">City:</Typography>
-              <ListItemText primary={shipAddress.city} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`City: `}
+                    </Typography>
+                    {shipAddress.city}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">Phone:</Typography>
-              <ListItemText primary={shipAddress.phone} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`Phone: `}
+                    </Typography>
+                    {shipAddress.phone}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">ZIP Code:</Typography>
-              <ListItemText primary={shipAddress.zip_code} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`ZIP Code: `}
+                    </Typography>
+                    {shipAddress.zip_code}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">Address:</Typography>
-              <ListItemText primary={shipAddress.address} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography clasName={classes.inline} variant="subtitle2">
+                      {`Address: `}
+                    </Typography>
+                    {shipAddress.address}
+                  </Fragment>
+                }
+              />
             </ListItem>
           </List>
 
           <List
             className={classes.root}
             dense
-            subheader={(
+            subheader={
               <ListSubheader component="div" id="nested-list-subheader">
                 Billing Address
               </ListSubheader>
-            )}
+            }
           >
             <ListItem>
-              <Typography variant="subtitle2">Country:</Typography>
-              <ListItemText primary={billAddress.country} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography classNanme={classes.inline} variant="subtitle2">
+                      {`Country: `}
+                    </Typography>
+                    {billAddress.country}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">State:</Typography>
-              <ListItemText primary={billAddress.state} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`State: `}
+                    </Typography>
+                    {billAddress.state}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">City:</Typography>
-              <ListItemText primary={billAddress.city} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`City: `}
+                    </Typography>
+                    {billAddress.city}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">Phone:</Typography>
-              <ListItemText primary={billAddress.phone} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`Phone: `}
+                    </Typography>
+                    {billAddress.phone}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">ZIP Code:</Typography>
-              <ListItemText primary={billAddress.zip_code} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`ZIP Code: `}
+                    </Typography>
+                    {billAddress.zip_code}
+                  </Fragment>
+                }
+              />
             </ListItem>
             <ListItem>
-              <Typography variant="subtitle2">Address:</Typography>
-              <ListItemText primary={billAddress.address} />
+              <ListItemText
+                primary={
+                  <Fragment>
+                    <Typography className={classes.inline} variant="subtitle2">
+                      {`Address: `}
+                    </Typography>
+                    {billAddress.address}
+                  </Fragment>
+                }
+              />
             </ListItem>
           </List>
         </div>
@@ -111,4 +206,4 @@ OrderCustomer.propTypes = {
   billAddress: PropTypes.object.isRequired
 };
 
-export default OrderCustomer;
+export default withStyles(styles)(OrderCustomer);

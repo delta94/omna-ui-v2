@@ -18,7 +18,7 @@ import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
 import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import Integration from '../Integration';
-import AddIntegrationForm from '../AddIntegrationForm';
+import IntegrationForm from '../IntegrationForm';
 
 const styles = theme => ({
   cardList: {
@@ -166,7 +166,7 @@ class ChannelList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
 
-        <AddIntegrationForm
+        <IntegrationForm
           channel={channel.name}
           classes={classes}
           handleClose={this.handleCloseForm}

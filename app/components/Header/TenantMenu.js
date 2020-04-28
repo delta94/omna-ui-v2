@@ -15,14 +15,9 @@ import {
 } from '@material-ui/core';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
-import {
-  getDeactivationDate,
-  getTenant,
-  isTenantEnabled,
-  setTenant
-} from 'dan-containers/Common/Utils';
 import API from 'dan-containers/Utils/api';
-import { GET_TENANT_ID } from '../../actions/actionConstants';
+import Utils from 'dan-containers/Common/Utils';
+// import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
   setTenantStatus,
   setTenantId,
@@ -64,7 +59,7 @@ const styles = () => ({
   }
 });
 
-function TenantMenu(props) {
+const TenantMenu = props => {
   const { classes, reloadTenants, onSetNotifications } = props;
   const [name, setName] = useState('');
   const [tenantList, setTenantList] = useState([]);
@@ -72,16 +67,18 @@ function TenantMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
+  const currentTenant = Utils.getTenant();
+
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
     const { onPushNotification, onInstall, enqueueSnackbar } = props;
-    const isEnabled = isTenantEnabled(deactivationDate);
+    const isEnabled = Utils.isTenantEnabled(deactivationDate);
     const subscribeNotif = {
       message: SUBSCRIBE_INFO`${tenantName}`,
       variant: 'error',
       action: subscribeAction
     };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
-    const deactivation = getDeactivationDate(deactivationDate);
+    const deactivation = Utils.getDeactivationDate(deactivationDate);
     const deactivationNotif = {
       message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`,
       variant: 'info',
@@ -100,7 +97,7 @@ function TenantMenu(props) {
 
   useEffect(() => {
     async function changeTenant() {
-      const { tenantId, changeReloadTenants, enqueueSnackbar } = props;
+      const { changeReloadTenants, enqueueSnackbar } = props;
       if (reloadTenants) {
         try {
           const params = { limit: 100, offset: 0 };
@@ -109,7 +106,9 @@ function TenantMenu(props) {
           changeReloadTenants(false);
           data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
-          const tenant = data.find(element => element.id === tenantId);
+          const tenant = data.find(
+            element => element.id === currentTenant.tenantId
+          );
           setName(tenant.name);
           const {
             name: tenantName,
@@ -132,7 +131,7 @@ function TenantMenu(props) {
 
   useEffect(() => {
     async function getTenants() {
-      const { tenantId, enqueueSnackbar } = props;
+      const { enqueueSnackbar } = props;
       try {
         // TO DO: adjust total of elements to show in combobox
         const params = { limit: 100, offset: 0 };
@@ -140,9 +139,10 @@ function TenantMenu(props) {
         const { data } = response.data;
         data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
-        const found = data.findIndex(element => element.id === tenantId);
+        const found = data.findIndex(
+          element => element.id === currentTenant.tenantId
+        );
         setSelectedIndex(found);
-        // const found = data.find(element => element.id === tenantId);
         const tenant = data[found];
         const {
           name: tenantName,
@@ -185,7 +185,7 @@ function TenantMenu(props) {
         is_ready_to_omna: isReadyToOmna,
         deactivation
       } = data;
-      const tenant = getTenant();
+      const tenant = Utils.getTenant();
       tenant.name = tenantName;
       tenant.token = token;
       tenant.secret = secret;
@@ -232,7 +232,10 @@ function TenantMenu(props) {
           </ListItemIcon>
           <ListItemText primary={name} className={classes.selectedTenant} />
           <ListItemIcon style={{ margin: 0 }}>
-            <ArrowDownIcon className={classes.icon} />
+            <ArrowDownIcon
+              className={classes.icon}
+              style={{ marginLeft: 36, minWidth: 16 }}
+            />
           </ListItemIcon>
         </ListItem>
       </List>
@@ -259,7 +262,7 @@ function TenantMenu(props) {
       </Menu>
     </div>
   );
-}
+};
 
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -278,13 +281,11 @@ TenantMenu.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  tenantId: state.getIn(['tenant', 'tenantId']),
   reloadTenants: state.getIn(['tenant', 'reloadTenants']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTenantId: () => dispatch({ type: GET_TENANT_ID }),
   changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
   changeTenantId: bindActionCreators(setTenantId, dispatch),
   changeReloadTenants: bindActionCreators(setReloadTenants, dispatch),

@@ -18,13 +18,8 @@ import {
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
-import {
-  handleAuthorization,
-  isOmnaShopify
-} from 'dan-containers/Common/Utils';
-import { getChannels } from 'dan-actions/integrationActions';
-import ShopeeDefaultPropsForm from './ShopeeDefaultPropsForm';
-import Qoo10DefaultPropsForm from './Qoo10DefaultPropsForm';
+import Utils from 'dan-containers/Common/Utils';
+import { getChannels, updateIntegration } from 'dan-actions/integrationActions';
 
 const styles = () => ({
   inputWidth: {
@@ -36,7 +31,7 @@ const styles = () => ({
   }
 });
 
-class AddIntegrationForm extends Component {
+class IntegrationForm extends Component {
   state = {
     integration: '',
     selectedChannel: '',
@@ -85,59 +80,54 @@ class AddIntegrationForm extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    const { enqueueSnackbar, handleClose } = this.props;
+    const {
+      editableIntegration,
+      enqueueSnackbar,
+      handleClose,
+      onUpdateIntegration
+    } = this.props;
     const {
       integration: name,
-      selectedChannel,
-      authorized,
-      defaultProperties
+      selectedChannel: channel,
+      authorized
     } = this.state;
-    const { shop } = JSON.parse(localStorage.getItem('currentTenant'));
 
     if (!name) {
       this.setState({ errors: { integration: 'Integration is required' } });
-    } else if (!selectedChannel) {
-      this.setState({ errors: { selectedChannel: 'Channel is required' } });
+    } else if (!channel) {
+      this.setState({ errors: { channel: 'Channel is required' } });
     } else {
       this.setState({ loadingState: true });
-      API.post('/integrations', { data: { name, channel: selectedChannel } })
-        .then(response => {
-          enqueueSnackbar('Integration created successfully', {
-            variant: 'success'
-          });
-          const { data } = response.data;
-          if (authorized && data.id) {
-            this.handleIntegrationAuthorization(data.id);
-          }
-
-          axios
-            .post(
-              `https://cenit.io/app/omna-dev/setup/default/properties?shop=${shop}&channel=${selectedChannel}&default_properties=${defaultProperties}`
-            )
-            .then(res => {
-              enqueueSnackbar(res, {
-                variant: 'success'
-              });
-            })
-            .catch(error => {
-              console.log(error);
-              enqueueSnackbar(error, {
+      if (editableIntegration) {
+        onUpdateIntegration({
+          id: editableIntegration.id,
+          name,
+          channel,
+          authorized
+        });
+      } else {
+        API.post('/integrations', { data: { name, channel } })
+          .then(response => {
+            enqueueSnackbar('Integration created successfully', {
+              variant: 'success'
+            });
+            const { data } = response.data;
+            if (authorized && data.id) {
+              this.handleAuthorization(data.id);
+            }
+          })
+          .catch(error => {
+            if (error && error.response.data.message) {
+              enqueueSnackbar(error.response.data.message, {
                 variant: 'error'
               });
-            });
-        })
-        .catch(error => {
-          console.log(error)
-          // if (error && error.response.data.message) {
-          //   enqueueSnackbar(error.response.data.message, {
-          //     variant: 'error'
-          //   });
-          // }
-        })
-        .then(() => {
-          handleClose();
-          this.setState({ loadingState: false });
-        });
+            }
+          })
+          .then(() => {
+            handleClose();
+            this.setState({ loadingState: false });
+          });
+      }
     }
   };
 
@@ -148,8 +138,10 @@ class AddIntegrationForm extends Component {
 
   handleClose = () => {
     const { handleClose } = this.props;
-    this.setState({ selectedChannel: '' });
-    handleClose();
+    this.setState(
+      { integration: '', selectedChannel: '', authorized: false },
+      handleClose()
+    );
   };
 
   render() {
@@ -157,9 +149,9 @@ class AddIntegrationForm extends Component {
       channel,
       channels,
       classes,
-      handleClose,
       loading,
-      open
+      open,
+      editableIntegration
     } = this.props;
     const {
       integration,
@@ -178,12 +170,26 @@ class AddIntegrationForm extends Component {
 
     const hasCustomDefaultProperties =
       channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
+      
+    if (editableIntegration && integration === '') {
+      this.setState({
+        authorized: editableIntegration.authorized,
+        integration: editableIntegration.name,
+        selectedChannel: editableIntegration.channel
+      });
+    }
 
     return (
       <div>
         {(loading || loadingState) && <Loading />}
-        <Dialog aria-labelledby="form-dialog" onClose={handleClose} open={open}>
-          <DialogTitle id="form-dialog-title">Add Integration</DialogTitle>
+        <Dialog
+          aria-labelledby="form-dialog"
+          onClose={this.handleClose}
+          open={open}
+        >
+          <DialogTitle id="form-dialog-title">
+            {editableIntegration ? 'Edit' : 'Add'} Integration
+          </DialogTitle>
           <DialogContent className={classes.formContainer}>
             <form
               onSubmit={this.onSubmit}
@@ -308,14 +314,20 @@ class AddIntegrationForm extends Component {
   }
 }
 
-AddIntegrationForm.propTypes = {
+IntegrationForm.defaultProps = {
+  editableIntegration: null
+};
+
+IntegrationForm.propTypes = {
   classes: PropTypes.object.isRequired,
   channel: PropTypes.object.isRequired,
   channels: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
+  editableIntegration: PropTypes.object,
   handleClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   onGetChannels: PropTypes.func.isRequired,
+  onUpdateIntegration: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
@@ -325,11 +337,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetChannels: query => dispatch(getChannels(query))
+  onGetChannels: query => dispatch(getChannels(query)),
+  onUpdateIntegration: integration => dispatch(updateIntegration(integration))
 });
 
 const AddIntegrationFormMapped = withSnackbar(
-  withStyles(styles)(AddIntegrationForm)
+  withStyles(styles)(IntegrationForm)
 );
 
 export default connect(

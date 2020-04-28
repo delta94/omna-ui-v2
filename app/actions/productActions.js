@@ -1,45 +1,37 @@
 import * as types from './actionConstants';
 
-/* export const setProductProperties = (tabIndex, properties) => ({
-  type: types.SET_PRODUCT_PROPERTIES,
-  payload: { tabIndex, properties }
-}); */
-
 export const getProductVariantList = (integrationId, remoteProductId) => ({
   type: types.GET_PRODUCT_VARIANTS,
   payload: { integrationId, remoteProductId }
 });
 
-export const setProductName = (name) => ({
-  type: types.SET_PRODUCT_NAME,
-  name
+export const getProducts = (payload) => ({
+  type: types.GET_PRODUCTS_ASYNC,
+  params: payload.params,
+  enqueueSnackbar: payload.enqueueSnackbar
 });
 
-export const setProductDescription = (description) => ({
-  type: types.SET_PRODUCT_DESCRIPTION,
-  description
+export const linkProduct = (productId, integrationIds, enqueueSnackbar) => ({
+  type: types.LINK_PRODUCT_ASYNC,
+  productId,
+  integrationIds,
+  enqueueSnackbar
 });
 
-export const setProductPrice = (price) => ({
-  type: types.SET_PRODUCT_PRICE,
-  price
+export const unLinkProduct = (productId ,integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
+  type: types.UNLINK_PRODUCT_ASYNC,
+  productId,
+  integrationIds,
+  deleteFromIntegration,
+  enqueueSnackbar
 });
 
-export const setProduct = (product) => ({
-  type: types.SET_PRODUCT,
-  product
+export const deleteProduct = (productId, enqueueSnackbar) => ({
+  type: types.DELETE_PRODUCT_ASYNC,
+  productId,
+  enqueueSnackbar
 });
 
-export const setProductIntegrations = (integrations) => ({
-  type: types.SET_PRODUCT_INTEGRATIONS,
-  integrations
+export const resetDeleteProductFlag = () => ({
+  type: types.RESET_DELETE_PRODUCT_FLAG
 });
-
-export const setProductProperties = (properties) => ({
-  type: types.SET_PRODUCT_PROPERTIES,
-  properties
-});
-
-/* export const getProductVariantList = () => (dispatch) => {
-  dispatch({ type: 'GET_PRODUCT_VARIANTS', payload: {} });
-}; */

@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actionConstants from 'dan-actions/actionConstants';
 import api from 'dan-containers/Utils/api';
 
@@ -14,10 +14,22 @@ function* fetchOrders(params) {
   }
 }
 
-export default function* fetchOrdersWatcher() {
-  yield takeLatest(actionConstants.GET_ORDERS, fetchOrders);
+function* fetchOrder(params) {
+  yield put({ type: actionConstants.GET_ORDER_START });
+  const { id } = params;
+
+  try {
+    const response = yield api.get(`/orders/${id}`);
+    const { data } = response;
+    yield put({ type: actionConstants.GET_ORDER_SUCCESS, data });
+  } catch (error) {
+    yield put({ type: actionConstants.GET_ORDER_FAILED, error });
+  }
 }
 
-// export default function* rootSaga() {
-//   yield all([actionWatcher()]);
-// }
+export default function* rootSaga() {
+  yield all([
+    takeLatest(actionConstants.GET_ORDERS, fetchOrders),
+    takeLatest(actionConstants.GET_ORDER, fetchOrder)
+  ]);
+}

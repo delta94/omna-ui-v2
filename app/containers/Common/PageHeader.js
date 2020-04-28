@@ -25,7 +25,7 @@ const styles = theme => ({
     color:
       theme.palette.type === 'dark'
         ? theme.palette.primary.main
-        : theme.palette.primary.dark
+        : theme.palette.text
   },
   lightTitle: {
     color: theme.palette.common.white

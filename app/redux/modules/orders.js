@@ -3,6 +3,7 @@ import * as actionConstants from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
   orders: { data: [], pagination: { total: 0 } },
+  order: {},
   loading: false,
   error: ''
 });
@@ -19,6 +20,20 @@ export default (state = initialState, action = {}) => {
         mutableState.set('loading', false);
       });
     case actionConstants.GET_ORDERS_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error);
+        mutableState.set('loading', false);
+      });
+    case actionConstants.GET_ORDER_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', true);
+      });
+    case actionConstants.GET_ORDER_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('order', fromJS(action.data));
+        mutableState.set('loading', false);
+      });
+    case actionConstants.GET_ORDER_FAILED:
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error);
         mutableState.set('loading', false);

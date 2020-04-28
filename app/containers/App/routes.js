@@ -9,7 +9,7 @@ import {
   AvailableIntegrations,
   Channels,
   InstalledIntegrations,
-  AddIntegrationForm,
+  IntegrationForm,
   Workflows,
   AddWorkflow,
   EditWorkflow,
@@ -28,7 +28,7 @@ export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
 export const OrdersRoute = { link: '/orders', component: Orders };
 
 export const OrderDetailsRoute = {
-  link: '/orders/:number',
+  link: '/orders/:id',
   component: OrderDetails
 };
 
@@ -62,7 +62,7 @@ export const InstalledIntegrationsRoute = {
 
 export const AddIntegrationFormRoute = {
   link: '/integrations/add-integration',
-  component: AddIntegrationForm
+  component: IntegrationForm
 };
 
 export const WorkflowsRoute = { link: '/workflows', component: Workflows };
