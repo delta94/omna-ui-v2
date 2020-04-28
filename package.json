@@ -140,7 +140,7 @@
     "lodash": "^4.17.15",
     "material-table": "^1.50.0",
     "material-ui-pickers": "^2.1.1",
-    "minimist": "1.2.0",
+    "minimist": "^1.2.5",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "mui-datatables": "^2.14.0",
