@@ -119,13 +119,6 @@ class Utils {
     return new Utils().getURL();
   }
 
-  static getTenant() {
-    if (localStorage.getItem('currentTenant')) {
-      return JSON.parse(localStorage.getItem('currentTenant'));
-    }
-    return null;
-  }
-
   static setTenant(tenant) {
     localStorage.setItem('currentTenant', JSON.stringify(tenant));
   }
@@ -191,6 +184,13 @@ export const isOmnaShopify = () =>
   localStorage.getItem('currentTenant')
     ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
     : null;
+
+export const getTenant = () => {
+  if (localStorage.getItem('currentTenant')) {
+    return JSON.parse(localStorage.getItem('currentTenant'));
+  }
+  return null;
+};
 
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');

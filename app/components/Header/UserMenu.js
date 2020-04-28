@@ -7,9 +7,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { Link } from 'react-router-dom';
+import Utils, {getTenant} from 'dan-containers/Common/Utils';
 import dummy from 'dan-api/dummy/dummyContents';
 import styles from './header-jss';
-import Utils from '../../containers/Common/Utils';
 
 class UserMenu extends React.Component {
   state = {
@@ -41,7 +41,7 @@ class UserMenu extends React.Component {
 
   render() {
     const { anchorEl, openMenu } = this.state;
-    const user = Utils.getTenant() ? Utils.getTenant().user : null;
+    const user = getTenant() ? getTenant().user : null;
 
     return (
       <div>

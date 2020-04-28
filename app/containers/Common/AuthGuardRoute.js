@@ -8,7 +8,6 @@ const AuthGuardRoute = ({
 }) => {
   let code = null;
   let store = null;
-  // const tenant = Utils.getTenant();
   //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
   const isAuthenticated = Utils.isAuthenticated();
   if (location.search.includes('store')) {

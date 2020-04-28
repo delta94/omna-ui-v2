@@ -15,10 +15,10 @@ import Hidden from '@material-ui/core/Hidden';
 import Settings from '@material-ui/icons/SettingsApplications';
 import Warning from '@material-ui/icons/Warning';
 import Loading from 'dan-components/Loading';
-import { GET_TENANT_ID } from '../../../actions/actionConstants';
-import { setTenantStatus } from '../../../actions/TenantActions';
+import Utils, {getTenant} from 'dan-containers/Common/Utils';
+import { GET_TENANT_ID } from 'dan-actions/actionConstants';
+import { setTenantStatus } from 'dan-actions/TenantActions';
 import API from '../../Utils/api';
-import Utils from '../../Common/Utils';
 
 const styles = theme => ({
   container: {
@@ -72,7 +72,7 @@ class TenantConfiguration extends React.Component {
   updateTenant = (status) => {
     const { changeTenantStatus } = this.props;
     changeTenantStatus(status);
-    const tenant = Utils.getTenant();
+    const tenant = getTenant();
     if (tenant) {
       tenant.isReadyToOmna = status;
       Utils.setTenant(tenant);
