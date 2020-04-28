@@ -79,7 +79,7 @@ class OrderList extends Component {
 
   handleDetailsViewClick = order => {
     const { history } = this.props;
-    history.push(`/orders/${get(order, 'number', 0)}`, {
+    history.push(`/orders/${get(order, 'id', 0)}`, {
       order: { data: order }
     });
   };
@@ -106,8 +106,11 @@ class OrderList extends Component {
   };
 
   handleFilterChange = filterList => {
+    console.log(filterList);
+
     if (filterList) {
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
+      const mappedList = filterList.map(i => i.name);
+      this.setState({ serverSideFilterList: mappedList }, this.callAPI);
     } else {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -123,12 +126,11 @@ class OrderList extends Component {
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
     const { limit, page, serverSideFilterList, searchTerm } = this.state;
-    const pagination = orders.get('pagination');
-    const data = orders.get('data').toJS();
-    const count = pagination.get('total');
+    const { data, pagination } = orders.toJS();
+    const { total: count } = pagination;
 
-    const integrationFilterOptions = integrations.data
-      ? integrations.data.map(integration => integration.id)
+    const integrationFilterOptions = integrations.get('data')
+      ? integrations.get('data').map(integration => integration.id)
       : [];
 
     const columns = [
@@ -140,8 +142,8 @@ class OrderList extends Component {
         }
       },
       {
-        name: 'updated_date',
-        label: 'Date',
+        name: 'created_date',
+        label: 'Created at',
         options: {
           filter: false,
           customBodyRender: value => (

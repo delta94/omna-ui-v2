@@ -18,11 +18,16 @@ import Ionicon from 'react-ionicons';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import { getIntegrations, setLoading } from 'dan-actions/integrationActions';
+import {
+  deleteIntegration,
+  getIntegrations,
+  importResource,
+  setLoading
+} from 'dan-actions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
-import { getLogo, handleAuthorization } from 'dan-containers/Common/Utils';
+import { handleAuthorization } from 'dan-containers/Common/Utils';
 import AddIntegrationForm from './AddIntegrationForm';
 import Integration from './Integration';
 
@@ -56,16 +61,23 @@ class IntegrationList extends Component {
     alertDialog: {
       open: false,
       integrationId: '',
-      integrationName: '',
       message: ''
     },
     limit: 5,
     page: 0,
-    searchTerm: ''
+    searchTerm: '',
+    editableIntegration: null
   };
 
-  async componentDidMount() {
-    this.initializeDataTable();
+  componentDidMount() {
+    this.makeRequest();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { task, history } = this.props;
+    if (task !== prevProps.task) {
+      history.push(`tasks/${task.id}`);
+    }
   }
 
   handleAddIntegrationClick = () => {
@@ -104,19 +116,12 @@ class IntegrationList extends Component {
     this.setState({ alertDialog: false });
   };
 
-  handleDeleteIntegration = async () => {
-    const { enqueueSnackbar } = this.props;
+  handleDeleteIntegration = () => {
+    const { onDeleteIntegration, enqueueSnackbar } = this.props;
+    const { alertDialog } = this.state;
+
     try {
-      const { alertDialog } = this.state;
-      const response = await API.delete(
-        `/integrations/${alertDialog.integrationId}`
-      );
-      if (response && response.data.success) {
-        enqueueSnackbar('Integration deleted successfully', {
-          variant: 'success'
-        });
-      }
-      this.getIntegrations();
+      onDeleteIntegration(alertDialog.integrationId);
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -124,9 +129,18 @@ class IntegrationList extends Component {
     }
   };
 
-  handleDialogConfirm = async () => {
+  handleImportResource = (id, resource) => {
+    const { onImportResource, enqueueSnackbar } = this.props;
+    onImportResource({ id, resource, enqueueSnackbar });
+  };
+
+  handleDialogConfirm = () => {
     this.handleDeleteIntegration();
     this.setState({ alertDialog: false });
+  };
+
+  handleEditClick = editableIntegration => {
+    this.setState({ editableIntegration, openForm: true });
   };
 
   handleDeleteClick = (id, name) => {
@@ -134,15 +148,13 @@ class IntegrationList extends Component {
       alertDialog: {
         open: true,
         integrationId: id,
-        integrationName: name,
         message: `Are you sure you want to remove "${name}" integration?`
       }
     });
   };
 
   handleChangePage = (e, page) => {
-    this.setState({ page });
-    this.makeRequest();
+    this.setState({ page }, this.makeRequest());
   };
 
   makeRequest = () => {
@@ -174,23 +186,25 @@ class IntegrationList extends Component {
   };
 
   handleSearch = e => {
-    this.setState({ searchTerm: e.target.value }, this.makeRequest);
+    this.setState({ searchTerm: e.target.value }, this.makeRequest());
   };
-
-  initializeDataTable() {
-    this.makeRequest();
-  }
 
   render() {
     const { classes, history, integrations, loading } = this.props;
-    const { alertDialog, limit, openForm, page } = this.state;
-    const { pagination, data } = integrations;
+    const {
+      alertDialog,
+      editableIntegration,
+      limit,
+      openForm,
+      page
+    } = this.state;
+    const { pagination, data } = integrations.toJS();
     const count = get(pagination, 'total', 0);
 
     return (
       <div>
         <PageHeader title="Installed integrations" history={history} />
-        {loading ? <Loading /> : null}
+        {loading && <Loading />}
         <div>
           <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
             <div className={classes.actions}>
@@ -218,37 +232,32 @@ class IntegrationList extends Component {
           </Paper>
           <Grid container>
             {data &&
-              data.map(
-                ({
-                  id,
-                  name,
-                  channel,
-                  logo = getLogo(channel),
-                  authorized,
-                  channel_title: channelTitle
-                }) => (
-                  <Grid item md={3} xs={12}>
-                    <Integration
-                      key={id}
-                      name={name}
-                      group={channelTitle}
-                      logo={logo}
-                      channel={channel}
-                      authorized={authorized}
-                      onIntegrationAuthorized={() =>
-                        this.handleAuthorization(id)
-                      }
-                      onIntegrationUnauthorized={() =>
-                        this.handleUnAuthorization(id)
-                      }
-                      onIntegrationDeleted={() =>
-                        this.handleDeleteClick(id, name)
-                      }
-                      classes={classes}
-                    />
-                  </Grid>
-                )
-              )}
+              data.map(integration => (
+                <Grid item md={3} xs={12}>
+                  <Integration
+                    key={integration.id}
+                    name={integration.name}
+                    group={integration.channel_title}
+                    logo
+                    channel={integration.channel}
+                    authorized={integration.authorized}
+                    onAuthorizeIntegration={() =>
+                      this.handleAuthorization(integration.id)
+                    }
+                    onEditIntegration={() => this.handleEditClick(integration)}
+                    onUnauthorizeIntegration={() =>
+                      this.handleUnAuthorization(integration.id)
+                    }
+                    onDeleteIntegration={() =>
+                      this.handleDeleteClick(integration.id, integration.name)
+                    }
+                    onImportResource={resource =>
+                      this.handleImportResource(integration.id, resource)
+                    }
+                    classes={classes}
+                  />
+                </Grid>
+              ))}
           </Grid>
           <Table>
             <TableFooter>
@@ -276,7 +285,9 @@ class IntegrationList extends Component {
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
         />
+
         <AddIntegrationForm
+          editableIntegration={editableIntegration}
           classes={classes}
           handleClose={this.handleCloseForm}
           open={openForm}
@@ -289,20 +300,26 @@ class IntegrationList extends Component {
 IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  task: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
+  onDeleteIntegration: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
+  onImportResource: PropTypes.func.isRequired,
   onSetLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
-  integrations: state.getIn(['integration', 'integrations'])
+  integrations: state.getIn(['integration', 'integrations']),
+  task: state.getIn(['integration', 'task'])
 });
 
 const mapDispatchToProps = dispatch => ({
+  onDeleteIntegration: id => dispatch(deleteIntegration(id)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
+  onImportResource: query => dispatch(importResource(query)),
   onSetLoading: query => dispatch(setLoading(query))
 });
 

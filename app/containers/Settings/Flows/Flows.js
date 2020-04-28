@@ -37,7 +37,8 @@ class Flows extends Component {
     page: 0,
     serverSideFilterList: [],
     searchTerm: '',
-    anchorEl: null
+    anchorEl: null,
+    selectedItem: { id: 0, task: '', title: '' }
   };
 
   componentDidMount() {
@@ -49,6 +50,7 @@ class Flows extends Component {
   handleDeleteFlow = async () => {
     const { enqueueSnackbar } = this.props;
     const { alertDialog } = this.state;
+    this.handleClose();
 
     try {
       this.setState({ isLoading: true });
@@ -92,6 +94,8 @@ class Flows extends Component {
 
   handleStartFlow = async id => {
     const { enqueueSnackbar } = this.props;
+    this.handleClose();
+
     try {
       await API.get(`flows/${id}/start`);
       enqueueSnackbar('Workflow started successfully', {
@@ -111,6 +115,8 @@ class Flows extends Component {
 
   handleToggleScheduler = async id => {
     const { enqueueSnackbar } = this.props;
+    this.handleClose();
+
     try {
       this.setState({ isLoading: true });
       await API.post(`flows/${id}/toggle/scheduler/status`);
@@ -184,9 +190,10 @@ class Flows extends Component {
     }
   };
 
-  handleMenu = event => {
+  handleMenu = (event, id, task, title) => {
     this.setState({
-      anchorEl: event.currentTarget
+      anchorEl: event.currentTarget,
+      selectedItem: { id, task, title }
     });
   };
 
@@ -194,6 +201,45 @@ class Flows extends Component {
     this.setState({
       anchorEl: null
     });
+  };
+
+  renderActionsMenu = () => {
+    const { anchorEl, selectedItem } = this.state;
+    const { id, task, title } = selectedItem;
+
+    return (
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={this.handleClose}
+      >
+        <MenuItem onClick={() => this.handleStartFlow(id)}>
+          <ListItemIcon>
+            <Ionicon icon="md-play" />
+          </ListItemIcon>
+          Start
+        </MenuItem>
+        <MenuItem onClick={() => this.handleOnClickDeleteFlow(id, title)}>
+          <ListItemIcon>
+            <Ionicon icon="md-trash" />
+          </ListItemIcon>
+          Delete
+        </MenuItem>
+        <MenuItem onClick={() => this.handleToggleScheduler(id)}>
+          <ListItemIcon>
+            {task.scheduler && task.scheduler.active ? (
+              <Ionicon icon="ios-close-circle" />
+            ) : (
+              <Ionicon icon="ios-timer" />
+            )}
+          </ListItemIcon>
+          {task.scheduler && task.scheduler.active
+            ? 'Disable scheduler'
+            : 'Enable scheduler'}
+        </MenuItem>
+      </Menu>
+    );
   };
 
   render() {
@@ -205,13 +251,12 @@ class Flows extends Component {
       isLoading,
       page,
       searchTerm,
-      serverSideFilterList,
-      anchorEl
+      serverSideFilterList
     } = this.state;
     const pagination = flows.get('pagination');
     const data = flows.get('data').toJS();
     const count = get(pagination, 'total', 0);
-    
+
     const columns = [
       {
         name: 'id',
@@ -272,59 +317,16 @@ class Flows extends Component {
         options: {
           filter: false,
           sort: false,
-          empty: true,
           customBodyRender: (value, tableMeta) => {
-            const [id, title, task = { scheduler: '' }] = tableMeta.rowData
-              ? tableMeta.rowData
-              : [];
+            const id = tableMeta.rowData[0];
+            const title = tableMeta.rowData[1];
+            const task = tableMeta.rowData[3];
 
             return (
               <div>
-                <IconButton onClick={this.handleMenu}>
+                <IconButton onClick={e => this.handleMenu(e, id, task, title)}>
                   <MoreVertIcon />
                 </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={this.handleClose}
-                >
-                  <MenuItem onClick={() => this.handleStartFlow(id)}>
-                    <ListItemIcon>
-                      <Ionicon icon="md-play" />
-                    </ListItemIcon>
-                    Start
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => this.handleOnClickDeleteFlow(id, title)}
-                  >
-                    <ListItemIcon>
-                      <Ionicon icon="md-trash" />
-                    </ListItemIcon>
-                    Delete
-                  </MenuItem>
-                  <MenuItem onClick={() => this.handleToggleScheduler(id)}>
-                    <ListItemIcon>
-                      {task.scheduler && task.scheduler.active ? (
-                        <Ionicon icon="ios-close-circle" />
-                      ) : (
-                        <Ionicon icon="ios-timer" />
-                      )}
-                    </ListItemIcon>
-                    {task.scheduler && task.scheduler.active
-                      ? 'Disable scheduler'
-                      : 'Enable scheduler'}
-                  </MenuItem>
-                </Menu>
-                {/* <Tooltip title="edit">
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => this.handleEditFlow(id)}
-                  >
-                    <Ionicon icon="md-create" />
-                  </IconButton>
-                </Tooltip> */}
               </div>
             );
           }
@@ -416,6 +418,8 @@ class Flows extends Component {
             <MUIDataTable columns={columns} data={data} options={options} />
           )}
         </div>
+
+        {this.renderActionsMenu()}
 
         <AlertDialog
           open={alertDialog.open}

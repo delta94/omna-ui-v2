@@ -1,20 +1,19 @@
 import axios from 'axios';
 import { sha256 } from 'js-sha256';
 import get from 'lodash/get';
-import { getTenant } from 'dan-containers/Common/Utils';
+import Utils from '../Common/Utils';
 
 function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
-  const currentTenant = getTenant();
-  if (config.method === 'post' || config.method === 'delete') {
+  const currentTenant = Utils.getTenant();
+  if (config.data) {
     if (config.url !== 'get_access_token') {
       data.token = currentTenant.token;
       data.timestamp = Date.now();
 
-      const msg =
-        config.url +
-        JSON.stringify(data)
+      const msg = config.url
+        + JSON.stringify(data)
           .replace(/["']/g, '')
           .split('')
           .sort()
@@ -30,9 +29,8 @@ function setParams(config) {
 
   // Join the service path and the ordered sequence of characters, excluding the quotes,
   // corresponding to the JSON of the parameters that will be sent.
-  const msg =
-    config.url +
-    JSON.stringify(params)
+  const msg = config.url
+    + JSON.stringify(params)
       .replace(/["']/g, '')
       .split('')
       .sort()

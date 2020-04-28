@@ -106,8 +106,8 @@ export const InstalledIntegrations = loadable(() => import('./Integrations/Integ
   fallback: <Loading />
 });
 
-export const AddIntegrationForm = loadable(
-  () => import('./Integrations/AddIntegrationForm'),
+export const IntegrationForm = loadable(
+  () => import('./Integrations/IntegrationForm'),
   {
     fallback: <Loading />
   }

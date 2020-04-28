@@ -4,6 +4,7 @@ import * as actionConstants from 'dan-actions/actionConstants';
 const initialState = fromJS({
   integrations: { data: [], pagination: {} },
   channels: { data: [], pagination: {} },
+  task: null,
   loading: false,
   error: ''
 });
@@ -16,13 +17,49 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.GET_INTEGRATIONS_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('integrations', action.data);
-        mutableState.set('loading', false);
+        mutableState
+          .set('integrations', fromJS(action.data))
+          .set('loading', false);
       });
     case actionConstants.GET_INTEGRATIONS_FAILED:
       return state.withMutations(mutableState => {
-        mutableState.set('error', action.error);
-        mutableState.set('loading', false);
+        mutableState.set('error', action.error).set('loading', false);
+      });
+    case actionConstants.UPDATE_INTEGRATION_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', true);
+      });
+    case actionConstants.UPDATE_INTEGRATION_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState
+          .updateIn(['integrations', 'data'], (data, index) =>
+            data.set(index, action.data)
+          )
+          .set('loading', false);
+      });
+    case actionConstants.UPDATE_INTEGRATION_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error).set('loading', false);
+      });
+    case actionConstants.DELETE_INTEGRATION_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', true);
+      });
+    case actionConstants.DELETE_INTEGRATION_SUCCESS:
+      return state.withMutations(mutableState => {
+        const dataFiltered = mutableState
+          .getIn(['integrations', 'data'])
+          .filter(
+            integration => integration.get('id') !== action.integrationId
+          );
+
+        mutableState
+          .setIn(['integrations', 'data'], dataFiltered)
+          .set('loading', false);
+      });
+    case actionConstants.DELETE_INTEGRATION_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error).set('loading', false);
       });
     case actionConstants.GET_CHANNELS_START:
       return state.withMutations(mutableState => {
@@ -30,17 +67,19 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.GET_CHANNELS_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('channels', action.data);
-        mutableState.set('loading', false);
+        mutableState.set('channels', action.data).set('loading', false);
       });
     case actionConstants.GET_CHANNELS_FAILED:
       return state.withMutations(mutableState => {
-        mutableState.set('error', action.error);
-        mutableState.set('loading', false);
+        mutableState.set('error', action.error).set('loading', false);
+      });
+    case actionConstants.IMPORT_RESOURCE:
+      return state.withMutations(mutableState => {
+        mutableState.set('task', action.data);
       });
     case actionConstants.SET_LOADING:
       return state.withMutations(mutableState => {
-        mutableState.set('error', action.loading);
+        mutableState.set('loading', action.loading);
       });
     default:
       return state;

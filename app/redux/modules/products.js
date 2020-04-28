@@ -2,17 +2,12 @@ import { fromJS, List } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
-  product: null,
-  name: '',
-  description: '',
-  price: null,
-  variants: null,
-  integrations: [],
-  properties: [],
+  products: { data: [], pagination: {} },
   productVariants: [],
-  loadingState: false,
+  loading: false,
   disabledForm: false,
-
+  deleted: false,
+  task: null
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -23,31 +18,31 @@ export default function integrationsReducer(state = initialState, action) {
       });
     case 'GET_PRODUCT_VARIANTS_ASYNC_LOADING':
       return state.withMutations((mutableState) => {
-        mutableState.set('loadingState', action.loading);
+        mutableState.set('loading', action.loading);
       });
-    case types.SET_PRODUCT:
+    case types.GET_PRODUCTS:
       return state.withMutations((mutableState) => {
-        mutableState.set('product', action.product);
+        mutableState.set('products', action.data);
       });
-    case types.SET_PRODUCT_NAME:
+    case types.LINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('name', action.name);
+        mutableState.set('task', action.data);
       });
-    case types.SET_PRODUCT_DESCRIPTION:
+    case types.UNLINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('description', action.description);
+        mutableState.set('task', action.data);
       });
-    case types.SET_PRODUCT_PRICE:
+    case types.DELETE_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('price', action.price);
+        mutableState.set('deleted', action.data);
       });
-    case types.SET_PRODUCT_INTEGRATIONS:
+    case types.RESET_DELETE_PRODUCT_FLAG:
       return state.withMutations((mutableState) => {
-        mutableState.set('integrations', action.integrations);
+        mutableState.set('deleted', false);
       });
-    case types.SET_PRODUCT_PROPERTIES:
+    case types.SET_LOADING:
       return state.withMutations((mutableState) => {
-        mutableState.set('properties', action.properties);
+        mutableState.set('loading', action.loading);
       });
     default:
       return state;
