@@ -8,9 +8,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 import Alert from 'dan-components/Notification/Alert';
+import AlertDialog from 'dan-containers/Common/AlertDialog';
 import FormBuilder from './FormBuilder';
 import styles from './product-jss';
-import AlertDialog from '../Common/AlertDialog';
 
 const UNSAVED_CHANGES = 'You have unsaved changes. Are you sure you want to move to the next integration?';
 

@@ -13,7 +13,6 @@ import TextField from '@material-ui/core/TextField';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-// import styles from 'dan-components/Product/product-jss';
 import RichEditor from './RichEditor';
 import styles from './product-jss';
 

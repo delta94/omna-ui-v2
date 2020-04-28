@@ -11,11 +11,11 @@ import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Loading from 'dan-components/Loading';
 
 import { getProductVariantList } from 'dan-actions/productActions';
-import API from '../Utils/api';
-import PageHeader from '../Common/PageHeader';
-import ProductForm from './ProductForm';
-import styles from './product-jss';
-import AlertDialog from '../Common/AlertDialog';
+import API from 'dan-containers/Utils/api';
+import PageHeader from 'dan-containers/Common/PageHeader';
+import ProductForm from 'dan-components/Products/ProductForm';
+import styles from 'dan-components/Products/product-jss';
+import AlertDialog from 'dan-containers/Common/AlertDialog';
 
 function EditProduct(props) {
   const { match, productVariants, updateProductVariants, history, enqueueSnackbar } = props;
@@ -148,7 +148,7 @@ function EditProduct(props) {
 EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  productVariants: PropTypes.array.isRequired,
+  productVariants: PropTypes.any.isRequired,
   updateProductVariants: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };

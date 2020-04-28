@@ -52,7 +52,7 @@ const styles = theme => ({
     boxShadow: theme.shadows[2],
     background: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,
-    margin: `${theme.spacing.unit * 2}px 0`
+    margin: `${theme.spacing(2)}px 0`
   },
   addBtn: {
     position: 'fixed',
@@ -64,7 +64,7 @@ const styles = theme => ({
     zIndex: 120
   },
   search: {
-    width: theme.spacing.unit * 9,
+    width: theme.spacing(9),
     height: '100%',
     position: 'absolute',
     pointerEvents: 'none',
@@ -74,7 +74,7 @@ const styles = theme => ({
   },
   input: {
     font: 'inherit',
-    padding: `${theme.spacing.unit}px ${theme.spacing.unit}px ${theme.spacing.unit}px ${theme.spacing.unit * 9}px`,
+    padding: `${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(9)}px`,
     border: 0,
     display: 'block',
     verticalAlign: 'middle',
@@ -118,18 +118,18 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     zIndex: 120,
-    marginBottom: theme.spacing.unit * 8,
-    marginTop: theme.spacing.unit * 8,
+    marginBottom: theme.spacing(8),
+    marginTop: theme.spacing(8),
     padding: theme.spacing.unit,
     [theme.breakpoints.up('md')]: {
-      padding: theme.spacing.unit * 3,
-      marginBottom: theme.spacing.unit * 4,
+      padding: theme.spacing(3),
+      marginBottom: theme.spacing(4),
     },
     position: 'relative',
     minWidth: 0, // So the Typography noWrap works
   },
   toolbar: {
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 4}px`
+    padding: `${theme.spacing(2)}px ${theme.spacing(4)}px`
   },
   title: {
     width: 205
@@ -163,7 +163,7 @@ const styles = theme => ({
   details: {
     alignItems: 'center',
     [theme.breakpoints.down('sm')]: {
-      padding: `${theme.spacing.unit}px ${theme.spacing.unit}px ${theme.spacing.unit * 3}px`
+      padding: `${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(3)}px`
     },
     '& section': {
       width: '100%'
@@ -177,7 +177,7 @@ const styles = theme => ({
     },
   },
   avatar: {},
-  fromHeading: {
+  heading: {
     flexBasis: '30%',
     overflow: 'hidden',
     display: 'flex',
@@ -238,7 +238,7 @@ const styles = theme => ({
       marginRight: 5
     }
   },
-  emailSummary: {
+  variantSummary: {
     padding: 0,
     '& > div': {
       [theme.breakpoints.down('sm')]: {
@@ -248,9 +248,9 @@ const styles = theme => ({
   },
   emailContent: {
     color: theme.palette.text.primary,
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 2}px`,
+      padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
     },
   },
   starBtn: {
@@ -289,7 +289,7 @@ const styles = theme => ({
     resize: 'none',
     height: 305,
     border: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing.unit / 2
+    padding: theme.spacing(1) / 2
   }
 });
 

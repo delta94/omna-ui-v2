@@ -1,14 +1,12 @@
 import React, { useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-import styles from './product-jss';
+import FormActions from 'dan-containers/Common/FormActions';
 import Properties from './Properties';
 import Variants from './Variants';
 import ProductInfo from './ProductInfo';
-import FormActions from '../Common/FormActions';
 
 function ProductForm(props) {
   const {
@@ -66,7 +64,7 @@ ProductForm.propTypes = {
   price: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
   variants: PropTypes.number,
-  variantList: PropTypes.array,
+  variantList: PropTypes.any,
   images: PropTypes.array,
   integrations: PropTypes.array,
   selectedIntegration: PropTypes.object,
@@ -88,4 +86,4 @@ ProductForm.defaultProps = {
   onCancelClick: () => {},
 };
 
-export default withStyles(styles)(ProductForm);
+export default ProductForm;

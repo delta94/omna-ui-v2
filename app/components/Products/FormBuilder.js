@@ -12,10 +12,9 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import AsyncSearch from 'dan-components/AsyncSearch';
-// import API from './Utils/api';
+import API from 'dan-containers/Utils/api';
+import Utils from 'dan-containers/Common/Utils';
 import RichEditor from './RichEditor';
-import API from '../Utils/api';
-import Utils from '../Common/Utils';
 
 const styles = (theme) => ({
   inputWidth: {
@@ -247,15 +246,16 @@ FormBuilder.propTypes = {
   onChange: PropTypes.func.isRequired
 };
 
-MuiSelect.defaultProps = {
+MuiTextField.defaultProps = {
   value: '',
+  placeholder: ''
 };
 
 MuiTextField.propTypes = {
   id: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  value: PropTypes.any,
-  placeholder: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  placeholder: PropTypes.string,
   required: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   read_only: PropTypes.bool.isRequired,
@@ -281,12 +281,13 @@ MuiSelect.propTypes = {
 };
 
 MuiMultiSelect.defaultProps = {
-  placeholder: ''
+  placeholder: '',
+  /* value: [] */
 };
 
 MuiMultiSelect.propTypes = {
   id: PropTypes.string.isRequired,
-  /* value: PropTypes.string, */
+  /* value: PropTypes.array, */
   label: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.bool.isRequired,
