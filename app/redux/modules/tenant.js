@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
+import * as types from 'dan-actions/actionConstants';
 import { getTenant } from 'dan-containers/Common/Utils';
-import * as types from '../../actions/actionConstants';
 
 const initialState = fromJS({
   isReadyToOmna: getTenant() ? getTenant().isReadyToOmna : false,

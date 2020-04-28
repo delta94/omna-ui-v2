@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { Link } from 'react-router-dom';
+import Utils, {getTenant} from 'dan-containers/Common/Utils';
 import dummy from 'dan-api/dummy/dummyContents';
 import { getTenant, logout } from 'dan-containers/Common/Utils';
 import styles from './header-jss';

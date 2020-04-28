@@ -38,7 +38,8 @@ class OrderList extends Component {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
-    searchTerm: ''
+    searchTerm: '',
+    filtering: false
   };
 
   componentDidMount() {
@@ -57,7 +58,7 @@ class OrderList extends Component {
       offset: page * limit,
       limit,
       term: searchTerm || '',
-      integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
+      integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
     };
 
     onGetIntegrations({ limit: 100, offset: 0 });
@@ -106,18 +107,23 @@ class OrderList extends Component {
   };
 
   handleFilterChange = filterList => {
-    console.log(filterList);
-
     if (filterList) {
-      const mappedList = filterList.map(i => i.name);
-      this.setState({ serverSideFilterList: mappedList }, this.callAPI);
+      this.setState(
+        { filtering: true, serverSideFilterList: filterList },
+        this.callAPI
+      );
     } else {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
+      this.setState(
+        { filtering: true, serverSideFilterList: [] },
+        this.callAPI
+      );
     }
   };
 
   handleResetFilters = () => {
     const { serverSideFilterList } = this.state;
+    this.setState({ filtering: true });
+
     if (serverSideFilterList.length > 0) {
       this.setState({ serverSideFilterList: [] }, this.callAPI);
     }
@@ -125,12 +131,21 @@ class OrderList extends Component {
 
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
-    const { limit, page, serverSideFilterList, searchTerm } = this.state;
+    const {
+      filtering,
+      limit,
+      page,
+      serverSideFilterList,
+      searchTerm
+    } = this.state;
     const { data, pagination } = orders.toJS();
     const { total: count } = pagination;
 
     const integrationFilterOptions = integrations.get('data')
-      ? integrations.get('data').map(integration => integration.id)
+      ? integrations
+          .get('data')
+          .toJS()
+          .map(integration => integration.id)
       : [];
 
     const columns = [
@@ -186,15 +201,17 @@ class OrderList extends Component {
       },
       {
         name: 'integration',
-        label: 'Integration',
+        label: 'Channel / Integration',
         options: {
           sort: true,
           filterType: 'dropdown',
-          filterList: serverSideFilterList[4],
+          filterList: serverSideFilterList[5],
           filterOptions: {
             names: integrationFilterOptions
           },
-          customBodyRender: value => <div>{value ? value.name : ''}</div>
+          customBodyRender: value => (
+            <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
+          )
         }
       },
       {
@@ -277,7 +294,7 @@ class OrderList extends Component {
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
           {loading ? (
-            <Loading />
+            <Loading fullPage={!filtering} text={filtering && 'Filtering'} />
           ) : (
             <MUIDataTable columns={columns} data={data} options={options} />
           )}

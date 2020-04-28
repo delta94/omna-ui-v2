@@ -6,7 +6,6 @@ import { baseApiUrl, baseAppUrl, isAuthenticated } from './Utils';
 const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
   let code = null;
   let store = null;
-  // const tenant = getTenant();
   //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
   // const isAuthenticated = isAuthenticated();
   if (location.search.includes('store')) {
