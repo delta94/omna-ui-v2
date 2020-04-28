@@ -90,15 +90,6 @@ class Utils {
     return queryString;
   }
 
-  static logout() {
-    if (localStorage.getItem('currentTenant')) {
-      localStorage.removeItem('currentTenant');
-    }
-    window.location.replace(
-      `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
-    );
-  }
-
   static handleAuthorization(path) {
     window.open(
       `${this.baseAPIURL()}/${path}?redirect_uri=${this.returnAfterAuthorization()}&${this.getHeaders(
@@ -236,27 +227,25 @@ export const handleAuthorization = path => {
   );
 };
 
+export const isAuthenticated = () => localStorage.getItem('currentTenant');
+
+export const currentTenant = localStorage.getItem('currentTenant')
+  ? JSON.parse(localStorage.getItem('currentTenant'))
+  : null;
+
 export const logout = () => {
-  if (localStorage.getItem('currentTenant')) {
+  if (currentTenant) {
     localStorage.removeItem('currentTenant');
   }
-
-  window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl()}`);
+  window.location.replace(
+    `${this.baseAPIURL()}/sign_out?redirect_uri=${new Utils().getURL()}`
+  );
 };
-
-export const isAuthenticated = () => localStorage.getItem('currentTenant');
 
 export const isOmnaShopify = () =>
   localStorage.getItem('currentTenant')
     ? JSON.parse(localStorage.getItem('currentTenant')).shop
     : null;
-
-export const getTenant = () => {
-  if (localStorage.getItem('currentTenant')) {
-    return JSON.parse(localStorage.getItem('currentTenant'));
-  }
-  return null;
-};
 
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');

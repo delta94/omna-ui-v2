@@ -1,15 +1,15 @@
 import { fromJS } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
-import { getTenant } from 'dan-containers/Common/Utils';
+import { currentTenant } from 'dan-containers/Common/Utils';
 
 const initialState = fromJS({
-  isReadyToOmna: getTenant() ? getTenant().isReadyToOmna : false,
-  tenantId: getTenant() ? getTenant().tenantId : '',
-  tenantName: getTenant() ? getTenant().name : '',
+  isReadyToOmna: currentTenant ? currentTenant.isReadyToOmna : false,
+  tenantId: currentTenant ? currentTenant.tenantId : '',
+  tenantName: currentTenant ? currentTenant.name : '',
   reloadTenants: false,
   reloadLandingPage: false,
   deactivationDate: null,
-  enabled: getTenant() ? getTenant().enabled : false
+  enabled: currentTenant ? currentTenant.enabled : false
 });
 
 export default function tenantReducer(state = initialState, action) {

@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { sha256 } from 'js-sha256';
 import get from 'lodash/get';
-import { getTenant } from 'dan-containers/Common/Utils';
+import { currentTenant } from 'dan-containers/Common/Utils';
 
 function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
-  const currentTenant = getTenant();
+
   if (config.data) {
     if (config.url !== 'get_access_token') {
       data.token = currentTenant.token;
