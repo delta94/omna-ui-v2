@@ -17,6 +17,13 @@ import ProductForm from 'dan-components/Products/ProductForm';
 import styles from 'dan-components/Products/product-jss';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 
+export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
+  if(name) {
+    return `The product will be edited under "${name}" integration`;
+  }
+  return 'Are you sure you want to edit the product?';
+}
+
 function EditProduct(props) {
   const { match, productVariants, updateProductVariants, history, enqueueSnackbar } = props;
   const [id, setId] = useState('');
@@ -137,7 +144,7 @@ function EditProduct(props) {
       )}
       <AlertDialog
         open={openDialog}
-        message={`The product will be edited under "${selectedIntegration ? selectedIntegration.name : ''}" integration`}
+        message={EDIT_PRODUCT_CONFIRM`${selectedIntegration ? selectedIntegration.name : ''}`}
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />
