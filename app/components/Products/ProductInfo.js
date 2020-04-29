@@ -31,6 +31,8 @@ function NumberFormatCustom(props) {
         });
       }}
       thousandSeparator
+      fixedDecimalScale
+      decimalScale={2}
       prefix="$"
     />
   );
