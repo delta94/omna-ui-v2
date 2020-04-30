@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Utils from '../../Common/Utils';
+import { setTenant } from 'dan-containers/Common/Utils';
 
 const ShopifyService = {
   async getSettingsInfo(props) {
@@ -20,12 +20,11 @@ const ShopifyService = {
       if (response) {
         console.log(response);
         const { data } = response.data;
-        Utils.setTenant(data);
+        setTenant(data);
         changeTenantStatus(data.isReadyToOmna);
         changeTenantId(data.tenantId);
         changeTenantName(data.name);
         changeEnabledTenant(data.enabled);
-
       }
     } catch (error) {
       console.log(error);
@@ -82,7 +81,6 @@ const ShopifyService = {
   },
 
   async CancelPlan(planId, store) {
-
     try {
       const response = await axios.get(
         `https://cenit.io/app/omna-dev/plan?task=cancel&plan_id=${planId}&shop=${store}`
@@ -99,7 +97,7 @@ const ShopifyService = {
     return null;
   },
 
-  async getClientSettings(){
+  async getClientSettings() {
     try {
       const response = await axios.get(
         `https://cenit.io/app/omna-dev/client_settings`
@@ -112,7 +110,6 @@ const ShopifyService = {
     }
     return [];
   }
-
 };
 
 export default ShopifyService;

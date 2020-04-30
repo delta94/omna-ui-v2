@@ -27,7 +27,7 @@ import {
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
-import Utils from 'dan-containers/Common/Utils';
+import { handleAuthorization } from 'dan-containers/Common/Utils';
 import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 
@@ -87,7 +87,7 @@ class IntegrationList extends Component {
 
   handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAuthorization(path);
+    handleAuthorization(path);
   };
 
   handleUnAuthorization = id => {

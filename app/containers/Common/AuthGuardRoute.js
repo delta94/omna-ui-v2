@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import Utils from './Utils';
+import { baseApiUrl, baseAppUrl, isAuthenticated } from './Utils';
 
-const AuthGuardRoute = ({
-  component: Component, location, path, ...rest
-}) => {
+const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
   let code = null;
   let store = null;
   //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
-  const isAuthenticated = Utils.isAuthenticated();
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
@@ -39,21 +36,22 @@ const AuthGuardRoute = ({
   return (
     <Route
       {...rest}
-      render={props => (isAuthenticated ? (
-        <Component {...props} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: '/lock-screen',
-            state: {
-              redirect: `${Utils.baseAPIURL()}/sign_in?redirect_uri=${Utils.baseAppUrl()}${path}`,
-              code,
-              path,
-              store
-            }
-          }}
-        />
-      ))
+      render={props =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/lock-screen',
+              state: {
+                redirect: `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`,
+                code,
+                path,
+                store
+              }
+            }}
+          />
+        )
       }
     />
   );

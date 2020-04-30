@@ -14,11 +14,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Loading from 'dan-components/Loading';
 import API from '../Utils/api';
 import AlertDialog from '../Common/AlertDialog';
-import Utils from '../Common/Utils';
+import { variantIcon } from '../Common/Utils';
 import Status from './Status';
 import PageHeader from '../Common/PageHeader';
-
-const variantIcon = Utils.iconVariants();
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);

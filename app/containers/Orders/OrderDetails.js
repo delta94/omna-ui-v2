@@ -15,7 +15,7 @@ import Button from '@material-ui/core/Button';
 import { getOrder } from 'dan-actions';
 import api from '../Utils/api';
 import LoadingState from '../Common/LoadingState';
-import Utils from '../Common/Utils';
+import { variantIcon } from '../Common/Utils';
 import OrderPayment from './detail/OrderPayment';
 import OrderCustomer from './detail/OrderCustomer';
 import OrderIntegration from './detail/OrderIntegration';
@@ -23,8 +23,6 @@ import OrderItems from './detail/OrderItems';
 import DocumentTypesDialog from './DocumentTypesDialog';
 import PageHeader from '../Common/PageHeader';
 import styles from './order-details-jss';
-
-const variantIcon = Utils.iconVariants();
 
 class OrderDetails extends Component {
   state = {

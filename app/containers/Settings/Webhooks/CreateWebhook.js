@@ -4,17 +4,11 @@ import Paper from '@material-ui/core/Paper';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import Ionicon from 'react-ionicons';
-
-/* material-ui */
-// core
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-// our
-import LoadingState from '../../Common/LoadingState';
-import GenericErrorMessage from '../../Common/GenericErrorMessage';
-import Utils from '../../Common/Utils';
-
-const variantIcon = Utils.iconVariants();
+import LoadingState from 'dan-containers/Common/LoadingState';
+import GenericErrorMessage from 'dan-containers/Common/GenericErrorMessage';
+import { variantIcon } from 'dan-containers/Common/Utils';
 
 const styles = () => ({
   table: {
@@ -22,7 +16,6 @@ const styles = () => ({
   }
 });
 
-/* ======= Principal Class ======= */
 class CreateWebhook extends React.Component {
   state = {
     loading: true,

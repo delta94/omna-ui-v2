@@ -16,7 +16,12 @@ import {
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
 import API from 'dan-containers/Utils/api';
-import Utils, { currentTenant } from 'dan-containers/Common/Utils';
+import {
+  currentTenant,
+  isTenantEnabled,
+  getDeactivationDate,
+  setTenant
+} from 'dan-containers/Common/Utils';
 // import { GET_TENANT_ID } from '../../actions/actionConstants';
 import {
   setTenantStatus,
@@ -69,14 +74,14 @@ const TenantMenu = props => {
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
     const { onPushNotification, onInstall, enqueueSnackbar } = props;
-    const isEnabled = Utils.isTenantEnabled(deactivationDate);
+    const isEnabled = isTenantEnabled(deactivationDate);
     const subscribeNotif = {
       message: SUBSCRIBE_INFO`${tenantName}`,
       variant: 'error',
       action: subscribeAction
     };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
-    const deactivation = Utils.getDeactivationDate(deactivationDate);
+    const deactivation = getDeactivationDate(deactivationDate);
     const deactivationNotif = {
       message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`,
       variant: 'info',
@@ -189,8 +194,8 @@ const TenantMenu = props => {
       tenant.secret = secret;
       tenant.isReadyToOmna = isReadyToOmna;
       tenant.tenantId = id;
-      tenant.enabled = Utils.isTenantEnabled(deactivation);
-      Utils.setTenant(tenant);
+      tenant.enabled = isTenantEnabled(deactivation);
+      setTenant(tenant);
       changeTenantStatus(isReadyToOmna);
       changeTenantId(id);
       changeDeactivationDate(deactivation);

@@ -10,7 +10,7 @@ import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import { getOrders } from 'dan-actions/orderActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
-import Utils from '../Common/Utils';
+import { getCurrencySymbol } from '../Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
 
@@ -192,7 +192,7 @@ class OrderList extends Component {
 
             return (
               <div>
-                {`${Utils.getCurrencySymbol(currency)}
+                {`${getCurrencySymbol(currency)}
                   ${parseFloat(value).toFixed(2)} ${currency}`}
               </div>
             );

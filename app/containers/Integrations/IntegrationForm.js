@@ -15,7 +15,7 @@ import {
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
-import Utils from 'dan-containers/Common/Utils';
+import { handleAuthorization } from 'dan-containers/Common/Utils';
 import { getChannels, updateIntegration } from 'dan-actions/integrationActions';
 
 const styles = () => ({
@@ -104,7 +104,7 @@ class IntegrationForm extends Component {
 
   handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
-    Utils.handleAuthorization(path);
+    handleAuthorization(path);
   };
 
   handleClose = () => {
