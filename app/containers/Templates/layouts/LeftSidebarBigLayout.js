@@ -44,7 +44,7 @@ class LeftSidebarBigLayout extends React.Component {
           openGuide={handleOpenGuide}
         />
         <SidebarBig
-          dataMenu={isOmnaShopify() ? shopifyMenu : dataMenu}
+          dataMenu={isOmnaShopify ? shopifyMenu : dataMenu}
           loadTransition={loadTransition}
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}

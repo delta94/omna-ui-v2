@@ -242,10 +242,9 @@ export const logout = () => {
   );
 };
 
-export const isOmnaShopify = () =>
-  localStorage.getItem('currentTenant')
-    ? JSON.parse(localStorage.getItem('currentTenant')).fromShopifyApp
-    : null;
+export const isOmnaShopify = currentTenant
+  ? currentTenant.fromShopifyApp
+  : null;
 
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');

@@ -50,7 +50,7 @@ class LeftSidebarLayout extends React.Component {
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}
           loadTransition={loadTransition}
-          dataMenu={isOmnaShopify() ? shopifyMenu : dataMenu}
+          dataMenu={isOmnaShopify ? shopifyMenu : dataMenu}
           leftSidebar
         />
         <main

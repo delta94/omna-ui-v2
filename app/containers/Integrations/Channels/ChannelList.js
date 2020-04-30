@@ -17,7 +17,7 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
-import Integration from '../Integration';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import IntegrationForm from '../IntegrationForm';
 
 const styles = theme => ({
@@ -118,7 +118,7 @@ class ChannelList extends Component {
           <Grid container spacing={2}>
             {data &&
               data.map(chan =>
-                isOmnaShopify()
+                isOmnaShopify
                   ? !chan.name.includes('Shopify') &&
                     this.renderIntegrationItem(chan, classes)
                   : this.renderIntegrationItem(chan, classes)
@@ -179,9 +179,7 @@ const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query))
 });
 
-const ChannelsMapped = withSnackbar(
-  withStyles(styles)(ChannelList)
-);
+const ChannelsMapped = withSnackbar(withStyles(styles)(ChannelList));
 
 export default connect(
   mapStateToProps,
