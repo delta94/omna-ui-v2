@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useCallback, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
@@ -16,22 +16,36 @@ function ProductForm(props) {
 
   const [dirtyProps, setDirtyProps] = useState(false);
 
-  const handleNameChange = (value) => props.onNameChange(value);
+  const handleNameChange = useCallback((e) => {
+    props.onNameChange(e);
+  }, []);
 
-  const handlePriceChange = (value) => props.onPriceChange(value);
+  const handlePriceChange = useCallback((e) => {
+    props.onPriceChange(e)
+  }, []);
 
-  const handleDescriptionChange = (value) => props.onDescriptionChange(value);
+  const handleDescriptionChange = useCallback((e) => {
+    props.onDescriptionChange(e)
+  },[]);
+
+  const handleDirtyProps = useCallback((e) => {
+    setDirtyProps(e);
+  }, [setDirtyProps]);
+
+  const handleIntegrationChange = useCallback((e) => {
+    onIntegrationChange(e);
+  }, []);
 
   const onSubmitForm = (e) => {
     e.preventDefault();
-    setDirtyProps(false);
+    handleDirtyProps(false);
     props.onSubmitForm();
   };
 
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmitForm}>
       <ProductInfo
-        thumbnail={images.length !== 0 ? images : ['/images/image_placeholder.png']}
+        thumbnail={images}
         name={name}
         price={price}
         description={description}
@@ -45,8 +59,8 @@ function ProductForm(props) {
           <Properties
             tabList={integrations}
             dirtyProps={dirtyProps}
-            onChangeProps={(e) => setDirtyProps(e)}
-            onTabChange={(e) => onIntegrationChange(e)}
+            onChangeProps={handleDirtyProps}
+            onTabChange={handleIntegrationChange}
           />
           <Variants
             variantList={variantList}
@@ -57,7 +71,7 @@ function ProductForm(props) {
       <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
     </form>
   );
-}
+};
 
 ProductForm.propTypes = {
   name: PropTypes.string.isRequired,

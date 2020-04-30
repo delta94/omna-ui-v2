@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
@@ -22,6 +22,7 @@ const VariantDetails = (params) => {
     const { properties, errors } = integration ? integration.variant : null;
     return (
       <Fragment>
+        {console.log('variantDetails')}
         {properties && !errors && <FormBuilder properties={properties} onChange={onPropertyChange} />}
         {errors && <Alert variant="error" message={errors} />}
       </Fragment>
@@ -30,7 +31,7 @@ const VariantDetails = (params) => {
   return <Alert variant="error" message="There is something wrong at showing properties" />
 };
 
-function Variants(props) {
+const Variants = memo((props) => {
   const { variantList, selectedIntegration, classes } = props;
 
   const emptyList = variantList && (variantList.lenght === 0 || variantList.size === 0);
@@ -80,7 +81,7 @@ function Variants(props) {
       ))}
     </Fragment>
   );
-}
+});
 
 Variants.propTypes = {
   variantList: PropTypes.any,
