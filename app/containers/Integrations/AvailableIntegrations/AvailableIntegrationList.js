@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  withStyles, createMuiTheme, MuiThemeProvider, Tooltip
+  withStyles,
+  createMuiTheme,
+  MuiThemeProvider,
+  Tooltip
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import moment from 'moment';
@@ -11,9 +14,13 @@ import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
+import * as Utils from 'dan-containers/Common/Utils';
+import {
+  setAvailableIntegrationList,
+  installAvailableIntegration,
+  uninstallAvailableIntegration
+} from 'dan-actions/AvailableIntegrationsActions';
 import PageHeader from '../../Common/PageHeader';
-import { setAvailableIntegrationList, installAvailableIntegration, uninstallAvailableIntegration } from '../../../actions/AvailableIntegrationsActions';
-import Utils from '../../Common/Utils';
 
 const styles = theme => ({
   table: {
@@ -31,19 +38,26 @@ const styles = theme => ({
   }
 });
 
-const getMuiTheme = () => createMuiTheme({
-  overrides: {
-    MUIDataTableToolbar: {
-      filterPaper: {
-        width: '50%'
+const getMuiTheme = () =>
+  createMuiTheme({
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
+        }
       }
     }
-  }
-});
+  });
 
 function AvailableIntegrationList(props) {
   const {
-    classes, history, availableIntegrations, fetchAvailableIntegrations, total, loading, enqueueSnackbar
+    classes,
+    history,
+    availableIntegrations,
+    fetchAvailableIntegrations,
+    total,
+    loading,
+    enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [_params, _setParams] = useState({
@@ -56,26 +70,30 @@ function AvailableIntegrationList(props) {
     fetchAvailableIntegrations({ ..._params }, enqueueSnackbar);
   }, [_params]);
 
-  const handleInstall = async (id) => {
+  const handleInstall = async id => {
     const { onInstall } = props;
     onInstall(id, enqueueSnackbar);
   };
 
-  const handleUninstall = (id) => {
+  const handleUninstall = id => {
     const { onUninstall } = props;
     onUninstall(id, enqueueSnackbar);
   };
 
-  const handleChangePage = (_page) => {
+  const handleChangePage = _page => {
     setPage(_page);
     _setParams({ ..._params, offset: _page * _params.limit });
   };
 
   const handleChangeRowsPerPage = rowsPerPage => {
-    _setParams({ ..._params, limit: rowsPerPage, offset: page * _params.limit });
+    _setParams({
+      ..._params,
+      limit: rowsPerPage,
+      offset: page * _params.limit
+    });
   };
 
-  const setSearchTerm = (value) => {
+  const setSearchTerm = value => {
     _setParams({ ..._params, searchTerm: value });
   };
 
@@ -108,14 +126,14 @@ function AvailableIntegrationList(props) {
       name: 'version',
       label: 'Version',
       options: {
-        filter: false,
+        filter: false
       }
     },
     {
       name: 'status',
       label: 'Status',
       options: {
-        filter: false,
+        filter: false
       }
     },
     {
@@ -139,13 +157,17 @@ function AvailableIntegrationList(props) {
             <Tooltip title="install">
               <VerticalAlignBottomIcon
                 color="action"
-                onClick={() => handleInstall(tableMeta ? tableMeta.rowData[0] : null)}
+                onClick={() =>
+                  handleInstall(tableMeta ? tableMeta.rowData[0] : null)
+                }
               />
             </Tooltip>
             <Tooltip title="uninstall">
               <CloseIcon
                 color="action"
-                onClick={() => handleUninstall(tableMeta ? tableMeta.rowData[0] : null)}
+                onClick={() =>
+                  handleUninstall(tableMeta ? tableMeta.rowData[0] : null)
+                }
               />
             </Tooltip>
           </div>
@@ -190,7 +212,11 @@ function AvailableIntegrationList(props) {
       <div className={classes.table}>
         {loading ? <Loading /> : null}
         <MuiThemeProvider theme={getMuiTheme()}>
-          <MUIDataTable columns={columns} data={availableIntegrations} options={options} />
+          <MUIDataTable
+            columns={columns}
+            data={availableIntegrations}
+            options={options}
+          />
         </MuiThemeProvider>
       </div>
     </div>
@@ -198,17 +224,22 @@ function AvailableIntegrationList(props) {
 }
 
 const mapStateToProps = state => ({
-  availableIntegrations: state.getIn(['availableIntegration', 'availableIntegrations']).toJS(),
+  availableIntegrations: state
+    .getIn(['availableIntegration', 'availableIntegrations'])
+    .toJS(),
   task: state.getIn(['availableIntegration', 'task']),
   total: state.getIn(['availableIntegration', 'total']),
   loading: state.getIn(['availableIntegration', 'loading']),
   ...state
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchAvailableIntegrations: bindActionCreators(setAvailableIntegrationList, dispatch),
+const mapDispatchToProps = dispatch => ({
+  fetchAvailableIntegrations: bindActionCreators(
+    setAvailableIntegrationList,
+    dispatch
+  ),
   onInstall: bindActionCreators(installAvailableIntegration, dispatch),
-  onUninstall: bindActionCreators(uninstallAvailableIntegration, dispatch),
+  onUninstall: bindActionCreators(uninstallAvailableIntegration, dispatch)
 });
 
 const CollectionListMapped = connect(

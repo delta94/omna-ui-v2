@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Ionicon from 'react-ionicons';
-import Utils from '../Common/Utils';
-
-const variantIcon = Utils.iconVariants();
+import { variantIcon } from '../Common/Utils';
 
 const myClass = {
   info: 'isa_info',

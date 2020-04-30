@@ -4,7 +4,7 @@ import { AUTH_LOGOUT } from './actionConstants';
 
 const logout = () => {
   const { location } = window;
-  window.location = baseAppUrl() + location.pathname;
+  window.location = baseAppUrl + location.pathname;
 
   const params = {
     redirect_uri: window.location

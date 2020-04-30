@@ -27,6 +27,7 @@ import {
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
+import { handleAuthorization } from 'dan-containers/Common/Utils';
 import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 

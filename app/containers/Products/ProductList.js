@@ -22,8 +22,14 @@ import Loading from 'dan-components/Loading';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import Publisher from 'dan-components/Products/Publisher';
-import { getProducts, linkProduct, unLinkProduct, deleteProduct, resetDeleteProductFlag } from 'dan-actions/productActions';
-import Utils from 'dan-containers/Common/Utils';
+import {
+  getProducts,
+  linkProduct,
+  unLinkProduct,
+  deleteProduct,
+  resetDeleteProductFlag
+} from 'dan-actions/productActions';
+import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 
@@ -59,7 +65,7 @@ class ProductList extends React.Component {
 
   componentDidMount() {
     this.callAPI();
-  };
+  }
 
   componentDidUpdate(prevProps) {
     const { deleted, onResetDeleteProduct, task, history } = this.props;
@@ -70,7 +76,7 @@ class ProductList extends React.Component {
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
-  };
+  }
 
   callAPI = () => {
     const { onGetProducts, enqueueSnackbar } = this.props;
@@ -139,23 +145,40 @@ class ProductList extends React.Component {
 
   handleCancelDlg = () => this.setState({ openConfirmDlg: false });
 
-  handleLinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'link' }, this.handleCloseMenu);
+  handleLinkClick = () =>
+    this.setState(
+      { openPublisherDlg: true, publisherAction: 'link' },
+      this.handleCloseMenu
+    );
 
-  handleUnlinkClick = () => this.setState({ openPublisherDlg: true, publisherAction: 'unlink' }, this.handleCloseMenu);
+  handleUnlinkClick = () =>
+    this.setState(
+      { openPublisherDlg: true, publisherAction: 'unlink' },
+      this.handleCloseMenu
+    );
 
-  handlePublisherAction = async (value) => {
+  handlePublisherAction = async value => {
     const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
     const { publisherAction } = this.state;
     const { productId, list, deleteFromIntegration } = value;
     if (publisherAction === 'link') {
-      list.length > 0 ? await onLinkProduct(productId, list, enqueueSnackbar) : null;
+      list.length > 0
+        ? await onLinkProduct(productId, list, enqueueSnackbar)
+        : null;
     } else {
-      list.length > 0 ? await onUnlinkProduct(productId, list, deleteFromIntegration, enqueueSnackbar) : null;
+      list.length > 0
+        ? await onUnlinkProduct(
+            productId,
+            list,
+            deleteFromIntegration,
+            enqueueSnackbar
+          )
+        : null;
     }
     this.setState({ openPublisherDlg: false });
   };
 
-  handleMenu = (event) => this.setState({ anchorEl: event.currentTarget });
+  handleMenu = event => this.setState({ anchorEl: event.currentTarget });
 
   handleCloseMenu = () => this.setState({ anchorEl: null });
 
@@ -182,14 +205,19 @@ class ProductList extends React.Component {
             </ListItemIcon>
             Unlink
           </MenuItem>
-          <MenuItem onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}>
+          <MenuItem
+            onClick={() =>
+              this.setState({ openConfirmDlg: true }, this.handleClose)
+            }
+          >
             <ListItemIcon>
               <Ionicon icon="md-trash" />
             </ListItemIcon>
             Delete
           </MenuItem>
         </Menu>
-      </div>)
+      </div>
+    );
   };
 
   render() {
@@ -222,7 +250,8 @@ class ProductList extends React.Component {
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
-            const imgSrc = images.length > 0 ? images[0] : '/images/image_placeholder.png';
+            const imgSrc =
+              images.length > 0 ? images[0] : '/images/image_placeholder.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
@@ -253,7 +282,7 @@ class ProductList extends React.Component {
             return (
               <div>
                 {' '}
-                {`${Utils.getCurrencySymbol(currency)}
+                {`${getCurrencySymbol(currency)}
             ${parseFloat(value).toFixed(2)} ${currency || ''}`}
               </div>
             );
@@ -278,7 +307,8 @@ class ProductList extends React.Component {
               aria-label="more"
               aria-controls="long-menu"
               aria-haspopup="true"
-              onClick={this.handleMenu}>
+              onClick={this.handleMenu}
+            >
               <MoreVertIcon />
             </IconButton>
           )
@@ -332,14 +362,14 @@ class ProductList extends React.Component {
             case 3:
               return (
                 (parseFloat(a.customSortData[colIndex]) <
-                  parseFloat(b.customSortData[colIndex])
+                parseFloat(b.customSortData[colIndex])
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
             case 4:
               return (
                 (a.customSortData[colIndex].name.toLowerCase() <
-                  b.customSortData[colIndex].name.toLowerCase()
+                b.customSortData[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
@@ -369,11 +399,13 @@ class ProductList extends React.Component {
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
           {loading ? <Loading /> : null}
-            <MUIDataTable columns={columns} data={data} options={options} />
+          <MUIDataTable columns={columns} data={data} options={options} />
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
-            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
+            message={`Are you sure you want to remove the product: "${
+              selectedItem ? selectedItem.name : ''
+            }"`}
             handleCancel={this.handleCancelDlg}
             handleConfirm={this.handleConfirmDlg}
           />
@@ -382,7 +414,8 @@ class ProductList extends React.Component {
             product={selectedItem}
             open={openPublishDlg}
             onClose={() => this.setState({ openPublisherDlg: false })}
-            onSave={this.handlePublisherAction} />
+            onSave={this.handlePublisherAction}
+          />
         </div>
       </div>
     );

@@ -18,7 +18,7 @@ import GenericTabsHead from '../Common/GenericTabsHead';
 import LoadingState from '../Common/LoadingState';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
-import Utils from '../Common/Utils';
+import { variantIcon } from '../Common/Utils';
 import PageHeader from '../Common/PageHeader';
 import TaskNotifications from './TaskNotifications';
 import NotificationBottom from './NotificationBottom';
@@ -27,8 +27,6 @@ import TabContainer from './TabContainer';
 import ElementPlusValuePrinter from './ElementPlusValuePrinter';
 import TaskScheduler from './TaskScheduler';
 import TaskExecutions from './TaskExecutions';
-
-const variantIcon = Utils.iconVariants();
 
 const tabHeaders = [
   {

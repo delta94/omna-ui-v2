@@ -6,15 +6,15 @@ import { bindActionCreators } from 'redux';
 import Loading from 'dan-components/Loading';
 import { isTenantEnabled, setTenant } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Forms/user-jss';
-import API from 'dan-containers/Utils/api';
-import ShopifyService from '../../Shopify/Services/ShopifyService';
 import {
   setTenantStatus,
   setTenantId,
   setDeactivationDate,
   setEnabledTenant,
   setTenantName
-} from '../../../actions/TenantActions';
+} from 'dan-actions/TenantActions';
+import ShopifyService from '../../Shopify/Services/ShopifyService';
+import API from '../../Utils/api';
 
 class LockScreen extends React.Component {
   async componentDidMount() {

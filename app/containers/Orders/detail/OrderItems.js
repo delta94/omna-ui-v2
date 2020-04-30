@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import MUIDataTable from 'mui-datatables';
-import Utils from '../../Common/Utils';
+import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 
 class OrderItems extends Component {
   render() {
@@ -38,7 +38,7 @@ class OrderItems extends Component {
 
             return (
               <div>
-                {`${Utils.getCurrencySymbol(currency)}
+                {`${getCurrencySymbol(currency)}
                   ${value.toFixed(2)} ${currency || ''}`}
               </div>
             );
@@ -61,7 +61,7 @@ class OrderItems extends Component {
             const { currency } = tableMeta.rowData;
             return (
               <div>
-                {`${Utils.getCurrencySymbol(currency)}
+                {`${getCurrencySymbol(currency)}
                   ${(tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(
                     2
                   )} ${currency || ''}`}

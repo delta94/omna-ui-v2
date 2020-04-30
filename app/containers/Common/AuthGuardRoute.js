@@ -7,7 +7,6 @@ const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
   let code = null;
   let store = null;
   //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
-  // const isAuthenticated = isAuthenticated();
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
@@ -21,7 +20,7 @@ const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
     ); */
   }
 
-  if (location.search.includes('code') && !isAuthenticated()) {
+  if (location.search.includes('code') && !isAuthenticated) {
     const searchParams = new URLSearchParams(location.search);
     code = searchParams.get('code');
   }
@@ -38,14 +37,14 @@ const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
     <Route
       {...rest}
       render={props =>
-        isAuthenticated() ? (
+        isAuthenticated ? (
           <Component {...props} />
         ) : (
           <Redirect
             to={{
               pathname: '/lock-screen',
               state: {
-                redirect: `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl()}${path}`,
+                redirect: `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`,
                 code,
                 path,
                 store
