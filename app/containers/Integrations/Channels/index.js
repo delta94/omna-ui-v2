@@ -107,7 +107,7 @@ class ChannelList extends Component {
     <Grid item md={3} xs={12}>
       <Integration
         classes={classes}
-        key={channel.id}
+        key={`${channel.id}-${channel.name}`}
         name={channel.name}
         group={channel.group}
         noActions

@@ -5,7 +5,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-
 import MUIDataTable from 'mui-datatables';
 import { Loading, EmptyState } from 'dan-components';
 import { getOrders } from 'dan-actions/orderActions';
@@ -39,7 +38,10 @@ class OrderList extends Component {
     page: 0,
     serverSideFilterList: [],
     searchTerm: '',
-    filtering: false
+    filtering: false,
+    columnSortDirection: ['none', 'none', 'none', 'none', 'none', 'none'],
+    sortCriteria: '',
+    sortDirection: ''
   };
 
   componentDidMount() {
@@ -53,13 +55,26 @@ class OrderList extends Component {
       onGetIntegrations,
       onGetOrders
     } = this.props;
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+    const {
+      searchTerm,
+      limit,
+      page,
+      serverSideFilterList,
+      sortCriteria,
+      sortDirection
+    } = this.state;
+
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
       integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
     };
+
+    if (sortCriteria && sortDirection) {
+      const sortParam = `{"${sortCriteria}":"${sortDirection.toUpperCase()}"}`;
+      params.sort = JSON.parse(sortParam);
+    }
 
     onGetIntegrations({ limit: 100, offset: 0 });
     onGetOrders(params);
@@ -129,16 +144,60 @@ class OrderList extends Component {
     }
   };
 
+  sort = (column, order) => {
+    const newColumnSortDirections = [
+      'none',
+      'none',
+      'none',
+      'none',
+      'none',
+      'none'
+    ];
+
+    switch (column) {
+      case 'number':
+        newColumnSortDirections[0] = order;
+        break;
+      case 'created_date':
+        newColumnSortDirections[1] = order;
+        break;
+      case 'status':
+        newColumnSortDirections[2] = order;
+        break;
+      case 'total_price':
+        newColumnSortDirections[4] = order;
+        break;
+      case 'integration':
+        newColumnSortDirections[5] = order;
+        break;
+      default:
+        break;
+    }
+
+    newColumnSortDirections[column.index] = order;
+
+    this.setState(
+      {
+        columnSortDirection: newColumnSortDirections,
+        sortCriteria: column,
+        sortDirection: order
+      },
+      this.callAPI
+    );
+  };
+
   render() {
     const { classes, history, orders, loading, integrations } = this.props;
     const {
+      columnSortDirection,
       filtering,
       limit,
       page,
       serverSideFilterList,
-      searchTerm
+      searchTerm,
+      sortCriteria
     } = this.state;
-    const { data, pagination } = orders.toJS();
+    const { data: orderList, pagination } = orders.toJS();
     const { total: count } = pagination;
 
     const integrationFilterOptions = integrations.get('data')
@@ -153,6 +212,7 @@ class OrderList extends Component {
         name: 'number',
         label: 'Order',
         options: {
+          sortDirection: columnSortDirection[0],
           filter: false
         }
       },
@@ -160,6 +220,7 @@ class OrderList extends Component {
         name: 'created_date',
         label: 'Created at',
         options: {
+          sortDirection: columnSortDirection[1],
           filter: false,
           customBodyRender: value => (
             <div>{moment(value).format('DD-MM-YYYY HH:mm')}</div>
@@ -170,8 +231,8 @@ class OrderList extends Component {
         name: 'status',
         label: 'Status',
         options: {
+          sortDirection: columnSortDirection[2],
           filter: false,
-          sort: false,
           customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
@@ -186,6 +247,7 @@ class OrderList extends Component {
         name: 'total_price',
         label: 'Total',
         options: {
+          sortDirection: columnSortDirection[4],
           filter: false,
           customBodyRender: (value, tableMeta) => {
             const currency = tableMeta.rowData[3];
@@ -203,7 +265,8 @@ class OrderList extends Component {
         name: 'integration',
         label: 'Channel / Integration',
         options: {
-          sort: true,
+          sortDirection: columnSortDirection[5],
+          sort: false,
           filterType: 'dropdown',
           filterList: serverSideFilterList[5],
           filterOptions: {
@@ -258,45 +321,54 @@ class OrderList extends Component {
         }
       },
       onRowClick: (rowData, { dataIndex }) => {
-        const order = data[dataIndex];
+        const order = orderList[dataIndex];
         this.handleDetailsViewClick(order);
-      }
-      // customSort: (data, colIndex, order) =>
-      //   data.sort((a, b) => {
-      //     debugger;
-      //     switch (colIndex) {
-      //       case 3:
-      //         return (
-      //           (parseFloat(a.data[colIndex]) <
-      //           parseFloat(b.data[colIndex])
-      //             ? -1
-      //             : 1) * (order === 'desc' ? 1 : -1)
-      //         );
-      //       case 4:
-      //         return (
-      //           (a.data[colIndex].name.toLowerCase() <
-      //           b.data[colIndex].name.toLowerCase()
-      //             ? -1
-      //             : 1) * (order === 'desc' ? 1 : -1)
-      //         );
-      //       default:
-      //         return (
-      //           (a.data[colIndex] < b.data[colIndex]
-      //             ? -1
-      //             : 1) * (order === 'desc' ? 1 : -1)
-      //         );
-      //     }
-      //   })
+      },
+      onColumnSortChange: (changedColumn, direction) => {
+        let order = 'desc';
+        if (direction === 'ascending') {
+          order = 'asc';
+        }
+
+        this.sort(changedColumn, order);
+      },
+      customSort: (data, colIndex, order) =>
+        data.sort((a, b) => {
+          switch (colIndex) {
+            case 4:
+              return (
+                (parseFloat(a.data[colIndex]) < parseFloat(b.data[colIndex])
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            case 5:
+              return (
+                (a.data[colIndex].name.toLowerCase() <
+                b.data[colIndex].name.toLowerCase()
+                  ? -1
+                  : 1) * (order === 'desc' ? 1 : -1)
+              );
+            default:
+              return 0;
+          }
+        })
     };
 
     return (
       <div>
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
-          {loading ? (
-            <Loading fullPage={!filtering} text={filtering && 'Filtering'} />
+          {loading && !sortCriteria ? (
+            <Loading fullPage={!filtering} />
           ) : count > 0 ? (
-            <MUIDataTable columns={columns} data={data} options={options} />
+            <div>
+              {sortCriteria && loading && <Loading />}
+              <MUIDataTable
+                columns={columns}
+                data={orderList}
+                options={options}
+              />
+            </div>
           ) : (
             <EmptyState text="There's nothing here now, but orders data will show up here later." />
           )}

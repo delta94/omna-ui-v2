@@ -48,7 +48,6 @@ const Integration = props => {
 
   const handleImportResource = value => {
     onImportResource(value);
-    console.log('CLICK');
     handleClose();
   };
 
