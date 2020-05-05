@@ -1,37 +1,33 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Container, Divider } from '@material-ui/core';
-// import Loading from 'dan-components/Loading';
-// import Utils from '../../Common/Utils';
+import { withSnackbar } from 'notistack';
 import PlansBoard from './PlansBoard';
-import ShopifyService from '../Services/ShopifyService';
+import { getPlanInfoAvailablePlans } from '../Services/ShopifyService';
 import CurrentPlan from './CurrentPlan';
 import LoadingState from '../../Common/LoadingState';
 import MySnackBar from '../../Common/SnackBar';
 
-function InstallShopify() {
+function InstallShopify(props) {
+  const { enqueueSnackbar } = props;
   const [planCurrent, setPlanCurrent] = useState({});
   const [planCurrentStatus, setPlanCurrentStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [plansAvailable, setPlansAvailable] = useState([]);
-  const [store, setStore] = useState('');
+  const store = JSON.parse(localStorage.getItem('currentTenant')).name;;
 
   useEffect(() => {
-    const storeName = JSON.parse(localStorage.getItem('currentTenant')).name;
-    setStore(storeName);
-
     async function getPlans() {
-      const result = await ShopifyService.getPlanInfoAvailablePlans(storeName);
-
-      if (result) {
-        if (result.length > 0) {
-          setPlansAvailable(result[0]);
-          if (result[1] !== null) {
-            setPlanCurrent(result[1]);
-            setPlanCurrentStatus(result[1].status);
-          }
+        const result = await getPlanInfoAvailablePlans(store, enqueueSnackbar);
+        if (result) {
+          const { availablePlans, currentPlan } = result;
+            setPlansAvailable(availablePlans);
+            if (currentPlan) {
+              setPlanCurrent(currentPlan);
+              setPlanCurrentStatus(currentPlan.status);
+            }
+          setLoading(false);
         }
-        setLoading(false);
-      }
     }
     getPlans();
   }, []);
@@ -55,7 +51,7 @@ function InstallShopify() {
       )}
       {loading === false && (
         <Container maxWidth="md">
-          {JSON.stringify(planCurrent) !== '{}' && (
+          {JSON.stringify(planCurrent) === '{}' && (
             <div style={{ marginTop: '10px' }}>
               <MySnackBar
                 variant="info"
@@ -63,7 +59,7 @@ function InstallShopify() {
                 open
                 message={`You have the app active into trial days. You have: ${
                   planCurrent.trial_days
-                } days left`}
+                  } days left`}
               />
             </div>
           )}
@@ -93,4 +89,8 @@ function InstallShopify() {
   );
 }
 
-export default InstallShopify;
+InstallShopify.propTypes = {
+  enqueueSnackbar: PropTypes.function.isRequired
+};
+
+export default withSnackbar(InstallShopify);

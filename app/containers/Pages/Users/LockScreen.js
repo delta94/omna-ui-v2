@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,14 +14,15 @@ import {
   setEnabledTenant,
   setTenantName
 } from 'dan-actions/TenantActions';
-import ShopifyService from '../../Shopify/Services/ShopifyService';
-import API from '../../Utils/api';
+import { getSettingsInfo } from 'dan-containers/Shopify/Services/ShopifyService';
+import API from 'dan-containers/Utils/api';
 
 class LockScreen extends React.Component {
   async componentDidMount() {
     const {
       history,
       location,
+      enqueueSnackbar,
       changeTenantStatus,
       changeTenantId,
       changeDeactivationDate,
@@ -55,8 +57,13 @@ class LockScreen extends React.Component {
     }
 
     if (store) {
-      const result = await ShopifyService.getSettingsInfo(this.props);
-      if (result) {
+      const data = await getSettingsInfo(store, enqueueSnackbar);
+      setTenant(data);
+      changeTenantStatus(data.isReadyToOmna);
+      changeTenantId(data.tenantId);
+      changeTenantName(data.name);
+      changeEnabledTenant(data.enabled);
+      if (data) {
         history.push('/shopify');
       }
     }
@@ -80,6 +87,7 @@ LockScreen.propTypes = {
   classes: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
   changeTenantStatus: PropTypes.func.isRequired,
   changeTenantId: PropTypes.func.isRequired,
   changeDeactivationDate: PropTypes.func.isRequired,
@@ -106,4 +114,4 @@ const LockScreenMapped = connect(
   dispatchToProps
 )(LockScreen);
 
-export default withStyles(styles)(LockScreenMapped);
+export default withStyles(styles)(withSnackbar(LockScreenMapped));

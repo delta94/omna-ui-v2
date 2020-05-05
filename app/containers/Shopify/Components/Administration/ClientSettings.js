@@ -1,33 +1,38 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
-import ShopifyService from '../../Services/ShopifyService';
+import { getClientSettings } from '../../Services/ShopifyService';
 
-function ClientSettings() {
-
+function ClientSettings(props) {
+  const { enqueueSnackbar } = props;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
-  useEffect(async ()=>{
-
-    const result = await ShopifyService.getSettingsInfo();
+  async function getSettings() {
+    const result = await getClientSettings(enqueueSnackbar);
     if (result){
-      setData(data);
+      setData(result.data);
       setLoading(false);
     }
+  }
+
+  useEffect(()=>{
+    if (data.length === 0){
+      getSettings();
+    }
+
   })
 
   const columns = ["Store Name", "Token", "App status", "Trial days", "Access token", "Plan id"];
 
-  // const data = [
-  // ["Joe James", "Test Corp", "Yonkers", "NY", "1", "1"]
-  // ];
-
   const options = {
-    filterType: 'checkbox',
-  };
-
+    filter: true,
+    selectableRows: 'none',
+    download: false,
+    print: false
+  }
   return(
     <div>
       {loading && <Loading />}
@@ -42,4 +47,8 @@ function ClientSettings() {
 
 }
 
-export default ClientSettings;
+ClientSettings.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(ClientSettings);
