@@ -295,7 +295,7 @@ class OrderList extends Component {
         <div className={classes.table}>
           {loading ? (
             <Loading fullPage={!filtering} text={filtering && 'Filtering'} />
-          ) : count < 0 ? (
+          ) : count > 0 ? (
             <MUIDataTable columns={columns} data={data} options={options} />
           ) : (
             <EmptyState text="There's nothing here now, but orders data will show up here later." />

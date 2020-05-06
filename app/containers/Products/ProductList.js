@@ -18,7 +18,7 @@ import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
-import Loading from 'dan-components/Loading';
+import { Loading, EmptyState } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import Publisher from 'dan-components/Products/Publisher';
@@ -400,8 +400,16 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
-          {loading ? <Loading /> : null}
-          <MUIDataTable columns={columns} data={data} options={options} />
+          {loading ? (
+            <Loading />
+          ) : count > 0 ? (
+            <MUIDataTable columns={columns} data={data} options={options} />
+          ) : (
+            <EmptyState
+              text="There's nothing here now, but products data will show up here later.
+             You can add them clicking the button below"
+            />
+          )}
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}

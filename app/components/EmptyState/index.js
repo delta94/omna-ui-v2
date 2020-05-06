@@ -1,16 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+// import { FormattedMessage } from 'react-intl';
 import { Button, Typography } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 
-const EmptyState = ({
-  backgroundImage,
-  buttonText,
-  link,
-  showAction,
-  text
-}) => {
+const EmptyState = ({ action, actionText, backgroundImage, text }) => {
   return (
     <div
       style={{
@@ -26,18 +19,18 @@ const EmptyState = ({
         variant="subtitle2"
         style={{ fontSize: 20, color: 'rgba(0, 0, 0, .47)' }}
       >
-        {<FormattedMessage id={text} />}
+        {/* {<FormattedMessage id={text} />} */}
+        {text}
       </Typography>
-      {showAction && (
+      {action && (
         <Button
-          component={Link}
-          to={link}
-          variant="contained"
+          onClick={action}
+          variant="outlined"
           color="secondary"
           style={{ margin: 16 }}
         >
           {/* <FormattedMessage id={buttonText} /> */}
-          {buttonText}
+          {actionText}
         </Button>
       )}
     </div>
@@ -45,16 +38,16 @@ const EmptyState = ({
 };
 
 EmptyState.defaultProps = {
+  action: null,
+  actionText: 'Add item',
   backgroundImage: '/images/empty-set.png',
-  showAction: false,
   text: 'No data to show'
 };
 
 EmptyState.propTypes = {
+  action: PropTypes.func,
+  actionText: PropTypes.string,
   backgroundImage: PropTypes.string,
-  buttonText: PropTypes.string.isRequired,
-  link: PropTypes.string.isRequired,
-  showAction: PropTypes.bool,
   text: PropTypes.string
 };
 
