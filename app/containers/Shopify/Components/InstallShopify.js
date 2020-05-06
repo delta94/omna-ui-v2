@@ -23,10 +23,12 @@ function InstallShopify(props) {
       if (result) {
         const { availablePlans, currentPlan } = result;
         setPlansAvailable(availablePlans);
+
         if (currentPlan) {
           setPlanCurrent(currentPlan);
           setPlanCurrentStatus(currentPlan.status);
         }
+
         setLoading(false);
       }
     }
@@ -51,18 +53,18 @@ function InstallShopify(props) {
         </div>
       ) : (
           <Container maxWidth="md">
-            <Alert
+            {JSON.stringify(planCurrent) !== '{}' && <Alert
               variant="info"
-              open={JSON.stringify(planCurrent) === '{}'}
+              open={JSON.stringify(planCurrent) !== '{}'}
               message={`You have the app active into trial days. You have: ${planCurrent.trial_days} days left`}
-            />
+            />}
             <Alert
               variant="info"
               open={JSON.stringify(planCurrent) === '{}'}
               message="You must select an available OMNA plan to use the app"
             />
-            <CurrentPlan planCurrent={planCurrent} />
-            <Divider />
+            {JSON.stringify(planCurrent) !== '{}' && (<div> <CurrentPlan planCurrent={planCurrent} /> <Divider /> </div>)}
+
             <PlansBoard
               store={store}
               plansAvailable={plansAvailable}
