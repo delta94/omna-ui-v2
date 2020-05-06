@@ -49,8 +49,8 @@ function PlansBoard(props) {
     if (planAccepted) {
       currentPlanAction(planAccepted);
       currentPlanStatusAction(planAccepted.status);
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function handelCancelPlan(planId) {
