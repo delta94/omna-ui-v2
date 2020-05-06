@@ -59,8 +59,8 @@ function PlansBoard(props) {
     if (planCancelled) {
       currentPlanAction(planCancelled);
       currentPlanStatusAction(planCancelled.status);
-      setLoading(false);
     }
+    setLoading(false);
   }
   return (
     <div className={containerStyles.container}>
