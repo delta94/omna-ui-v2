@@ -45,7 +45,7 @@ const API = axios.create({
 });
 
 export const CENIT_APP = axios.create({
-  baseURL: 'https://cenit.io/app/omna-dev'
+  baseURL: 'https://cenit.io/app/omnav1v2'
 });
 
 API.interceptors.request.use(setParams, Promise.reject);

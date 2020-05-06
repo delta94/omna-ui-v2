@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
-import ShopifyService from '../../Services/ShopifyService';
+import { getClientSettings } from '../../Services/ShopifyService';
 
-function ClientSettings() {
-
+function ClientSettings(props) {
+  const { enqueueSnackbar } = props;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   async function getSettings() {
-    const result = await ShopifyService.getClientSettings();
+    const result = await getClientSettings(enqueueSnackbar);
     if (result){
       setData(result.data);
       setLoading(false);
@@ -45,4 +47,8 @@ function ClientSettings() {
 
 }
 
-export default ClientSettings;
+ClientSettings.propTypes = {
+  enqueueSnackbar: PropTypes.func.isRequired
+};
+
+export default withSnackbar(ClientSettings);
