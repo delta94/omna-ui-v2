@@ -97,8 +97,8 @@ PlansBoard.propTypes = {
   planCurrent: PropTypes.object,
   planCurrentStatus: PropTypes.string,
   enqueueSnackbar: PropTypes.func.isRequired,
-  currentPlanAction: PropTypes.function,
-  currentPlanStatusAction: PropTypes.function
+  currentPlanAction: PropTypes.func,
+  currentPlanStatusAction: PropTypes.func
 };
 
 PlansBoard.defaultProps = {

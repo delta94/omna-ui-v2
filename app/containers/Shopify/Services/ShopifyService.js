@@ -35,6 +35,9 @@ import get from 'lodash/get';
     try {
       const response = await CENIT_APP.get(`/plan?task=create&plan_name=${name}&shop=${store}`);
       if (response) {
+        enqueueSnackbar('Plan was created successfully, please confirm it', {
+          variant: 'success'
+        });
         return response.data.plan_created;
       }
     } catch (error) {
@@ -51,6 +54,9 @@ import get from 'lodash/get';
       if (response) {
         const plan = await getPlanInfoAvailablePlans(store);
         if (plan) {
+          enqueueSnackbar('Plan was activated successfully', {
+            variant: 'success'
+          });
           return plan[1];
         }
       }
@@ -68,6 +74,9 @@ import get from 'lodash/get';
       if (response) {
         const plan = await getPlanInfoAvailablePlans(store);
         if (plan) {
+          enqueueSnackbar('Plan was cancelled successfully', {
+            variant: 'success'
+          });
           return plan[1];
         }
       }

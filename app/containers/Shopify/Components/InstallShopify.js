@@ -55,13 +55,13 @@ function InstallShopify(props) {
           <Container maxWidth="md">
             {JSON.stringify(planCurrent) !== '{}' && <Alert
               variant="info"
-              open={JSON.stringify(planCurrent) !== '{}'}
+              open={planCurrent.status === 'active'}
               message={`You have the app active into trial days. You have: ${planCurrent.trial_days} days left`}
             />}
             <Alert
               variant="info"
               open={JSON.stringify(planCurrent) === '{}'}
-              message="You must select an available OMNA plan to use the app"
+              message="You must select and active an available OMNA plan to use the app"
             />
             {JSON.stringify(planCurrent) !== '{}' && (<div> <CurrentPlan planCurrent={planCurrent} /> <Divider /> </div>)}
 
