@@ -9,7 +9,8 @@ import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import Typography from '@material-ui/core/Typography';
 import 'dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css';
-import styles from './email-jss';
+import styles from './richEditor-jss';
+
 
 function RichEditor(props) {
   const { id, label, text, classes } = props;

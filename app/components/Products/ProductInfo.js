@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { memo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from 'react-slick';
@@ -13,7 +13,6 @@ import TextField from '@material-ui/core/TextField';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
-// import styles from 'dan-components/Product/product-jss';
 import RichEditor from './RichEditor';
 import styles from './product-jss';
 
@@ -32,6 +31,8 @@ function NumberFormatCustom(props) {
         });
       }}
       thousandSeparator
+      fixedDecimalScale
+      decimalScale={2}
       prefix="$"
     />
   );
@@ -42,7 +43,7 @@ NumberFormatCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-function ProductInfo(props) {
+const ProductInfo = memo((props) => {
   const {
     name, rating, thumbnail, description, price, variants, editable, classes
   } = props;
@@ -60,7 +61,9 @@ function ProductInfo(props) {
   };
 
   const handleNameChange = event => props.onNameChange(event.target.value);
+
   const handlePriceChange = event => props.onPriceChange(parseFloat(event.target.value));
+
   const handleDescriptionChange = event => props.onDescriptionChange(event.target.value);
 
   return (
@@ -72,18 +75,20 @@ function ProductInfo(props) {
               {!editable && <Typography noWrap gutterBottom variant="h5" component="h2">{name}</Typography>}
               {rating && <Rating value={4} max={5} readOnly />}
               <div className="container thumb-nav">
-                <Slider {...settings}>
-                  {thumbnail.map((item, index) => {
-                    if (index > 4) {
-                      return false;
-                    }
-                    return (
-                      <div key={index.toString()} className={classes.item}>
-                        <img src={item} alt={`thumb${index}`} height="500" width="450" />
-                      </div>
-                    );
-                  })}
-                </Slider>
+                {thumbnail.length > 0 ? (
+                   <Slider {...settings}>
+                      {thumbnail.map((item, index) => {
+                        if (index > 4) {
+                          return false;
+                        }
+                        return (
+                          <div key={index.toString()} className={classes.item}>
+                            <img src={item} alt={`thumb${index}`} height="500" width="450" />
+                          </div>
+                        );
+                      })}
+                   </Slider>
+                ) :  <div className={classes.item}><img src="/images/image_placeholder.png" alt="thumb" height="400" width="350" /></div>}
               </div>
             </aside>
           </Grid>
@@ -141,7 +146,7 @@ function ProductInfo(props) {
        </Paper>
     </div>
   );
-}
+});
 
 ProductInfo.propTypes = {
   name: PropTypes.string.isRequired,

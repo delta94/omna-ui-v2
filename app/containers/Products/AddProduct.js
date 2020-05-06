@@ -7,12 +7,10 @@ import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Loading from 'dan-components/Loading';
-
-import styles from './product-jss';
-
-import API from '../Utils/api';
-import PageHeader from '../Common/PageHeader';
-import ProductForm from './ProductForm';
+import API from 'dan-containers/Utils/api';
+import PageHeader from 'dan-containers/Common/PageHeader';
+import ProductForm from 'dan-components/Products/ProductForm';
+import styles from 'dan-components/Products/product-jss';
 
 function AddProduct(props) {
   const { history } = props;

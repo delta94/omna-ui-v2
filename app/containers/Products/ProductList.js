@@ -251,7 +251,9 @@ class ProductList extends React.Component {
           customBodyRender: (value, tableMeta) => {
             const [images, name] = tableMeta.rowData;
             const imgSrc =
-              images.length > 0 ? images[0] : '/images/image_placeholder.png';
+              images.length > 0
+                ? images[0]
+                : '/images/image_placeholder_listItem.png';
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Avatar
