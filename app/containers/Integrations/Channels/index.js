@@ -103,6 +103,21 @@ class ChannelList extends Component {
     this.makeRequest();
   }
 
+  renderIntegrationItem = (channel, classes) => (
+    <Grid item md={3} xs={12}>
+      <Integration
+        classes={classes}
+        key={channel.id}
+        name={channel.name}
+        group={channel.group}
+        noActions
+        handleAddIntegration={event =>
+          this.handleAddIntegrationClick(event, channel)
+        }
+      />
+    </Grid>
+  );
+
   render() {
     const { classes, history, channels, loading } = this.props;
     const { alertDialog, channel, limit, openForm, page } = this.state;
@@ -116,21 +131,7 @@ class ChannelList extends Component {
         {loading ? <Loading /> : null}
         <div>
           <Grid container spacing={2}>
-            {data &&
-              data.map(chan => (
-                <Grid item md={3} xs={12}>
-                  <Integration
-                    key={chan.id}
-                    name={chan.name}
-                    group={chan.group}
-                    classes={classes}
-                    noActions
-                    handleAddIntegration={event =>
-                      this.handleAddIntegrationClick(event, chan)
-                    }
-                  />
-                </Grid>
-              ))}
+            {data && data.map(chan => this.renderIntegrationItem(chan, classes))}
           </Grid>
           <Table>
             <TableFooter>
@@ -187,9 +188,7 @@ const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query))
 });
 
-const ChannelsMapped = withSnackbar(
-  withStyles(styles)(ChannelList)
-);
+const ChannelsMapped = withSnackbar(withStyles(styles)(ChannelList));
 
 export default connect(
   mapStateToProps,
