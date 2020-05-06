@@ -38,3 +38,5 @@ export SalesChartWidget from './Widget/SalesChartWidget';
 
 export AsyncSearch from './AsyncSearch';
 export Loading from './Loading';
+
+export { default as EmptyState } from './EmptyState';

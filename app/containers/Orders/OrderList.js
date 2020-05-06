@@ -7,7 +7,7 @@ import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
-import Loading from 'dan-components/Loading';
+import { Loading, EmptyState } from 'dan-components';
 import { getOrders } from 'dan-actions/orderActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import { getCurrencySymbol } from '../Common/Utils';
@@ -295,8 +295,10 @@ class OrderList extends Component {
         <div className={classes.table}>
           {loading ? (
             <Loading fullPage={!filtering} text={filtering && 'Filtering'} />
-          ) : (
+          ) : count > 0 ? (
             <MUIDataTable columns={columns} data={data} options={options} />
+          ) : (
+            <EmptyState text="There's nothing here now, but orders data will show up here later." />
           )}
         </div>
       </div>

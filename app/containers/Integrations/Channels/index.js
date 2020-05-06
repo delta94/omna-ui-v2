@@ -19,6 +19,7 @@ import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels } from 'dan-actions/integrationActions';
 import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import IntegrationForm from '../IntegrationForm';
+import Integration from '../Integration';
 
 const styles = theme => ({
   cardList: {
@@ -102,6 +103,21 @@ class ChannelList extends Component {
   initializeDataTable() {
     this.makeRequest();
   }
+
+  renderIntegrationItem = (channel, classes) => (
+    <Grid item md={3} xs={12}>
+      <Integration
+        classes={classes}
+        key={channel.id}
+        name={channel.name}
+        group={channel.group}
+        noActions
+        handleAddIntegration={event =>
+          this.handleAddIntegrationClick(event, channel)
+        }
+      />
+    </Grid>
+  );
 
   render() {
     const { classes, history, channels, loading } = this.props;

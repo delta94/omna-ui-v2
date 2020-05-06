@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
@@ -7,10 +7,10 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LoadingState from 'dan-containers/Common/LoadingState';
 import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
-import LoadingState from '../Common/LoadingState';
-import styles from './email-jss';
+import styles from './variants-jss';
 
 const VariantDetails = (params) => {
   const { integrations, selectedIntegration } = params;
@@ -22,6 +22,7 @@ const VariantDetails = (params) => {
     const { properties, errors } = integration ? integration.variant : null;
     return (
       <Fragment>
+        {console.log('variantDetails')}
         {properties && !errors && <FormBuilder properties={properties} onChange={onPropertyChange} />}
         {errors && <Alert variant="error" message={errors} />}
       </Fragment>
@@ -30,7 +31,7 @@ const VariantDetails = (params) => {
   return <Alert variant="error" message="There is something wrong at showing properties" />
 };
 
-function Variants(props) {
+const Variants = memo((props) => {
   const { variantList, selectedIntegration, classes } = props;
 
   const emptyList = variantList && (variantList.lenght === 0 || variantList.size === 0);
@@ -54,15 +55,15 @@ function Variants(props) {
       {loading && <div style={{ margin: '25px' }}><LoadingState /></div>}
       {!loading && emptyList && <Alert variant="info" message="There is not available variants" />}
       {!loading && !emptyList && variantList.map(({ sku, price, images, quantity, integrations }) => (
-        <ExpansionPanel key={sku} className={classes.emailList}>
-          <ExpansionPanelSummary className={classes.emailSummary} expandIcon={<ExpandMoreIcon />}>
-            <div className={classes.fromHeading}>
+        <ExpansionPanel key={sku}>
+          <ExpansionPanelSummary className={classes.variantSummary} expandIcon={<ExpandMoreIcon />}>
+            <div className={classes.heading}>
               <Avatar
                 alt="avatar"
                 src={images.length > 0 ? images[0] : '/images/screen/no-image.png'}
                 className={classes.bigAvatar}
               />
-              <Typography className={classes.heading}>
+              <Typography>
                 <span>SKU:{sku}</span>
               </Typography>
             </div>
@@ -80,11 +81,11 @@ function Variants(props) {
       ))}
     </Fragment>
   );
-}
+});
 
 Variants.propTypes = {
-  variantList: PropTypes.object,
-  selectedIntegration: PropTypes.string.isRequired,
+  variantList: PropTypes.any,
+  selectedIntegration: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired
 };
 

@@ -15,7 +15,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import get from 'lodash/get';
 import moment from 'moment';
 import MUIDataTable from 'mui-datatables';
-import Loading from 'dan-components/Loading';
+import { EmptyState, Loading } from 'dan-components';
 import { getFlows } from 'dan-actions/flowActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import API from '../../Utils/api';
@@ -253,10 +253,9 @@ class Flows extends Component {
       searchTerm,
       serverSideFilterList
     } = this.state;
-    const pagination = flows.get('pagination');
-    const data = flows.get('data').toJS();
-    const count = get(pagination, 'total', 0);
-
+    const { data, pagination } = flows.toJS();
+    const { total: count } = pagination;
+    console.log(count);
     const columns = [
       {
         name: 'id',
@@ -411,22 +410,27 @@ class Flows extends Component {
     return (
       <div>
         <PageHeader title="Workflows" history={history} />
-        <div className={classes.table}>
-          {loading || isLoading ? (
-            <Loading />
-          ) : (
+        {loading || isLoading ? (
+          <Loading />
+        ) : count > 0 ? (
+          <div className={classes.table}>
             <MUIDataTable columns={columns} data={data} options={options} />
-          )}
-        </div>
+            {this.renderActionsMenu()}
 
-        {this.renderActionsMenu()}
-
-        <AlertDialog
-          open={alertDialog.open}
-          message={alertDialog.message}
-          handleCancel={this.handleDialogCancel}
-          handleConfirm={this.handleDialogConfirm}
-        />
+            <AlertDialog
+              open={alertDialog.open}
+              message={alertDialog.message}
+              handleCancel={this.handleDialogCancel}
+              handleConfirm={this.handleDialogConfirm}
+            />
+          </div>
+        ) : (
+          <EmptyState
+          action={this.handleAddAction}
+          actionText="Add Flow"
+            text={`There's nothing here now, but products data will show up here later. You can add them clicking the button below.`}
+          />
+        )}
       </div>
     );
   }

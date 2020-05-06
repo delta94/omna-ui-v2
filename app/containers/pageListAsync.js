@@ -98,7 +98,7 @@ export const AddProduct = loadable(() => import('./Products/AddProduct'), {
   fallback: <Loading />
 });
 
-export const Channels = loadable(() => import('./Integrations/Channels/ChannelList'), {
+export const Channels = loadable(() => import('./Integrations/Channels'), {
   fallback: <Loading />
 });
 
