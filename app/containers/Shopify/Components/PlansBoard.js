@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { withSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Loading from 'dan-components/Loading';
 import PlanInfo from './PlanInfo';
-import ShopifyService from '../Services/ShopifyService';
+import { activatePlan, createPlan, cancelPlan } from '../Services/ShopifyService';
 const useStyles = makeStyles(() => ({
   container: {
     padding: '20px',
@@ -19,7 +20,8 @@ function PlansBoard(props) {
     planCurrentStatus,
     currentPlanAction,
     currentPlanStatusAction,
-    store
+    store,
+    enqueueSnackbar
   } = props;
   const containerStyles = useStyles();
   const [loading, setLoading] = useState(true);
@@ -29,9 +31,8 @@ function PlansBoard(props) {
   }, [planCurrent]);
 
   async function handleCreatePlan(name) {
-
     setLoading(true);
-    const result = await ShopifyService.CreatePlan(name, store);
+    const result = await createPlan(name, store, enqueueSnackbar);
     if (result) {
       currentPlanAction(result);
       currentPlanStatusAction(result.status);
@@ -44,22 +45,22 @@ function PlansBoard(props) {
   }
   async function handleActivatePlan(id) {
     setLoading(true);
-    const planAccepted = await ShopifyService.ActivatePlan(id, store);
+    const planAccepted = await activatePlan(id, store, enqueueSnackbar);
     if (planAccepted) {
       currentPlanAction(planAccepted);
       currentPlanStatusAction(planAccepted.status);
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function handelCancelPlan(planId) {
     setLoading(true);
-    const planCancelled = await ShopifyService.CancelPlan(planId, store);
+    const planCancelled = await cancelPlan(planId, store, enqueueSnackbar);
     if (planCancelled) {
       currentPlanAction(planCancelled);
       currentPlanStatusAction(planCancelled.status);
-      setLoading(false);
     }
+    setLoading(false);
   }
   return (
     <div className={containerStyles.container}>
@@ -95,9 +96,9 @@ PlansBoard.propTypes = {
   plansAvailable: PropTypes.array,
   planCurrent: PropTypes.object,
   planCurrentStatus: PropTypes.string,
-  currentPlanAction: PropTypes.function,
-  currentPlanStatusAction: PropTypes.function
-
+  enqueueSnackbar: PropTypes.func.isRequired,
+  currentPlanAction: PropTypes.func,
+  currentPlanStatusAction: PropTypes.func
 };
 
 PlansBoard.defaultProps = {
@@ -109,4 +110,4 @@ PlansBoard.defaultProps = {
   currentPlanStatusAction: () => {},
 };
 
-export default PlansBoard;
+export default withSnackbar(PlansBoard);

@@ -199,12 +199,12 @@ PlanInfo.propTypes = {
   orderLimit: PropTypes.number.isRequired,
   actionLabel: PropTypes.string,
   classes: PropTypes.object.isRequired,
-  CreatePlanAction: PropTypes.function,
-  ActivatePlanAction: PropTypes.function,
+  CreatePlanAction: PropTypes.func,
+  ActivatePlanAction: PropTypes.func,
   planCurrent: PropTypes.object,
   planCurrentStatus: PropTypes.string,
-  ConfirmPlanAction: PropTypes.function,
-  CancelPlanAction: PropTypes.function
+  ConfirmPlanAction: PropTypes.func,
+  CancelPlanAction: PropTypes.func
 };
 
 PlanInfo.defaultProps = {

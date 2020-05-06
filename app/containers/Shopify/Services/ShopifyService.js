@@ -1,115 +1,103 @@
-import axios from 'axios';
-import { setTenant } from 'dan-containers/Common/Utils';
 
-const ShopifyService = {
-  async getSettingsInfo(props) {
-    const {
-      location,
-      changeTenantStatus,
-      changeTenantId,
-      changeEnabledTenant,
-      changeTenantName
-    } = props;
-    const { store } = location.state;
+import { CENIT_APP } from 'dan-containers/Utils/api'
+import get from 'lodash/get';
 
+  export async function getSettingsInfo(store, enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/request_tenant_info?search=${store}`
-      );
-
-      if (response) {
-        console.log(response);
-        const { data } = response.data;
-        setTenant(data);
-        changeTenantStatus(data.isReadyToOmna);
-        changeTenantId(data.tenantId);
-        changeTenantName(data.name);
-        changeEnabledTenant(data.enabled);
-      }
+     const response = await CENIT_APP.get(`/request_tenant_info?search=${store}`);
+     const { data } = response.data;
+     return data;
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
-    return store;
-  },
+    return null;
+  };
 
-  async getPlanInfoAvailablePlans(store) {
+  export async function getPlanInfoAvailablePlans(store, enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/plan?task=get&shop=${store}`
-      );
+      const response = await CENIT_APP.get(`/plan?task=get&shop=${store}`);
       if (response) {
         const availablePlans = response.data.available_plans;
         const currentPlan = response.data.current_plan;
-        return [availablePlans, currentPlan];
+        return { availablePlans, currentPlan };
       }
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
-    return [];
-  },
+    return null;
+  };
 
-  async CreatePlan(name, store) {
+  export async function createPlan(name, store, enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/plan?task=create&plan_name=${name}&shop=${store}`
-      );
+      const response = await CENIT_APP.get(`/plan?task=create&plan_name=${name}&shop=${store}`);
       if (response) {
-        console.log(response.data.plan_created);
+        enqueueSnackbar('Plan was created successfully, please confirm it', {
+          variant: 'success'
+        });
         return response.data.plan_created;
       }
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     return false;
-  },
+  };
 
-  async ActivatePlan(planId, store) {
+  export async function activatePlan(planId, store, enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/plan?task=activate&plan_id=${planId}&shop=${store}`
-      );
+      const response = await CENIT_APP.get(`/plan?task=activate&plan_id=${planId}&shop=${store}`);
       if (response) {
-        const plan = await this.getPlanInfoAvailablePlans(store);
+        const plan = await getPlanInfoAvailablePlans(store);
         if (plan) {
+          enqueueSnackbar('Plan was activated successfully', {
+            variant: 'success'
+          });
           return plan[1];
         }
       }
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     return null;
-  },
+  };
 
-  async CancelPlan(planId, store) {
+  export async function cancelPlan(planId, store, enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/plan?task=cancel&plan_id=${planId}&shop=${store}`
-      );
+      const response = await CENIT_APP.get(`/plan?task=cancel&plan_id=${planId}&shop=${store}`);
       if (response) {
-        const plan = await this.getPlanInfoAvailablePlans(store);
+        const plan = await getPlanInfoAvailablePlans(store);
         if (plan) {
+          enqueueSnackbar('Plan was cancelled successfully', {
+            variant: 'success'
+          });
           return plan[1];
         }
       }
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     return null;
-  },
+  };
 
-  async getClientSettings() {
+  export async function getClientSettings(enqueueSnackbar) {
     try {
-      const response = await axios.get(
-        `https://cenit.io/app/omna-dev/client_settings`
-      );
+      const response = await CENIT_APP.get('/client_settings');
       if (response) {
         return response;
       }
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     return [];
-  }
-};
-
-export default ShopifyService;
+  };
