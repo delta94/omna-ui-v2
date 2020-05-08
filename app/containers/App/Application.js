@@ -9,13 +9,13 @@ import { AllRoutes as routes } from './routes';
 
 class Application extends React.Component {
   render() {
-    const { changeMode, history } = this.props;
+    const { changeMode, history, appStore } = this.props;
     return (
       <SnackbarProvider
         maxSnack={3}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Dashboard history={history} changeMode={changeMode}>
+        <Dashboard history={history} changeMode={changeMode} appStore={appStore}>
           <Switch>
             {routes.map(route => (
               <AuthGuardRoute
@@ -23,6 +23,7 @@ class Application extends React.Component {
                 exact
                 path={route.link}
                 component={route.component}
+                appStore={appStore}
               />
             ))}
             <Route
@@ -42,7 +43,8 @@ class Application extends React.Component {
 
 Application.propTypes = {
   changeMode: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  appStore: PropTypes.object.isRequired
 };
 
 export default Application;
