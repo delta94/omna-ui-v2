@@ -3,42 +3,26 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { baseApiUrl, baseAppUrl, isAuthenticated } from './Utils';
 
-const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
+const AuthGuardRoute = ({ component: Component, location, path, appStore, ...rest }) => {
   let code = null;
   let store = null;
-  //  const isEnabled = tenant ? (tenant.enabled && tenant.isReadyToOmna) : false;
+
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
-    /*  return (
-      <Route
-        {...rest}
-        render={props => (
-          <InstallShopify {...props} store={searchParams.get('store')} />
-        )}
-      />
-    ); */
   }
 
   if (location.search.includes('code') && !isAuthenticated) {
     const searchParams = new URLSearchParams(location.search);
     code = searchParams.get('code');
   }
-  /*   if (isAuthenticated && !isEnabled && path !== tenantconfigUrl && path !== createTenantUrl) {
-    return (
-      <Route
-        render={() => (
-          <Redirect to={{ pathname: tenantconfigUrl }} />
-        )}
-      />
-    );
-  } */
+
   return (
     <Route
       {...rest}
       render={props =>
         isAuthenticated ? (
-          <Component {...props} />
+          <Component {...props} appStore={appStore} />
         ) : (
           <Redirect
             to={{
@@ -60,6 +44,7 @@ const AuthGuardRoute = ({ component: Component, location, path, ...rest }) => {
 AuthGuardRoute.propTypes = {
   component: PropTypes.func.isRequired,
   path: PropTypes.string.isRequired,
+  appStore: PropTypes.object.isRequired,
   location: PropTypes.object
 };
 
