@@ -360,7 +360,7 @@ class OrderList extends Component {
         <div className={classes.table}>
           {loading && !sortCriteria ? (
             <Loading fullPage={!filtering} />
-          ) : count > 0 ? (
+          ) : count > 0 || filtering ? (
             <div>
               {sortCriteria && loading && <Loading />}
               <MUIDataTable
