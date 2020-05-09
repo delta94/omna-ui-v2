@@ -255,7 +255,7 @@ class Flows extends Component {
     } = this.state;
     const { data, pagination } = flows.toJS();
     const { total: count } = pagination;
-    console.log(count);
+
     const columns = [
       {
         name: 'id',
@@ -426,8 +426,8 @@ class Flows extends Component {
           </div>
         ) : (
           <EmptyState
-          action={this.handleAddAction}
-          actionText="Add Flow"
+            action={this.handleAddAction}
+            actionText="Add Flow"
             text={`There's nothing here now, but products data will show up here later. You can add them clicking the button below.`}
           />
         )}

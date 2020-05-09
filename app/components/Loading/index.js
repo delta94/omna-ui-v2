@@ -41,7 +41,6 @@ const styles = {
 };
 
 function Loading({ classes, fullPage, text }) {
-  console.log(fullPage);
   return (
     <div className={classNames(classes.root, fullPage && classes.fullPage)}>
       <Fragment>

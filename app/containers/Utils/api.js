@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { sha256 } from 'js-sha256';
 import get from 'lodash/get';
+import qs from 'qs';
 import { currentTenant } from 'dan-containers/Common/Utils';
 
 function setParams(config) {
@@ -37,7 +38,9 @@ function setParams(config) {
 
   // Generate the corresponding hmac using the js-sha256 or similar library.
   params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
-  return Object.assign(config, { params });
+  return Object.assign(config, {
+    paramsSerializer: param => qs.stringify(param)
+  });
 }
 
 const API = axios.create({
