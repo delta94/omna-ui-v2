@@ -39,7 +39,8 @@ function setParams(config) {
   // Generate the corresponding hmac using the js-sha256 or similar library.
   params.hmac = sha256.hmac.update(currentTenant.secret, msg).hex();
   return Object.assign(config, {
-    paramsSerializer: param => qs.stringify(param)
+    paramsSerializer: param => qs.stringify(param),
+    params
   });
 }
 
