@@ -9,9 +9,9 @@ import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
 import shopifyMenu from 'dan-api/ui/shopifyMenu';
 import { isOmnaShopify } from 'dan-containers/Common/Utils';
+import { GET_TENANT } from 'dan-actions/actionConstants';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
-import { GET_TENANT } from '../../../actions/actionConstants';
 
 class LeftSidebarLayout extends React.Component {
   render() {

@@ -70,7 +70,7 @@ const styles = theme => ({
     },
     '& $profile': {
       flexDirection: 'row',
-      top: theme.spacing(4),
+      top: theme.spacing(5),
       padding: theme.spacing.unit / 2,
       '& button': {
         width: 'auto'
@@ -270,7 +270,7 @@ const styles = theme => ({
     }
   },
   profile: {
-    height: 120,
+    height: theme.spacing(12),
     width: '100%',
     display: 'flex',
     fontSize: 14,

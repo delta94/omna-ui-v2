@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import { NavLink } from 'react-router-dom';
-import logo from 'dan-images/omna.svg';
+import logo from 'dan-images/logo.svg';
 import logoSmall from 'dan-images/omna_min.svg';
 import MainMenu from './MainMenu';
 import styles from './sidebar-jss';
