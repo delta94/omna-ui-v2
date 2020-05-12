@@ -1,16 +1,15 @@
-import React, { useState, useCallback, Fragment } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
 import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import FormActions from 'dan-containers/Common/FormActions';
 import Properties from './Properties';
-import Variants from './Variants';
 import ProductInfo from './ProductInfo';
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations = [], variantList, selectedIntegration,
+    name, price, description, variants, images, integrations = [],
     onIntegrationChange, onCancelClick,
   } = props;
 
@@ -26,7 +25,7 @@ function ProductForm(props) {
 
   const handleDescriptionChange = useCallback((e) => {
     props.onDescriptionChange(e)
-  },[]);
+  }, []);
 
   const handleDirtyProps = useCallback((e) => {
     setDirtyProps(e);
@@ -55,18 +54,12 @@ function ProductForm(props) {
         onDescriptionChange={handleDescriptionChange}
       />
       {integrations && integrations.length > 0 && (
-        <Fragment>
-          <Properties
-            tabList={integrations}
-            dirtyProps={dirtyProps}
-            onChangeProps={handleDirtyProps}
-            onTabChange={handleIntegrationChange}
-          />
-          <Variants
-            variantList={variantList}
-            selectedIntegration={selectedIntegration || integrations[0]}
-          />
-        </Fragment>
+        <Properties
+          tabList={integrations}
+          dirtyProps={dirtyProps}
+          onChangeProps={handleDirtyProps}
+          onTabChange={handleIntegrationChange}
+        />
       )}
       <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
     </form>
@@ -78,10 +71,8 @@ ProductForm.propTypes = {
   price: PropTypes.number.isRequired,
   description: PropTypes.string.isRequired,
   variants: PropTypes.number,
-  variantList: PropTypes.any,
   images: PropTypes.array,
   integrations: PropTypes.array,
-  selectedIntegration: PropTypes.object,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
@@ -92,12 +83,10 @@ ProductForm.propTypes = {
 
 ProductForm.defaultProps = {
   variants: null,
-  variantList: [],
   images: [],
   integrations: [],
-  selectedIntegration: null,
-  onIntegrationChange: () => {},
-  onCancelClick: () => {},
+  onIntegrationChange: () => { },
+  onCancelClick: () => { },
 };
 
 export default ProductForm;
