@@ -3,6 +3,7 @@ import {
   TaskDetails,
   Orders,
   OrderDetails,
+  Variants,
   Products,
   EditProduct,
   AddProduct,
@@ -47,6 +48,8 @@ export const EditProductRoute = {
   link: '/products/:id',
   component: EditProduct
 };
+
+export const VariantsRoute = { link: '/products/:id/variants', component: Variants };
 
 export const AvailableIntegrationsRoute = {
   link: '/available-integrations',
@@ -114,6 +117,7 @@ export const AllRoutes = [
   OrderDetailsRoute,
   TasksRoute,
   TaskDetailsRoute,
+  VariantsRoute,
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,

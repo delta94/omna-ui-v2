@@ -3,7 +3,7 @@ import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
   products: { data: [], pagination: {} },
-  variantList: null,
+  variantList: { data: [], pagination: {} },
   loading: false,
   disabledForm: false,
   deleted: false,

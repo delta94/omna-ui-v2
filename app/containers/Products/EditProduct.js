@@ -10,6 +10,7 @@ import Loading from 'dan-components/Loading';
 
 import API from 'dan-containers/Utils/api';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import ProductForm from 'dan-components/Products/ProductForm';
 import styles from 'dan-components/Products/product-jss';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
@@ -112,6 +113,7 @@ function EditProduct(props) {
     <div>
       {isLoading ? <Loading /> : null}
       <PageHeader title="Edit product" history={history} />
+      <ToolbarActions onVariantClick={() => history.push(`/products/${match.params.id}/variants`)} />
       {id && (
         <ProductForm
           name={name}

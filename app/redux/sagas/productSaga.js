@@ -4,8 +4,7 @@ import get from 'lodash/get';
 import api from 'dan-containers/Utils/api';
 
 function* prodVariantsAsync(payload) {
-  const { productId, enqueueSnackbar } = payload;
-  const params = { with_details: true };
+  const { productId, params, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const response = yield api.get(`/products/${productId}/variants`, { params });

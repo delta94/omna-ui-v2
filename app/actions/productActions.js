@@ -1,8 +1,9 @@
 import * as types from './actionConstants';
 
-export const getProductVariantList = (productId, enqueueSnackbar) => ({
+export const getProductVariantList = (productId, params, enqueueSnackbar) => ({
   type: types.GET_VARIANTS_ASYNC,
   productId,
+  params,
   enqueueSnackbar
 });
 

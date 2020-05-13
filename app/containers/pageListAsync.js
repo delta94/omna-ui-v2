@@ -86,6 +86,10 @@ export const EditWebhook = loadable(
   }
 );
 
+export const Variants = loadable(() => import('./Products/VariantList'), {
+  fallback: <Loading />
+});
+
 export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
