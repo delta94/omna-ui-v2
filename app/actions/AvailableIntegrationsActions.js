@@ -1,7 +1,7 @@
 import * as types from './actionConstants';
 
-export const setAvailableIntegrationList = (params, enqueueSnackbar) => ({
-  type: types.SET_AVAILABLE_INTEGRATIONS_ASYNC,
+export const getAvailableIntegrationList = (params, enqueueSnackbar) => ({
+  type: types.GET_AVAILABLE_INTEGRATIONS_ASYNC,
   params,
   enqueueSnackbar
 });
