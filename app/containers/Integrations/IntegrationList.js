@@ -27,7 +27,11 @@ import {
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import API from 'dan-containers/Utils/api';
-import { handleAuthorization } from 'dan-containers/Common/Utils';
+import { CENIT_APP } from 'dan-containers/Utils/api';
+import {
+  handleAuthorization,
+  currentTenant
+} from 'dan-containers/Common/Utils';
 import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 
@@ -87,6 +91,8 @@ class IntegrationList extends Component {
 
   handleAuthorization = id => {
     const path = `integrations/${id}/authorize`;
+    const shop = currentTenant.name;
+    CENIT_APP.post(`/request_create_flow?integration_id=${id}&shop=${shop}`);
     handleAuthorization(path);
   };
 
