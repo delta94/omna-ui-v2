@@ -32,6 +32,11 @@ const styles = theme => ({
   },
   gray: {
     color: 'gray'
+  },
+  navigation: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    margin: theme.spacing(3,0,1,1)
   }
 });
 

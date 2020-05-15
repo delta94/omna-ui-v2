@@ -177,180 +177,180 @@ class TaskDetails extends React.Component {
             {loading ? null : !success ? (
               <GenericErrorMessage messageError={messageError} />
             ) : (
-              <div>
-                <div className="display-flex justify-content-space-between">
-                  <Button
-                    variant="text"
-                    size="small"
-                    color="primary"
-                    component={Link}
-                    to="/tasks"
-                  >
-                    <Ionicon
-                      icon={variantIcon.arrowBack}
-                      className={classNames(
-                        classes.leftIcon,
-                        classes.iconSmall
-                      )}
-                    />
+                <div>
+                  <div className="display-flex justify-content-space-between">
+                    <Button
+                      variant="text"
+                      size="small"
+                      color="primary"
+                      component={Link}
+                      to="/tasks"
+                    >
+                      <Ionicon
+                        icon={variantIcon.arrowBack}
+                        className={classNames(
+                          classes.leftIcon,
+                          classes.iconSmall
+                        )}
+                      />
                     Tasks
-                  </Button>
-                  <Button
-                    variant="text"
-                    size="small"
-                    color="primary"
-                    onClick={this.onClickGetAPItask(id)}
-                  >
-                    <Ionicon
-                      icon={variantIcon.refresh}
-                      className={classNames(
-                        classes.leftIcon,
-                        classes.iconSmall
-                      )}
-                    />
+                    </Button>
+                    <Button
+                      variant="text"
+                      size="small"
+                      color="primary"
+                      onClick={this.onClickGetAPItask(id)}
+                    >
+                      <Ionicon
+                        icon={variantIcon.refresh}
+                        className={classNames(
+                          classes.leftIcon,
+                          classes.iconSmall
+                        )}
+                      />
                     Reload Info
-                  </Button>
-                  <div>
-                    {status === 'failed' ? (
-                      <Tooltip title="You Can Re-run the Task">
+                    </Button>
+                    <div>
+                      {status === 'failed' ? (
+                        <Tooltip title="You Can Re-run the Task">
+                          <Button
+                            variant="text"
+                            size="small"
+                            color="primary"
+                            className={classes.button}
+                            onClick={this.handleAlertClick(id, 'run')}
+                          >
+                            Run
+                          <Ionicon
+                              icon={variantIcon.play}
+                              className={classes.rightIcon}
+                            />
+                          </Button>
+                        </Tooltip>
+                      ) : null}
+                      <Tooltip title="Delete Task">
                         <Button
                           variant="text"
                           size="small"
                           color="primary"
                           className={classes.button}
-                          onClick={this.handleAlertClick(id, 'run')}
+                          onClick={this.handleAlertClick(id, 'remove')}
                         >
-                          Run
-                          <Ionicon
-                            icon={variantIcon.play}
+                          Delete
+                        <Ionicon
+                            icon={variantIcon.delete}
                             className={classes.rightIcon}
                           />
                         </Button>
                       </Tooltip>
-                    ) : null}
-                    <Tooltip title="Delete Task">
-                      <Button
-                        variant="text"
-                        size="small"
-                        color="primary"
-                        className={classes.button}
-                        onClick={this.handleAlertClick(id, 'remove')}
-                      >
-                        Delete
-                        <Ionicon
-                          icon={variantIcon.delete}
-                          className={classes.rightIcon}
-                        />
-                      </Button>
-                    </Tooltip>
-                  </div>
-                </div>
-                <Divider />
-                <div className={classNames(classes.root, classes.margin)}>
-                  <Typography variant="subtitle1" color="primary">
-                    {`${get(data, 'description', '')} `}
-                  </Typography>
-                  <div className="display-flex justify-content-flex-start">
-                    <ElementPlusValuePrinter
-                      element="Progress"
-                      value={get(data, 'progress', '') + '%'}
-                      elementVariant="subtitle2"
-                      valueVariant="caption"
-                      elementColor="default"
-                      valueColor="inherit"
-                    />
-                    <div className={classes.marginLeft}>
-                      <div className="display-flex align-items-baseline">
-                        <div>
-                          <Typography variant="subtitle2">Status:</Typography>
-                        </div>
-                        <div className={classes.marginLeft}>
-                          <Typography
-                            variant="caption"
-                            className={
-                              status === 'failed'
-                                ? classes.error
-                                : status === 'completed'
-                                ? classes.green
-                                : classes.gray
-                            }
-                          >
-                            {status}
-                          </Typography>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                  {/* <div className={classNames(classes.marginLeft2u)}>
-                    <Typography variant="caption" color="inherit">
-                      {`${id} `}
+                  <Divider />
+                  <div className={classNames(classes.root, classes.margin)}>
+                    <Typography variant="subtitle1" color="primary">
+                      {`${get(data, 'description', '')} `}
                     </Typography>
-                  </div> */}
-                  <div className="display-flex justify-content-space-between justify-content-flex-start">
-                    <ElementPlusValuePrinter
-                      element="Created at"
-                      value={get(data, 'created_at', null)}
-                      elementVariant="subtitle2"
-                      valueVariant="caption"
-                      elementColor="default"
-                      valueColor="inherit"
-                    />
-                    <div className={classes.marginLeft2u}>
+                    <div className="display-flex justify-content-flex-start">
                       <ElementPlusValuePrinter
-                        element="Updated at"
-                        value={get(data, 'updated_at', null)}
+                        element="Progress"
+                        value={get(data, 'progress', '') + '%'}
                         elementVariant="subtitle2"
                         valueVariant="caption"
                         elementColor="default"
                         valueColor="inherit"
                       />
+                      <div className={classes.marginLeft}>
+                        <div className="display-flex align-items-baseline">
+                          <div>
+                            <Typography variant="subtitle2">Status:</Typography>
+                          </div>
+                          <div className={classes.marginLeft}>
+                            <Typography
+                              variant="caption"
+                              className={
+                                status === 'failed'
+                                  ? classes.error
+                                  : status === 'completed'
+                                    ? classes.green
+                                    : classes.gray
+                              }
+                            >
+                              {status}
+                            </Typography>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* <div className={classNames(classes.marginLeft2u)}>
+                    <Typography variant="caption" color="inherit">
+                      {`${id} `}
+                    </Typography>
+                  </div> */}
+                    <div className="display-flex justify-content-space-between justify-content-flex-start">
+                      <ElementPlusValuePrinter
+                        element="Created at"
+                        value={get(data, 'created_at', null)}
+                        elementVariant="subtitle2"
+                        valueVariant="caption"
+                        elementColor="default"
+                        valueColor="inherit"
+                      />
+                      <div className={classes.marginLeft2u}>
+                        <ElementPlusValuePrinter
+                          element="Updated at"
+                          value={get(data, 'updated_at', null)}
+                          elementVariant="subtitle2"
+                          valueVariant="caption"
+                          elementColor="default"
+                          valueColor="inherit"
+                        />
+                      </div>
                     </div>
                   </div>
+                  <div className={classes.tabRoot}>
+                    <GenericTabsHead
+                      tabHeaders={tabHeaders}
+                      onChange={this.handleTabChange}
+                      value={get(this.state, 'content', [])}
+                    />
+                    {content === 0 && (
+                      <TabContainer className="item-margin">
+                        {executions.length > 0 ? (
+                          <TaskExecutions
+                            classes={classes}
+                            executions={executions}
+                          />
+                        ) : (
+                            <NotificationBottom
+                              type="info"
+                              message="There is no retrieved information."
+                            />
+                          )}
+                      </TabContainer>
+                    )}
+                    {content === 1 && (
+                      <TabContainer className="item-margin">
+                        {scheduler ? (
+                          <TaskScheduler
+                            classes={classes}
+                            scheduler={scheduler}
+                          />
+                        ) : (
+                            <NotificationBottom
+                              type="info"
+                              message="There is no retrieved information."
+                            />
+                          )}
+                      </TabContainer>
+                    )}
+                    {content === 2 && (
+                      <TabContainer>
+                        <TaskNotifications notifications={notifications} />
+                      </TabContainer>
+                    )}
+                  </div>
                 </div>
-                <div className={classes.tabRoot}>
-                  <GenericTabsHead
-                    tabHeaders={tabHeaders}
-                    onChange={this.handleTabChange}
-                    value={get(this.state, 'content', [])}
-                  />
-                  {content === 0 && (
-                    <TabContainer className="item-margin">
-                      {executions.length > 0 ? (
-                        <TaskExecutions
-                          classes={classes}
-                          executions={executions}
-                        />
-                      ) : (
-                        <NotificationBottom
-                          type="info"
-                          message="There is no retrieved information."
-                        />
-                      )}
-                    </TabContainer>
-                  )}
-                  {content === 1 && (
-                    <TabContainer className="item-margin">
-                      {scheduler ? (
-                        <TaskScheduler
-                          classes={classes}
-                          scheduler={scheduler}
-                        />
-                      ) : (
-                        <NotificationBottom
-                          type="info"
-                          message="There is no retrieved information."
-                        />
-                      )}
-                    </TabContainer>
-                  )}
-                  {content === 2 && (
-                    <TabContainer>
-                      <TaskNotifications notifications={notifications} />
-                    </TabContainer>
-                  )}
-                </div>
-              </div>
-            )}
+              )}
           </div>
           <AlertDialog
             open={alertDialog.open}
@@ -359,6 +359,15 @@ class TaskDetails extends React.Component {
             handleConfirm={this.handleDialogConfirm}
           />
         </Paper>
+        <div className={classes.navigation}>
+          <Button
+            variant="contained"
+            size="medium"
+            color="default"
+            onClick={() => history.goBack()}>
+            Back
+          </Button>
+        </div>
       </div>
     );
   }
