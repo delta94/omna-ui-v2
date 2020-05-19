@@ -68,7 +68,7 @@ const ProductInfo = memo((props) => {
 
   return (
     <div>
-       <Paper className={classes.rootDetail} elevation={0}>
+      <Paper className={classes.rootDetail} elevation={0}>
         <Grid container className={classes.root} spacing={2}>
           <Grid item md={4} sm={12} xs={12}>
             <aside className={classes.imgGallery}>
@@ -76,19 +76,19 @@ const ProductInfo = memo((props) => {
               {rating && <Rating value={4} max={5} readOnly />}
               <div className="container thumb-nav">
                 {thumbnail.length > 0 ? (
-                   <Slider {...settings}>
-                      {thumbnail.map((item, index) => {
-                        if (index > 4) {
-                          return false;
-                        }
-                        return (
-                          <div key={index.toString()} className={classes.item}>
-                            <img src={item} alt={`thumb${index}`} height="500" width="450" />
-                          </div>
-                        );
-                      })}
-                   </Slider>
-                ) :  <div className={classes.item}><img src="/images/image_placeholder.png" alt="thumb" height="400" width="350" /></div>}
+                  <Slider {...settings}>
+                    {thumbnail.map((item, index) => {
+                      if (index > 4) {
+                        return false;
+                      }
+                      return (
+                        <div key={index.toString()} className={classes.item}>
+                          <img src={item} alt={`thumb${index}`} height="500" width="450" />
+                        </div>
+                      );
+                    })}
+                  </Slider>
+                ) : <div className={classes.item}><img src="/images/image_placeholder.png" alt="thumb" height="400" width="350" /></div>}
               </div>
             </aside>
           </Grid>
@@ -143,7 +143,7 @@ const ProductInfo = memo((props) => {
             </section>
           </Grid>
         </Grid>
-       </Paper>
+      </Paper>
     </div>
   );
 });

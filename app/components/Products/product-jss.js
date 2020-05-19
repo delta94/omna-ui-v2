@@ -20,7 +20,7 @@ const styles = theme => ({
     flexGrow: 1,
   },
   rootDetail: {
-    marginTop: theme.spacing.unit,
+    marginTop: theme.spacing(1),
     paddingBottom: theme.spacing(3),
   },
   rootSlider: {
@@ -182,9 +182,18 @@ const styles = theme => ({
     right: 16,
     zIndex: 1000
   },
-  inputWidth: {
-    width: '300px'
-  }
+  formControl: {
+    width: '300px',
+    margin: theme.spacing(1,1,1,0)
+  },
+  dimensionItems: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  dimensionContainer: {
+    padding: theme.spacing(3),
+    marginTop: theme.spacing(2)
+  },
 });
 
 export default styles;

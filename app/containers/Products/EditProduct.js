@@ -31,6 +31,14 @@ function EditProduct(props) {
   const [variants, setVariants] = useState();
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
+  const [dimension, setDimension] = useState({
+    content: "",
+    height: 0,
+    length: 0,
+    weight: 0,
+    width: 0,
+    overwrite: true
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIntegration, setSelectedIntegration] = useState();
   const [openDialog, setOpenDialog] = useState(false);
@@ -49,6 +57,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
+        setDimension({...data.package, overwrite: true});
         setSelectedIntegration(data.integrations.length > 0 ? data.integrations[0] : null);
       } catch (error) {
         if (error && error.response.data.message) {
@@ -69,8 +78,10 @@ function EditProduct(props) {
     }
   };
 
+  const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+
   const editBasicInfo = async () => {
-    const data = { name, price: parseFloat(price), description };
+    const data = { name, price: parseFloat(price), description, package: dimension };
     await API.post(`products/${match.params.id}`, { data });
   };
 
@@ -120,12 +131,15 @@ function EditProduct(props) {
           price={price}
           description={description}
           images={images}
+          dimension={dimension}
           variants={variants}
           integrations={integrations}
           selectedIntegration={selectedIntegration}
-          onNameChange={e => setName(e)}
+          onNameChange={(e) => setName(e)}
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
+          onDimensionChange={handleDimensionChange}
+          /* onDimensionChange={({ target, value }) => setDimension({...dimension, weight: value})} */
           onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
           onSubmitForm={() => setOpenDialog(true)}

@@ -6,10 +6,11 @@ import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import FormActions from 'dan-containers/Common/FormActions';
 import Properties from './Properties';
 import ProductInfo from './ProductInfo';
+import DimensionProps from './DimensionProps';
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations = [],
+    name, price, description, variants, images, integrations = [], dimension, onDimensionChange,
     onIntegrationChange, onCancelClick,
   } = props;
 
@@ -35,6 +36,10 @@ function ProductForm(props) {
     onIntegrationChange(e);
   }, []);
 
+  const handleDimensionChange = useCallback((e) => {
+    onDimensionChange(e);
+  }, []);
+
   const onSubmitForm = (e) => {
     e.preventDefault();
     handleDirtyProps(false);
@@ -53,6 +58,7 @@ function ProductForm(props) {
         onPriceChange={handlePriceChange}
         onDescriptionChange={handleDescriptionChange}
       />
+      <DimensionProps {...dimension} onDimensionChange={handleDimensionChange} />
       {integrations && integrations.length > 0 && (
         <Properties
           tabList={integrations}
@@ -72,6 +78,8 @@ ProductForm.propTypes = {
   description: PropTypes.string.isRequired,
   variants: PropTypes.number,
   images: PropTypes.array,
+  dimension: PropTypes.object.isRequired,
+  onDimensionChange: PropTypes.func.isRequired,
   integrations: PropTypes.array,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
