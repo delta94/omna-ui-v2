@@ -4,6 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import NumberFormat from 'react-number-format';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -43,8 +45,10 @@ NumberFormatCustom.propTypes = {
 
 const DimensionProps = memo((props) => {
   const {
-    weight, height, length, width, content, classes, onDimensionChange
+    weight, height, length, width, content, overwrite = false, classes, onDimensionChange
   } = props;
+
+  const handleOverwriteChange = (e) => onDimensionChange({target: { name: e.target.name, value: e.target.checked }});
 
   return (
     <Paper className={classes.dimensionContainer} elevation={0}>
@@ -109,6 +113,21 @@ const DimensionProps = memo((props) => {
           variant="outlined"
           id="content-input"
         />
+        <FormControlLabel
+            className={classes.formControl}
+            control={
+              (
+                <Checkbox
+                  name="overwrite"
+                  checked={overwrite}
+                  onChange={handleOverwriteChange}
+                  value="overwrite"
+                  color="default"
+                />
+              )
+            }
+            label="overwrite package information in all variants"
+          />
       </div>
     </Paper>
   );
@@ -119,6 +138,7 @@ DimensionProps.propTypes = {
   height: PropTypes.number.isRequired,
   length: PropTypes.number.isRequired,
   width: PropTypes.number,
+  overwrite: PropTypes.bool.isRequired,
   content: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
   onDimensionChange: PropTypes.func.isRequired

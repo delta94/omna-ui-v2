@@ -37,7 +37,7 @@ function EditProduct(props) {
     length: 0,
     weight: 0,
     width: 0,
-    overwrite: true
+    overwrite: false
   });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIntegration, setSelectedIntegration] = useState();
@@ -57,7 +57,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
-        setDimension({...data.package, overwrite: true});
+        setDimension({...data.package, overwrite: false});
         setSelectedIntegration(data.integrations.length > 0 ? data.integrations[0] : null);
       } catch (error) {
         if (error && error.response.data.message) {
@@ -139,7 +139,6 @@ function EditProduct(props) {
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
           onDimensionChange={handleDimensionChange}
-          /* onDimensionChange={({ target, value }) => setDimension({...dimension, weight: value})} */
           onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
           onSubmitForm={() => setOpenDialog(true)}
