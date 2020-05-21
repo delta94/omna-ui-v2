@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import Loading from 'dan-components/Loading';
 import get from 'lodash/get';
+import API from 'dan-containers/Utils/api';
+import PageHeader from 'dan-containers/Common/PageHeader';
 import WebhookForm from './WebhookForm';
-import API from '../../Utils/api';
-import PageHeader from '../../Common/PageHeader';
 
 function EditWebhook(props) {
   const { history, match } = props;

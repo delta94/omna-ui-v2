@@ -20,7 +20,8 @@ import {
   DashboardPage,
   TenantConfiguration,
   AddTenant,
-  InstallShopify
+  InstallShopify,
+  ApiKeys
 } from '../pageListAsync';
 import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
@@ -49,7 +50,10 @@ export const EditProductRoute = {
   component: EditProduct
 };
 
-export const VariantsRoute = { link: '/products/:id/variants', component: Variants };
+export const VariantsRoute = {
+  link: '/products/:id/variants',
+  component: Variants
+};
 
 export const AvailableIntegrationsRoute = {
   link: '/available-integrations',
@@ -109,7 +113,12 @@ export const TenantConfigurationRoute = {
 export const ClientSettingsRoute = {
   link: '/client-settings',
   component: ClientSettings
-}
+};
+
+export const ApiKeysRoute = {
+  link: '/api-keys',
+  component: ApiKeys
+};
 
 export const AllRoutes = [
   DashboardRoute,
@@ -135,5 +144,6 @@ export const AllRoutes = [
   InstallShopifyRoute,
   DashboardPageRoute,
   TenantConfigurationRoute,
-  ClientSettingsRoute
+  ClientSettingsRoute,
+  ApiKeysRoute
 ];
