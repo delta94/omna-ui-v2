@@ -36,6 +36,8 @@ export ErrorWrap from './Error/ErrorWrap';
 //Widget
 export SalesChartWidget from './Widget/SalesChartWidget';
 
+export { default as PaperBlock } from './PapperBlock/PapperBlock';
+
 export AsyncSearch from './AsyncSearch';
 export Loading from './Loading';
 

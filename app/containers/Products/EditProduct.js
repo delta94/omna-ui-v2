@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
@@ -10,9 +8,9 @@ import 'dan-styles/vendors/slick-carousel/slick.css';
 import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Loading from 'dan-components/Loading';
 
-import { getProductVariantList } from 'dan-actions/productActions';
 import API from 'dan-containers/Utils/api';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import ProductForm from 'dan-components/Products/ProductForm';
 import styles from 'dan-components/Products/product-jss';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
@@ -25,7 +23,7 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
 }
 
 function EditProduct(props) {
-  const { match, productVariants, updateProductVariants, history, enqueueSnackbar } = props;
+  const { match, history, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -33,6 +31,14 @@ function EditProduct(props) {
   const [variants, setVariants] = useState();
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
+  const [dimension, setDimension] = useState({
+    content: "",
+    height: 0,
+    length: 0,
+    weight: 0,
+    width: 0,
+    overwrite: false
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIntegration, setSelectedIntegration] = useState();
   const [openDialog, setOpenDialog] = useState(false);
@@ -51,6 +57,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
+        setDimension({...data.package, overwrite: false});
         setSelectedIntegration(data.integrations.length > 0 ? data.integrations[0] : null);
       } catch (error) {
         if (error && error.response.data.message) {
@@ -64,24 +71,17 @@ function EditProduct(props) {
     fetchProduct();
   }, [match.params.id]);
 
-  useEffect(() => {
-    if (integrations && integrations.length > 0) {
-      const { id: _id, product: _product } = integrations[0];
-      updateProductVariants(_id, _product.remote_product_id);
-    }
-  }, [integrations]);
-
   const onIntegrationChange = value => {
     const obj = integrations.find(item => item.id === value.id);
     if (obj) {
       setSelectedIntegration(value);
-      const { id: _id, product: _product } = obj;
-      updateProductVariants(_id, _product.remote_product_id);
     }
   };
 
+  const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+
   const editBasicInfo = async () => {
-    const data = { name, price: parseFloat(price), description };
+    const data = { name, price: parseFloat(price), description, package: dimension };
     await API.post(`products/${match.params.id}`, { data });
   };
 
@@ -124,19 +124,21 @@ function EditProduct(props) {
     <div>
       {isLoading ? <Loading /> : null}
       <PageHeader title="Edit product" history={history} />
+      <ToolbarActions onVariantClick={() => history.push(`/products/${match.params.id}/variants`)} />
       {id && (
         <ProductForm
           name={name}
           price={price}
           description={description}
           images={images}
+          dimension={dimension}
           variants={variants}
           integrations={integrations}
-          variantList={productVariants}
           selectedIntegration={selectedIntegration}
-          onNameChange={e => setName(e)}
+          onNameChange={(e) => setName(e)}
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
+          onDimensionChange={handleDimensionChange}
           onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
           onSubmitForm={() => setOpenDialog(true)}
@@ -155,23 +157,7 @@ function EditProduct(props) {
 EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  productVariants: PropTypes.any.isRequired,
-  updateProductVariants: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  productVariants: state.getIn(['product', 'productVariants']),
-  ...state
-});
-
-const mapDispatchToProps = dispatch => ({
-  updateProductVariants: bindActionCreators(getProductVariantList, dispatch)
-});
-
-const EditProductMapped = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EditProduct);
-
-export default withStyles(styles)(withSnackbar(EditProductMapped));
+export default withStyles(styles)(withSnackbar(EditProduct));

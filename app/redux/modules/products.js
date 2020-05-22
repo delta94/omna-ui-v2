@@ -1,9 +1,9 @@
-import { fromJS, List } from 'immutable';
+import { fromJS } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
   products: { data: [], pagination: {} },
-  productVariants: [],
+  variantList: { data: [], pagination: {} },
   loading: false,
   disabledForm: false,
   deleted: false,
@@ -12,13 +12,9 @@ const initialState = fromJS({
 
 export default function integrationsReducer(state = initialState, action) {
   switch (action.type) {
-    case 'GET_PRODUCT_VARIANTS_ASYNC':
+    case types.GET_VARIANTS:
       return state.withMutations((mutableState) => {
-        mutableState.set('productVariants', List(action.data));
-      });
-    case 'GET_PRODUCT_VARIANTS_ASYNC_LOADING':
-      return state.withMutations((mutableState) => {
-        mutableState.set('loading', action.loading);
+        mutableState.set('variantList', action.data);
       });
     case types.GET_PRODUCTS:
       return state.withMutations((mutableState) => {

@@ -66,25 +66,29 @@ export const OrderDetails = loadable(() => import('./Orders/OrderDetails'), {
 });
 
 export const Webhooks = loadable(
-  () => import('./Settings/Webhooks/WebhookList'),
+  () => import('./Developers/Webhooks/WebhookList'),
   {
     fallback: <Loading />
   }
 );
 
 export const AddWebhook = loadable(
-  () => import('./Settings/Webhooks/AddWebhook'),
+  () => import('./Developers/Webhooks/AddWebhook'),
   {
     fallback: <Loading />
   }
 );
 
 export const EditWebhook = loadable(
-  () => import('./Settings/Webhooks/EditWebhook'),
+  () => import('./Developers/Webhooks/EditWebhook'),
   {
     fallback: <Loading />
   }
 );
+
+export const Variants = loadable(() => import('./Products/VariantList'), {
+  fallback: <Loading />
+});
 
 export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
@@ -140,6 +144,13 @@ export const AddTenant = loadable(
 
 export const InstallShopify = loadable(
   () => import('./Shopify/Components/InstallShopify'),
+  {
+    fallback: <Loading />
+  }
+);
+
+export const ApiKeys = loadable(
+  () => import('./Developers/ApiKeys'),
   {
     fallback: <Loading />
   }

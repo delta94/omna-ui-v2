@@ -10,13 +10,14 @@ import {
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import moment from 'moment';
+import get from 'lodash/get';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
 import CloseIcon from '@material-ui/icons/Close';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
-import * as Utils from 'dan-containers/Common/Utils';
+import { delay } from 'dan-containers/Common/Utils';
 import {
-  setAvailableIntegrationList,
+  getAvailableIntegrationList,
   installAvailableIntegration,
   uninstallAvailableIntegration
 } from 'dan-actions/AvailableIntegrationsActions';
@@ -55,20 +56,28 @@ function AvailableIntegrationList(props) {
     history,
     availableIntegrations,
     fetchAvailableIntegrations,
-    total,
     loading,
     enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
-  const [_params, _setParams] = useState({
-    limit: 10,
-    offset: 0,
-    searchTerm: ''
-  });
+  const [limit, setLimit] = useState(10);
+  const [searchText, setSearchText] = useState('');
+
+  const { data, pagination } =  availableIntegrations;
+
+  const makeQuery = () => {
+    const params = {
+      limit,
+      offset: page * limit,
+      term: searchText,
+      with_details: true
+    };
+    fetchAvailableIntegrations(params, enqueueSnackbar);
+  };
 
   useEffect(() => {
-    fetchAvailableIntegrations({ ..._params }, enqueueSnackbar);
-  }, [_params]);
+    makeQuery();
+  }, [limit, page, searchText]);
 
   const handleInstall = async id => {
     const { onInstall } = props;
@@ -80,30 +89,17 @@ function AvailableIntegrationList(props) {
     onUninstall(id, enqueueSnackbar);
   };
 
-  const handleChangePage = _page => {
-    setPage(_page);
-    _setParams({ ..._params, offset: _page * _params.limit });
-  };
+  const handleChangePage = (page_) => setPage(page_);
 
-  const handleChangeRowsPerPage = rowsPerPage => {
-    _setParams({
-      ..._params,
-      limit: rowsPerPage,
-      offset: page * _params.limit
-    });
-  };
+  const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
-  const setSearchTerm = value => {
-    _setParams({ ..._params, searchTerm: value });
-  };
-
-  function handleSearch(_searchTerm) {
-    if (_searchTerm) {
-      Utils.delay(_searchTerm, () => setSearchTerm(_searchTerm));
-    } else if (_params.searchTerm) {
-      setSearchTerm('');
+  function handleSearch(searchTerm) {
+    if (searchTerm) {
+      delay(searchTerm, () => setSearchText(searchTerm));
+    } else if (searchText) {
+      setSearchText('');
     }
-  }
+  };
 
   const columns = [
     {
@@ -181,13 +177,13 @@ function AvailableIntegrationList(props) {
     filter: false,
     sort: false,
     selectableRows: 'none',
-    searchText: _params.searchTerm,
+    searchText,
     responsive: 'stacked',
     download: false,
     print: false,
     serverSide: true,
-    rowsPerPage: _params.limit,
-    total,
+    rowsPerPage: limit,
+    count: get(pagination, 'total', 0),
     page,
     onTableChange: (action, tableState) => {
       switch (action) {
@@ -214,7 +210,7 @@ function AvailableIntegrationList(props) {
         <MuiThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             columns={columns}
-            data={availableIntegrations}
+            data={data}
             options={options}
           />
         </MuiThemeProvider>
@@ -224,18 +220,15 @@ function AvailableIntegrationList(props) {
 }
 
 const mapStateToProps = state => ({
-  availableIntegrations: state
-    .getIn(['availableIntegration', 'availableIntegrations'])
-    .toJS(),
+  availableIntegrations: state.getIn(['availableIntegration', 'availableIntegrations']),
   task: state.getIn(['availableIntegration', 'task']),
-  total: state.getIn(['availableIntegration', 'total']),
   loading: state.getIn(['availableIntegration', 'loading']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAvailableIntegrations: bindActionCreators(
-    setAvailableIntegrationList,
+    getAvailableIntegrationList,
     dispatch
   ),
   onInstall: bindActionCreators(installAvailableIntegration, dispatch),
@@ -250,10 +243,9 @@ const CollectionListMapped = connect(
 AvailableIntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  total: PropTypes.number.isRequired,
   loading: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  availableIntegrations: PropTypes.array.isRequired,
+  availableIntegrations: PropTypes.object.isRequired,
   fetchAvailableIntegrations: PropTypes.func.isRequired,
   onInstall: PropTypes.func.isRequired,
   onUninstall: PropTypes.func.isRequired

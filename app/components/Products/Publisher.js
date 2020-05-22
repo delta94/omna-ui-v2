@@ -115,7 +115,7 @@ function Publisher(props) {
             renderValue={selected => selected.join(', ')}
             MenuProps={MenuProps}
           >
-            {product && action === 'link' && integrations.data && integrations.data.map(option => {
+            {product && action === 'link' && integrations.data.map(option => {
               const found = product.integrations.findIndex(item => item.id === option.id) > -1;
               return (
                 <MenuItem key={option.id} value={option.id} disabled={found}>
@@ -168,7 +168,7 @@ function Publisher(props) {
 }
 
 const mapStateToProps = state => ({
-  integrations: state.getIn(['integration', 'integrations']),
+  integrations: state.getIn(['integration', 'integrations']).toJS(),
   ...state
 });
 
@@ -183,13 +183,14 @@ const PublisherMapped = connect(
 
 Publisher.defaultProps = {
   action: 'link',
+  product: null
 };
 
 Publisher.propTypes = {
   action: PropTypes.string,
   classes: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
-  product: PropTypes.object.isRequired,
+  product: PropTypes.object,
   integrations: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,

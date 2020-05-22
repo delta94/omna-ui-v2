@@ -10,9 +10,7 @@ function* fetchAvailableIntegrationAsync(payload) {
   try {
     yield put({ type: types.SET_LOADING, data: true });
     const response = yield API.get('/available/integrations', { params });
-    const { data, pagination } = response.data;
-    yield put({ type: types.SET_AVAILABLE_INTEGRATIONS, data });
-    yield put({ type: types.SET_TOTAL, data: pagination.total });
+    yield put({ type: types.GET_AVAILABLE_INTEGRATIONS, data: response.data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -69,7 +67,7 @@ export function* watchInstallAvailableIntegration() {
 }
 
 export function* watchAvailableIntegrations() {
-  yield takeLatest(types.SET_AVAILABLE_INTEGRATIONS_ASYNC, fetchAvailableIntegrationAsync);
+  yield takeLatest(types.GET_AVAILABLE_INTEGRATIONS_ASYNC, fetchAvailableIntegrationAsync);
 }
 
 export default function* availableIntegrationSaga() {

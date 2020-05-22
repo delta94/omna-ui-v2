@@ -1,8 +1,10 @@
 import * as types from './actionConstants';
 
-export const getProductVariantList = (integrationId, remoteProductId) => ({
-  type: types.GET_PRODUCT_VARIANTS,
-  payload: { integrationId, remoteProductId }
+export const getProductVariantList = (productId, params, enqueueSnackbar) => ({
+  type: types.GET_VARIANTS_ASYNC,
+  productId,
+  params,
+  enqueueSnackbar
 });
 
 export const getProducts = (payload) => ({

@@ -34,18 +34,13 @@ const VariantDetails = (params) => {
 const Variants = memo((props) => {
   const { variantList, selectedIntegration, classes } = props;
 
-  const emptyList = variantList && (variantList.lenght === 0 || variantList.size === 0);
-
   const [loading, setLoading] = useState(true);
 
+  const emptyList = variantList ? variantList.pagination.total === 0 || false : false;
+
   useEffect(() => {
-    setLoading(false);
+    variantList && !emptyList ? setLoading(false) : null;
   }, [variantList]);
-
-  useEffect(() => {
-    setLoading(true);
-  }, [selectedIntegration]);
-
 
   return (
     <Fragment>
@@ -54,7 +49,7 @@ const Variants = memo((props) => {
       </Typography>
       {loading && <div style={{ margin: '25px' }}><LoadingState /></div>}
       {!loading && emptyList && <Alert variant="info" message="There is not available variants" />}
-      {!loading && !emptyList && variantList.map(({ sku, price, images, quantity, integrations }) => (
+      {variantList && variantList.data.map(({ sku, price, images, quantity, integrations }) => (
         <ExpansionPanel key={sku}>
           <ExpansionPanelSummary className={classes.variantSummary} expandIcon={<ExpandMoreIcon />}>
             <div className={classes.heading}>

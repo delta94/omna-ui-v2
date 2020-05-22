@@ -3,6 +3,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import DataIcon from '@material-ui/icons/Apps';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
+import DeveloperIcon from '@material-ui/icons/DeveloperMode';
 
 export default [
   {
@@ -59,11 +60,6 @@ export default [
         key: 'workflows',
         name: 'Workflows',
         link: '/workflows'
-      },
-      {
-        key: 'webhooks',
-        name: 'Webhooks',
-        link: '/webhooks'
       }
     ]
   },
@@ -72,5 +68,32 @@ export default [
     name: 'Tasks',
     icon: <TasksIcon />,
     link: '/tasks'
+  },
+  {
+    key: 'developers',
+    name: 'Developers',
+    icon: <DeveloperIcon />,
+    child: [
+      {
+        key: 'api-keys',
+        name: 'API Keys',
+        link: '/api-keys'
+      },
+      {
+        key: 'webhooks',
+        name: 'Webhooks',
+        link: '/webhooks'
+      },
+      // {
+      //   key: 'events',
+      //   name: 'Events',
+      //   link: '/events'
+      // },
+      // {
+      //   key: 'logs',
+      //   name: 'Logs',
+      //   link: '/logs'
+      // }
+    ]
   }
 ];

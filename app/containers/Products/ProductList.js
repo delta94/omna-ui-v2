@@ -454,10 +454,14 @@ const ProductListMapped = connect(
   mapDispatchToProps
 )(ProductList);
 
+ProductList.defaultProps = {
+  task: null
+};
+
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
   products: PropTypes.object.isRequired,
-  task: PropTypes.object.isRequired,
+  task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,

@@ -3,21 +3,19 @@ import * as types from 'dan-actions/actionConstants';
 import get from 'lodash/get';
 import api from 'dan-containers/Utils/api';
 
-function* prodVariantsAsync(dispatch) {
-  const { integrationId, remoteProductId } = dispatch.payload;
-  const params = { with_details: true };
+function* prodVariantsAsync(payload) {
+  const { productId, params, enqueueSnackbar } = payload;
   try {
-    yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC_LOADING', loading: true });
-    const response = yield api.get(
-      `/integrations/${integrationId}/products/${remoteProductId}/variants`,
-      { params }
-    );
-    const { data } = response.data;
-    yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC', data });
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.get(`/products/${productId}/variants`, { params });
+    const { data } = response;
+    yield put({ type: types.GET_VARIANTS, data });
   } catch (error) {
-    console.log('error fetching product variants');
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
   }
-  yield put({ type: 'GET_PRODUCT_VARIANTS_ASYNC_LOADING', loading: false });
+  yield put({ type: types.SET_LOADING, loading: false });
 }
 
 function* getProducts(payload) {
@@ -84,7 +82,7 @@ function* deleteProduct(payload) {
 }
 
 export function* watchProdVariants() {
-  yield takeLatest('GET_PRODUCT_VARIANTS', prodVariantsAsync);
+  yield takeLatest(types.GET_VARIANTS_ASYNC, prodVariantsAsync);
 }
 
 export function* watchLinkProduct() {
