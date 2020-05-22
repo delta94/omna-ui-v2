@@ -1,7 +1,7 @@
 import { sha256 } from 'js-sha256';
 
 const URL_LOCAL = 'http://127.0.0.1:4000';
-const URL_DEV = 'https://develop.d19tdb0x4s4txh.amplifyapp.com';
+const URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
 const URL_PROD = 'https://app.omna.io';
 
 export const baseApiUrl = 'https://cenit.io/app/ecapi-v1';
@@ -10,7 +10,7 @@ const currentLocation = window.location.href;
 
 export const baseAppUrl = currentLocation.includes('app.omna.io')
   ? URL_PROD
-  : currentLocation.includes('https://develop.d19tdb0x4s4txh.amplifyapp.com')
+  : currentLocation.includes('https://develop.d2px3nipkhew1t.amplifyapp.com')
   ? URL_DEV
   : URL_LOCAL;
 
