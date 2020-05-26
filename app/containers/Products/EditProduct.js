@@ -22,6 +22,22 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
   return 'Are you sure you want to edit the product?';
 }
 
+function useWithUndefinedProps(values){
+  const [dimensionValue, setDimensionValue] = useState(null);
+
+  useEffect(() => {
+    if(values) {
+      const obj = {};
+      Object.keys(values).forEach((key) => {
+        obj[key] = values[key] || undefined
+      });
+      setDimensionValue(obj);
+    }
+  },[]);
+
+  return dimensionValue;
+};
+
 function EditProduct(props) {
   const { match, history, enqueueSnackbar } = props;
   const [id, setId] = useState('');
@@ -32,15 +48,16 @@ function EditProduct(props) {
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
   const [dimension, setDimension] = useState({
-    content: "",
-    height: 0,
-    length: 0,
-    weight: 0,
-    width: 0,
+    weight: undefined,
+    height: undefined,
+    width: undefined,
+    length: undefined,
+    content: '',
     overwrite: false
   });
+  const dimensions = useWithUndefinedProps(dimension);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedIntegration, setSelectedIntegration] = useState();
+  const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
 
 
@@ -58,7 +75,6 @@ function EditProduct(props) {
         setVariants(data.variants);
         setImages(data.images);
         setDimension({...data.package, overwrite: false});
-        setSelectedIntegration(data.integrations.length > 0 ? data.integrations[0] : null);
       } catch (error) {
         if (error && error.response.data.message) {
           enqueueSnackbar(error.response.data.message, {
@@ -71,13 +87,6 @@ function EditProduct(props) {
     fetchProduct();
   }, [match.params.id]);
 
-  const onIntegrationChange = value => {
-    const obj = integrations.find(item => item.id === value.id);
-    if (obj) {
-      setSelectedIntegration(value);
-    }
-  };
-
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const editBasicInfo = async () => {
@@ -85,10 +94,9 @@ function EditProduct(props) {
     await API.post(`products/${match.params.id}`, { data });
   };
 
-  const editProps = async () => {
-    const editProperties = selectedIntegration || integrations.length > 0;
-    if (editProperties) {
-      const integrationId = selectedIntegration.id || integrations[0].id;
+  const editIntegrationProps = async () => {
+    if (form) {
+      const integrationId = form;
       const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
       const data = { properties };
       await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
@@ -98,8 +106,7 @@ function EditProduct(props) {
   const handleEdit = async () => {
     setIsLoading(true);
     try {
-      await editBasicInfo();
-      await editProps();
+      form === 'general' ? await editBasicInfo() : await editIntegrationProps();
       enqueueSnackbar('Product edited successfuly', {
         variant: 'success'
       });
@@ -120,6 +127,11 @@ function EditProduct(props) {
     handleEdit();
   };
 
+  const handleSubmitForm = (form_) => {
+    setForm(form_);
+    setOpenDialog(true)
+  };
+
   return (
     <div>
       {isLoading ? <Loading /> : null}
@@ -131,22 +143,20 @@ function EditProduct(props) {
           price={price}
           description={description}
           images={images}
-          dimension={dimension}
+          dimension={dimensions}
           variants={variants}
           integrations={integrations}
-          selectedIntegration={selectedIntegration}
           onNameChange={(e) => setName(e)}
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
           onDimensionChange={handleDimensionChange}
-          onIntegrationChange={onIntegrationChange}
           onCancelClick={() => history.goBack()}
-          onSubmitForm={() => setOpenDialog(true)}
+          onSubmitForm={handleSubmitForm}
         />
       )}
       <AlertDialog
         open={openDialog}
-        message={EDIT_PRODUCT_CONFIRM`${selectedIntegration ? selectedIntegration.name : ''}`}
+        message={EDIT_PRODUCT_CONFIRM`${form !== 'general' ? form : ''}`}
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />

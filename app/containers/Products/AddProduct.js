@@ -17,11 +17,22 @@ function AddProduct(props) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState('');
+  const [dimension, setDimension] = useState({
+    weight: undefined,
+    height: undefined,
+    width: undefined,
+    length: undefined,
+    content: '',
+    overwrite: false
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const handleAdd = async () => {
     const { enqueueSnackbar } = props;
     const data = { name, price: parseFloat(price), description };
+    dimension ? data.package = dimension : null;
     setIsLoading(true);
     try {
       await API.post('/products', { data });
@@ -47,9 +58,11 @@ function AddProduct(props) {
         name={name}
         price={price}
         description={description}
+        dimension={dimension}
         onNameChange={(e) => setName(e)}
         onPriceChange={(e) => setPrice(e)}
         onDescriptionChange={(e) => setDescription(e)}
+        onDimensionChange={handleDimensionChange}
         onCancelClick={() => history.goBack()}
         onSubmitForm={handleAdd}
       />
