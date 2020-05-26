@@ -1,4 +1,8 @@
-module.exports = [
+import React from 'react';
+import DataIcon from '@material-ui/icons/Apps';
+import SettingsIcon from '@material-ui/icons/Settings';
+
+export default [
   // {
   //   key: 'dashboard',
   //   name: 'Dashboard',
@@ -6,26 +10,10 @@ module.exports = [
   //   link: '/dashboard'
   // },
   {
-    key: 'settings',
-    name: 'Settings',
-    icon: 'ios-apps-outline',
-    child: [
-      {
-        key: 'plan',
-        name: 'Plans',
-        link: '/shopify'
-      },
-      {
-        key: 'client-settings',
-        name: 'Client Settings',
-        link: '/client-settings'
-      }
-    ]
-  },
-  {
     key: 'data',
     name: 'Data',
-    icon: 'ios-apps-outline',
+    icon: <DataIcon />,
+
     child: [
       {
         key: 'products',
@@ -48,7 +36,24 @@ module.exports = [
         key: 'installed-integrations',
         name: 'Installed Integrations',
         link: '/installed-integrations'
+      }
+    ]
+  },
+  {
+    key: 'settings',
+    name: 'Settings',
+    icon: <SettingsIcon />,
+    child: [
+      {
+        key: 'plan',
+        name: 'Plans',
+        link: '/shopify'
       },
+      {
+        key: 'client-settings',
+        name: 'Client Settings',
+        link: '/client-settings'
+      }
     ]
   }
 ];
