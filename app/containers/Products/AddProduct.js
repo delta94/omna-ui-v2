@@ -21,8 +21,8 @@ function AddProduct(props) {
     weight: undefined,
     height: undefined,
     width: undefined,
-    lenght: undefined,
-    content: undefined,
+    length: undefined,
+    content: '',
     overwrite: false
   });
   const [isLoading, setIsLoading] = useState(false);

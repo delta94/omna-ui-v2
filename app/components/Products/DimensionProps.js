@@ -25,7 +25,7 @@ function NumberFormatCustom(props) {
         onChange({
           target: {
             name,
-            value: parseFloat(values.value) || 0,
+            value: parseFloat(values.value) || undefined,
           },
         });
       }}
@@ -50,9 +50,7 @@ const DimensionProps = memo((props) => {
 
   const handleOverwriteChange = (e) => onDimensionChange({ target: { name: e.target.name, value: e.target.checked } });
 
-  const handleContentChange = (e) => {
-    onDimensionChange({ target: { name: e.target.name, value: e.target.value } });
-  };
+  const handleContentChange = (e) => onDimensionChange({ target: { name: e.target.name, value: e.target.value } });
 
   return (
     <Paper className={classes.dimensionContainer} elevation={0}>
@@ -149,11 +147,11 @@ DimensionProps.propTypes = {
 };
 
 DimensionProps.defaultProps = {
-  weight: 0,
-  height: 0,
-  length: 0,
-  width: 0,
-  content: '',
+  weight: undefined,
+  height: undefined,
+  length: undefined,
+  width: undefined,
+  content: undefined,
   overwrite: false
 };
 

@@ -22,8 +22,8 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
   return 'Are you sure you want to edit the product?';
 }
 
-function useDimensionProps(values){
-  const [dimensionValue, setDimensionValue] = useState();
+function useWithUndefinedProps(values){
+  const [dimensionValue, setDimensionValue] = useState(null);
 
   useEffect(() => {
     if(values) {
@@ -33,7 +33,7 @@ function useDimensionProps(values){
       });
       setDimensionValue(obj);
     }
-  }, [values]);
+  },[]);
 
   return dimensionValue;
 };
@@ -51,11 +51,11 @@ function EditProduct(props) {
     weight: undefined,
     height: undefined,
     width: undefined,
-    lenght: undefined,
-    content: undefined,
+    length: undefined,
+    content: '',
     overwrite: false
   });
-  const dimensions = useDimensionProps(dimension);
+  const dimensions = useWithUndefinedProps(dimension);
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
