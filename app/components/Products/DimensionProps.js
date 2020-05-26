@@ -25,7 +25,7 @@ function NumberFormatCustom(props) {
         onChange({
           target: {
             name,
-            value: parseFloat(values.value),
+            value: parseFloat(values.value) || undefined,
           },
         });
       }}
@@ -48,7 +48,9 @@ const DimensionProps = memo((props) => {
     weight, height, length, width, content, overwrite = false, classes, onDimensionChange
   } = props;
 
-  const handleOverwriteChange = (e) => onDimensionChange({target: { name: e.target.name, value: e.target.checked }});
+  const handleOverwriteChange = (e) => onDimensionChange({ target: { name: e.target.name, value: e.target.checked } });
+
+  const handleContentChange = (e) => onDimensionChange({ target: { name: e.target.name, value: e.target.value } });
 
   return (
     <Paper className={classes.dimensionContainer} elevation={0}>
@@ -61,7 +63,7 @@ const DimensionProps = memo((props) => {
           label="Weight"
           name="weight"
           value={weight}
-          onChange={(e) => onDimensionChange(e)}
+          onChange={onDimensionChange}
           variant="outlined"
           id="formatted-numberformat-input"
           InputProps={{
@@ -73,7 +75,7 @@ const DimensionProps = memo((props) => {
           label="Height"
           name="height"
           value={height}
-          onChange={(e) => onDimensionChange(e)}
+          onChange={onDimensionChange}
           variant="outlined"
           id="formatted-numberformat-input"
           InputProps={{
@@ -85,7 +87,7 @@ const DimensionProps = memo((props) => {
           label="Width"
           name="width"
           value={width}
-          onChange={(e) => onDimensionChange(e)}
+          onChange={onDimensionChange}
           variant="outlined"
           id="formatted-numberformat-input"
           InputProps={{
@@ -97,7 +99,7 @@ const DimensionProps = memo((props) => {
           label="Length"
           name="length"
           value={length}
-          onChange={(e) => onDimensionChange(e)}
+          onChange={onDimensionChange}
           variant="outlined"
           id="formatted-numberformat-input"
           InputProps={{
@@ -109,39 +111,48 @@ const DimensionProps = memo((props) => {
           label="Content"
           name="content"
           value={content}
-          onChange={(e) => onDimensionChange(e)}
+          onChange={handleContentChange}
           variant="outlined"
           id="content-input"
         />
         <FormControlLabel
-            className={classes.formControl}
-            control={
-              (
-                <Checkbox
-                  name="overwrite"
-                  checked={overwrite}
-                  onChange={handleOverwriteChange}
-                  value="overwrite"
-                  color="default"
-                />
-              )
-            }
-            label="overwrite package information in all variants"
-          />
+          className={classes.formControl}
+          control={
+            (
+              <Checkbox
+                name="overwrite"
+                checked={overwrite}
+                onChange={handleOverwriteChange}
+                value="overwrite"
+                color="default"
+              />
+            )
+          }
+          label="overwrite package information in all variants"
+        />
       </div>
     </Paper>
   );
 });
 
 DimensionProps.propTypes = {
-  weight: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  length: PropTypes.number.isRequired,
+  weight: PropTypes.number,
+  height: PropTypes.number,
+  length: PropTypes.number,
   width: PropTypes.number,
-  overwrite: PropTypes.bool.isRequired,
-  content: PropTypes.array.isRequired,
+  overwrite: PropTypes.bool,
+  content: PropTypes.string,
   classes: PropTypes.object.isRequired,
   onDimensionChange: PropTypes.func.isRequired
+};
+
+DimensionProps.defaultProps = {
+  weight: undefined,
+  height: undefined,
+  length: undefined,
+  width: undefined,
+  content: undefined,
+  overwrite: false
 };
 
 export default withStyles(styles)(DimensionProps);
