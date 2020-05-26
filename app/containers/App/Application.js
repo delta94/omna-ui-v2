@@ -5,19 +5,29 @@ import { SnackbarProvider } from 'notistack';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 import { LockScreen, Logout, NotFound } from '../pageListAsync';
-import { AllRoutes as routes } from './routes';
+import {
+  OmnaAppRoutes as omnaRoutes,
+  OmnaShopifyRoutes as shopifyRoutes
+} from './routes';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 
 class Application extends React.Component {
   render() {
     const { changeMode, history, appStore } = this.props;
+    const availableRoutes = !isOmnaShopify ? omnaRoutes : shopifyRoutes;
+
     return (
       <SnackbarProvider
         maxSnack={3}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Dashboard history={history} changeMode={changeMode} appStore={appStore}>
+        <Dashboard
+          history={history}
+          changeMode={changeMode}
+          appStore={appStore}
+        >
           <Switch>
-            {routes.map(route => (
+            {availableRoutes.map(route => (
               <AuthGuardRoute
                 key={route.link}
                 exact

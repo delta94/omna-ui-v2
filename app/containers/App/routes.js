@@ -120,20 +120,22 @@ export const ApiKeysRoute = {
   component: ApiKeys
 };
 
-export const AllRoutes = [
+export const OmnaAppRoutes = [
   DashboardRoute,
-  OrdersRoute,
-  OrderDetailsRoute,
-  TasksRoute,
-  TaskDetailsRoute,
+  // Products
   VariantsRoute,
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,
+  // Integrations
   AvailableIntegrationsRoute,
   ChannelsRoute,
   InstalledIntegrationsRoute,
   AddIntegrationFormRoute,
+  OrdersRoute,
+  OrderDetailsRoute,
+  TasksRoute,
+  TaskDetailsRoute,
   WorkflowsRoute,
   AddWorkflowRoute,
   EditWorkflowRoute,
@@ -141,6 +143,27 @@ export const AllRoutes = [
   WebhooksRoute,
   AddWebhookRoute,
   EditWebhookRoute,
+  // Settings
+  InstallShopifyRoute,
+  DashboardPageRoute,
+  TenantConfigurationRoute,
+  ClientSettingsRoute,
+  ApiKeysRoute
+];
+
+export const OmnaShopifyRoutes = [
+  DashboardRoute,
+  // Products
+  VariantsRoute,
+  ProductsRoute,
+  AddProductRoute,
+  EditProductRoute,
+  // Integrations
+  AvailableIntegrationsRoute,
+  ChannelsRoute,
+  InstalledIntegrationsRoute,
+  AddIntegrationFormRoute,
+  // Settings
   InstallShopifyRoute,
   DashboardPageRoute,
   TenantConfigurationRoute,
