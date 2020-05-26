@@ -22,6 +22,22 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
   return 'Are you sure you want to edit the product?';
 }
 
+function useDimensionProps(values){
+  const [dimensionValue, setDimensionValue] = useState();
+
+  useEffect(() => {
+    if(values) {
+      const obj = {};
+      Object.keys(values).forEach((key) => {
+        obj[key] = values[key] || undefined
+      });
+      setDimensionValue(obj);
+    }
+  }, [values]);
+
+  return dimensionValue;
+};
+
 function EditProduct(props) {
   const { match, history, enqueueSnackbar } = props;
   const [id, setId] = useState('');
@@ -32,13 +48,14 @@ function EditProduct(props) {
   const [integrations, setIntegrations] = useState([]);
   const [images, setImages] = useState([]);
   const [dimension, setDimension] = useState({
-    content: "",
-    height: 0,
-    length: 0,
-    weight: 0,
-    width: 0,
+    weight: undefined,
+    height: undefined,
+    width: undefined,
+    lenght: undefined,
+    content: undefined,
     overwrite: false
   });
+  const dimensions = useDimensionProps(dimension);
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
@@ -126,7 +143,7 @@ function EditProduct(props) {
           price={price}
           description={description}
           images={images}
-          dimension={dimension}
+          dimension={dimensions}
           variants={variants}
           integrations={integrations}
           onNameChange={(e) => setName(e)}

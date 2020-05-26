@@ -124,7 +124,7 @@ ProductForm.propTypes = {
   description: PropTypes.string.isRequired,
   variants: PropTypes.number,
   images: PropTypes.array,
-  dimension: PropTypes.object.isRequired,
+  dimension: PropTypes.object,
   integrations: PropTypes.array,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
@@ -138,6 +138,7 @@ ProductForm.defaultProps = {
   variants: null,
   images: [],
   integrations: [],
+  dimension: null,
   onCancelClick: () => { },
 };
 
