@@ -26,6 +26,11 @@ export default [
         key: 'products',
         name: 'Products',
         link: '/products'
+      },
+      {
+        key: 'inventory',
+        name: 'Inventory',
+        link: '/Inventory'
       }
     ]
   },
@@ -83,7 +88,7 @@ export default [
         key: 'webhooks',
         name: 'Webhooks',
         link: '/webhooks'
-      },
+      }
       // {
       //   key: 'events',
       //   name: 'Events',

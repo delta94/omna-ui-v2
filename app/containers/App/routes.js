@@ -21,6 +21,7 @@ import {
   TenantConfiguration,
   AddTenant,
   InstallShopify,
+  Inventory,
   ApiKeys
 } from '../pageListAsync';
 import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
@@ -54,6 +55,8 @@ export const VariantsRoute = {
   link: '/products/:id/variants',
   component: Variants
 };
+
+export const InventoryRoute = { link: '/inventory', component: Inventory };
 
 export const AvailableIntegrationsRoute = {
   link: '/available-integrations',
@@ -127,6 +130,8 @@ export const OmnaAppRoutes = [
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,
+  // Inventory
+  InventoryRoute,
   // Integrations
   AvailableIntegrationsRoute,
   ChannelsRoute,
@@ -158,6 +163,8 @@ export const OmnaShopifyRoutes = [
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,
+  // Inventory
+  InventoryRoute,
   // Integrations
   AvailableIntegrationsRoute,
   ChannelsRoute,

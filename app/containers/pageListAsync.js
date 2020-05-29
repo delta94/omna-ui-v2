@@ -149,6 +149,13 @@ export const InstallShopify = loadable(
   }
 );
 
+export const Inventory = loadable(
+  () => import('./Inventory'),
+  {
+    fallback: <Loading />
+  }
+);
+
 export const ApiKeys = loadable(
   () => import('./Developers/ApiKeys'),
   {
