@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import get from 'lodash/get';
-import moment from 'moment';
+// import get from 'lodash/get';
+// import moment from 'moment';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { Loading, EmptyState } from 'dan-components';
 import { getCurrencySymbol } from '../Common/Utils';
-
 import PageHeader from '../Common/PageHeader';
+import entries from './mock-inventory-entries.json';
 
 const styles = theme => ({
   table: {
@@ -47,26 +47,13 @@ class InventoryEntries extends Component {
   }
 
   callAPI = () => {
-    const {
-      enqueueSnackbar,
-      error,
-      onGetIntegrations,
-      onGetOrders
-    } = this.props;
-    const {
-      searchTerm,
-      limit,
-      page,
-      serverSideFilterList,
-      sortCriteria,
-      sortDirection
-    } = this.state;
+    const { enqueueSnackbar, error } = this.props;
+    const { searchTerm, limit, page, sortCriteria, sortDirection } = this.state;
 
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm || '',
-      integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
+      term: searchTerm || ''
     };
 
     if (sortCriteria && sortDirection) {
@@ -74,8 +61,7 @@ class InventoryEntries extends Component {
       params.sort = JSON.parse(sortParam);
     }
 
-    onGetIntegrations({ limit: 100, offset: 0 });
-    onGetOrders(params);
+    // onGetInventoryEntries(params);
 
     if (error)
       enqueueSnackbar(error, {
@@ -89,13 +75,6 @@ class InventoryEntries extends Component {
 
   handleChangeRowsPerPage = rowsPerPage => {
     this.setState({ limit: rowsPerPage }, this.callAPI);
-  };
-
-  handleDetailsViewClick = order => {
-    const { history } = this.props;
-    history.push(`/orders/${get(order, 'id', 0)}`, {
-      order: { data: order }
-    });
   };
 
   handleSearch = searchTerm => {
@@ -143,30 +122,20 @@ class InventoryEntries extends Component {
   };
 
   sort = (column, order) => {
-    const newColumnSortDirections = [
-      'none',
-      'none',
-      'none',
-      'none',
-      'none',
-      'none'
-    ];
+    const newColumnSortDirections = ['none', 'none', 'none', 'none', 'none'];
 
     switch (column) {
-      case 'number':
+      case 'product':
         newColumnSortDirections[0] = order;
         break;
-      case 'created_date':
+      case 'variant':
         newColumnSortDirections[1] = order;
         break;
-      case 'status':
+      case 'location':
         newColumnSortDirections[2] = order;
         break;
-      case 'total_price':
+      case 'available':
         newColumnSortDirections[4] = order;
-        break;
-      case 'integration':
-        newColumnSortDirections[5] = order;
         break;
       default:
         break;
@@ -195,82 +164,39 @@ class InventoryEntries extends Component {
       searchTerm,
       sortCriteria
     } = this.state;
+    const count = entries.length;
 
     const columns = [
       {
-        name: 'number',
-        label: 'Order',
+        name: 'product',
+        label: 'Product',
         options: {
           sortDirection: columnSortDirection[0],
           filter: false
         }
       },
       {
-        name: 'created_date',
-        label: 'Created at',
+        name: 'variant',
+        label: 'Variant',
         options: {
           sortDirection: columnSortDirection[1],
-          filter: false,
-          customBodyRender: value => (
-            <div>{moment(value).format('DD-MM-YYYY HH:mm')}</div>
-          )
+          filter: false
         }
       },
       {
-        name: 'status',
-        label: 'Status',
+        name: 'location',
+        label: 'Location',
         options: {
           sortDirection: columnSortDirection[2],
-          filter: false,
-          customBodyRender: value => <div>{value.toUpperCase()}</div>
+          filter: false
         }
       },
       {
-        name: 'currency',
+        name: 'available',
+        label: 'Available',
         options: {
-          filter: false,
-          display: 'excluded'
-        }
-      },
-      {
-        name: 'total_price',
-        label: 'Total',
-        options: {
-          sortDirection: columnSortDirection[4],
-          filter: false,
-          customBodyRender: (value, tableMeta) => {
-            const currency = tableMeta.rowData[3];
-
-            return (
-              <div>
-                {`${getCurrencySymbol(currency)}
-                  ${parseFloat(value).toFixed(2)} ${currency}`}
-              </div>
-            );
-          }
-        }
-      },
-      {
-        name: 'integration',
-        label: 'Channel / Integration',
-        options: {
-          sortDirection: columnSortDirection[5],
-          sort: false,
-          filterType: 'dropdown',
-          filterList: serverSideFilterList[5],
-          filterOptions: {
-            names: integrationFilterOptions
-          },
-          customBodyRender: value => (
-            <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
-          )
-        }
-      },
-      {
-        name: 'id',
-        options: {
-          filter: false,
-          display: 'excluded'
+          sortDirection: columnSortDirection[3],
+          filter: false
         }
       }
     ];
@@ -354,7 +280,7 @@ class InventoryEntries extends Component {
               {sortCriteria && loading && <Loading />}
               <MUIDataTable
                 columns={columns}
-                data={InventoryEntries}
+                data={entries}
                 options={options}
               />
             </div>
@@ -368,12 +294,8 @@ class InventoryEntries extends Component {
 }
 
 InventoryEntries.propTypes = {
-  orders: PropTypes.object.isRequired,
-  onGetOrders: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.object.isRequired,
-  integrations: PropTypes.object.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({

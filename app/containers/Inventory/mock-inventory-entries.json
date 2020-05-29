@@ -1,0 +1,20 @@
+[
+    {
+        "product": "Product 1",
+        "variant": "SKU A",
+        "location": "Location 1",
+        "available": 56
+    },
+    {
+        "product": "Product 2",
+        "variant": "SKU B",
+        "location": "Location 2",
+        "available": 5
+    },
+    {
+        "product": "Product 1",
+        "variant": "SKU B",
+        "location": "Location 2",
+        "available": 10
+    }
+]

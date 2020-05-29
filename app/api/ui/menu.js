@@ -30,7 +30,7 @@ export default [
       {
         key: 'inventory',
         name: 'Inventory',
-        link: '/Inventory'
+        link: '/inventory'
       }
     ]
   },
