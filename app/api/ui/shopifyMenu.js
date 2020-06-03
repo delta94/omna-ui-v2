@@ -1,5 +1,6 @@
 import React from 'react';
 import DataIcon from '@material-ui/icons/Apps';
+import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 export default [
@@ -38,6 +39,12 @@ export default [
         link: '/installed-integrations'
       }
     ]
+  },
+  {
+    key: 'tasks',
+    name: 'Tasks',
+    icon: <TasksIcon />,
+    link: '/tasks'
   },
   {
     key: 'settings',

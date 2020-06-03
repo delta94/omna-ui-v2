@@ -170,6 +170,9 @@ export const OmnaShopifyRoutes = [
   ChannelsRoute,
   InstalledIntegrationsRoute,
   AddIntegrationFormRoute,
+  // Tasks
+  TasksRoute,
+  TaskDetailsRoute,
   // Settings
   InstallShopifyRoute,
   DashboardPageRoute,
