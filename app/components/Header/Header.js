@@ -2,11 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import Hidden from '@material-ui/core/Hidden';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Fab from '@material-ui/core/Fab';
+import {
+  AppBar,
+  Fab,
+  Hidden,
+  IconButton,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography
+} from '@material-ui/core';
+import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
 import ShopInfo from 'dan-containers/Shopify/Components/ShopInfo';
 import { currentTenant } from 'dan-containers/Common/Utils';
@@ -21,7 +28,8 @@ class Header extends React.Component {
   state = {
     open: false,
     turnDarker: false,
-    showTitle: false
+    showTitle: false,
+    anchorEl: null
   };
 
   // Initial header style
@@ -87,6 +95,14 @@ class Header extends React.Component {
     }
   };
 
+  handleHelpClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleHelpClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
   render() {
     const {
       classes,
@@ -97,7 +113,7 @@ class Header extends React.Component {
       title,
       history
     } = this.props;
-    const { open, turnDarker, showTitle } = this.state;
+    const { open, turnDarker, showTitle, anchorEl } = this.state;
 
     const setMargin = sidebarPosition => {
       if (sidebarPosition === 'right-sidebar') {
@@ -131,6 +147,58 @@ class Header extends React.Component {
           </Fab>
           <Hidden smDown>
             <div className={classes.headerProperties}>
+              <div
+                className={classNames(
+                  classes.headerAction,
+                  showTitle && classes.fadeOut
+                )}
+              >
+                {/* {fullScreen ? (
+                  <Tooltip title="Exit Full Screen" placement="bottom">
+                    <IconButton
+                      className={classes.button}
+                      onClick={this.closeFullScreen}
+                    >
+                      <FullScreenExitIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Full Screen" placement="bottom">
+                    <IconButton
+                      className={classes.button}
+                      onClick={this.openFullScreen}
+                    >
+                      <FullScreenIcon />
+                    </IconButton>
+                  </Tooltip>
+                )} */}
+                {/* <Tooltip title="Turn Dark/Light" placement="bottom">
+                  <IconButton
+                    className={classes.button}
+                    onClick={() => this.turnMode(mode)}
+                  >
+                    <Ionicon icon="ios-bulb-outline" />
+                  </IconButton>
+                </Tooltip> */}
+                <Tooltip title="Help" placement="bottom">
+                  <IconButton
+                    className={classes.button}
+                    onClick={this.handleHelpClick}
+                  >
+                    <HelpIcon />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={this.handleHelpClose}
+                >
+                  <MenuItem onClick={this.handleHelpClose}>Documentation</MenuItem>
+                  <MenuItem onClick={this.handleHelpClose}>Support</MenuItem>
+                </Menu>
+              </div>
               <Typography
                 component="h2"
                 className={classNames(
