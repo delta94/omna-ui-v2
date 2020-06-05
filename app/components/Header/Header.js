@@ -15,10 +15,10 @@ import {
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
-import ShopInfo from 'dan-containers/Shopify/Components/ShopInfo';
 import { currentTenant } from 'dan-containers/Common/Utils';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
+import ShopifyMenu from './ShopifyMenu';
 // import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
 
@@ -195,7 +195,9 @@ class Header extends React.Component {
                   open={Boolean(anchorEl)}
                   onClose={this.handleHelpClose}
                 >
-                  <MenuItem onClick={this.handleHelpClose}>Documentation</MenuItem>
+                  <MenuItem onClick={this.handleHelpClose}>
+                    Documentation
+                  </MenuItem>
                   <MenuItem onClick={this.handleHelpClose}>Support</MenuItem>
                 </Menu>
               </div>
@@ -224,7 +226,7 @@ class Header extends React.Component {
 
           {currentTenant ? (
             currentTenant.fromShopifyApp ? (
-              <ShopInfo
+              <ShopifyMenu
                 name={currentTenant.shop}
                 title={currentTenant.shopDomain}
               />
