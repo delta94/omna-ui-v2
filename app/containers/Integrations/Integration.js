@@ -26,6 +26,7 @@ const Integration = props => {
     logo,
     authorized,
     classes,
+    integrated,
     onAuthorizeIntegration,
     onUnauthorizeIntegration,
     onDeleteIntegration,
@@ -141,15 +142,17 @@ const Integration = props => {
               {`${group} ${group !== 'Shopify' ? name.slice(-2) : ''}`}
             </Typography>
 
-            <Tooltip title="Add integration">
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleAddIntegration}
-              >
-                Add
-              </Button>
-            </Tooltip>
+            {!integrated && (
+              <Tooltip title="Add integration">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleAddIntegration}
+                >
+                  Add
+                </Button>
+              </Tooltip>
+            )}
           </div>
         ) : (
           <CardActions
@@ -233,6 +236,7 @@ Integration.defaultProps = {
   authorized: false,
   group: '',
   handleAddIntegration: () => {},
+  integrated: false,
   logo: false,
   name: '',
   noActions: false,
@@ -247,6 +251,7 @@ Integration.propTypes = {
   classes: PropTypes.object.isRequired,
   group: PropTypes.string,
   handleAddIntegration: PropTypes.func,
+  integrated: PropTypes.bool,
   logo: PropTypes.bool,
   name: PropTypes.string,
   noActions: PropTypes.bool,
@@ -254,7 +259,7 @@ Integration.propTypes = {
   onImportResource: PropTypes.func.isRequired,
   onDeleteIntegration: PropTypes.func,
   onEditIntegration: PropTypes.func,
-  onUnauthorizeIntegration: PropTypes.func,
+  onUnauthorizeIntegration: PropTypes.func
 };
 
 export default Integration;

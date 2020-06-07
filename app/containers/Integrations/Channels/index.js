@@ -16,7 +16,7 @@ import { Loading } from 'dan-components';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import { getChannels } from 'dan-actions/integrationActions';
+import { getChannels, getIntegrations } from 'dan-actions/integrationActions';
 import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import IntegrationForm from '../IntegrationForm';
 import Integration from '../Integration';
@@ -56,8 +56,8 @@ class ChannelList extends Component {
     searchTerm: ''
   };
 
-  async componentDidMount() {
-    this.initializeDataTable();
+  componentDidMount() {
+    this.makeRequest();
   }
 
   handleDialogCancel = () => {
@@ -74,14 +74,22 @@ class ChannelList extends Component {
   };
 
   makeRequest = () => {
-    const { onGetChannels } = this.props;
+    const { onGetChannels, onGetIntegrations, integrations } = this.props;
     const { limit, page, searchTerm } = this.state;
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm
     };
+
     onGetChannels(params);
+
+    onGetIntegrations({ offset: 0, limit });
+    const integrationsParams = {
+      offset: 0,
+      limit: integrations.total
+    };
+    onGetIntegrations(integrationsParams);
   };
 
   handleChangeRowsPerPage = event => {
@@ -100,17 +108,14 @@ class ChannelList extends Component {
     this.setState({ openForm: true });
   };
 
-  initializeDataTable() {
-    this.makeRequest();
-  }
-
-  renderIntegrationItem = (channel, classes) => (
+  renderIntegrationItem = (channel, classes, integrated) => (
     <Grid item md={3} xs={12}>
       <Integration
         classes={classes}
         key={`${channel.id}-${channel.name}`}
         name={channel.name}
         group={channel.group}
+        integrated={integrated}
         noActions
         handleAddIntegration={event =>
           this.handleAddIntegrationClick(event, channel)
@@ -120,7 +125,7 @@ class ChannelList extends Component {
   );
 
   render() {
-    const { classes, history, channels, loading } = this.props;
+    const { channels, classes, history, integrations, loading } = this.props;
     const { alertDialog, channel, limit, openForm, page } = this.state;
 
     const { pagination, data } = channels;
@@ -133,12 +138,16 @@ class ChannelList extends Component {
         <div>
           <Grid container spacing={2}>
             {data &&
-              data.map(chan =>
-                isOmnaShopify
+              data.map(chan => {
+                const match = integrations
+                .get('data')
+                .find(integration => integration.get('channel') === chan.name);
+
+                return isOmnaShopify
                   ? !chan.name.includes('Shopify') &&
-                    this.renderIntegrationItem(chan, classes)
-                  : this.renderIntegrationItem(chan, classes)
-              )}
+                      this.renderIntegrationItem(chan, classes, Boolean(match))
+                  : this.renderIntegrationItem(chan, classes, Boolean(match));
+              })}
           </Grid>
           <Table>
             <TableFooter>
@@ -182,17 +191,21 @@ ChannelList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   channels: PropTypes.array.isRequired,
+  integrations: PropTypes.array.isRequired,
+  onGetIntegrations: PropTypes.array.isRequired,
   onGetChannels: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
-  channels: state.getIn(['integration', 'channels'])
+  channels: state.getIn(['integration', 'channels']),
+  integrations: state.getIn(['integration', 'integrations'])
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetChannels: query => dispatch(getChannels(query))
+  onGetChannels: query => dispatch(getChannels(query)),
+  onGetIntegrations: query => dispatch(getIntegrations(query))
 });
 
 const ChannelsMapped = withSnackbar(withStyles(styles)(ChannelList));
