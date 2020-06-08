@@ -421,9 +421,7 @@ class ProductList extends React.Component {
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
-            message={`Are you sure you want to remove the product: "${
-              selectedItem ? selectedItem.name : ''
-            }"`}
+            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : '' }"`}
             handleCancel={this.handleCancelDlg}
             handleConfirm={this.handleConfirmDlg}
           />

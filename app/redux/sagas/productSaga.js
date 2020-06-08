@@ -3,21 +3,6 @@ import * as types from 'dan-actions/actionConstants';
 import get from 'lodash/get';
 import api from 'dan-containers/Utils/api';
 
-function* prodVariantsAsync(payload) {
-  const { productId, params, enqueueSnackbar } = payload;
-  try {
-    yield put({ type: types.SET_LOADING, loading: true });
-    const response = yield api.get(`/products/${productId}/variants`, { params });
-    const { data } = response;
-    yield put({ type: types.GET_VARIANTS, data });
-  } catch (error) {
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-      variant: 'error'
-    });
-  }
-  yield put({ type: types.SET_LOADING, loading: false });
-}
-
 function* getProducts(payload) {
   const { params, enqueueSnackbar } = payload;
   try {
@@ -81,10 +66,6 @@ function* deleteProduct(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
-export function* watchProdVariants() {
-  yield takeLatest(types.GET_VARIANTS_ASYNC, prodVariantsAsync);
-}
-
 export function* watchLinkProduct() {
   yield takeLatest(types.LINK_PRODUCT_ASYNC, linkProduct);
 }
@@ -102,5 +83,5 @@ export function* watchGetProducts() {
 }
 
 export default function* productSaga() {
-  yield all([watchGetProducts(), watchLinkProduct(), watchProdVariants(), watchUnLinkProduct(), watchDeleteProduct()]);
+  yield all([watchGetProducts(), watchLinkProduct(), watchUnLinkProduct(), watchDeleteProduct()]);
 }

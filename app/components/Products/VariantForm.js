@@ -6,9 +6,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import FormActions from 'dan-containers/Common/FormActions';
-import ProductInfo from './ProductInfo';
 import DimensionProps from './DimensionProps';
 import IntegrationProps from './IntegrationProps';
+import VariantMainProps from './VariantMainProps';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -37,9 +37,9 @@ TabPanel.defaultProps = {
   children: () => {}
 };
 
-function ProductForm(props) {
+function VariantForm(props) {
   const {
-    name, price, description, variants, images, integrations = [], dimension, onDimensionChange,
+    name, price, originalPrice, quantity, images, integrations = [], dimension, onDimensionChange,
     onCancelClick,
   } = props;
 
@@ -55,16 +55,16 @@ function ProductForm(props) {
 
   const handleChange = (event, newValue) => setValue(newValue);
 
-  const handleNameChange = useCallback((e) => {
-    props.onNameChange(e);
-  }, []);
-
   const handlePriceChange = useCallback((e) => {
-    props.onPriceChange(e)
+    props.onPriceChange(e);
   }, []);
 
-  const handleDescriptionChange = useCallback((e) => {
-    props.onDescriptionChange(e)
+  const handleOriginalPriceChange = useCallback((e) => {
+    props.onOriginalPriceChange(e);
+  }, []);
+
+  const handleQuantityChange = useCallback((e) => {
+    props.onQuantityChange(e);
   }, []);
 
   const handleDimensionChange = useCallback((e) => {
@@ -93,19 +93,19 @@ function ProductForm(props) {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index="general">
-        <ProductInfo
-          thumbnail={images}
+        <VariantMainProps
           name={name}
+          quantity={quantity}
           price={price}
-          description={description}
-          variants={variants}
-          onNameChange={handleNameChange}
+          originalPrice={originalPrice}
+          images={images}
+          onQuantityChange={handleQuantityChange}
           onPriceChange={handlePriceChange}
-          onDescriptionChange={handleDescriptionChange}
+          onOriginalPriceChange={handleOriginalPriceChange}
         />
         <DimensionProps {...dimension} onDimensionChange={handleDimensionChange} />
       </TabPanel>
-      {multipleTabs && integrations.map(({ id, name: name_, product: { properties, errors } }) => (
+      {multipleTabs && integrations.map(({ id, name: name_, variant: { properties, errors } }) => (
         <TabPanel key={id} value={value} index={name_}>
           <IntegrationProps
             properties={properties}
@@ -114,33 +114,36 @@ function ProductForm(props) {
         </TabPanel>
       )
       )}
-      <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
+      <FormActions onCancelClick={onCancelClick} />
     </form>
   );
 };
 
-ProductForm.propTypes = {
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  description: PropTypes.string.isRequired,
-  variants: PropTypes.number,
+VariantForm.propTypes = {
+  name: PropTypes.string,
+  price: PropTypes.number,
+  quantity: PropTypes.number,
+  originalPrice: PropTypes.number,
   images: PropTypes.array,
   dimension: PropTypes.object,
   integrations: PropTypes.array,
-  onNameChange: PropTypes.func.isRequired,
+  onQuantityChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
-  onDescriptionChange: PropTypes.func.isRequired,
+  onOriginalPriceChange: PropTypes.func.isRequired,
   onDimensionChange: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func,
   onSubmitForm: PropTypes.func.isRequired
 };
 
-ProductForm.defaultProps = {
-  variants: null,
+VariantForm.defaultProps = {
   images: [],
+  name: '',
+  price: undefined,
+  originalPrice: undefined,
+  quantity: undefined,
   integrations: [],
   dimension: null,
   onCancelClick: () => { },
 };
 
-export default ProductForm;
+export default VariantForm;

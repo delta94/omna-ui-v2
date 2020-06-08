@@ -3,7 +3,6 @@ import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
   products: { data: [], pagination: {} },
-  variantList: { data: [], pagination: {} },
   loading: false,
   disabledForm: false,
   deleted: false,
@@ -12,10 +11,6 @@ const initialState = fromJS({
 
 export default function integrationsReducer(state = initialState, action) {
   switch (action.type) {
-    case types.GET_VARIANTS:
-      return state.withMutations((mutableState) => {
-        mutableState.set('variantList', action.data);
-      });
     case types.GET_PRODUCTS:
       return state.withMutations((mutableState) => {
         mutableState.set('products', action.data);

@@ -16,24 +16,24 @@ import styles from 'dan-components/Products/product-jss';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 
 export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
-  if(name) {
+  if (name) {
     return `The product will be edited under "${name}" integration`;
   }
   return 'Are you sure you want to edit the product?';
 }
 
-function useWithUndefinedProps(values){
+function useWithUndefinedProps(values) {
   const [dimensionValue, setDimensionValue] = useState(null);
 
   useEffect(() => {
-    if(values) {
+    if (values) {
       const obj = {};
       Object.keys(values).forEach((key) => {
         obj[key] = values[key] || undefined
       });
       setDimensionValue(obj);
     }
-  },[]);
+  }, []);
 
   return dimensionValue;
 };
@@ -74,7 +74,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
-        setDimension({...data.package, overwrite: false});
+        setDimension({ ...data.package, overwrite: false });
       } catch (error) {
         if (error && error.response.data.message) {
           enqueueSnackbar(error.response.data.message, {
@@ -95,12 +95,11 @@ function EditProduct(props) {
   };
 
   const editIntegrationProps = async () => {
-    if (form) {
-      const integrationId = form;
-      const { remote_product_id: remoteProductId, properties } = integrations.find(item => item.id === integrationId).product;
-      const data = { properties };
-      await API.post(`integrations/${integrationId}/products/${remoteProductId}`, { data });
-    }
+    const integrationName = form;
+    const found = integrations.find(item => item.name === integrationName);
+    const { remote_product_id: remoteProductId, properties } = found.product;
+    const data = { properties };
+    await API.post(`integrations/${found.id}/products/${remoteProductId}`, { data });
   };
 
   const handleEdit = async () => {

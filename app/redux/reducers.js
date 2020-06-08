@@ -19,6 +19,7 @@ import tasksReducer from './modules/tasks';
 import integrationsReducer from './modules/integrations';
 import notificationsReducer from './modules/notifications';
 import webhooksReducer from './modules/webhooks';
+import variantsReducer from './modules/variants';
 
 /**
  * Creates the main reducer with the dynamically injected ones
@@ -34,6 +35,7 @@ export default function createReducer(injectedReducers = {}) {
     integration: integrationsReducer,
     notification: notificationsReducer,
     product: productsReducer,
+    variant: variantsReducer,
     availableIntegration: availableIntegrationsReducer,
     initval,
     language: languageProviderReducer,

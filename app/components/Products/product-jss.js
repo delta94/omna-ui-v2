@@ -133,6 +133,17 @@ const styles = theme => ({
       marginLeft: theme.spacing(2),
     }
   },
+  imgGallery2: {
+    marginTop: theme.spacing(3),
+    marginRight: theme.spacing(8),
+    [theme.breakpoints.down('md')]: {
+      marginRight: theme.spacing(8),
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginRight: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+    }
+  },
   divider: {
     background: 'none',
     margin: `${theme.spacing.unit}px 0`
@@ -185,15 +196,7 @@ const styles = theme => ({
   formControl: {
     width: '300px',
     margin: theme.spacing(1,1,1,0)
-  },
-  dimensionItems: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  dimensionContainer: {
-    padding: theme.spacing(3),
-    marginTop: theme.spacing(2)
-  },
+  }
 });
 
 export default styles;
