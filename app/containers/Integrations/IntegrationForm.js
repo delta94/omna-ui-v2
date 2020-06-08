@@ -42,11 +42,13 @@ class IntegrationForm extends Component {
   }
 
   onInputChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
   };
 
   onCheckBoxChange = e => {
-    this.setState({ [e.target.name]: e.target.checked });
+    const { name, checked } = e.target;
+    this.setState({ [name]: checked });
   };
 
   onSubmit = e => {
@@ -133,12 +135,18 @@ class IntegrationForm extends Component {
     } = this.state;
 
     if (selectedChannel === '' && open) {
-      this.setState({ selectedChannel: channel });
+      this.setState({
+        selectedChannel: channel,
+        integration: `integration_${channel
+          .slice(3, -2)
+          .concat('_', channel.slice(-2))
+          .toLowerCase()}`
+      });
     }
 
     const hasCustomDefaultProperties =
       channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
-      
+
     if (editableIntegration && integration === '') {
       this.setState({
         authorized: editableIntegration.authorized,
