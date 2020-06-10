@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
@@ -12,15 +14,17 @@ import API from 'dan-containers/Utils/api';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import ProductForm from 'dan-components/Products/ProductForm';
-import styles from 'dan-components/Products/product-jss';
+import Linker from 'dan-components/Products/Linker';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
+import { linkProduct, unLinkProduct } from 'dan-actions/productActions';
+import styles from 'dan-components/Products/product-jss';
 
 export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
   if (name) {
     return `The product will be edited under "${name}" integration`;
   }
   return 'Are you sure you want to edit the product?';
-}
+};
 
 function useWithUndefinedProps(values) {
   const [dimensionValue, setDimensionValue] = useState(null);
@@ -39,7 +43,7 @@ function useWithUndefinedProps(values) {
 };
 
 function EditProduct(props) {
-  const { match, history, enqueueSnackbar } = props;
+  const { match, history, loading, linkTask, unlinkTask, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -59,7 +63,10 @@ function EditProduct(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
-
+  const [action, setAction] = useState('link');
+  const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
+  const prevLinkTaskProp = useRef(linkTask);
+  const prevUnlinkTaskProp = useRef(unlinkTask);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -86,6 +93,18 @@ function EditProduct(props) {
     }
     fetchProduct();
   }, [match.params.id]);
+
+  useEffect(() => {
+    if(linkTask && linkTask !== prevLinkTaskProp.current) {
+      history.push(`/tasks/${linkTask.id}`);
+    }
+  }, [linkTask]);
+
+  useEffect(() => {
+    if(unlinkTask && unlinkTask !== prevUnlinkTaskProp.current) {
+      history.push(`/tasks/${unlinkTask.id}`);
+    }
+  }, [unlinkTask]);
 
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
@@ -119,6 +138,36 @@ function EditProduct(props) {
     setIsLoading(false);
   };
 
+  const handleLink = () => {
+    setAction('link');
+    setOpenLinkerDlg(true);
+  };
+
+  const handleUnlink = () => {
+    setAction('unlink');
+    setOpenLinkerDlg(true);
+  };
+
+  const handleLinker = (value) => {
+    const { onLinkProduct, onUnlinkProduct } = props;
+    const { id: _id, list, deleteFromIntegration } = value;
+    if (action === 'link') {
+      list.length > 0
+        ? onLinkProduct(_id, list, enqueueSnackbar)
+        : null;
+    } else {
+      list.length > 0
+        ? onUnlinkProduct(
+          _id,
+          list,
+          deleteFromIntegration,
+          enqueueSnackbar
+        )
+        : null;
+    }
+    setOpenLinkerDlg(false);
+  };
+
   const handleDialogCancel = () => setOpenDialog(false);
 
   const handleDialogConfirm = () => {
@@ -133,9 +182,13 @@ function EditProduct(props) {
 
   return (
     <div>
-      {isLoading ? <Loading /> : null}
+      {isLoading || loading ? <Loading /> : null}
       <PageHeader title="Edit product" history={history} />
-      <ToolbarActions onVariantClick={() => history.push(`/products/${match.params.id}/variants`)} />
+      <ToolbarActions
+        onLink={handleLink}
+        onUnlink={handleUnlink}
+        onVariantClick={() => history.push(`/products/${match.params.id}/variants`)}
+      />
       {id && (
         <ProductForm
           name={name}
@@ -159,14 +212,49 @@ function EditProduct(props) {
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />
+      <Linker
+        action={action}
+        id={id}
+        linkedIntegrations={integrations}
+        open={openLinkerDlg}
+        onClose={() => setOpenLinkerDlg(false)}
+        onSave={handleLinker}
+      />
     </div>
   );
-}
+};
+
+const mapStateToProps = state => ({
+  loading: state.getIn(['product', 'loading']),
+  linkTask: state.getIn(['product', 'link']),
+  unlinkTask: state.getIn(['product', 'unlink']),
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  onLinkProduct: bindActionCreators(linkProduct, dispatch),
+  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch)
+});
+
+const EditProductMapped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditProduct);
+
+EditProduct.defaultProps = {
+  linkTask: null,
+  unlinkTask: null
+};
 
 EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
+  loading: PropTypes.bool.isRequired,
+  linkTask: PropTypes.object,
+  unlinkTask: PropTypes.object,
+  onLinkProduct: PropTypes.func.isRequired,
+  onUnlinkProduct: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withStyles(styles)(withSnackbar(EditProduct));
+export default withStyles(styles)(withSnackbar(EditProductMapped));

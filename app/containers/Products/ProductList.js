@@ -195,13 +195,13 @@ class ProductList extends React.Component {
           open={Boolean(anchorEl)}
           onClose={this.handleCloseMenu}
         >
-          <MenuItem onClick={this.handleLinkClick}>
+          <MenuItem onClick={this.handleLinkClick} disabled>
             <ListItemIcon>
               <LinkIcon />
             </ListItemIcon>
             Link
           </MenuItem>
-          <MenuItem onClick={this.handleUnlinkClick}>
+          <MenuItem onClick={this.handleUnlinkClick} disabled>
             <ListItemIcon>
               <LinkOffIcon />
             </ListItemIcon>
@@ -370,7 +370,7 @@ class ProductList extends React.Component {
       },
       onCellClick: (rowData, { colIndex, dataIndex }) => {
         this.setState({ selectedItem: data[dataIndex] });
-        if (colIndex !== 4) {
+        if (colIndex !== 5) {
           history.push(`/products/${data[dataIndex].id}`);
         }
       },
