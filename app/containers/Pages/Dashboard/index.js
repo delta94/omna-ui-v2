@@ -108,8 +108,14 @@ class Dashboard extends Component {
             </PapperBlock>
           </Grid>
 
-          <Grid item md={4} xs={12}>
-            <SalesChartWidget title="Orders / Channel" data={countsExtended} />
+          <Grid item container md={4} xs={12}>
+            {/* <Grid item>Plan</Grid> */}
+            <Grid item>
+              <SalesChartWidget
+                title="Orders / Channel"
+                data={countsExtended}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </div>

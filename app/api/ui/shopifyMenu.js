@@ -1,20 +1,20 @@
 import React from 'react';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import DataIcon from '@material-ui/icons/Apps';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 export default [
-  // {
-  //   key: 'dashboard',
-  //   name: 'Dashboard',
-  //   icon: 'ios-stats-outline',
-  //   link: '/dashboard'
-  // },
+  {
+    key: 'dashboard',
+    name: 'Dashboard',
+    icon: <DashboardIcon />,
+    link: '/dashboard'
+  },
   {
     key: 'data',
     name: 'Data',
     icon: <DataIcon />,
-
     child: [
       {
         key: 'products',
