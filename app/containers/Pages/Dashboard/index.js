@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
-import { PapperBlock, Loading, SalesChartWidget } from 'dan-components';
+import { PapperBlock, SalesChartWidget } from 'dan-components';
 import { withSnackbar } from 'notistack';
 import { getFlows } from 'dan-actions/flowActions';
 import { getOrders } from 'dan-actions/orderActions';
@@ -45,9 +45,9 @@ class Dashboard extends Component {
     const {
       flows,
       loadingOrders,
-      loadingFlows,
-      loadingTasks,
-      loadingWebhooks,
+      // loadingFlows,
+      // loadingTasks,
+      // loadingWebhooks,
       orders,
       tasks,
       webhooks
@@ -83,18 +83,16 @@ class Dashboard extends Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-
-        {loadingOrders || loadingFlows || loadingTasks || loadingWebhooks ? (
+        {/* {loadingOrders || loadingFlows || loadingTasks || loadingWebhooks ? (
           <Loading />
-        ) : (
-          <PerformanceChartWidget
-            flows={flows}
-            orders={orders}
-            webhooks={webhooks}
-            tasks={tasks}
-          />
-        )}
-
+        ) :  */}
+        <PerformanceChartWidget
+          flows={flows}
+          orders={orders}
+          webhooks={webhooks}
+          tasks={tasks}
+        />
+        {/* } */}
         <Grid container spacing={2}>
           <Grid item md={8} xs={12}>
             <PapperBlock
@@ -121,10 +119,10 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   flows: PropTypes.object.isRequired,
-  loadingFlows: PropTypes.bool.isRequired,
+  // loadingFlows: PropTypes.bool.isRequired,
   loadingOrders: PropTypes.bool.isRequired,
-  loadingTasks: PropTypes.bool.isRequired,
-  loadingWebhooks: PropTypes.bool.isRequired,
+  // loadingTasks: PropTypes.bool.isRequired,
+  // loadingWebhooks: PropTypes.bool.isRequired,
   onGetOrders: PropTypes.func.isRequired,
   onGetFlows: PropTypes.func.isRequired,
   onGetTasks: PropTypes.func.isRequired,

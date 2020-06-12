@@ -11,7 +11,8 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem
+  MenuItem,
+  TextField
 } from '@material-ui/core';
 import ArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import HomeIcon from '@material-ui/icons/Home';
@@ -68,9 +69,10 @@ const TenantMenu = props => {
   const { classes, reloadTenants, onSetNotifications } = props;
   const [name, setName] = useState('');
   const [tenantList, setTenantList] = useState([]);
+  const [filteredTenants, setFilteredTenants] = useState([]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  // const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const loadNotications = (tenantName, isReadyToOmna, deactivationDate) => {
     const { onPushNotification, onInstall, enqueueSnackbar } = props;
@@ -107,7 +109,7 @@ const TenantMenu = props => {
           const response = await API.get('tenants', { params });
           const { data } = response.data;
           changeReloadTenants(false);
-          data.unshift({ id: '0', name: 'Tenants' });
+          // data.unshift({ id: '0', name: 'Tenants' });
           setTenantList(data);
           const tenant = data.find(element => element.id === tenantId);
           setName(tenant.name);
@@ -138,10 +140,10 @@ const TenantMenu = props => {
         const params = { limit: 100, offset: 0 };
         const response = await API.get('tenants', { params });
         const { data } = response.data;
-        data.unshift({ id: '0', name: 'Tenants' });
+        // data.unshift({ id: '0', name: 'Tenants' });
         setTenantList(data);
         const found = data.findIndex(element => element.id === tenantId);
-        setSelectedIndex(found);
+        // setSelectedIndex(found);
         // const found = data.find(element => element.id === tenantId);
         const tenant = data[found];
         const {
@@ -160,7 +162,7 @@ const TenantMenu = props => {
     getTenants();
   }, []);
 
-  const handleTenantChange = async (e, tenantId, _name, index) => {
+  const handleTenantChange = async (e, tenantId, _name) => {
     const {
       enqueueSnackbar,
       changeTenantStatus,
@@ -173,7 +175,7 @@ const TenantMenu = props => {
     } = props;
     try {
       setName(_name);
-      setSelectedIndex(index);
+      // setSelectedIndex(index);
       setAnchorEl(null);
       const response = await API.get(`tenants/${tenantId}`);
       const { data } = response.data;
@@ -217,6 +219,18 @@ const TenantMenu = props => {
     setAnchorEl(null);
   };
 
+  const filterTenants = event => {
+    setFilteredTenants(
+      tenantList.map(tenant => {
+        return tenant.name
+          .toLowerCase()
+          .includes(event.target.value.toLowerCase())
+          ? tenant
+          : '';
+      })
+    );
+  };
+
   return (
     <div className={classes.root}>
       <List component="nav" aria-label="Tenants" style={{ padding: 0 }}>
@@ -231,35 +245,50 @@ const TenantMenu = props => {
             <HomeIcon className={classes.icon} />
           </ListItemIcon>
           <ListItemText primary={name} className={classes.selectedTenant} />
-          <ListItemIcon style={{ margin: 0 }}>
+          <ListItemIcon style={{ margin: 0, paddingLeft: 24, width: 20 }}>
             <ArrowDownIcon className={classes.icon} />
           </ListItemIcon>
         </ListItem>
       </List>
+
       <Menu
         id="lock-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        disableAutoFocusItem
       >
-        {tenantList.map((option, index) => (
-          <MenuItem
-            key={option.id}
-            value={option.id}
-            disabled={index === 0}
-            selected={index === selectedIndex}
-            onClick={event =>
-              handleTenantChange(event, option.id, option.name, index)
-            }
-          >
-            {option.name}
-          </MenuItem>
-        ))}
+        <MenuItem>
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            onChange={filterTenants}
+            placeholder="Tenants"
+            onKeyDown={e => e.stopPropagation()}
+
+            // style={{ margin: 8, width: '100%' }}
+          />
+        </MenuItem>
+        {(filteredTenants.length > 0 ? filteredTenants : tenantList).map(
+          (option, index) => (
+            <MenuItem
+              key={option.id}
+              value={option.id}
+              // selected={index === selectedIndex}
+              onClick={event =>
+                handleTenantChange(event, option.id, option.name, index)
+              }
+            >
+              {option.name}
+            </MenuItem>
+          )
+        )}
       </Menu>
     </div>
   );
-}
+};
 
 TenantMenu.propTypes = {
   classes: PropTypes.object.isRequired,
