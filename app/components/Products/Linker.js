@@ -48,27 +48,70 @@ const LINK_TEXT = 'To link this product check the integrations below';
 const UNLINK_TEXT = 'To unlink this product uncheck the linked integrations below';
 
 function Linker(props) {
-  const { classes, action, open, id, linkedIntegrations, integrations, onClose, onGetIntegrations } = props;
+  const { classes, action, open, id, linkedIntegrations, integrations, fromShopifyApp, onClose, onGetIntegrations } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [deleteFromIntegration, setDeleteFromIntegration] = useState(false);
-  const [error, setError] = useState(false);
+  const [errors, setErrors] = useState({
+    integrations: '',
+    delete: ''
+  });
+  const [dirty, setDirty] = useState(false);
   const [labelWidth] = useState(0);
   const inputLabel = React.useRef(null);
+
 
   useEffect(() => {
     if (id && linkedIntegrations) {
       const items = linkedIntegrations.map(item => item.id);
       setSelectedItems(items);
-      setError(false);
     }
   }, [id, open]);
 
   useEffect(() => {
     action === 'link' ? onGetIntegrations({ limit: 100, offset: 0, with_details: true }) : null;
-  }, [])
+  }, []);
 
-  const handleOnChange = e => setSelectedItems(e.target.value);
+  const validForm = () => {
+    let valid = true;
+    Object.keys(errors).forEach((key) => {
+      errors[key] !== '' ? valid = false : null;
+    });
+    return valid;
+  };
+
+  const checkValidity = () => {
+    if (fromShopifyApp && linkedIntegrations.length > 0) {
+      const shopifyItem = linkedIntegrations.find(item => item.channel === 'Ov2Shopify');
+      if(shopifyItem) {
+        const found = selectedItems.find(item => item === shopifyItem.id);
+        if (!found) {
+          setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
+        } else
+          setErrors((prevState) => ({ ...prevState, integrations: '' }));
+      }
+    }
+    const linkedItems = linkedIntegrations.map(item => item.id);
+    if (deleteFromIntegration && JSON.stringify(selectedItems.sort()) === JSON.stringify(linkedItems.sort())) {
+      setErrors((prevState) => ({ ...prevState, delete: 'You have to uncheck some integration' }));
+    } else
+      setErrors((prevState) => ({ ...prevState, delete: '' }));
+
+    if (JSON.stringify(selectedItems.sort()) === JSON.stringify(linkedItems.sort())) {
+      setDirty(false);
+    }
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, [deleteFromIntegration, selectedItems]);
+
+  const handleOnChange = e => {
+    setDirty(true);
+    setSelectedItems(e.target.value)
+  };
+
+  const handleDeleteChange = e => setDeleteFromIntegration(e.target.checked);
 
   const handleOnSave = async () => {
     const { onSave } = props;
@@ -84,11 +127,7 @@ function Linker(props) {
         index === -1 ? list.push(element.id) : null;
       });
     }
-    if(list.length === 0) {
-      setError(true);
-    } else {
-      onSave({ id, list, deleteFromIntegration });
-    }
+    onSave({ id, list, deleteFromIntegration });
   };
 
   return (
@@ -99,7 +138,7 @@ function Linker(props) {
           {action === 'link' ? LINK_TEXT : UNLINK_TEXT}
         </DialogContentText>
         <div className={classes.content}>
-          <FormControl variant="outlined" className={classes.inputWidth} error={error}>
+          <FormControl variant="outlined" className={classes.inputWidth} error={errors.integrations !== '' || false}>
             <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
               Integrations
             </InputLabel>
@@ -111,7 +150,7 @@ function Linker(props) {
               value={selectedItems}
               onChange={handleOnChange}
               labelWidth={labelWidth}
-              renderValue={selected => selected.join(', ')}
+              renderValue={(selected) => selected.join(', ')}
               MenuProps={MenuProps}
             >
               {id && action === 'link' && integrations.data.map(option => {
@@ -137,22 +176,25 @@ function Linker(props) {
                 );
               })}
             </Select>
-            <FormHelperText>{error ? 'There is no elements to save' : ''}</FormHelperText>
+            <FormHelperText>{errors.integrations || ''}</FormHelperText>
           </FormControl>
           {action === 'unlink' ? (
-            <FormControlLabel
-              control={
-                (
-                  <Checkbox
-                    name="delete"
-                    checked={deleteFromIntegration}
-                    onChange={(e) => setDeleteFromIntegration(e.target.checked)}
-                    value="delete"
-                  />
-                )
-              }
-              label="Delete from integration"
-            />
+            <FormControl error={errors.delete !== '' || false}>
+              <FormControlLabel
+                control={
+                  (
+                    <Checkbox
+                      name="delete"
+                      checked={deleteFromIntegration}
+                      onChange={handleDeleteChange}
+                      value="delete"
+                    />
+                  )
+                }
+                label="Delete from integration"
+              />
+              <FormHelperText>{errors.delete || ''}</FormHelperText>
+            </FormControl>
           ) : null}
         </div>
       </DialogContent>
@@ -160,7 +202,7 @@ function Linker(props) {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleOnSave} color="primary">
+        <Button onClick={handleOnSave} color="primary" disabled={!validForm() || !dirty}>
           Save
         </Button>
       </DialogActions>
@@ -185,6 +227,7 @@ const LinkerMapped = connect(
 Linker.defaultProps = {
   action: 'link',
   id: '',
+  fromShopifyApp: undefined,
   linkedIntegrations: []
 };
 
@@ -193,6 +236,7 @@ Linker.propTypes = {
   classes: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
   id: PropTypes.string,
+  fromShopifyApp: PropTypes.bool,
   linkedIntegrations: PropTypes.array,
   integrations: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,

@@ -43,7 +43,7 @@ function useWithUndefinedProps(values) {
 };
 
 function EditProduct(props) {
-  const { match, history, loading, linkTask, unlinkTask, enqueueSnackbar } = props;
+  const { match, history, loading, linkTask, unlinkTask, appStore, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -216,6 +216,7 @@ function EditProduct(props) {
         action={action}
         id={id}
         linkedIntegrations={integrations}
+        fromShopifyApp={appStore.fromShopifyApp}
         open={openLinkerDlg}
         onClose={() => setOpenLinkerDlg(false)}
         onSave={handleLinker}
@@ -250,6 +251,7 @@ EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
+  appStore: PropTypes.object.isRequired,
   linkTask: PropTypes.object,
   unlinkTask: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,

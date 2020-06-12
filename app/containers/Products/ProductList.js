@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -233,7 +233,7 @@ class ProductList extends React.Component {
       openConfirmDlg,
       selectedItem
     } = this.state;
-    const { classes, history, products, integrations, loading } = this.props;
+    const { classes, history, products, integrations, loading, appStore } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
@@ -400,15 +400,19 @@ class ProductList extends React.Component {
           }
         }),
       customToolbar: () => (
-        <Tooltip title="add">
-          <IconButton
-            aria-label="add"
-            component={Link}
-            to="/products/add-product"
-          >
-            <Ionicon icon="md-add-circle" />
-          </IconButton>
-        </Tooltip>
+        <Fragment>
+          {!appStore.fromShopifyApp ? (
+            <Tooltip title="add">
+              <IconButton
+                aria-label="add"
+                component={Link}
+                to="/products/add-product"
+              >
+                <Ionicon icon="md-add-circle" />
+              </IconButton>
+            </Tooltip>
+          ) : null}
+        </Fragment>
       )
     };
 
@@ -471,6 +475,7 @@ ProductList.propTypes = {
   integrations: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
+  appStore: PropTypes.object.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   onGetProducts: PropTypes.func.isRequired,
