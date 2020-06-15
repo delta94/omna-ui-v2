@@ -17,6 +17,7 @@ import ProductForm from 'dan-components/Products/ProductForm';
 import Linker from 'dan-components/Products/Linker';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { linkProduct, unLinkProduct } from 'dan-actions/productActions';
+import { checkTypes } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Products/product-jss';
 
 export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
@@ -24,22 +25,6 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
     return `The product will be edited under "${name}" integration`;
   }
   return 'Are you sure you want to edit the product?';
-};
-
-function useWithUndefinedProps(values) {
-  const [dimensionValue, setDimensionValue] = useState(null);
-
-  useEffect(() => {
-    if (values) {
-      const obj = {};
-      Object.keys(values).forEach((key) => {
-        obj[key] = values[key] || undefined
-      });
-      setDimensionValue(obj);
-    }
-  }, []);
-
-  return dimensionValue;
 };
 
 function EditProduct(props) {
@@ -59,7 +44,6 @@ function EditProduct(props) {
     content: '',
     overwrite: false
   });
-  const dimensions = useWithUndefinedProps(dimension);
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
@@ -81,7 +65,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
-        setDimension({ ...data.package, overwrite: false });
+        setDimension({...checkTypes(data.package), overwrite: false});
       } catch (error) {
         if (error && error.response.data.message) {
           enqueueSnackbar(error.response.data.message, {
@@ -195,7 +179,7 @@ function EditProduct(props) {
           price={price}
           description={description}
           images={images}
-          dimension={dimensions}
+          dimension={dimension}
           variants={variants}
           integrations={integrations}
           onNameChange={(e) => setName(e)}
