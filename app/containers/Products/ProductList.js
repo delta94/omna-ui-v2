@@ -285,9 +285,13 @@ class ProductList extends React.Component {
             const { currency } = tableMeta.rowData;
             return (
               <div>
-                {' '}
-                {`${getCurrencySymbol(currency)}
-            ${parseFloat(value).toFixed(2)} ${currency || ''}`}
+                {value ?  (
+                  <Fragment>
+                    {`${getCurrencySymbol(currency)}`}
+                    {parseFloat(value).toFixed(2)}
+                  </Fragment>
+                ) : ''
+                }
               </div>
             );
           }

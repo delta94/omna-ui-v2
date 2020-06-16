@@ -103,7 +103,7 @@ function ProductForm(props) {
           onPriceChange={handlePriceChange}
           onDescriptionChange={handleDescriptionChange}
         />
-        <DimensionProps {...dimension} onDimensionChange={handleDimensionChange} />
+        <DimensionProps {...dimension} overwriteOption onDimensionChange={handleDimensionChange} />
       </TabPanel>
       {multipleTabs && integrations.map(({ id, name: name_, product: { properties, errors } }) => (
         <TabPanel key={id} value={value} index={name_}>
