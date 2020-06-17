@@ -8,6 +8,7 @@ import {
   EditProduct,
   EditVariant,
   AddProduct,
+  AddVariant,
   AvailableIntegrations,
   Channels,
   InstalledIntegrations,
@@ -57,8 +58,15 @@ export const VariantsRoute = {
   component: Variants
 };
 
-export const EditVariantRoute = { link: '/products/:productId/variants/:variantId', component: EditVariant };
+export const AddVariantRoute = {
+  link: '/products/:id/variants/add-variant',
+  component: AddVariant
+};
 
+export const EditVariantRoute = {
+  link: '/products/:productId/variants/:variantId',
+  component: EditVariant
+};
 
 export const InventoryRoute = { link: '/inventory', component: Inventory };
 
@@ -133,6 +141,7 @@ export const OmnaAppRoutes = [
   VariantsRoute,
   ProductsRoute,
   AddProductRoute,
+  AddVariantRoute,
   EditProductRoute,
   EditVariantRoute,
   // Inventory

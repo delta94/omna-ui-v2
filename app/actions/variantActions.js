@@ -14,6 +14,13 @@ export const getVariant = (productId, variantId, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
+export const createVariant = (productId, data, enqueueSnackbar) => ({
+  type: types.CREATE_VARIANT_ASYNC,
+  productId,
+  data,
+  enqueueSnackbar
+});
+
 export const updateVariant = (productId, variantId, data, enqueueSnackbar) => ({
   type: types.UPDATE_VARIANT_ASYNC,
   productId,

@@ -13,8 +13,9 @@ import styles from './variants-jss';
 
 const VariantMainProps = memo((props) => {
 
-  const { name, price, images, originalPrice, quantity, classes } = props;
+  const { sku, price, images, originalPrice, quantity, action, classes } = props;
 
+  const handleSKUChange = (e) => props.onSkuChange(e.target.value);
   const handleQtyChange = (e) => props.onQuantityChange(e.target.value);
   const handlePriceChange = (e) => props.onPriceChange(e.target.value);
   const handleOriginalPriceChange = (e) => props.onOriginalPriceChange(e.target.value);
@@ -27,11 +28,24 @@ const VariantMainProps = memo((props) => {
         </Grid>
         <Grid item md={6} sm={12} xs={12}>
           <div className={classes.variantContainer}>
-            <Typography variant="subtitle1" className={classes.formControl} gutterBottom>
-              <span className={classNames(Type.textInfo, Type.bold)}>SKU:</span>
-              {' '}
-              <span className={Type.bold}>{name}</span>
-            </Typography>
+            {action === 'add' ? (
+              <TextField
+                className={classes.formControl}
+                label="SKU"
+                name="sku"
+                value={sku}
+                onChange={handleSKUChange}
+                variant="outlined"
+                id="sku"
+              />
+            ) : (
+              <Typography variant="subtitle1" className={classes.formControl} gutterBottom>
+                <span className={classNames(Type.textInfo, Type.bold)}>SKU:</span>
+                {' '}
+                <span className={Type.bold}>{sku}</span>
+              </Typography>
+            )
+            }
             <TextField
               className={classes.formControl}
               label="Quantity"
@@ -87,22 +101,26 @@ const VariantMainProps = memo((props) => {
 
 VariantMainProps.propTypes = {
   classes: PropTypes.object.isRequired,
-  name: PropTypes.string,
+  sku: PropTypes.string,
   images: PropTypes.array,
   quantity: PropTypes.number,
   price: PropTypes.number,
   originalPrice: PropTypes.number,
+  action: PropTypes.oneOf(['add', 'edit']),
+  onSkuChange: PropTypes.func,
   onQuantityChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onOriginalPriceChange: PropTypes.func.isRequired
 };
 
 VariantMainProps.defaultProps = {
-  name: '',
+  sku: '',
   quantity: undefined,
   price: undefined,
   originalPrice: undefined,
-  images: []
+  images: [],
+  action: 'add',
+  onSkuChange: () => {}
 };
 
 export default withStyles(styles)(VariantMainProps);

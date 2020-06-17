@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import get from 'lodash/get';
+
+import IconButton from '@material-ui/core/IconButton';
+import { Link } from 'react-router-dom';
+import Ionicon from 'react-ionicons';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import Avatar from '@material-ui/core/Avatar';
@@ -24,7 +30,7 @@ const getMuiTheme = () => createMuiTheme({
 })
 
 function VariantList(props) {
-  const { match, loading, variantList, onGetVariants, history, enqueueSnackbar } = props;
+  const { match, loading, variantList, onGetVariants, history, appStore, enqueueSnackbar } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
@@ -148,7 +154,22 @@ function VariantList(props) {
     onCellClick: (rowData, { dataIndex }) => {
       const { pathname } = history.location;
       history.push(`${pathname}/${data[dataIndex].id}`);
-    }
+    },
+    customToolbar: () => (
+      <Fragment>
+        {!appStore.fromShopifyApp ? (
+          <Tooltip title="add variant">
+            <IconButton
+              aria-label="add"
+              component={Link}
+              to={`${history.location.pathname}/add-variant`}
+            >
+              <Ionicon icon="md-add-circle" />
+            </IconButton>
+          </Tooltip>
+        ) : null}
+      </Fragment>
+    )
   };
 
   return (
@@ -166,6 +187,7 @@ VariantList.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
+  appStore: PropTypes.object.isRequired,
   variantList: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired

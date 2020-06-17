@@ -33,6 +33,23 @@ function* getVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* createVariant(payload) {
+  const { productId, data, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.post(`/products/${productId}/variants`, { data });
+    yield put({ type: types.CREATE_VARIANT, data: response.data.data });
+    enqueueSnackbar('Variant created successfuly', {
+      variant: 'success'
+    });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* updateVariant(payload) {
   const { productId, variantId, data, enqueueSnackbar } = payload;
   try {
@@ -67,13 +84,16 @@ function* updateIntegrationVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
-
 export function* watchGetVariants() {
   yield takeLatest(types.GET_VARIANTS_ASYNC, getVariants);
 }
 
 export function* watchGetVariant() {
   yield takeLatest(types.GET_VARIANT_ASYNC, getVariant);
+}
+
+export function* watchCreateVariant() {
+  yield takeLatest(types.CREATE_VARIANT_ASYNC, createVariant);
 }
 
 export function* watchUpdateVariant() {
@@ -85,5 +105,5 @@ export function* watchUpdateIntegrationVariant() {
 }
 
 export default function* variantSaga() {
-  yield all([watchGetVariants(), watchGetVariant(), watchUpdateVariant(), watchUpdateIntegrationVariant()]);
+  yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(), watchUpdateIntegrationVariant()]);
 }

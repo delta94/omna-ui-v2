@@ -90,6 +90,10 @@ export const Variants = loadable(() => import('./Products/VariantList'), {
   fallback: <Loading />
 });
 
+export const AddVariant = loadable(() => import('./Products/AddVariant'), {
+  fallback: <Loading />
+});
+
 export const EditVariant = loadable(() => import('./Products/EditVariant'), {
   fallback: <Loading />
 });
