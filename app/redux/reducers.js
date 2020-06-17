@@ -17,6 +17,7 @@ import ordersReducer from './modules/orders';
 import productsReducer from './modules/products';
 import tasksReducer from './modules/tasks';
 import integrationsReducer from './modules/integrations';
+import inventoryReducer from './modules/inventory';
 import notificationsReducer from './modules/notifications';
 import webhooksReducer from './modules/webhooks';
 import variantsReducer from './modules/variants';
@@ -33,6 +34,7 @@ export default function createReducer(injectedReducers = {}) {
     ui: uiReducer,
     tenant: tenantReducer,
     integration: integrationsReducer,
+    inventory: inventoryReducer,
     notification: notificationsReducer,
     product: productsReducer,
     variant: variantsReducer,

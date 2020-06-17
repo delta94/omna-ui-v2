@@ -3,6 +3,7 @@ import availableIntegrationSaga from './availableIntegrationSaga';
 import orderSaga from './orderSaga';
 import productSaga from './productSaga';
 import integrationSaga from './integrationSaga';
+import inventorySaga from './inventorySaga';
 import channelSaga from './channelSaga';
 import flowSaga from './flowSaga';
 import taskSaga from './taskSaga';
@@ -15,6 +16,7 @@ export default function* rootSaga() {
     channelSaga(),
     flowSaga(),
     integrationSaga(),
+    inventorySaga(),
     orderSaga(),
     productSaga(),
     variantSaga(),
