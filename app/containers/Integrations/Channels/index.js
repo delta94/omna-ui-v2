@@ -89,6 +89,7 @@ class ChannelList extends Component {
       offset: 0,
       limit: integrations.total
     };
+
     onGetIntegrations(integrationsParams);
   };
 
@@ -140,12 +141,16 @@ class ChannelList extends Component {
             {data &&
               data.map(chan => {
                 const match = integrations
-                .get('data')
-                .find(integration => integration.get('channel') === chan.name);
+                  .get('data')
+                  .find(
+                    integration => integration.get('channel') === chan.name
+                  );
 
-                return isOmnaShopify
+                return match
+                  ? null
+                  : isOmnaShopify
                   ? !chan.name.includes('Shopify') &&
-                      this.renderIntegrationItem(chan, classes, Boolean(match))
+                    this.renderIntegrationItem(chan, classes, Boolean(match))
                   : this.renderIntegrationItem(chan, classes, Boolean(match));
               })}
           </Grid>
