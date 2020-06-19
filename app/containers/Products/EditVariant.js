@@ -22,7 +22,7 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 function EditVariant(props) {
   const { match, loading, history, variant, enqueueSnackbar, onGetVariant } = props;
   const [id, setId] = useState();
-  const [name, setName] = useState('');
+  const [sku, setSKU] = useState('');
   const [price, setPrice] = useState();
   const [originalPrice, setOriginalPrice] = useState();
   const [quantity, setQuantity] = useState();
@@ -46,7 +46,7 @@ function EditVariant(props) {
   useEffect(() => {
     if (variant) {
       setId(variant.id);
-      setName(variant.sku);
+      setSKU(variant.sku);
       setPrice(variant.price);
       setQuantity(variant.quantity);
       setOriginalPrice(variant.original_price);
@@ -60,7 +60,7 @@ function EditVariant(props) {
 
   const editBasicInfo = async () => {
     const { onUpdateVariant } = props;
-    const data = { sku: name, quantity, price, original_price: originalPrice, package: dimension };
+    const data = { sku, quantity, price, original_price: originalPrice, package: dimension };
     onUpdateVariant(match.params.productId, match.params.variantId, data, enqueueSnackbar);
   };
 
@@ -93,13 +93,14 @@ function EditVariant(props) {
       <PageHeader title="Edit variant" history={history} />
       {id && (
         <VariantForm
-          name={name}
+          sku={sku}
           quantity={quantity}
           price={price}
           originalPrice={originalPrice}
           images={images}
           dimension={dimension}
           integrations={integrations}
+          action="edit"
           onQuantityChange={(e) => setQuantity(e)}
           onPriceChange={e => setPrice(e)}
           onOriginalPriceChange={e => setOriginalPrice(e)}

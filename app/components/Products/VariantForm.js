@@ -39,8 +39,8 @@ TabPanel.defaultProps = {
 
 function VariantForm(props) {
   const {
-    name, price, originalPrice, quantity, images, integrations = [], dimension, onDimensionChange,
-    onCancelClick,
+    sku, price, originalPrice, quantity, images, integrations = [], dimension, action,
+    onDimensionChange, onCancelClick,
   } = props;
 
   const [value, setValue] = useState('general');
@@ -54,6 +54,11 @@ function VariantForm(props) {
   }, [integrations])
 
   const handleChange = (event, newValue) => setValue(newValue);
+
+
+  const handleSKUChange = useCallback((e) => {
+    props.onSKUChange(e);
+  }, []);
 
   const handlePriceChange = useCallback((e) => {
     props.onPriceChange(e);
@@ -94,11 +99,13 @@ function VariantForm(props) {
       </AppBar>
       <TabPanel value={value} index="general">
         <VariantMainProps
-          name={name}
+          sku={sku}
           quantity={quantity}
           price={price}
           originalPrice={originalPrice}
           images={images}
+          action={action}
+          onSkuChange={handleSKUChange}
           onQuantityChange={handleQuantityChange}
           onPriceChange={handlePriceChange}
           onOriginalPriceChange={handleOriginalPriceChange}
@@ -120,13 +127,15 @@ function VariantForm(props) {
 };
 
 VariantForm.propTypes = {
-  name: PropTypes.string,
+  sku: PropTypes.string,
   price: PropTypes.number,
   quantity: PropTypes.number,
   originalPrice: PropTypes.number,
   images: PropTypes.array,
   dimension: PropTypes.object,
+  action: PropTypes.oneOf(['add', 'edit']),
   integrations: PropTypes.array,
+  onSKUChange: PropTypes.func,
   onQuantityChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onOriginalPriceChange: PropTypes.func.isRequired,
@@ -137,12 +146,14 @@ VariantForm.propTypes = {
 
 VariantForm.defaultProps = {
   images: [],
-  name: '',
+  sku: '',
   price: undefined,
   originalPrice: undefined,
   quantity: undefined,
   integrations: [],
   dimension: null,
+  action: 'add',
+  onSKUChange: () => {},
   onCancelClick: () => { },
 };
 
