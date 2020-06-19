@@ -7,6 +7,7 @@ import channelSaga from './channelSaga';
 import flowSaga from './flowSaga';
 import taskSaga from './taskSaga';
 import webhookSaga from './webhookSaga';
+import variantSaga from './variantSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -16,6 +17,7 @@ export default function* rootSaga() {
     integrationSaga(),
     orderSaga(),
     productSaga(),
+    variantSaga(),
     taskSaga(),
     webhookSaga()
   ]);

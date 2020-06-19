@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import LinkIcon from '@material-ui/icons/Link';
+import LinkOffIcon from '@material-ui/icons/LinkOff';
 
 const styles = theme => ({
   topAction: {
@@ -15,22 +16,51 @@ const styles = theme => ({
     padding: '0 20px',
     borderRadius: theme.rounded.medium,
   },
+  button: {
+    margin: theme.spacing(1),
+  },
 });
 
-function ToolbarActions({ classes, onVariantClick }) {
+function ToolbarActions({ classes, onVariantClick, onLink, onUnlink }) {
 
   return (
     <div className={classes.topAction}>
-        <Tooltip id="tooltip-variants" title="Variants">
-          <IconButton onClick={onVariantClick}><ViewAgendaIcon /></IconButton>
-        </Tooltip>
+      <Button
+        variant="contained"
+        color="default"
+        className={classes.button}
+        startIcon={<ViewAgendaIcon />}
+        onClick={onVariantClick}
+      >
+        Variants
+      </Button>
+      <Button
+        variant="contained"
+        color="default"
+        className={classes.button}
+        startIcon={<LinkOffIcon />}
+        onClick={onUnlink}
+      >
+        Unlink
+      </Button>
+      <Button
+        variant="contained"
+        color="default"
+        className={classes.button}
+        startIcon={<LinkIcon />}
+        onClick={onLink}
+      >
+        Link
+      </Button>
     </div>
   );
 };
 
 ToolbarActions.propTypes = {
   classes: PropTypes.object.isRequired,
-  onVariantClick: PropTypes.func.isRequired
+  onVariantClick: PropTypes.func.isRequired,
+  onLink: PropTypes.func.isRequired,
+  onUnlink: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(ToolbarActions);

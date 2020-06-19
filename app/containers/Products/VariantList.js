@@ -4,19 +4,24 @@ import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import get from 'lodash/get';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
-
-import { withStyles } from '@material-ui/core/styles';
-import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
-import 'dan-styles/vendors/slick-carousel/slick.css';
-import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Avatar from '@material-ui/core/Avatar';
 import { delay } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 
-import { getProductVariantList } from 'dan-actions/productActions';
+import { getVariantList } from 'dan-actions/variantActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
-import styles from 'dan-components/Products/product-jss';
+
+const getMuiTheme = () => createMuiTheme({
+  overrides: {
+    MUIDataTableBodyCell: {
+      root: {
+        cursor: 'pointer'
+      }
+    }
+  }
+})
 
 function VariantList(props) {
   const { match, loading, variantList, onGetVariants, history, enqueueSnackbar } = props;
@@ -103,7 +108,11 @@ function VariantList(props) {
       options: {
         filter: false,
         customBodyRender: (value) => (
-          <div>$ {' '} {parseFloat(value).toFixed(2)}</div>
+          <div>
+            $
+            {' '}
+            {parseFloat(value).toFixed(2)}
+          </div>
         )
       }
     },
@@ -135,6 +144,10 @@ function VariantList(props) {
         default:
           break;
       }
+    },
+    onCellClick: (rowData, { dataIndex }) => {
+      const { pathname } = history.location;
+      history.push(`${pathname}/${data[dataIndex].id}`);
     }
   };
 
@@ -142,7 +155,9 @@ function VariantList(props) {
     <div>
       {loading ? <Loading /> : null}
       <PageHeader title="Variants" history={history} />
-      <MUIDataTable columns={columns} data={data} options={options} />
+      <MuiThemeProvider theme={getMuiTheme()}>
+        <MUIDataTable columns={columns} data={data} options={options} />
+      </MuiThemeProvider>
     </div>
   );
 }
@@ -157,13 +172,13 @@ VariantList.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  variantList: state.getIn(['product', 'variantList']),
-  loading: state.getIn(['product', 'loading']),
+  variantList: state.getIn(['variant', 'variantList']),
+  loading: state.getIn(['variant', 'loading']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetVariants: bindActionCreators(getProductVariantList, dispatch)
+  onGetVariants: bindActionCreators(getVariantList, dispatch)
 });
 
 const VariantListMapped = connect(
@@ -171,4 +186,4 @@ const VariantListMapped = connect(
   mapDispatchToProps
 )(VariantList);
 
-export default withStyles(styles)(withSnackbar(VariantListMapped));
+export default withSnackbar(VariantListMapped);

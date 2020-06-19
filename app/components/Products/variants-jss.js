@@ -18,6 +18,21 @@ const styles = theme => ({
     borderRadius: theme.rounded.medium,
     boxShadow: theme.shade.light
   },
+  detailWrap: {
+    position: 'relative',
+    padding: theme.spacing(2)
+  },
+  variantContainer: {
+    marginTop: theme.spacing(3),
+    padding: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'column',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    width: '100%',
+    margin: theme.spacing(1,1,2,0)
+  },
   iconRed: {
     color: red[500]
   },

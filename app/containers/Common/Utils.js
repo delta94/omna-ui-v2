@@ -190,3 +190,14 @@ export const getResourceOptions = () => {
   ];
   return options;
 };
+
+export const checkTypes = (values) => {
+  if (values) {
+    const obj = {};
+    Object.keys(values).forEach((key) => {
+      obj[key] = values[key] || undefined
+    });
+    return obj;
+  }
+  return undefined;
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -18,9 +18,10 @@ import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
-import { Loading, EmptyState } from 'dan-components';
+import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
+import ChipsArray from 'dan-components/ChipsArray';
 import Publisher from 'dan-components/Products/Publisher';
 import {
   getProducts,
@@ -51,7 +52,6 @@ const styles = theme => ({
 
 class ProductList extends React.Component {
   state = {
-    // integrationFilterOptions: [],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -64,6 +64,8 @@ class ProductList extends React.Component {
   };
 
   componentDidMount() {
+    const { onGetIntegrations } = this.props;
+    onGetIntegrations({ params: { offset: 0, limit: 100 } });
     this.callAPI();
   }
 
@@ -79,7 +81,7 @@ class ProductList extends React.Component {
   }
 
   callAPI = () => {
-    const { onGetProducts, enqueueSnackbar } = this.props;
+    const { integrations, onGetProducts, enqueueSnackbar } = this.props;
     const { searchTerm, limit, page, serverSideFilterList } = this.state;
 
     const params = {
@@ -87,7 +89,7 @@ class ProductList extends React.Component {
       limit,
       term: searchTerm || '',
       with_details: true,
-      integration_id: serverSideFilterList[4] ? serverSideFilterList[4][0] : ''
+      integration_id: serverSideFilterList[3] && serverSideFilterList[3][0] ? integrations.data.find(item => item.name === serverSideFilterList[3][0]).id : ''
     };
     onGetProducts({ params, enqueueSnackbar });
   };
@@ -168,11 +170,11 @@ class ProductList extends React.Component {
     } else {
       list.length > 0
         ? await onUnlinkProduct(
-            productId,
-            list,
-            deleteFromIntegration,
-            enqueueSnackbar
-          )
+          productId,
+          list,
+          deleteFromIntegration,
+          enqueueSnackbar
+        )
         : null;
     }
     this.setState({ openPublisherDlg: false });
@@ -193,13 +195,13 @@ class ProductList extends React.Component {
           open={Boolean(anchorEl)}
           onClose={this.handleCloseMenu}
         >
-          <MenuItem onClick={this.handleLinkClick}>
+          <MenuItem onClick={this.handleLinkClick} disabled>
             <ListItemIcon>
               <LinkIcon />
             </ListItemIcon>
             Link
           </MenuItem>
-          <MenuItem onClick={this.handleUnlinkClick}>
+          <MenuItem onClick={this.handleUnlinkClick} disabled>
             <ListItemIcon>
               <LinkOffIcon />
             </ListItemIcon>
@@ -231,7 +233,7 @@ class ProductList extends React.Component {
       openConfirmDlg,
       selectedItem
     } = this.state;
-    const { classes, history, products, loading } = this.props;
+    const { classes, history, products, integrations, loading, appStore } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
@@ -283,12 +285,30 @@ class ProductList extends React.Component {
             const { currency } = tableMeta.rowData;
             return (
               <div>
-                {' '}
-                {`${getCurrencySymbol(currency)}
-            ${parseFloat(value).toFixed(2)} ${currency || ''}`}
+                {value ?  (
+                  <Fragment>
+                    {`${getCurrencySymbol(currency)}`}
+                    {parseFloat(value).toFixed(2)}
+                  </Fragment>
+                ) : ''
+                }
               </div>
             );
           }
+        }
+      },
+      {
+        name: 'integrations',
+        label: 'Integrations',
+        options: {
+          filter: true,
+          sort: false,
+          filterType: 'dropdown',
+          filterList: serverSideFilterList[3],
+          filterOptions: {
+            names: integrations.data.map(item => item.name),
+          },
+          customBodyRender: value => <ChipsArray items={value} />
         }
       },
       {
@@ -354,7 +374,7 @@ class ProductList extends React.Component {
       },
       onCellClick: (rowData, { colIndex, dataIndex }) => {
         this.setState({ selectedItem: data[dataIndex] });
-        if (colIndex !== 4) {
+        if (colIndex !== 5) {
           history.push(`/products/${data[dataIndex].id}`);
         }
       },
@@ -364,14 +384,14 @@ class ProductList extends React.Component {
             case 3:
               return (
                 (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
+                  parseFloat(b.customSortData[colIndex])
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
             case 4:
               return (
                 (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
+                  b.customSortData[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (product === 'desc' ? 1 : -1)
               );
@@ -384,15 +404,19 @@ class ProductList extends React.Component {
           }
         }),
       customToolbar: () => (
-        <Tooltip title="add">
-          <IconButton
-            aria-label="add"
-            component={Link}
-            to="/products/add-product"
-          >
-            <Ionicon icon="md-add-circle" />
-          </IconButton>
-        </Tooltip>
+        <Fragment>
+          {!appStore.fromShopifyApp ? (
+            <Tooltip title="add">
+              <IconButton
+                aria-label="add"
+                component={Link}
+                to="/products/add-product"
+              >
+                <Ionicon icon="md-add-circle" />
+              </IconButton>
+            </Tooltip>
+          ) : null}
+        </Fragment>
       )
     };
 
@@ -400,22 +424,12 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         <div className={classes.table}>
-          {loading ? (
-            <Loading />
-          ) : count > 0 ? (
-            <MUIDataTable columns={columns} data={data} options={options} />
-          ) : (
-            <EmptyState
-              text="There's nothing here now, but products data will show up here later.
-             You can add them clicking the button below"
-            />
-          )}
+          {loading ? <Loading /> : null}
+          <MUIDataTable columns={columns} data={data} options={options} />
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
-            message={`Are you sure you want to remove the product: "${
-              selectedItem ? selectedItem.name : ''
-            }"`}
+            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : '' }"`}
             handleCancel={this.handleCancelDlg}
             handleConfirm={this.handleConfirmDlg}
           />
@@ -434,6 +448,7 @@ class ProductList extends React.Component {
 
 const mapStateToProps = state => ({
   products: state.getIn(['product', 'products']),
+  integrations: state.getIn(['integration', 'integrations']).toJS(),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
@@ -461,11 +476,14 @@ ProductList.defaultProps = {
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
   products: PropTypes.object.isRequired,
+  integrations: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
+  appStore: PropTypes.object.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   onGetProducts: PropTypes.func.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
