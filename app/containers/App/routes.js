@@ -49,7 +49,7 @@ export const AddProductRoute = {
 };
 
 export const EditProductRoute = {
-  link: '/products/:id',
+  link: '/products/:id/edit-product',
   component: EditProduct
 };
 
@@ -64,7 +64,7 @@ export const AddVariantRoute = {
 };
 
 export const EditVariantRoute = {
-  link: '/products/:productId/variants/:variantId',
+  link: '/products/:productId/variants/:variantId/edit-variant',
   component: EditVariant
 };
 
@@ -95,7 +95,7 @@ export const AddWorkflowRoute = {
 };
 
 export const EditWorkflowRoute = {
-  link: '/workflows/:id',
+  link: '/workflows/:id/edit-workflow',
   component: EditWorkflow
 };
 
@@ -109,7 +109,7 @@ export const AddWebhookRoute = {
 };
 
 export const EditWebhookRoute = {
-  link: '/webhooks/:id',
+  link: '/webhooks/:id/edit-webhook',
   component: EditWebhook
 };
 

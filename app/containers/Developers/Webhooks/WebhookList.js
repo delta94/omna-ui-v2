@@ -188,7 +188,7 @@ class WebhookList extends React.Component {
 
   handleEdit = id => {
     const { history } = this.props;
-    history.push(`/webhooks/${id}`);
+    history.push(`/webhooks/${id}/edit-webhook`);
   };
 
   handleOnClickDelete = tableMeta => {

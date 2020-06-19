@@ -110,7 +110,7 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/workflows/${id}`);
+    history.push(`/workflows/${id}/edit-workflow`);
   };
 
   handleToggleScheduler = async id => {

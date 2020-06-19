@@ -185,7 +185,7 @@ function VariantList(props) {
       setSelectedItem(data[dataIndex] || null);
       if(colIndex !== 5) {
         const { pathname } = history.location;
-        history.push(`${pathname}/${data[dataIndex].id}`);
+        history.push(`${pathname}/${data[dataIndex].id}/edit-variant`);
       }
     },
     customToolbar: () => (

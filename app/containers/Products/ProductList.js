@@ -375,7 +375,7 @@ class ProductList extends React.Component {
       onCellClick: (rowData, { colIndex, dataIndex }) => {
         this.setState({ selectedItem: data[dataIndex] });
         if (colIndex !== 5) {
-          history.push(`/products/${data[dataIndex].id}`);
+          history.push(`/products/${data[dataIndex].id}/edit-product`);
         }
       },
       customSort: (customSortData, colIndex, product) =>

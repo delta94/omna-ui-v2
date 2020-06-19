@@ -20,6 +20,11 @@ export default [
         key: 'products',
         name: 'Products',
         link: '/products'
+      },
+      {
+        key: 'inventory',
+        name: 'Inventory',
+        link: '/inventory'
       }
     ]
   },

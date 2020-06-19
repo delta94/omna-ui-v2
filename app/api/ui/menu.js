@@ -89,16 +89,6 @@ export default [
         name: 'Webhooks',
         link: '/webhooks'
       }
-      // {
-      //   key: 'events',
-      //   name: 'Events',
-      //   link: '/events'
-      // },
-      // {
-      //   key: 'logs',
-      //   name: 'Logs',
-      //   link: '/logs'
-      // }
     ]
   }
 ];
