@@ -13,7 +13,7 @@ export default function variantsReducer(state = initialState, action) {
   switch (action.type) {
     case types.GET_VARIANTS:
       return state.withMutations((mutableState) => {
-        mutableState.set('variantList', action.data);
+        mutableState.set('variantList', fromJS(action.data));
       });
     case types.GET_VARIANT:
       return state.withMutations((mutableState) => {
@@ -26,6 +26,10 @@ export default function variantsReducer(state = initialState, action) {
     case types.UPDATE_VARIANT:
       return state.withMutations((mutableState) => {
         mutableState.set('update', action.data);
+      });
+    case types.DELETE_VARIANT:
+      return state.withMutations((mutableState) => {
+        mutableState.updateIn(['variantList', 'data'], list => list.filter(item => item.get('id') !== action.id));
       });
     case types.UPDATE_INTEGRATION_VARIANT:
       return state.withMutations((mutableState) => {
