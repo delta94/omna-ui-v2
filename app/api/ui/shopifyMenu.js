@@ -65,6 +65,11 @@ export default [
         key: 'client-settings',
         name: 'Client Settings',
         link: '/client-settings'
+      },
+      {
+        key: 'workflows',
+        name: 'Workflows',
+        link: '/workflows'
       }
     ]
   }

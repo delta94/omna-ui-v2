@@ -18,6 +18,7 @@ import MUIDataTable from 'mui-datatables';
 import { EmptyState, Loading } from 'dan-components';
 import { getFlows } from 'dan-actions/flowActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
 import PageHeader from '../../Common/PageHeader';
@@ -220,12 +221,14 @@ class Flows extends Component {
           </ListItemIcon>
           Start
         </MenuItem>
-        <MenuItem onClick={() => this.handleOnClickDeleteFlow(id, title)}>
-          <ListItemIcon>
-            <Ionicon icon="md-trash" />
-          </ListItemIcon>
-          Delete
-        </MenuItem>
+        {!isOmnaShopify && (
+          <MenuItem onClick={() => this.handleOnClickDeleteFlow(id, title)}>
+            <ListItemIcon>
+              <Ionicon icon="md-trash" />
+            </ListItemIcon>
+            Delete
+          </MenuItem>
+        )}
         <MenuItem onClick={() => this.handleToggleScheduler(id)}>
           <ListItemIcon>
             {task.scheduler && task.scheduler.active ? (
@@ -392,15 +395,16 @@ class Flows extends Component {
               );
           }
         }),
-      customToolbar: () => (
-        <Tooltip title="add">
-          <IconButton aria-label="add" onClick={this.handleAddAction}>
-            <Ionicon icon="md-add-circle" />
-          </IconButton>
-        </Tooltip>
-      ),
+      customToolbar: () =>
+        !isOmnaShopify && (
+          <Tooltip title="add">
+            <IconButton aria-label="add" onClick={this.handleAddAction}>
+              <Ionicon icon="md-add-circle" />
+            </IconButton>
+          </Tooltip>
+        ),
       onCellClick: (rowData, { colIndex, dataIndex }) => {
-        if (colIndex !== 6) {
+        if (colIndex !== 6 && isOmnaShopify) {
           const flow = data[dataIndex];
           this.handleEditFlow(flow.id);
         }
@@ -426,7 +430,7 @@ class Flows extends Component {
           </div>
         ) : (
           <EmptyState
-            action={this.handleAddAction}
+            action={!isOmnaShopify && this.handleAddAction}
             actionText="Add Flow"
             text={`There's nothing here now, but products data will show up here later. You can add them clicking the button below.`}
           />
