@@ -6,6 +6,8 @@ const initialState = fromJS({
   variant: null,
   create: null,
   update: null,
+  link: null,
+  unlink: null,
   loading: false,
 });
 
@@ -34,6 +36,14 @@ export default function variantsReducer(state = initialState, action) {
     case types.UPDATE_INTEGRATION_VARIANT:
       return state.withMutations((mutableState) => {
         mutableState.set('update', action.data);
+      });
+    case types.LINK_VARIANT:
+      return state.withMutations((mutableState) => {
+        mutableState.set('link', action.data);
+      });
+    case types.UNLINK_VARIANT:
+      return state.withMutations((mutableState) => {
+        mutableState.set('unlink', action.data);
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

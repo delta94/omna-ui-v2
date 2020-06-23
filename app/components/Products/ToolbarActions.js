@@ -25,15 +25,17 @@ function ToolbarActions({ classes, onVariantClick, onLink, onUnlink }) {
 
   return (
     <div className={classes.topAction}>
-      <Button
-        variant="contained"
-        color="default"
-        className={classes.button}
-        startIcon={<ViewAgendaIcon />}
-        onClick={onVariantClick}
-      >
-        Variants
-      </Button>
+      {onVariantClick && (
+        <Button
+          variant="contained"
+          color="default"
+          className={classes.button}
+          startIcon={<ViewAgendaIcon />}
+          onClick={onVariantClick}
+        >
+          Variants
+        </Button>
+      )}
       <Button
         variant="contained"
         color="default"
@@ -56,9 +58,13 @@ function ToolbarActions({ classes, onVariantClick, onLink, onUnlink }) {
   );
 };
 
+ToolbarActions.defaultProps = {
+  onVariantClick: undefined
+};
+
 ToolbarActions.propTypes = {
   classes: PropTypes.object.isRequired,
-  onVariantClick: PropTypes.func.isRequired,
+  onVariantClick: PropTypes.func,
   onLink: PropTypes.func.isRequired,
   onUnlink: PropTypes.func.isRequired
 };

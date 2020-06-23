@@ -101,6 +101,38 @@ function* updateIntegrationVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* linkVariant(payload) {
+  const { productId, variantId, integrationIds, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.put(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds } });
+    const { data } = response.data;
+    enqueueSnackbar('Linking variant', { variant: 'info' });
+    yield put({ type: types.LINK_VARIANT, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
+function* unlinkVariant(payload) {
+  const { productId, variantId, integrationIds, deleteFromIntegration, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.patch(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
+    const { data } = response.data;
+    enqueueSnackbar('Unlinking variant', { variant: 'info' });
+    yield put({ type: types.UNLINK_VARIANT, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 export function* watchGetVariants() {
   yield takeLatest(types.GET_VARIANTS_ASYNC, getVariants);
 }
@@ -125,6 +157,14 @@ export function* watchUpdateIntegrationVariant() {
   yield takeLatest(types.UPDATE_INTEGRATION_VARIANT_ASYNC, updateIntegrationVariant);
 }
 
+export function* watchLinkVariant() {
+  yield takeLatest(types.LINK_VARIANT_ASYNC, linkVariant);
+}
+
+export function* watchUnlinkVariant() {
+  yield takeLatest(types.UNLINK_VARIANT_ASYNC, unlinkVariant);
+}
+
 export default function* variantSaga() {
-  yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(), watchDeleteVariant(), watchUpdateIntegrationVariant()]);
+  yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(), watchDeleteVariant(), watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant()]);
 }
