@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
+import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
 import Dashboard from '../Templates/Dashboard';
 import { LockScreen, Logout, NotFound } from '../pageListAsync';
@@ -9,7 +10,6 @@ import {
   OmnaAppRoutes as omnaRoutes,
   OmnaShopifyRoutes as shopifyRoutes
 } from './routes';
-import { isOmnaShopify } from 'dan-containers/Common/Utils';
 
 class Application extends React.Component {
   render() {

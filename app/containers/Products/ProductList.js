@@ -347,7 +347,7 @@ class ProductList extends React.Component {
       serverSide: true,
       searchText: searchTerm,
       serverSideFilterList,
-      searchPlaceholder: 'Search by address & topic',
+      searchPlaceholder: 'Search by name',
       rowsPerPage: limit,
       count,
       page,

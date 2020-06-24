@@ -53,9 +53,12 @@ export const TaskDetails = loadable(() => import('./Tasks/TaskDetails'), {
   fallback: <Loading />
 });
 
-export const AvailableIntegrations = loadable(() => import('./Integrations/AvailableIntegrations/AvailableIntegrationList'), {
-  fallback: <Loading />
-});
+export const AvailableIntegrations = loadable(
+  () => import('./Integrations/AvailableIntegrations/AvailableIntegrationList'),
+  {
+    fallback: <Loading />
+  }
+);
 
 export const Orders = loadable(() => import('./Orders/OrderList'), {
   fallback: <Loading />
@@ -114,9 +117,12 @@ export const Channels = loadable(() => import('./Integrations/Channels'), {
   fallback: <Loading />
 });
 
-export const InstalledIntegrations = loadable(() => import('./Integrations/IntegrationList'), {
-  fallback: <Loading />
-});
+export const InstalledIntegrations = loadable(
+  () => import('./Integrations/IntegrationList'),
+  {
+    fallback: <Loading />
+  }
+);
 
 export const IntegrationForm = loadable(
   () => import('./Integrations/IntegrationForm'),
@@ -157,16 +163,10 @@ export const InstallShopify = loadable(
   }
 );
 
-export const Inventory = loadable(
-  () => import('./Inventory'),
-  {
-    fallback: <Loading />
-  }
-);
+export const Inventory = loadable(() => import('./Inventory'), {
+  fallback: <Loading />
+});
 
-export const ApiKeys = loadable(
-  () => import('./Developers/ApiKeys'),
-  {
-    fallback: <Loading />
-  }
-);
+export const ApiKeys = loadable(() => import('./Developers/ApiKeys'), {
+  fallback: <Loading />
+});
