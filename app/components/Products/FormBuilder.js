@@ -264,9 +264,7 @@ const MuiDate = props => {
     classes
   } = props;
 
-  const handleChange = (e) => {
-    onChange({ target: { name: id, value: moment(e).format('Y-MM-DD') } });
-  };
+  const handleChange = (e) => onChange({ target: { name: id, value: moment(e).format() } });
 
   return (
     <Grid item>
