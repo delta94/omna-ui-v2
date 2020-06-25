@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -9,7 +9,11 @@ import Loading from 'dan-components/Loading';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import VariantForm from 'dan-components/Products/VariantForm';
-import { getVariant, updateVariant, updateIntegrationVariant } from 'dan-actions/variantActions';
+import ToolbarActions from 'dan-components/Products/ToolbarActions';
+import Linker from 'dan-components/Products/Linker';
+import {
+  getVariant, updateVariant, linkVariant, unlinkVariant, updateIntegrationVariant
+} from 'dan-actions/variantActions';
 import { checkTypes } from 'dan-containers/Common/Utils';
 
 export const EDIT_VARIANT_CONFIRM = (strings, name) => {
@@ -20,7 +24,7 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 };
 
 function EditVariant(props) {
-  const { match, loading, history, variant, enqueueSnackbar, onGetVariant } = props;
+  const { match, loading, history, variant, linkTask, unlinkTask, enqueueSnackbar, onGetVariant } = props;
   const [id, setId] = useState();
   const [sku, setSKU] = useState('');
   const [price, setPrice] = useState();
@@ -35,9 +39,12 @@ function EditVariant(props) {
     length: undefined,
     content: ''
   });
+  const [action, setAction] = useState('link');
+  const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
-
+  const prevLinkTaskProp = useRef(linkTask);
+  const prevUnlinkTaskProp = useRef(unlinkTask);
 
   useEffect(() => {
     onGetVariant(match.params.productId, match.params.variantId, enqueueSnackbar);
@@ -56,6 +63,18 @@ function EditVariant(props) {
     }
   }, [variant]);
 
+  useEffect(() => {
+    if (linkTask && linkTask !== prevLinkTaskProp.current) {
+      history.push(`/tasks/${linkTask.id}`);
+    }
+  }, [linkTask]);
+
+  useEffect(() => {
+    if (unlinkTask && unlinkTask !== prevUnlinkTaskProp.current) {
+      history.push(`/tasks/${unlinkTask.id}`);
+    }
+  }, [unlinkTask]);
+
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const editBasicInfo = async () => {
@@ -73,7 +92,7 @@ function EditVariant(props) {
     onUpdateIntegrationVariant(found.id, remoteProductId, remoteVariantId, data, enqueueSnackbar);
   };
 
-  const handleEdit = async () => form === 'general' ? editBasicInfo() : editIntegrationProps();
+  const handleEdit = async () => (form === 'general' ? editBasicInfo() : editIntegrationProps());
 
   const handleDialogCancel = () => setOpenDialog(false);
 
@@ -84,13 +103,38 @@ function EditVariant(props) {
 
   const handleSubmitForm = (form_) => {
     setForm(form_);
-    setOpenDialog(true)
+    setOpenDialog(true);
+  };
+
+  const handleLink = () => {
+    setAction('link');
+    setOpenLinkerDlg(true);
+  };
+
+  const handleUnlink = () => {
+    setAction('unlink');
+    setOpenLinkerDlg(true);
+  };
+
+  const handleLinker = (value) => {
+    const { onLinkVariant, onUnlinkVariant } = props;
+    const { id: variantId, list, deleteFromIntegration } = value;
+    if (action === 'link') {
+      onLinkVariant(match.params.productId, variantId, list, enqueueSnackbar);
+    } else {
+      onUnlinkVariant(match.params.productId, variantId, list, deleteFromIntegration, enqueueSnackbar);
+    }
+    setOpenLinkerDlg(false);
   };
 
   return (
     <div>
       {loading ? <Loading /> : null}
       <PageHeader title="Edit variant" history={history} />
+      <ToolbarActions
+        onLink={handleLink}
+        onUnlink={handleUnlink}
+      />
       {id && (
         <VariantForm
           sku={sku}
@@ -109,6 +153,15 @@ function EditVariant(props) {
           onSubmitForm={handleSubmitForm}
         />
       )}
+      <Linker
+        action={action}
+        id={id}
+        type="variant"
+        linkedIntegrations={integrations}
+        open={openLinkerDlg}
+        onClose={() => setOpenLinkerDlg(false)}
+        onSave={handleLinker}
+      />
       <AlertDialog
         open={openDialog}
         message={EDIT_VARIANT_CONFIRM`${form !== 'general' ? form : ''}`}
@@ -117,18 +170,22 @@ function EditVariant(props) {
       />
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   variant: state.getIn(['variant', 'variant']),
   loading: state.getIn(['variant', 'loading']),
   update: state.getIn(['variant', 'update']),
+  linkTask: state.getIn(['variant', 'link']),
+  unlinkTask: state.getIn(['variant', 'unlink']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetVariant: bindActionCreators(getVariant, dispatch),
   onUpdateVariant: bindActionCreators(updateVariant, dispatch),
+  onLinkVariant: bindActionCreators(linkVariant, dispatch),
+  onUnlinkVariant: bindActionCreators(unlinkVariant, dispatch),
   onUpdateIntegrationVariant: bindActionCreators(updateIntegrationVariant, dispatch)
 });
 
@@ -142,14 +199,20 @@ EditVariant.propTypes = {
   match: PropTypes.object.isRequired,
   variant: PropTypes.object,
   loading: PropTypes.bool.isRequired,
+  linkTask: PropTypes.object,
+  unlinkTask: PropTypes.object,
   onGetVariant: PropTypes.func.isRequired,
   onUpdateVariant: PropTypes.func.isRequired,
+  onLinkVariant: PropTypes.func.isRequired,
+  onUnlinkVariant: PropTypes.func.isRequired,
   onUpdateIntegrationVariant: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 EditVariant.defaultProps = {
-  variant: null
+  variant: null,
+  linkTask: null,
+  unlinkTask: null
 };
 
 export default withSnackbar(EditVariantMapped);

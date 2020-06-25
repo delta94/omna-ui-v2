@@ -29,6 +29,13 @@ export const updateVariant = (productId, variantId, data, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
+export const deleteVariant = (productId, variantId, enqueueSnackbar) => ({
+  type: types.DELETE_VARIANT_ASYNC,
+  productId,
+  variantId,
+  enqueueSnackbar
+});
+
 export const updateIntegrationVariant = (integrationId, remoteProductId, remoteVariantId, data, enqueueSnackbar) => ({
   type: types.UPDATE_INTEGRATION_VARIANT_ASYNC,
   integrationId,
@@ -38,4 +45,19 @@ export const updateIntegrationVariant = (integrationId, remoteProductId, remoteV
   enqueueSnackbar
 });
 
+export const linkVariant = (productId, variantId, integrationIds, enqueueSnackbar) => ({
+  type: types.LINK_VARIANT_ASYNC,
+  productId,
+  variantId,
+  integrationIds,
+  enqueueSnackbar
+});
 
+export const unlinkVariant = (productId, variantId, integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
+  type: types.UNLINK_VARIANT_ASYNC,
+  productId,
+  variantId,
+  integrationIds,
+  deleteFromIntegration,
+  enqueueSnackbar
+});

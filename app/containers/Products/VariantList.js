@@ -8,6 +8,7 @@ import get from 'lodash/get';
 import IconButton from '@material-ui/core/IconButton';
 import { Link } from 'react-router-dom';
 import Ionicon from 'react-ionicons';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
@@ -16,8 +17,9 @@ import Avatar from '@material-ui/core/Avatar';
 import { delay } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 
-import { getVariantList } from 'dan-actions/variantActions';
+import { getVariantList, deleteVariant } from 'dan-actions/variantActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import AlertDialog from 'dan-containers/Common/AlertDialog';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -34,6 +36,8 @@ function VariantList(props) {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
+  const [openConfirmDlg, setOpenConfirmDlg] = useState();
+  const [selectedItem, setSelectedItem] = useState();
 
   const { data, pagination } = variantList;
 
@@ -62,6 +66,14 @@ function VariantList(props) {
       setSearchText('');
     }
   };
+
+  const handleConfirmDlg = () => {
+    const { onDeleteVariant } = props;
+    onDeleteVariant(match.params.id, selectedItem.id, enqueueSnackbar);
+    setOpenConfirmDlg(false);
+  };
+
+  const handleCancelDlg = () => setOpenConfirmDlg(false);
 
   const columns = [
     {
@@ -122,6 +134,24 @@ function VariantList(props) {
         )
       }
     },
+    {
+      name: 'Actions',
+      options: {
+        filter: false,
+        sort: false,
+        empty: true,
+        customBodyRender: () => (
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={() => setOpenConfirmDlg(true)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        )
+      }
+    }
   ];
 
   const options = {
@@ -151,9 +181,12 @@ function VariantList(props) {
           break;
       }
     },
-    onCellClick: (rowData, { dataIndex }) => {
-      const { pathname } = history.location;
-      history.push(`${pathname}/${data[dataIndex].id}`);
+    onCellClick: (rowData, { colIndex, dataIndex }) => {
+      setSelectedItem(data[dataIndex] || null);
+      if(colIndex !== 5) {
+        const { pathname } = history.location;
+        history.push(`${pathname}/${data[dataIndex].id}`);
+      }
     },
     customToolbar: () => (
       <Fragment>
@@ -179,6 +212,12 @@ function VariantList(props) {
       <MuiThemeProvider theme={getMuiTheme()}>
         <MUIDataTable columns={columns} data={data} options={options} />
       </MuiThemeProvider>
+      <AlertDialog
+        open={openConfirmDlg}
+        message={`Are you sure you want to remove the variant wit SKU: "${get(selectedItem, 'sku')}"?`}
+        handleConfirm={handleConfirmDlg}
+        handleCancel={handleCancelDlg}
+      />
     </div>
   );
 }
@@ -190,17 +229,19 @@ VariantList.propTypes = {
   appStore: PropTypes.object.isRequired,
   variantList: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
+  onDeleteVariant: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  variantList: state.getIn(['variant', 'variantList']),
+  variantList: state.getIn(['variant', 'variantList']).toJS(),
   loading: state.getIn(['variant', 'loading']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetVariants: bindActionCreators(getVariantList, dispatch)
+  onGetVariants: bindActionCreators(getVariantList, dispatch),
+  onDeleteVariant: bindActionCreators(deleteVariant, dispatch)
 });
 
 const VariantListMapped = connect(

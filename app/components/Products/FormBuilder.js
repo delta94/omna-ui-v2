@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -250,6 +253,42 @@ const MuiRichTextEditor = props => {
   );
 };
 
+const MuiDate = props => {
+  const {
+    id,
+    label,
+    value,
+    required,
+    read_only: disabled,
+    onChange,
+    classes
+  } = props;
+
+  const handleChange = (e) => {
+    onChange({ target: { name: id, value: moment(e).format('Y-MM-DD') } });
+  };
+
+  return (
+    <Grid item>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <DatePicker
+          id={id}
+          format="YYYY/MM/DD"
+          placeholder="2018/10/10"
+          label={label}
+          value={value}
+          disabled={disabled}
+          required={required}
+          onChange={handleChange}
+          animateYearScrolling={false}
+          inputVariant="outlined"
+          className={classes.inputWidth}
+        />
+      </MuiPickersUtilsProvider>
+    </Grid>
+  );
+};
+
 function FormBuilder(props) {
   const { properties, classes, onChange } = props;
   const mainProps = properties
@@ -320,6 +359,15 @@ function FormBuilder(props) {
           case 'rich_text':
             return (
               <MuiRichTextEditor
+                key={item.id}
+                {...item}
+                classes={classes}
+                onChange={onChange}
+              />
+            );
+          case 'date':
+            return (
+              <MuiDate
                 key={item.id}
                 {...item}
                 classes={classes}
@@ -417,6 +465,20 @@ MuiRichTextEditor.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired
+};
+
+MuiDate.defaultProps = {
+  value: ''
+};
+
+MuiDate.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  required: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  read_only: PropTypes.bool.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(FormBuilder);

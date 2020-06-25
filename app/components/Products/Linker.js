@@ -42,13 +42,13 @@ const MenuProps = {
   },
 };
 
-const LINK_TITLE = 'Link product';
-const UNLINK_TITLE = 'Unlink product';
-const LINK_TEXT = 'To link this product check the integrations below';
-const UNLINK_TEXT = 'To unlink this product uncheck the linked integrations below';
+const LINK_TITLE = (strings, value) => `Link ${value}`;
+const UNLINK_TITLE = (strings, value) => `Unlink ${value}`;
+const LINK_TEXT = (strings, value) => `To link this ${value} check one of the integrations below`;
+const UNLINK_TEXT = (strings, value) => `To unlink this ${value} uncheck one of the linked integrations below`;
 
 function Linker(props) {
-  const { classes, action, open, id, linkedIntegrations, integrations, fromShopifyApp, onClose, onGetIntegrations } = props;
+  const { classes, action, type, open, id, linkedIntegrations, integrations, fromShopifyApp, onClose, onGetIntegrations } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [deleteFromIntegration, setDeleteFromIntegration] = useState(false);
@@ -132,10 +132,10 @@ function Linker(props) {
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">{action === 'link' ? LINK_TITLE : UNLINK_TITLE}</DialogTitle>
+      <DialogTitle id="form-dialog-title">{action === 'link' ? LINK_TITLE`${type}` : UNLINK_TITLE`${type}`}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {action === 'link' ? LINK_TEXT : UNLINK_TEXT}
+          {action === 'link' ? LINK_TEXT`${type}` : UNLINK_TEXT`${type}`}
         </DialogContentText>
         <div className={classes.content}>
           <FormControl variant="outlined" className={classes.inputWidth} error={errors.integrations !== '' || false}>
@@ -226,6 +226,7 @@ const LinkerMapped = connect(
 
 Linker.defaultProps = {
   action: 'link',
+  type: 'product',
   id: '',
   fromShopifyApp: undefined,
   linkedIntegrations: []
@@ -233,6 +234,7 @@ Linker.defaultProps = {
 
 Linker.propTypes = {
   action: PropTypes.string,
+  type: PropTypes.string,
   classes: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
   id: PropTypes.string,

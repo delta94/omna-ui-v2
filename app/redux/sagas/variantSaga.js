@@ -67,6 +67,23 @@ function* updateVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* deleteVariant(payload) {
+  const { productId, variantId, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    yield api.delete(`/products/${productId}/variants/${variantId}`);
+    yield put({ type: types.DELETE_VARIANT, id: variantId });
+    enqueueSnackbar('Variant deleted successfuly', {
+      variant: 'success'
+    });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* updateIntegrationVariant(payload) {
   const { integrationId, remoteProductId, remoteVariantId, data, enqueueSnackbar } = payload;
   try {
@@ -76,6 +93,38 @@ function* updateIntegrationVariant(payload) {
     enqueueSnackbar('Variant edited successfuly', {
       variant: 'success'
     });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
+function* linkVariant(payload) {
+  const { productId, variantId, integrationIds, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.put(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds } });
+    const { data } = response.data;
+    enqueueSnackbar('Linking variant', { variant: 'info' });
+    yield put({ type: types.LINK_VARIANT, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
+function* unlinkVariant(payload) {
+  const { productId, variantId, integrationIds, deleteFromIntegration, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.patch(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
+    const { data } = response.data;
+    enqueueSnackbar('Unlinking variant', { variant: 'info' });
+    yield put({ type: types.UNLINK_VARIANT, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -100,10 +149,22 @@ export function* watchUpdateVariant() {
   yield takeLatest(types.UPDATE_VARIANT_ASYNC, updateVariant);
 }
 
+export function* watchDeleteVariant() {
+  yield takeLatest(types.DELETE_VARIANT_ASYNC, deleteVariant);
+}
+
 export function* watchUpdateIntegrationVariant() {
   yield takeLatest(types.UPDATE_INTEGRATION_VARIANT_ASYNC, updateIntegrationVariant);
 }
 
+export function* watchLinkVariant() {
+  yield takeLatest(types.LINK_VARIANT_ASYNC, linkVariant);
+}
+
+export function* watchUnlinkVariant() {
+  yield takeLatest(types.UNLINK_VARIANT_ASYNC, unlinkVariant);
+}
+
 export default function* variantSaga() {
-  yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(), watchUpdateIntegrationVariant()]);
+  yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(), watchDeleteVariant(), watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant()]);
 }
