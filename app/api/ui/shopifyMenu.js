@@ -17,6 +17,11 @@ export default [
     icon: <DataIcon />,
     child: [
       {
+        key: 'orders',
+        name: 'Orders',
+        link: '/orders'
+      },
+      {
         key: 'products',
         name: 'Products',
         link: '/products'

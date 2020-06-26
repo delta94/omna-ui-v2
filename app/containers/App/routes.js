@@ -185,6 +185,9 @@ export const OmnaShopifyRoutes = [
   ChannelsRoute,
   InstalledIntegrationsRoute,
   AddIntegrationFormRoute,
+  // Orders
+  OrdersRoute,
+  OrderDetailsRoute,
   // Workflows
   WorkflowsRoute,
   // Tasks
