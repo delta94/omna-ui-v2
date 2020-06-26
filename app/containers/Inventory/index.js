@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import get from 'lodash/get';
-// import moment from 'moment';
+import get from 'lodash/get';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { Loading, EmptyState } from 'dan-components';
-import { getCurrencySymbol } from '../Common/Utils';
+import { getInventoryEntries } from 'dan-actions';
+// import { getCurrencySymbol } from '../Common/Utils';
 import PageHeader from '../Common/PageHeader';
-import entries from './mock-inventory-entries.json';
 
 const styles = theme => ({
   table: {
@@ -47,7 +46,7 @@ class InventoryEntries extends Component {
   }
 
   callAPI = () => {
-    const { enqueueSnackbar, error } = this.props;
+    const { enqueueSnackbar, onGetInventoryEntries, error } = this.props;
     const { searchTerm, limit, page, sortCriteria, sortDirection } = this.state;
 
     const params = {
@@ -61,7 +60,7 @@ class InventoryEntries extends Component {
       params.sort = JSON.parse(sortParam);
     }
 
-    // onGetInventoryEntries(params);
+    onGetInventoryEntries(params);
 
     if (error)
       enqueueSnackbar(error, {
@@ -154,7 +153,7 @@ class InventoryEntries extends Component {
   };
 
   render() {
-    const { classes, history, loading } = this.props;
+    const { classes, history, loading, inventoryEntries } = this.props;
     const {
       columnSortDirection,
       filtering,
@@ -164,11 +163,12 @@ class InventoryEntries extends Component {
       searchTerm,
       sortCriteria
     } = this.state;
-    const count = entries.length;
+    const { data: entries, pagination } = inventoryEntries.toJS();
+    const count = get(pagination, 'total', 0);
 
     const columns = [
       {
-        name: 'product',
+        name: 'product_title',
         label: 'Product',
         options: {
           sortDirection: columnSortDirection[0],
@@ -176,26 +176,18 @@ class InventoryEntries extends Component {
         }
       },
       {
-        name: 'variant',
-        label: 'Variant',
+        name: 'sku',
+        label: 'SKU',
         options: {
           sortDirection: columnSortDirection[1],
           filter: false
         }
       },
       {
-        name: 'location',
-        label: 'Location',
+        name: 'quantity',
+        label: 'Quantity',
         options: {
           sortDirection: columnSortDirection[2],
-          filter: false
-        }
-      },
-      {
-        name: 'available',
-        label: 'Available',
-        options: {
-          sortDirection: columnSortDirection[3],
           filter: false
         }
       }
@@ -246,27 +238,7 @@ class InventoryEntries extends Component {
         }
 
         this.sort(changedColumn, order);
-      },
-      customSort: (data, colIndex, order) =>
-        data.sort((a, b) => {
-          switch (colIndex) {
-            case 4:
-              return (
-                (parseFloat(a.data[colIndex]) < parseFloat(b.data[colIndex])
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            case 5:
-              return (
-                (a.data[colIndex].name.toLowerCase() <
-                b.data[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            default:
-              return 0;
-          }
-        })
+      }
     };
 
     return (
@@ -295,6 +267,8 @@ class InventoryEntries extends Component {
 
 InventoryEntries.propTypes = {
   loading: PropTypes.bool.isRequired,
+  inventoryEntries: PropTypes.object.isRequired,
+  onGetInventoryEntries: PropTypes.func.isRequired,
   error: PropTypes.object.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
@@ -303,13 +277,19 @@ InventoryEntries.propTypes = {
   }).isRequired
 };
 
-// const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  loading: state.getIn(['inventory', 'loading']),
+  inventoryEntries: state.getIn(['inventory', 'inventoryEntries']),
+  error: state.getIn(['inventory', 'error'])
+});
 
-// const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+  onGetInventoryEntries: query => dispatch(getInventoryEntries(query))
+});
 
 const InventoryEntriesMapped = connect(
-  null,
-  null
+  mapStateToProps,
+  mapDispatchToProps
 )(InventoryEntries);
 
 export default withSnackbar(withStyles(styles)(InventoryEntriesMapped));

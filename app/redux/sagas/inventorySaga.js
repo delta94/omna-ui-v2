@@ -1,12 +1,15 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actionConstants from 'dan-actions/actionConstants';
-import api from 'dan-containers/Utils/api';
+import { CENIT_APP as api } from 'dan-containers/Utils/api';
 
-function* fetchInventoryEntries(params) {
+function* fetchInventoryEntries() {
   yield put({ type: actionConstants.ACTION_INVENTORY_START });
 
   try {
-    const response = yield api.get('/inventoryEntries', { params: params.query });
+    const response = yield api.get(
+      '/request_products?shop=playstoretestingone.myshopify.com&task=get_product_inventory'
+      // { params: params.query }
+    );
     const { data } = response;
     yield put({ type: actionConstants.GET_INVENTORY_ENTRIES_SUCCESS, data });
   } catch (error) {
