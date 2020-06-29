@@ -168,6 +168,7 @@ function VariantList(props) {
         filter: false,
         sort: false,
         empty: true,
+        display: !appStore.fromShopifyApp || false,
         customBodyRender: () => (
           <IconButton
             aria-label="more"
@@ -219,7 +220,7 @@ function VariantList(props) {
     },
     onCellClick: (rowData, { colIndex, dataIndex }) => {
       setSelectedItem(data[dataIndex] || null);
-      if (colIndex !== 5) {
+      if (colIndex !== 6) {
         const { pathname } = history.location;
         history.push(`${pathname}/${data[dataIndex].id}/edit-variant`);
       }
