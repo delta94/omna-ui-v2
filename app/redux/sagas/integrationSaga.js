@@ -1,6 +1,6 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actionConstants from 'dan-actions/actionConstants';
-import api from 'dan-containers/Utils/api';
+import api, { CENIT_APP } from 'dan-containers/Utils/api';
 import get from 'lodash/get';
 
 const url = '/integrations';
@@ -49,11 +49,15 @@ function* deleteIntegration(params) {
   }
 }
 
-function* importResource(params) {
-  const { id, resource, enqueueSnackbar } = params.query;
+function* importResource(payload) {
+  const { id, resource, fromShopify, shop, enqueueSnackbar } = payload.query;
   try {
     yield put({ type: actionConstants.SET_LOADING, loading: true });
-    const response = yield api.get(`/integrations/${id}/${resource}/import`);
+    let response = null;
+    if (fromShopify && resource === 'products') {
+      response = yield CENIT_APP.get(`/request_products?shop=${shop}&task=import_from_integration&integration_id=${id}`);
+    } else
+      response = yield api.get(`/integrations/${id}/${resource}/import`);
     const { data } = response.data;
     yield put({ type: actionConstants.IMPORT_RESOURCE, data });
     enqueueSnackbar(`Importing ${resource}`, { variant: 'info' });

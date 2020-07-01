@@ -26,8 +26,7 @@ import {
 } from 'dan-actions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
-import API from 'dan-containers/Utils/api';
-import { CENIT_APP } from 'dan-containers/Utils/api';
+import API, { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
   currentTenant
@@ -79,9 +78,7 @@ class IntegrationList extends Component {
 
   componentDidUpdate(prevProps) {
     const { task, history } = this.props;
-    if (task !== prevProps.task) {
-      history.push(`tasks/${task.id}`);
-    }
+    task !== prevProps.task ? history.push(`tasks/${task.id}`) : null;
   }
 
   handleAddIntegrationClick = () => {
@@ -136,8 +133,8 @@ class IntegrationList extends Component {
   };
 
   handleImportResource = (id, resource) => {
-    const { onImportResource, enqueueSnackbar } = this.props;
-    onImportResource({ id, resource, enqueueSnackbar });
+    const { appStore, onImportResource, enqueueSnackbar } = this.props;
+    onImportResource({ id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar });
   };
 
   handleDialogConfirm = () => {
@@ -296,10 +293,15 @@ class IntegrationList extends Component {
   }
 }
 
+IntegrationList.defaultProps = {
+  task: null
+};
+
 IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  task: PropTypes.object.isRequired,
+  task: PropTypes.object,
+  appStore: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
   onDeleteIntegration: PropTypes.func.isRequired,
