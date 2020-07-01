@@ -54,10 +54,11 @@ function* importResource(payload) {
   try {
     yield put({ type: actionConstants.SET_LOADING, loading: true });
     let response = null;
+
     if (fromShopify && resource === 'products') {
       response = yield CENIT_APP.get(`/request_products?shop=${shop}&task=import_from_integration&integration_id=${id}`);
-    } else
-      response = yield api.get(`/integrations/${id}/${resource}/import`);
+    } else response = yield api.get(`/integrations/${id}/${resource}/import`);
+
     const { data } = response.data;
     yield put({ type: actionConstants.IMPORT_RESOURCE, data });
     enqueueSnackbar(`Importing ${resource}`, { variant: 'info' });
