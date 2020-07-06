@@ -24,7 +24,8 @@ import {
   AddTenant,
   InstallShopify,
   Inventory,
-  ApiKeys
+  ApiKeys,
+  BrandList
 } from '../pageListAsync';
 import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
@@ -135,6 +136,11 @@ export const ApiKeysRoute = {
   component: ApiKeys
 };
 
+export const BrandRoute = {
+  link: '/:integration_id/brands',
+  component: BrandList
+};
+
 export const OmnaAppRoutes = [
   DashboardRoute,
   // Products
@@ -167,7 +173,8 @@ export const OmnaAppRoutes = [
   DashboardPageRoute,
   TenantConfigurationRoute,
   ClientSettingsRoute,
-  ApiKeysRoute
+  ApiKeysRoute,
+  BrandRoute
 ];
 
 export const OmnaShopifyRoutes = [
@@ -198,5 +205,6 @@ export const OmnaShopifyRoutes = [
   DashboardPageRoute,
   TenantConfigurationRoute,
   ClientSettingsRoute,
-  ApiKeysRoute
+  ApiKeysRoute,
+  BrandRoute
 ];

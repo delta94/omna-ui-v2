@@ -137,6 +137,15 @@ class IntegrationList extends Component {
     onImportResource({ id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar });
   };
 
+
+  handleViewResource = (id, resource) => {
+    const { history } = this.props;
+    if (resource === 'brand')
+      history.push(`/${id}/brands`);
+    else
+      history.push(`/${id}/categories`);
+  };
+
   handleDialogConfirm = () => {
     this.handleDeleteIntegration();
     this.setState({ alertDialog: false });
@@ -249,6 +258,9 @@ class IntegrationList extends Component {
                     }
                     onImportResource={resource =>
                       this.handleImportResource(integration.id, resource)
+                    }
+                    onViewResource={resource =>
+                      this.handleViewResource(integration.id, resource)
                     }
                     classes={classes}
                   />
