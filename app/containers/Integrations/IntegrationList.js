@@ -22,11 +22,11 @@ import {
   deleteIntegration,
   getIntegrations,
   importResource,
-  setLoading
+  setLoading,
+  unauthorizeIntegration
 } from 'dan-actions';
 import { Loading } from 'dan-components';
 import AsyncSearch from 'dan-components/AsyncSearch/index2';
-import API from 'dan-containers/Utils/api';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
@@ -97,25 +97,18 @@ class IntegrationList extends Component {
   };
 
   handleUnAuthorization = id => {
-    const { enqueueSnackbar, onSetLoading } = this.props;
-    onSetLoading(true);
-    API.delete(`/integrations/${id}/authorize`, {
-      data: { data: { integration_id: id } }
-    })
-      .then(() => {
-        enqueueSnackbar('Integration unauthorized successfully', {
-          variant: 'success'
-        });
-      })
-      .catch(error => {
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      })
-      .then(() => {
-        this.getIntegrations();
-        onSetLoading(false);
+    const { enqueueSnackbar, onUnauthorizeIntegration } = this.props;
+
+    try {
+      onUnauthorizeIntegration(id);
+      enqueueSnackbar('Integration unauthorized successfully', {
+        variant: 'success'
       });
+    } catch (error) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    }
   };
 
   handleDialogCancel = () => {
@@ -305,7 +298,7 @@ IntegrationList.propTypes = {
   onDeleteIntegration: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
   onImportResource: PropTypes.func.isRequired,
-  onSetLoading: PropTypes.func.isRequired,
+  onUnauthorizeIntegration: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
@@ -319,7 +312,8 @@ const mapDispatchToProps = dispatch => ({
   onDeleteIntegration: id => dispatch(deleteIntegration(id)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
   onImportResource: query => dispatch(importResource(query)),
-  onSetLoading: query => dispatch(setLoading(query))
+  onSetLoading: query => dispatch(setLoading(query)),
+  onUnauthorizeIntegration: id => dispatch(unauthorizeIntegration(id))
 });
 
 const MyIntegrationsMapped = withSnackbar(withStyles(styles)(IntegrationList));

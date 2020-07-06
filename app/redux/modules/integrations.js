@@ -11,7 +11,7 @@ const initialState = fromJS({
 
 export default (state = initialState, action = {}) => {
   switch (action.type) {
-    case actionConstants.GET_INTEGRATIONS_START:
+    case actionConstants.ACTION_PRODUCT_START:
       return state.withMutations(mutableState => {
         mutableState.set('loading', true);
       });
@@ -25,10 +25,6 @@ export default (state = initialState, action = {}) => {
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
       });
-    case actionConstants.UPDATE_INTEGRATION_START:
-      return state.withMutations(mutableState => {
-        mutableState.set('loading', true);
-      });
     case actionConstants.UPDATE_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
         mutableState
@@ -40,10 +36,6 @@ export default (state = initialState, action = {}) => {
     case actionConstants.UPDATE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
-      });
-    case actionConstants.DELETE_INTEGRATION_START:
-      return state.withMutations(mutableState => {
-        mutableState.set('loading', true);
       });
     case actionConstants.DELETE_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
@@ -60,10 +52,6 @@ export default (state = initialState, action = {}) => {
     case actionConstants.DELETE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
-      });
-    case actionConstants.GET_CHANNELS_START:
-      return state.withMutations(mutableState => {
-        mutableState.set('loading', true);
       });
     case actionConstants.GET_CHANNELS_SUCCESS:
       return state.withMutations(mutableState => {

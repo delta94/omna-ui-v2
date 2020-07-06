@@ -4,6 +4,7 @@ export {
   importResource,
   setLoading,
   deleteIntegration,
+  unauthorizeIntegration,
   updateIntegration
 } from './integrationActions';
 export { getOrder, getOrders } from './orderActions';

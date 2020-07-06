@@ -221,12 +221,14 @@ const Integration = props => {
         <MenuItem aria-label="edit" onClick={() => handleOptionClick('edit')}>
           Edit
         </MenuItem>
-        <MenuItem
-          aria-label="delete"
-          onClick={() => handleOptionClick('delete')}
-        >
-          Delete
-        </MenuItem>
+        {!authorized && (
+          <MenuItem
+            aria-label="delete"
+            onClick={() => handleOptionClick('delete')}
+          >
+            Delete
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

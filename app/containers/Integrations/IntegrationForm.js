@@ -135,17 +135,18 @@ class IntegrationForm extends Component {
     } = this.state;
 
     if (selectedChannel === '' && open) {
-      this.setState({
-        selectedChannel: channel,
-        integration: `integration_${channel
-          .slice(3, -2)
-          .concat('_', channel.slice(-2))
-          .toLowerCase()}`
-      });
+      channel &&
+        this.setState({
+          selectedChannel: channel,
+          integration: `integration_${channel
+            .slice(3, -2)
+            .concat('_', channel.slice(-2))
+            .toLowerCase()}`
+        });
     }
 
-    const hasCustomDefaultProperties =
-      channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
+    // const hasCustomDefaultProperties =
+    //   channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
 
     if (editableIntegration && integration === '') {
       this.setState({

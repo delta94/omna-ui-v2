@@ -3,7 +3,7 @@ import * as actionConstants from 'dan-actions/actionConstants';
 import api from 'dan-containers/Utils/api';
 
 function* fetchChannels(params) {
-  yield put({ type: actionConstants.GET_CHANNELS_START });
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
   const { query } = params;
 
   try {

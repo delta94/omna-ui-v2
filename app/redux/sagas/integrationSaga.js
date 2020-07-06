@@ -6,7 +6,7 @@ import get from 'lodash/get';
 const url = '/integrations';
 
 function* fetchIntegrations(params) {
-  yield put({ type: actionConstants.GET_INTEGRATIONS_START });
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
 
   try {
     const response = yield api.get(url, { params: params.query });
@@ -18,7 +18,7 @@ function* fetchIntegrations(params) {
 }
 
 function* updateIntegration(params) {
-  yield put({ type: actionConstants.UPDATE_INTEGRATION_START });
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
   const { integration } = params;
 
   try {
@@ -35,7 +35,7 @@ function* updateIntegration(params) {
 }
 
 function* deleteIntegration(params) {
-  yield put({ type: actionConstants.DELETE_INTEGRATION_START });
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
   const { integrationId } = params;
 
   try {
@@ -46,6 +46,22 @@ function* deleteIntegration(params) {
     });
   } catch (error) {
     yield put({ type: actionConstants.DELETE_INTEGRATION_FAILED, error });
+  }
+}
+
+function* unauthorizeIntegration(params) {
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
+  const { id } = params;
+
+  try {
+    yield api.delete(`${url}/${id}/authorize`, {
+      data: { data: { integration_id: id } }
+    });
+    const response = yield api.get(url, { params: params.query });
+    const { data } = response;
+    yield put({ type: actionConstants.GET_INTEGRATIONS_SUCCESS, data });
+  } catch (error) {
+    yield put({ type: actionConstants.UNAUTHORIZE_INTEGRATION_FALIED, error });
   }
 }
 
@@ -70,6 +86,7 @@ export default function* rootSaga() {
     takeLatest(actionConstants.GET_INTEGRATIONS, fetchIntegrations),
     takeLatest(actionConstants.UPDATE_INTEGRATION, updateIntegration),
     takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration),
-    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource)
+    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource),
+    takeLatest(actionConstants.UNAUTHORIZE_INTEGRATION, unauthorizeIntegration)
   ]);
 }

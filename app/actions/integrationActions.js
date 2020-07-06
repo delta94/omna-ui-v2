@@ -24,6 +24,11 @@ export const deleteIntegration = integrationId => ({
   integrationId
 });
 
+export const unauthorizeIntegration = id => ({
+  type: actionConstants.UNAUTHORIZE_INTEGRATION,
+  id
+});
+
 export const importResource = query => ({
   type: actionConstants.IMPORT_RESOURCE_ASYNC,
   query
