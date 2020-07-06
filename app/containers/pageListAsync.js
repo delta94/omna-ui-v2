@@ -174,3 +174,8 @@ export const ApiKeys = loadable(() => import('./Developers/ApiKeys'), {
 export const BrandList = loadable(() => import('./Brand/BrandList'), {
   fallback: <Loading />
 });
+
+export const CategoryList = loadable(() => import('./Category/CategoryList'), {
+  fallback: <Loading />
+});
+

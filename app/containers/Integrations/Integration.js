@@ -225,8 +225,14 @@ const Integration = props => {
         <Divider />
 
         <MenuItem key="brand" onClick={() => handleViewResource('brand')}>
-              {`View Brands`}
+              View Brands
         </MenuItem>
+
+        <MenuItem key="brand" onClick={() => handleViewResource('categories')}>
+              View Categories
+        </MenuItem>
+
+        <Divider />
         <Divider />
 
         <MenuItem aria-label="edit" onClick={() => handleOptionClick('edit')}>

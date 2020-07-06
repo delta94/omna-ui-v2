@@ -22,6 +22,7 @@ import notificationsReducer from './modules/notifications';
 import webhooksReducer from './modules/webhooks';
 import variantsReducer from './modules/variants';
 import brandsReducer from './modules/brand';
+import categoriesReducer from './modules/category';
 /**
  * Creates the main reducer with the dynamically injected ones
  */
@@ -45,6 +46,7 @@ export default function createReducer(injectedReducers = {}) {
     task: tasksReducer,
     webhook: webhooksReducer,
     brand: brandsReducer,
+    category: categoriesReducer,
     router: connectRouter(history),
     ...injectedReducers
   });

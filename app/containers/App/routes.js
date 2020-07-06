@@ -25,7 +25,8 @@ import {
   InstallShopify,
   Inventory,
   ApiKeys,
-  BrandList
+  BrandList,
+  CategoryList
 } from '../pageListAsync';
 import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
@@ -141,6 +142,11 @@ export const BrandRoute = {
   component: BrandList
 };
 
+export const CategoryRoute = {
+  link: '/:integration_id/categories',
+  component: CategoryList
+};
+
 export const OmnaAppRoutes = [
   DashboardRoute,
   // Products
@@ -174,7 +180,8 @@ export const OmnaAppRoutes = [
   TenantConfigurationRoute,
   ClientSettingsRoute,
   ApiKeysRoute,
-  BrandRoute
+  BrandRoute,
+  CategoryRoute
 ];
 
 export const OmnaShopifyRoutes = [
@@ -206,5 +213,6 @@ export const OmnaShopifyRoutes = [
   TenantConfigurationRoute,
   ClientSettingsRoute,
   ApiKeysRoute,
-  BrandRoute
+  BrandRoute,
+  CategoryRoute
 ];
