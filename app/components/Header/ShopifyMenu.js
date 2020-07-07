@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { withStyles } from '@material-ui/core/styles';
-import { logout } from 'dan-containers/Common/Utils';
+import { logoutShopify } from 'dan-containers/Common/Utils';
 
 const styles = theme => ({
   info: {
@@ -38,7 +38,7 @@ class ShopifyMenu extends React.Component {
 
   handleLogout = () => {
     this.handleClose();
-    logout();
+    logoutShopify();
   };
 
   render() {

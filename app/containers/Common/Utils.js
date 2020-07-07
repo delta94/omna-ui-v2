@@ -3,6 +3,7 @@ import { sha256 } from 'js-sha256';
 const URL_LOCAL = 'http://127.0.0.1:4000';
 const URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
 const URL_PROD = 'https://app.omna.io';
+const URL_SHOPIFY = 'https://playstoretestingone.myshopify.com/';
 
 export const baseApiUrl = 'https://cenit.io/app/ecapi-v1';
 
@@ -155,6 +156,13 @@ export const logout = () => {
     localStorage.removeItem('currentTenant');
   }
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
+};
+
+export const logoutShopify = () => {
+  if (currentTenant) {
+    localStorage.removeItem('currentTenant');
+  }
+  window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${URL_SHOPIFY}`);
 };
 
 export const isOmnaShopify = currentTenant
