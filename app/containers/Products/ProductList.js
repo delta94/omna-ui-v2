@@ -6,8 +6,6 @@ import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
-import LinkIcon from '@material-ui/icons/Link';
-import LinkOffIcon from '@material-ui/icons/LinkOff';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -22,17 +20,18 @@ import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 import ChipsArray from 'dan-components/ChipsArray';
-import Publisher from 'dan-components/Products/Publisher';
 import {
   getProducts,
-  linkProduct,
-  unLinkProduct,
+  bulkLinkProducts,
+  bulkUnlinkProducts,
   deleteProduct,
   resetDeleteProductFlag
 } from 'dan-actions/productActions';
 import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
+import ToolbarActions from 'dan-components/Products/ToolbarActions';
+import BulkLinker from 'dan-components/Products/BulkLinker';
 
 const styles = theme => ({
   table: {
@@ -56,9 +55,11 @@ class ProductList extends React.Component {
     page: 0,
     serverSideFilterList: [],
     searchTerm: '',
+    rowsSelected: [],
+    rowsSelectedIds: [],
     anchorEl: null,
     selectedItem: null,
-    publisherAction: 'link',
+    bulkLinkerAction: 'link',
     openPublisherDlg: false,
     openConfirmDlg: false
   };
@@ -94,8 +95,23 @@ class ProductList extends React.Component {
     onGetProducts({ params, enqueueSnackbar });
   };
 
+  updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
+    const { rowsSelectedIds } = this.state;
+    const selectedIndex = rowsSelectedData[0].dataIndex || 0;
+    const selectedId = data[selectedIndex].id;
+    const row = allRows.findIndex(item => item === rowsSelectedData[0]);
+    if (row >= 0) {
+      rowsSelectedIds.push(selectedId);
+    } else {
+      const deleteIndex = rowsSelectedIds.findIndex(item => item === selectedId);
+      rowsSelectedIds.splice(deleteIndex, 1);
+    }
+    this.setState({ rowsSelectedIds });
+  };
+
   handleChangePage = (page, searchTerm) => {
     this.setState({ page, searchTerm }, this.callAPI);
+    this.setState({ rowsSelected: [] });
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
@@ -147,35 +163,18 @@ class ProductList extends React.Component {
 
   handleCancelDlg = () => this.setState({ openConfirmDlg: false });
 
-  handleLinkClick = () =>
-    this.setState(
-      { openPublisherDlg: true, publisherAction: 'link' },
-      this.handleCloseMenu
-    );
+  handleBulkLink = () => this.setState({ openPublisherDlg: true, bulkLinkerAction: 'link' });
 
-  handleUnlinkClick = () =>
-    this.setState(
-      { openPublisherDlg: true, publisherAction: 'unlink' },
-      this.handleCloseMenu
-    );
+  handleBulkUnlink = () => this.setState({ openPublisherDlg: true, bulkLinkerAction: 'unlink' });
 
-  handlePublisherAction = async value => {
-    const { enqueueSnackbar, onLinkProduct, onUnlinkProduct } = this.props;
-    const { publisherAction } = this.state;
-    const { productId, list, deleteFromIntegration } = value;
-    if (publisherAction === 'link') {
-      list.length > 0
-        ? await onLinkProduct(productId, list, enqueueSnackbar)
-        : null;
+  handleBulkLinkerAction = async value => {
+    const { appStore: { name }, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts } = this.props;
+    const { bulkLinkerAction, rowsSelectedIds } = this.state;
+    const { integrationIds, deleteFromIntegration } = value;
+    if (bulkLinkerAction === 'link') {
+      onBulkLinkProducts(name, rowsSelectedIds, integrationIds, enqueueSnackbar)
     } else {
-      list.length > 0
-        ? await onUnlinkProduct(
-          productId,
-          list,
-          deleteFromIntegration,
-          enqueueSnackbar
-        )
-        : null;
+      onBulkUnlinkProducts(name, rowsSelectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
     }
     this.setState({ openPublisherDlg: false });
   };
@@ -195,22 +194,8 @@ class ProductList extends React.Component {
           open={Boolean(anchorEl)}
           onClose={this.handleCloseMenu}
         >
-          <MenuItem onClick={this.handleLinkClick} disabled>
-            <ListItemIcon>
-              <LinkIcon />
-            </ListItemIcon>
-            Link
-          </MenuItem>
-          <MenuItem onClick={this.handleUnlinkClick} disabled>
-            <ListItemIcon>
-              <LinkOffIcon />
-            </ListItemIcon>
-            Unlink
-          </MenuItem>
           <MenuItem
-            onClick={() =>
-              this.setState({ openConfirmDlg: true }, this.handleClose)
-            }
+            onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}
           >
             <ListItemIcon>
               <Ionicon icon="md-trash" />
@@ -228,7 +213,8 @@ class ProductList extends React.Component {
       page,
       serverSideFilterList,
       searchTerm,
-      publisherAction,
+      rowsSelected,
+      bulkLinkerAction,
       openPublisherDlg: openPublishDlg,
       openConfirmDlg,
       selectedItem
@@ -285,7 +271,7 @@ class ProductList extends React.Component {
             const { currency } = tableMeta.rowData;
             return (
               <div>
-                {value ?  (
+                {value ? (
                   <Fragment>
                     {`${getCurrencySymbol(currency)}`}
                     {parseFloat(value).toFixed(2)}
@@ -340,8 +326,10 @@ class ProductList extends React.Component {
 
     const options = {
       filter: true,
-      selectableRows: 'none',
-      responsive: 'stacked',
+      selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
+      rowsSelected,
+      responsive: 'vertical',
+      rowHover: true,
       download: false,
       print: false,
       serverSide: true,
@@ -377,6 +365,10 @@ class ProductList extends React.Component {
         if (colIndex !== 5) {
           history.push(`/products/${data[dataIndex].id}/edit-product`);
         }
+      },
+      onRowSelectionChange: (rowsSelectedData, allRows, rowsSelectedIndex) => {
+        this.setState({ rowsSelected: rowsSelectedIndex });
+        this.updateRowsSelectedIds(rowsSelectedData, allRows, data);
       },
       customSort: (customSortData, colIndex, product) =>
         customSortData.sort((a, b) => {
@@ -417,6 +409,12 @@ class ProductList extends React.Component {
             </Tooltip>
           ) : null}
         </Fragment>
+      ),
+      customToolbarSelect: () => (
+        <ToolbarActions
+          onLink={this.handleBulkLink}
+          onUnlink={this.handleBulkUnlink}
+        />
       )
     };
 
@@ -429,16 +427,16 @@ class ProductList extends React.Component {
           {this.renderTableActionsMenu()}
           <AlertDialog
             open={openConfirmDlg}
-            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : '' }"`}
+            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
             handleCancel={this.handleCancelDlg}
             handleConfirm={this.handleConfirmDlg}
           />
-          <Publisher
-            action={publisherAction}
-            product={selectedItem}
+          <BulkLinker
+            action={bulkLinkerAction}
             open={openPublishDlg}
+            fromShopifyApp={appStore.fromShopifyApp}
             onClose={() => this.setState({ openPublisherDlg: false })}
-            onSave={this.handlePublisherAction}
+            onSave={this.handleBulkLinkerAction}
           />
         </div>
       </div>
@@ -457,8 +455,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
-  onLinkProduct: bindActionCreators(linkProduct, dispatch),
-  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch),
+  onBulkLinkProducts: bindActionCreators(bulkLinkProducts, dispatch),
+  onBulkUnlinkProducts: bindActionCreators(bulkUnlinkProducts, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
   onGetProducts: bindActionCreators(getProducts, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch)
@@ -484,8 +482,8 @@ ProductList.propTypes = {
   history: PropTypes.object.isRequired,
   onGetProducts: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
-  onLinkProduct: PropTypes.func.isRequired,
-  onUnlinkProduct: PropTypes.func.isRequired,
+  onBulkLinkProducts: PropTypes.func.isRequired,
+  onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
   onResetDeleteProduct: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired

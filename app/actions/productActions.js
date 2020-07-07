@@ -34,6 +34,23 @@ export const deleteProduct = (productId, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
+export const bulkLinkProducts = (shop, productIds ,integrationIds, enqueueSnackbar) => ({
+  type: types.BULK_LINK_PRODUCTS_ASYNC,
+  shop,
+  productIds,
+  integrationIds,
+  enqueueSnackbar
+});
+
+export const bulkUnlinkProducts = (shop, productIds ,integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
+  type: types.BULK_UNLINK_PRODUCTS_ASYNC,
+  shop,
+  productIds,
+  integrationIds,
+  deleteFromIntegration,
+  enqueueSnackbar
+});
+
 export const resetDeleteProductFlag = () => ({
   type: types.RESET_DELETE_PRODUCT_FLAG
 });
