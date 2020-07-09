@@ -6,9 +6,7 @@ const initialState = fromJS({
   loading: false,
   disabledForm: false,
   deleted: false,
-  task: null,
-  link: null,
-  unlink: null
+  task: null
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -19,11 +17,19 @@ export default function integrationsReducer(state = initialState, action) {
       });
     case types.LINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('link', action.data).set('task', action.data);
+        mutableState.set('task', action.data);
       });
     case types.UNLINK_PRODUCT:
       return state.withMutations((mutableState) => {
-        mutableState.set('unlink', action.data);
+        mutableState.set('task', action.data);
+      });
+    case types.BULK_LINK_PRODUCTS:
+      return state.withMutations((mutableState) => {
+        mutableState.set('task', action.data);
+      });
+    case types.BULK_UNLINK_PRODUCTS:
+      return state.withMutations((mutableState) => {
+        mutableState.set('task', action.data);
       });
     case types.DELETE_PRODUCT:
       return state.withMutations((mutableState) => {

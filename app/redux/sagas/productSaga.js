@@ -1,7 +1,7 @@
 import { takeLatest, put, all } from 'redux-saga/effects';
 import * as types from 'dan-actions/actionConstants';
 import get from 'lodash/get';
-import api from 'dan-containers/Utils/api';
+import api, { CENIT_APP } from 'dan-containers/Utils/api';
 
 function* getProducts(payload) {
   const { params, enqueueSnackbar } = payload;
@@ -50,6 +50,40 @@ function* unLinkProduct(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* bulkLinkProducts(payload) {
+  const { shop, productIds, integrationIds, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const url = `/request_products?shop=${shop}&task=bulk_edit_link_products`;
+    const response = yield CENIT_APP.post(url, { data: { product_ids: productIds, integration_ids: integrationIds } });
+    const { data } = response.data;
+    enqueueSnackbar('Linking products', { variant: 'info' });
+    yield put({ type: types.BULK_LINK_PRODUCTS, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
+function* bulkUnlinkProducts(payload) {
+  const { shop, productIds, integrationIds, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const url = `/request_products?shop=${shop}&task=bulk_edit_unlink_products`;
+    const response = yield CENIT_APP.post(url, { data: { product_ids: productIds, integration_ids: integrationIds } });
+    const { data } = response.data;
+    enqueueSnackbar('Unlinking products', { variant: 'info' });
+    yield put({ type: types.BULK_UNLINK_PRODUCTS, data });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* deleteProduct(payload) {
   const { productId, enqueueSnackbar } = payload;
   try {
@@ -74,6 +108,14 @@ export function* watchUnLinkProduct() {
   yield takeLatest(types.UNLINK_PRODUCT_ASYNC, unLinkProduct);
 }
 
+export function* watchBulkLinkProducts() {
+  yield takeLatest(types.BULK_LINK_PRODUCTS_ASYNC, bulkLinkProducts);
+}
+
+export function* watchBulkUnlinkProducts() {
+  yield takeLatest(types.BULK_UNLINK_PRODUCTS_ASYNC, bulkUnlinkProducts);
+}
+
 export function* watchDeleteProduct() {
   yield takeLatest(types.DELETE_PRODUCT_ASYNC, deleteProduct);
 }
@@ -83,5 +125,5 @@ export function* watchGetProducts() {
 }
 
 export default function* productSaga() {
-  yield all([watchGetProducts(), watchLinkProduct(), watchUnLinkProduct(), watchDeleteProduct()]);
+  yield all([watchGetProducts(), watchLinkProduct(), watchUnLinkProduct(), watchDeleteProduct(), watchBulkLinkProducts(), watchBulkUnlinkProducts()]);
 }

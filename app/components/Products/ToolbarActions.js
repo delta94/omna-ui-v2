@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import ViewAgendaIcon from '@material-ui/icons/ViewAgenda';
+import ListIcon from '@material-ui/icons/List';
 import Button from '@material-ui/core/Button';
 import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
@@ -11,7 +11,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'row-reverse',
     background: theme.palette.type === 'dark' ? theme.palette.grey[700] : theme.palette.grey[100],
-    marginBottom: 20,
+    marginBottom: 5,
     alignItems: 'center',
     padding: '0 20px',
     borderRadius: theme.rounded.medium,
@@ -30,7 +30,7 @@ function ToolbarActions({ classes, onVariantClick, onLink, onUnlink }) {
           variant="contained"
           color="default"
           className={classes.button}
-          startIcon={<ViewAgendaIcon />}
+          startIcon={<ListIcon />}
           onClick={onVariantClick}
         >
           Variants

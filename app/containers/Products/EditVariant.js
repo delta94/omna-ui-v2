@@ -24,7 +24,7 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 };
 
 function EditVariant(props) {
-  const { match, loading, history, variant, linkTask, unlinkTask, enqueueSnackbar, onGetVariant } = props;
+  const { match, loading, history, variant, linkTask, unlinkTask, onGetVariant, appStore, enqueueSnackbar } = props;
   const [id, setId] = useState();
   const [sku, setSKU] = useState('');
   const [price, setPrice] = useState();
@@ -131,10 +131,12 @@ function EditVariant(props) {
     <div>
       {loading ? <Loading /> : null}
       <PageHeader title="Edit variant" history={history} />
-      <ToolbarActions
-        onLink={handleLink}
-        onUnlink={handleUnlink}
-      />
+      {!appStore.fromShopifyApp && (
+        <ToolbarActions
+          onLink={handleLink}
+          onUnlink={handleUnlink}
+        />
+      )}
       {id && (
         <VariantForm
           sku={sku}
@@ -201,6 +203,7 @@ EditVariant.propTypes = {
   loading: PropTypes.bool.isRequired,
   linkTask: PropTypes.object,
   unlinkTask: PropTypes.object,
+  appStore: PropTypes.object.isRequired,
   onGetVariant: PropTypes.func.isRequired,
   onUpdateVariant: PropTypes.func.isRequired,
   onLinkVariant: PropTypes.func.isRequired,

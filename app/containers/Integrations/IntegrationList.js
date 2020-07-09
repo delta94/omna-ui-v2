@@ -79,9 +79,7 @@ class IntegrationList extends Component {
 
   componentDidUpdate(prevProps) {
     const { task, history } = this.props;
-    if (task !== prevProps.task) {
-      history.push(`tasks/${task.id}`);
-    }
+    task !== prevProps.task ? history.push(`tasks/${task.id}`) : null;
   }
 
   handleAddIntegrationClick = () => {
@@ -129,8 +127,17 @@ class IntegrationList extends Component {
   };
 
   handleImportResource = (id, resource) => {
-    const { onImportResource, enqueueSnackbar } = this.props;
-    onImportResource({ id, resource, enqueueSnackbar });
+    const { appStore, onImportResource, enqueueSnackbar } = this.props;
+    onImportResource({ id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar });
+  };
+
+
+  handleViewResource = (id, resource) => {
+    const { history } = this.props;
+    if (resource === 'brand')
+      history.push(`/${id}/brands`);
+    else
+      history.push(`/${id}/categories`);
   };
 
   handleDialogConfirm = () => {
@@ -246,6 +253,9 @@ class IntegrationList extends Component {
                     onImportResource={resource =>
                       this.handleImportResource(integration.id, resource)
                     }
+                    onViewResource={resource =>
+                      this.handleViewResource(integration.id, resource)
+                    }
                     classes={classes}
                   />
                 </Grid>
@@ -289,10 +299,15 @@ class IntegrationList extends Component {
   }
 }
 
+IntegrationList.defaultProps = {
+  task: null
+};
+
 IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  task: PropTypes.object.isRequired,
+  task: PropTypes.object,
+  appStore: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
   onDeleteIntegration: PropTypes.func.isRequired,

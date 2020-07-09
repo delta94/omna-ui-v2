@@ -32,6 +32,7 @@ const Integration = props => {
     onDeleteIntegration,
     onEditIntegration,
     onImportResource,
+    onViewResource,
     noActions,
     handleAddIntegration
   } = props;
@@ -49,6 +50,11 @@ const Integration = props => {
 
   const handleImportResource = value => {
     onImportResource(value);
+    handleClose();
+  };
+
+  const handleViewResource = value => {
+    onViewResource(value);
     handleClose();
   };
 
@@ -218,6 +224,17 @@ const Integration = props => {
 
         <Divider />
 
+        <MenuItem key="brand" onClick={() => handleViewResource('brand')}>
+              View Brands
+        </MenuItem>
+
+        <MenuItem key="brand" onClick={() => handleViewResource('categories')}>
+              View Categories
+        </MenuItem>
+
+        <Divider />
+        <Divider />
+
         <MenuItem aria-label="edit" onClick={() => handleOptionClick('edit')}>
           Edit
         </MenuItem>
@@ -259,6 +276,7 @@ Integration.propTypes = {
   noActions: PropTypes.bool,
   onAuthorizeIntegration: PropTypes.func,
   onImportResource: PropTypes.func.isRequired,
+  onViewResource: PropTypes.func.isRequired,
   onDeleteIntegration: PropTypes.func,
   onEditIntegration: PropTypes.func,
   onUnauthorizeIntegration: PropTypes.func

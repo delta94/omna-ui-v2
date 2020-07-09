@@ -28,7 +28,7 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
 };
 
 function EditProduct(props) {
-  const { match, history, loading, linkTask, unlinkTask, appStore, enqueueSnackbar } = props;
+  const { match, history, loading, task, appStore, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -49,8 +49,7 @@ function EditProduct(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [action, setAction] = useState('link');
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
-  const prevLinkTaskProp = useRef(linkTask);
-  const prevUnlinkTaskProp = useRef(unlinkTask);
+  const prevTaskProp = useRef(task);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -65,7 +64,7 @@ function EditProduct(props) {
         setIntegrations(data.integrations);
         setVariants(data.variants);
         setImages(data.images);
-        setDimension({...checkTypes(data.package), overwrite: false});
+        setDimension({ ...checkTypes(data.package), overwrite: false });
       } catch (error) {
         if (error && error.response.data.message) {
           enqueueSnackbar(error.response.data.message, {
@@ -79,16 +78,10 @@ function EditProduct(props) {
   }, [match.params.id]);
 
   useEffect(() => {
-    if(linkTask && linkTask !== prevLinkTaskProp.current) {
-      history.push(`/tasks/${linkTask.id}`);
+    if (task && task !== prevTaskProp.current) {
+      history.push(`/tasks/${task.id}`);
     }
-  }, [linkTask]);
-
-  useEffect(() => {
-    if(unlinkTask && unlinkTask !== prevUnlinkTaskProp.current) {
-      history.push(`/tasks/${unlinkTask.id}`);
-    }
-  }, [unlinkTask]);
+  }, [task]);
 
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
@@ -161,7 +154,7 @@ function EditProduct(props) {
 
   const handleSubmitForm = (form_) => {
     setForm(form_);
-    setOpenDialog(true)
+    setOpenDialog(true);
   };
 
   return (
@@ -211,8 +204,7 @@ function EditProduct(props) {
 
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
-  linkTask: state.getIn(['product', 'link']),
-  unlinkTask: state.getIn(['product', 'unlink']),
+  task: state.getIn(['product', 'task']),
   ...state
 });
 
@@ -227,8 +219,7 @@ const EditProductMapped = connect(
 )(EditProduct);
 
 EditProduct.defaultProps = {
-  linkTask: null,
-  unlinkTask: null
+  task: null
 };
 
 EditProduct.propTypes = {
@@ -236,8 +227,7 @@ EditProduct.propTypes = {
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
-  linkTask: PropTypes.object,
-  unlinkTask: PropTypes.object,
+  task: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired

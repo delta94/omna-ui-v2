@@ -9,6 +9,9 @@ import flowSaga from './flowSaga';
 import taskSaga from './taskSaga';
 import webhookSaga from './webhookSaga';
 import variantSaga from './variantSaga';
+import brandSaga from './brandSaga';
+import categorySaga from './categorySaga';
+
 
 export default function* rootSaga() {
   yield all([
@@ -21,6 +24,8 @@ export default function* rootSaga() {
     productSaga(),
     variantSaga(),
     taskSaga(),
-    webhookSaga()
+    webhookSaga(),
+    brandSaga(),
+    categorySaga()
   ]);
 }
