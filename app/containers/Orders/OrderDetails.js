@@ -50,14 +50,17 @@ class OrderDetails extends Component {
     }
   }
 
-  getOrderDocumentTypes = async params => {
-    const { enqueueSnackbar } = this.props;
+  getOrderDocumentTypes = async () => {
+    const { enqueueSnackbar, location } = this.props;
     const response = await api.get(
-      `/integrations/${params.storeId}/orders/${params.number}/doc/types`
+      `/integrations/${location.state.order.integration.id}/orders/${
+        location.state.order.number
+      }/doc/types`
     );
 
     try {
       this.setState({ documentTypes: response.data.data });
+      this.handleOpenDocumentsDialog();
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -67,10 +70,9 @@ class OrderDetails extends Component {
 
   onPrintHandler = () => {
     this.getOrderDocumentTypes();
-    this.handleClickOpen();
   };
 
-  handleClickOpen = () => {
+  handleOpenDocumentsDialog = () => {
     this.setState({ openDialog: true });
   };
 
