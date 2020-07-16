@@ -1,4 +1,4 @@
-import { put, takeLatest, all} from 'redux-saga/effects';
+import { put, takeLatest, all } from 'redux-saga/effects';
 import * as types from 'dan-actions/actionConstants';
 
 import api from 'dan-containers/Utils/api';
@@ -15,7 +15,9 @@ function* getCategories(payload) {
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Getting categories error'), {
       variant: 'error'
-    });  }
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
 }
 
 export function* watchgetCategories() {
