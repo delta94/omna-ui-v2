@@ -98,8 +98,8 @@ const MuiSelect = props => {
         variant="outlined"
         className={classes.inputWidth}
       >
-        {options &&
-          options.map(option => (
+        {options
+          && options.map(option => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>
@@ -176,8 +176,7 @@ const MuiAsyncSelect = props => {
     onChange
   } = props;
 
-  const selectedValue =
-    options.length > 0 ? { id: options[0].id, name: options[0].name } : '';
+  const selectedValue = options.length > 0 ? { id: options[0].id, name: options[0].name } : '';
 
   const [options_, setOptions_] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -297,7 +296,7 @@ function FormBuilder(props) {
     : [];
 
   return (
-    <Grid container spacing={6} direction="row" justify="flex-start">
+    <Grid container spacing={2} direction="row" justify="flex-start">
       {[...mainProps, ...richEditorProps].map(item => {
         switch (item.input_type) {
           case 'text':
@@ -388,7 +387,7 @@ function FormBuilder(props) {
 }
 
 FormBuilder.propTypes = {
-  properties: PropTypes.array.isRequired,
+  properties: PropTypes.any.isRequired,
   classes: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };

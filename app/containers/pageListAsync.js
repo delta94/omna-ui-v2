@@ -109,6 +109,10 @@ export const EditProduct = loadable(() => import('./Products/EditProduct'), {
   fallback: <Loading />
 });
 
+export const BulkEditProducts = loadable(() => import('./Products/BulkEditProducts'), {
+  fallback: <Loading />
+});
+
 export const AddProduct = loadable(() => import('./Products/AddProduct'), {
   fallback: <Loading />
 });
@@ -178,4 +182,3 @@ export const BrandList = loadable(() => import('./Brand/BrandList'), {
 export const CategoryList = loadable(() => import('./Category/CategoryList'), {
   fallback: <Loading />
 });
-

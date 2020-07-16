@@ -4,8 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
 
-const IntegrationProps = memo(({ properties, errors = '' }) => {
-
+const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
   const [properties_, setProperties_] = useState(properties);
 
   // handlePropertyChange to use in the future if the api makes changes on the properties
@@ -35,6 +34,7 @@ const IntegrationProps = memo(({ properties, errors = '' }) => {
       delete properties_[index];
       properties_.splice(index, 1, property);
       setProperties_([...properties]);
+      onTouchedProps(true);
     }
   };
 
@@ -47,18 +47,20 @@ const IntegrationProps = memo(({ properties, errors = '' }) => {
         <FormBuilder properties={properties_} onChange={handlePropertyChange} />
       ) : (
         <Alert variant="error" message={errors} />
-        )}
+      )}
     </div>
   );
 });
 
 IntegrationProps.propTypes = {
   properties: PropTypes.array.isRequired,
-  errors: PropTypes.string
+  errors: PropTypes.string,
+  onTouchedProps: PropTypes.func
 };
 
 IntegrationProps.defaultProps = {
-  errors: ''
+  errors: '',
+  onTouchedProps: undefined
 };
 
 export default IntegrationProps;

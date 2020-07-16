@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-import Ionicon from 'react-ionicons';
 import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -25,7 +27,8 @@ import {
   bulkLinkProducts,
   bulkUnlinkProducts,
   deleteProduct,
-  resetDeleteProductFlag
+  resetDeleteProductFlag,
+  unsubscribeProducts
 } from 'dan-actions/productActions';
 import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
@@ -79,6 +82,11 @@ class ProductList extends React.Component {
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
+  }
+
+  componentWillUnmount() {
+    const { onUnsubscribeProducts } = this.props;
+    onUnsubscribeProducts();
   }
 
   callAPI = () => {
@@ -198,7 +206,7 @@ class ProductList extends React.Component {
             onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}
           >
             <ListItemIcon>
-              <Ionicon icon="md-trash" />
+              <DeleteIcon />
             </ListItemIcon>
             Delete
           </MenuItem>
@@ -404,10 +412,20 @@ class ProductList extends React.Component {
                 component={Link}
                 to="/products/add-product"
               >
-                <Ionicon icon="md-add-circle" />
+                <AddCircleIcon />
               </IconButton>
             </Tooltip>
-          ) : null}
+          ) : (
+            <Tooltip title="Bulk edit">
+              <IconButton
+                aria-label="edit"
+                component={Link}
+                to="/products/bulk-edit"
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Fragment>
       ),
       customToolbarSelect: () => (
@@ -459,7 +477,8 @@ const mapDispatchToProps = dispatch => ({
   onBulkUnlinkProducts: bindActionCreators(bulkUnlinkProducts, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
   onGetProducts: bindActionCreators(getProducts, dispatch),
-  onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch)
+  onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
+  onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
 });
 
 const ProductListMapped = connect(
@@ -486,6 +505,7 @@ ProductList.propTypes = {
   onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
   onResetDeleteProduct: PropTypes.func.isRequired,
+  onUnsubscribeProducts: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 

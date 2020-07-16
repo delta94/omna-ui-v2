@@ -13,6 +13,13 @@ export const getProducts = (payload) => ({
   enqueueSnackbar: payload.enqueueSnackbar
 });
 
+export const getProductsByIntegration = (integrationId, params, enqueueSnackbar) => ({
+  type: types.GET_PRODUCTS_BY_INTEGRATION_ASYNC,
+  integrationId,
+  params,
+  enqueueSnackbar
+});
+
 export const linkProduct = (productId, integrationIds, enqueueSnackbar) => ({
   type: types.LINK_PRODUCT_ASYNC,
   productId,
@@ -20,7 +27,7 @@ export const linkProduct = (productId, integrationIds, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
-export const unLinkProduct = (productId ,integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
+export const unLinkProduct = (productId, integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
   type: types.UNLINK_PRODUCT_ASYNC,
   productId,
   integrationIds,
@@ -34,7 +41,7 @@ export const deleteProduct = (productId, enqueueSnackbar) => ({
   enqueueSnackbar
 });
 
-export const bulkLinkProducts = (shop, productIds ,integrationIds, enqueueSnackbar) => ({
+export const bulkLinkProducts = (shop, productIds, integrationIds, enqueueSnackbar) => ({
   type: types.BULK_LINK_PRODUCTS_ASYNC,
   shop,
   productIds,
@@ -42,7 +49,7 @@ export const bulkLinkProducts = (shop, productIds ,integrationIds, enqueueSnackb
   enqueueSnackbar
 });
 
-export const bulkUnlinkProducts = (shop, productIds ,integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
+export const bulkUnlinkProducts = (shop, productIds, integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
   type: types.BULK_UNLINK_PRODUCTS_ASYNC,
   shop,
   productIds,
@@ -53,4 +60,24 @@ export const bulkUnlinkProducts = (shop, productIds ,integrationIds, deleteFromI
 
 export const resetDeleteProductFlag = () => ({
   type: types.RESET_DELETE_PRODUCT_FLAG
+});
+
+export const unsubscribeProducts = () => ({
+  type: types.UNSUBSCRIBE_PRODUCTS
+});
+
+export const getBulkEditProperties = (shop, integrationId, categoryId, enqueueSnackbar) => ({
+  type: types.GET_BULK_EDIT_PROPERTIES,
+  shop,
+  integrationId,
+  categoryId,
+  enqueueSnackbar
+});
+
+export const bulkEditProperties = (shop, remoteIds, properties, enqueueSnackbar) => ({
+  type: types.BULK_EDIT_PROPERTIES,
+  shop,
+  remoteIds,
+  properties,
+  enqueueSnackbar
 });
