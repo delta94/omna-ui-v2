@@ -11,7 +11,7 @@ const initialState = fromJS({
 
 export default (state = initialState, action = {}) => {
   switch (action.type) {
-    case actionConstants.ACTION_PRODUCT_START:
+    case actionConstants.ACTION_INTEGRATION_START:
       return state.withMutations(mutableState => {
         mutableState.set('loading', true);
       });
@@ -26,13 +26,14 @@ export default (state = initialState, action = {}) => {
         mutableState.set('error', action.error).set('loading', false);
       });
     case actionConstants.UPDATE_INTEGRATION_SUCCESS:
-      return state.withMutations(mutableState => {
-        mutableState
-          .updateIn(['integrations', 'data'], (data, index) =>
-            data.set(index, action.data)
+      return state
+        .updateIn(['integrations', 'data'], data =>
+          data.set(
+            data.findIndex(item => item.get('id') === action.data.id),
+            fromJS(action.data)
           )
-          .set('loading', false);
-      });
+        )
+        .set('loading', false);
     case actionConstants.UPDATE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);

@@ -20,16 +20,21 @@ function* fetchIntegrations(params) {
 function* updateIntegration(params) {
   yield put({ type: actionConstants.ACTION_INTEGRATION_START });
   const { integration } = params;
+  const { name } = integration;
 
   try {
-    yield api.put(`${url}/${integration.id}`, {
-      data: integration
+    const response = yield api.post(`${url}/${integration.id}`, {
+      data: { name }
     });
+    const {
+      data: { data }
+    } = response;
     yield put({
       type: actionConstants.UPDATE_INTEGRATION_SUCCESS,
-      integration
+      data
     });
   } catch (error) {
+    console.log(error);
     yield put({ type: actionConstants.UPDATE_INTEGRATION_FAILED, error });
   }
 }
@@ -72,7 +77,9 @@ function* importResource(params) {
     let response = null;
 
     if (fromShopify && resource === 'products') {
-      response = yield CENIT_APP.get(`/request_products?shop=${shop}&task=import_from_integration&integration_id=${id}`);
+      response = yield CENIT_APP.get(
+        `/request_products?shop=${shop}&task=import_from_integration&integration_id=${id}`
+      );
     } else response = yield api.get(`/integrations/${id}/${resource}/import`);
 
     const { data } = response.data;

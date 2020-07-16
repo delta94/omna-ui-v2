@@ -69,39 +69,34 @@ class IntegrationForm extends Component {
       this.setState({ errors: { integration: 'Integration is required' } });
     } else if (!channel) {
       this.setState({ errors: { channel: 'Channel is required' } });
+    } else if (editableIntegration) {
+      onUpdateIntegration({
+        id: editableIntegration.id,
+        name,
+        channel,
+        authorized
+      });
     } else {
-      this.setState({ loadingState: true });
-      if (editableIntegration) {
-        onUpdateIntegration({
-          id: editableIntegration.id,
-          name,
-          channel,
-          authorized
-        });
-      } else {
-        API.post('/integrations', { data: { name, channel } })
-          .then(response => {
-            enqueueSnackbar('Integration created successfully', {
-              variant: 'success'
-            });
-            const { data } = response.data;
-            if (authorized && data.id) {
-              this.handleAuthorization(data.id);
-            }
-          })
-          .catch(error => {
-            if (error && error.response.data.message) {
-              enqueueSnackbar(error.response.data.message, {
-                variant: 'error'
-              });
-            }
-          })
-          .then(() => {
-            handleClose();
-            this.setState({ loadingState: false });
+      API.post('/integrations', { data: { name, channel } })
+        .then(response => {
+          enqueueSnackbar('Integration created successfully', {
+            variant: 'success'
           });
-      }
+          const { data } = response.data;
+          if (authorized && data.id) {
+            this.handleAuthorization(data.id);
+          }
+        })
+        .catch(error => {
+          if (error && error.response.data.message) {
+            enqueueSnackbar(error.response.data.message, {
+              variant: 'error'
+            });
+          }
+        });
     }
+
+    handleClose();
   };
 
   handleAuthorization = id => {
