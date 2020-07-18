@@ -6,7 +6,6 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
@@ -109,11 +108,11 @@ const MuiSelect = props => {
   );
 };
 
-// TO DO: adjust value in multiselect
 const MuiMultiSelect = props => {
   const {
     id,
     label,
+    value,
     required,
     options,
     placeholder,
@@ -124,17 +123,15 @@ const MuiMultiSelect = props => {
 
   const inputLabel = React.useRef(null);
   const [labelWidth, setLabelWidth] = useState(0);
-  const [selectedValues] = useState([]);
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
-  // TO DO: adjust value in multiselect
+
   return (
     <Grid item>
       <FormControl
         variant="outlined"
         className={classNames(classes.inputWidth)}
-        error
       >
         <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
           {label}
@@ -143,7 +140,8 @@ const MuiMultiSelect = props => {
           labelId={label}
           id={id}
           name={id}
-          value={selectedValues}
+          multiple
+          value={value}
           required={required}
           disabled={disabled}
           onChange={onChange}
@@ -154,12 +152,11 @@ const MuiMultiSelect = props => {
         >
           {options.map(option => (
             <MenuItem key={option} value={option}>
-              <Checkbox checked={selectedValues.indexOf(option) > -1} />
+              <Checkbox checked={value.indexOf(option) > -1} />
               <ListItemText primary={option} />
             </MenuItem>
           ))}
         </Select>
-        <FormHelperText>Property is not ready to edit</FormHelperText>
       </FormControl>
     </Grid>
   );
@@ -173,7 +170,7 @@ const MuiAsyncSelect = props => {
     options,
     required,
     read_only: disabled,
-    onChange
+    onChange,
   } = props;
 
   const selectedValue = options.length > 0 ? { id: options[0].id, name: options[0].name } : '';
@@ -188,7 +185,7 @@ const MuiAsyncSelect = props => {
     try {
       const response = await API.get(path, { params });
       const { data } = response.data;
-      setOptions_(data.map(item => ({ id: item.id, name: item.name })));
+      setOptions_(data.map(item => ({ value: item.id, name: item.name })));
     } catch (error) {
       console.log(error);
     }
@@ -286,7 +283,7 @@ const MuiDate = props => {
   );
 };
 
-function FormBuilder(props) {
+const FormBuilder = (props) => {
   const { properties, classes, onChange } = props;
   const mainProps = properties
     ? properties.filter(item => item.input_type !== 'rich_text')
@@ -309,15 +306,6 @@ function FormBuilder(props) {
               />
             );
           case 'single_select':
-            return (
-              <MuiSelect
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'category_select_box':
             return (
               <MuiSelect
                 key={item.id}
@@ -428,12 +416,12 @@ MuiSelect.propTypes = {
 
 MuiMultiSelect.defaultProps = {
   placeholder: '',
-  /* value: [] */
+  value: undefined
 };
 
 MuiMultiSelect.propTypes = {
   id: PropTypes.string.isRequired,
-  /* value: PropTypes.array, */
+  value: PropTypes.array,
   label: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.bool.isRequired,

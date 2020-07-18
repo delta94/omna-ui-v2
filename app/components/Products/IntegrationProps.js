@@ -4,6 +4,13 @@ import Typography from '@material-ui/core/Typography';
 import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
 
+const emptyProps = (list) => {
+  if (list && (list.size === 0 || list.length === 0)) {
+    return true;
+  }
+  return false;
+};
+
 const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
   const [properties_, setProperties_] = useState(properties);
 
@@ -20,7 +27,7 @@ const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
         }
       }; */
 
-  const handlePropertyChange = (e) => {
+   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
     const index = properties_.findIndex(item => item.id === name);
     if (index >= 0) {
@@ -43,7 +50,8 @@ const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
       <Typography variant="subtitle2" gutterBottom>
         Properties
       </Typography>
-      {(properties_ && !errors) ? (
+      {emptyProps(properties_) && !errors ? <Alert variant="error" message="Something wrong. No properties to show" /> : null}
+      {properties_ && !errors ? (
         <FormBuilder properties={properties_} onChange={handlePropertyChange} />
       ) : (
         <Alert variant="error" message={errors} />
@@ -60,7 +68,7 @@ IntegrationProps.propTypes = {
 
 IntegrationProps.defaultProps = {
   errors: '',
-  onTouchedProps: undefined
+  onTouchedProps: () => {}
 };
 
 export default IntegrationProps;
