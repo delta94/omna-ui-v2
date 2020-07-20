@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { baseApiUrl, baseAppUrl, isAuthenticated } from './Utils';
 
-const AuthGuardRoute = ({ component: Component, location, path, appStore, ...rest }) => {
+const AuthGuardRoute = ({
+  appStore,
+  changeMode,
+  component: Component,
+  history,
+  layout: Layout,
+  location,
+  path,
+  ...rest
+}) => {
   let code = null;
   let store = null;
 
@@ -22,7 +31,9 @@ const AuthGuardRoute = ({ component: Component, location, path, appStore, ...res
       {...rest}
       render={props =>
         isAuthenticated ? (
-          <Component {...props} appStore={appStore} />
+          <Layout history={history} changeMode={changeMode}>
+            <Component {...props} appStore={appStore} />
+          </Layout>
         ) : (
           <Redirect
             to={{
@@ -42,10 +53,13 @@ const AuthGuardRoute = ({ component: Component, location, path, appStore, ...res
 };
 
 AuthGuardRoute.propTypes = {
-  component: PropTypes.func.isRequired,
-  path: PropTypes.string.isRequired,
   appStore: PropTypes.object.isRequired,
-  location: PropTypes.object
+  changeMode: PropTypes.func.isRequired,
+  component: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  layout: PropTypes.object.isRequired,
+  location: PropTypes.object,
+  path: PropTypes.string.isRequired
 };
 
 AuthGuardRoute.defaultProps = {

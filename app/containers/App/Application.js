@@ -21,31 +21,24 @@ class Application extends React.Component {
         maxSnack={3}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Dashboard
-          history={history}
-          changeMode={changeMode}
-          appStore={appStore}
-        >
-          <Switch>
-            {availableRoutes.map(route => (
-              <AuthGuardRoute
-                key={route.link}
-                exact
-                path={route.link}
-                component={route.component}
-                appStore={appStore}
-              />
-            ))}
-            <Route
-              path="/lock-screen"
+        <Switch>
+          {availableRoutes.map(route => (
+            <AuthGuardRoute
+              key={route.link}
+              exact
+              path={route.link}
+              component={route.component}
+              appStore={appStore}
+              layout={Dashboard}
               history={history}
-              component={LockScreen}
+              changeMode={changeMode}
             />
-            <Route path="/logout" component={Logout} />
-            {/* Default */}
-            <Route component={NotFound} />
-          </Switch>
-        </Dashboard>
+          ))}
+          <Route path="/lock-screen" history={history} component={LockScreen} />
+          <Route path="/logout" component={Logout} />
+          {/* Default */}
+          <Route component={NotFound} />
+        </Switch>
       </SnackbarProvider>
     );
   }

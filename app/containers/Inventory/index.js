@@ -194,7 +194,7 @@ class InventoryEntries extends Component {
     ];
 
     const options = {
-      filter: true,
+      filter: false,
       selectableRows: 'none',
       responsive: 'stacked',
       download: false,
