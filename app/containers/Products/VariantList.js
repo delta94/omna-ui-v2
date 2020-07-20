@@ -168,7 +168,7 @@ function VariantList(props) {
         filter: false,
         sort: false,
         empty: true,
-        display: !appStore.fromShopifyApp || false,
+        display: appStore.fromShopifyApp ? 'excluded' : true,
         customBodyRender: () => (
           <IconButton
             aria-label="more"

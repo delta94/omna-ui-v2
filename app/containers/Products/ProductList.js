@@ -318,6 +318,7 @@ class ProductList extends React.Component {
           filter: false,
           sort: false,
           empty: true,
+          display: appStore.fromShopifyApp ? 'excluded' : true,
           customBodyRender: () => (
             <IconButton
               aria-label="more"
