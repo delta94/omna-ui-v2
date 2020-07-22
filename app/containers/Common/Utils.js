@@ -3,6 +3,7 @@ import { sha256 } from 'js-sha256';
 const URL_LOCAL = 'http://127.0.0.1:4000';
 const URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
 const URL_PROD = 'https://app.omna.io';
+export const SECRET_SHOPIFY_APP = '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'
 const URL_SHOPIFY = 'https://playstoretestingone.myshopify.com/';
 
 export const baseApiUrl = 'https://cenit.io/app/ecapi-v1';
