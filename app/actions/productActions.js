@@ -81,3 +81,10 @@ export const bulkEditProperties = (shop, remoteIds, properties, enqueueSnackbar)
   properties,
   enqueueSnackbar
 });
+
+export const importProductFromIntegration = (integrationId, remoteId, enqueueSnackbar) => ({
+  type: types.IMPORT_PRODUCT_FROM_INTEGRATION,
+  integrationId,
+  remoteId,
+  enqueueSnackbar
+});

@@ -5,9 +5,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { withStyles } from '@material-ui/core/styles';
-import 'dan-styles/vendors/slick-carousel/slick-carousel.css';
-import 'dan-styles/vendors/slick-carousel/slick.css';
-import 'dan-styles/vendors/slick-carousel/slick-theme.css';
 import Loading from 'dan-components/Loading';
 
 import API from 'dan-containers/Utils/api';
@@ -16,7 +13,8 @@ import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import ProductForm from 'dan-components/Products/ProductForm';
 import Linker from 'dan-components/Products/Linker';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
-import { linkProduct, unLinkProduct } from 'dan-actions/productActions';
+import { linkProduct, unLinkProduct, importProductFromIntegration } from 'dan-actions/productActions';
+import { importResource } from 'dan-actions/integrationActions';
 import { checkTypes } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Products/product-jss';
 
@@ -27,8 +25,12 @@ export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
   return 'Are you sure you want to edit the product?';
 };
 
+export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
+  `Are you sure you want to ${_action} under "${integration}" integration`
+);
+
 function EditProduct(props) {
-  const { match, history, loading, task, appStore, enqueueSnackbar } = props;
+  const { match, history, loading, task, importTask, appStore, enqueueSnackbar } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -46,10 +48,14 @@ function EditProduct(props) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState('general');
+  const [selectedTab, setSelectedTab] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
   const [action, setAction] = useState('link');
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
+  const [integrationActionsDialog, setIntegrationActionsDialog] = useState(false);
+  const [integrationAction, setIntegrationAction] = useState('import this product');
   const prevTaskProp = useRef(task);
+  const prevImportTaskProp = useRef(importTask);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -82,6 +88,12 @@ function EditProduct(props) {
       history.push(`/tasks/${task.id}`);
     }
   }, [task]);
+
+  useEffect(() => {
+    if (importTask && importTask !== prevImportTaskProp.current) {
+      history.push(`/tasks/${importTask.id}`);
+    }
+  }, [importTask]);
 
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
@@ -152,9 +164,37 @@ function EditProduct(props) {
     handleEdit();
   };
 
+  const handleIntegrationActionsDlgCancel = () => setIntegrationActionsDialog(false);
+
+  const handleIntegrationActionsDlgConfirm = () => {
+    const { onImportResource, onImportProductFromIntegration } = props;
+    switch (integrationAction) {
+      case 'import categories':
+        onImportResource({ id: selectedTab.id, resource: 'categories', enqueueSnackbar });
+        break;
+      case 'import brands':
+        onImportResource({ id: selectedTab.id, resource: 'brands', enqueueSnackbar });
+        break;
+      case 'import this product': {
+        const found = integrations.find(item => item.id === selectedTab.id);
+        const { remote_product_id: remoteId } = found.product;
+        onImportProductFromIntegration(selectedTab.id, remoteId, enqueueSnackbar);
+        break;
+      }
+      default:
+        break;
+    }
+    setIntegrationActionsDialog(false);
+  };
+
   const handleSubmitForm = (form_) => {
     setForm(form_);
     setOpenDialog(true);
+  };
+
+  const handleImportAction = (actionType) => {
+    setIntegrationAction(actionType);
+    setIntegrationActionsDialog(true);
   };
 
   return (
@@ -165,6 +205,8 @@ function EditProduct(props) {
         onLink={handleLink}
         onUnlink={handleUnlink}
         onVariantClick={() => history.push(`/products/${match.params.id}/variants`)}
+        onImport={handleImportAction}
+        disableImport={selectedTab === 'general' || false}
       />
       {id && (
         <ProductForm
@@ -179,7 +221,9 @@ function EditProduct(props) {
           onPriceChange={e => setPrice(e)}
           onDescriptionChange={e => setDescription(e)}
           onDimensionChange={handleDimensionChange}
+          onIntegrationChange={(e) => setSelectedTab(e)}
           onCancelClick={() => history.goBack()}
+          onImportAction={handleImportAction}
           onSubmitForm={handleSubmitForm}
         />
       )}
@@ -188,6 +232,12 @@ function EditProduct(props) {
         message={EDIT_PRODUCT_CONFIRM`${form !== 'general' ? form : ''}`}
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
+      />
+      <AlertDialog
+        open={integrationActionsDialog}
+        message={INTEGRATION_ACTIONS_CONFIRM`${integrationAction}${selectedTab.name}`}
+        handleCancel={handleIntegrationActionsDlgCancel}
+        handleConfirm={handleIntegrationActionsDlgConfirm}
       />
       <Linker
         action={action}
@@ -205,12 +255,15 @@ function EditProduct(props) {
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
   task: state.getIn(['product', 'task']),
+  importTask: state.getIn(['integration', 'task']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   onLinkProduct: bindActionCreators(linkProduct, dispatch),
-  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch)
+  onUnlinkProduct: bindActionCreators(unLinkProduct, dispatch),
+  onImportResource: bindActionCreators(importResource, dispatch),
+  onImportProductFromIntegration: bindActionCreators(importProductFromIntegration, dispatch),
 });
 
 const EditProductMapped = connect(
@@ -219,7 +272,8 @@ const EditProductMapped = connect(
 )(EditProduct);
 
 EditProduct.defaultProps = {
-  task: null
+  task: null,
+  importTask: null
 };
 
 EditProduct.propTypes = {
@@ -228,8 +282,11 @@ EditProduct.propTypes = {
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
   task: PropTypes.object,
+  importTask: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
+  onImportResource: PropTypes.func.isRequired,
+  onImportProductFromIntegration: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 

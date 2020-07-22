@@ -151,6 +151,27 @@ function* bulkEditProperties(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* importProductFromIntegration(payload) {
+  const { integrationId, remoteId, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const url = `/integrations/${integrationId}/products/${remoteId}/import`;
+    const response = yield api.get(url);
+    const { data } = response.data;
+    yield put({ type: types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS, data });
+    if (enqueueSnackbar) {
+      enqueueSnackbar('Importing product', { variant: 'info' });
+    }
+  } catch (error) {
+    if (enqueueSnackbar) {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
+    } else yield put({ type: types.GET_PRODUCTS_ERROR, error });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 export function* watchLinkProduct() {
   yield takeLatest(types.LINK_PRODUCT_ASYNC, linkProduct);
 }
@@ -187,8 +208,12 @@ export function* watchBulkEditProperties() {
   yield takeLatest(types.BULK_EDIT_PROPERTIES, bulkEditProperties);
 }
 
+export function* watchImportProductFromIntegration() {
+  yield takeLatest(types.IMPORT_PRODUCT_FROM_INTEGRATION, importProductFromIntegration);
+}
+
 export default function* productSaga() {
   yield all([watchGetProducts(), watchLinkProduct(), watchUnLinkProduct(), watchDeleteProduct(),
     watchBulkLinkProducts(), watchBulkUnlinkProducts(), watchGetProductsByIntegration(),
-    watchGetBulkEditProperties(), watchBulkEditProperties()]);
+    watchGetBulkEditProperties(), watchBulkEditProperties(), watchImportProductFromIntegration()]);
 }

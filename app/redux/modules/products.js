@@ -57,6 +57,10 @@ export default function integrationsReducer(state = initialState, action) {
       return state.withMutations(mutableState => {
         mutableState.set('task', action.data).set('products', { data: [], pagination: { total: 0 } });
       });
+    case types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('task', action.data);
+      });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {
         mutableState.set('loading', action.loading);
