@@ -8,7 +8,10 @@ const initialState = fromJS({
   update: null,
   link: null,
   unlink: null,
-  loading: false,
+  bulkEdit: null,
+  properties: [],
+  loading: true,
+  remoteIds: []
 });
 
 export default function variantsReducer(state = initialState, action) {
@@ -44,6 +47,18 @@ export default function variantsReducer(state = initialState, action) {
     case types.UNLINK_VARIANT:
       return state.withMutations((mutableState) => {
         mutableState.set('unlink', action.data);
+      });
+    case types.GET_BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('properties', action.data);
+      });
+    case types.BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('bulkEdit', action.data);
+      });
+    case types.UPDATE_VARIANT_REMOTE_IDS:
+      return state.withMutations(mutableState => {
+        mutableState.set('remoteIds', action.remoteIds);
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

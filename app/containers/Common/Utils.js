@@ -135,8 +135,6 @@ export const currentTenant = localStorage.getItem('currentTenant')
   ? JSON.parse(localStorage.getItem('currentTenant'))
   : null;
 
-export const shopifyStoreName = currentTenant ? currentTenant.name : null;
-
 export const isAuthenticated = currentTenant;
 
 export const getDeactivationDate = deactivationDate => {

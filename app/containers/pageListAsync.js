@@ -101,6 +101,10 @@ export const EditVariant = loadable(() => import('./Products/EditVariant'), {
   fallback: <Loading />
 });
 
+export const BulkEditVariants = loadable(() => import('./Products/BulkEditVariants'), {
+  fallback: <Loading />
+});
+
 export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });

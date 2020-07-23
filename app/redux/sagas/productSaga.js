@@ -18,6 +18,24 @@ function* getProducts(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* getProductCategory(payload) {
+  const { productId, integrationId, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.get(`/products/${productId}`);
+    const { data } = response.data;
+    const integration = data.integrations.find(item => item.id === integrationId);
+    const { properties } = integration.product
+    const category = properties.find(item => item.id.includes('category'));
+    yield put({ type: types.GET_PRODUCT_CATEGORY_SUCCESS, data: { id: category.value, integration: integrationId } });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 function* getProductsByIntegration(payload) {
   const { integrationId, params, enqueueSnackbar } = payload;
   try {
@@ -212,8 +230,13 @@ export function* watchImportProductFromIntegration() {
   yield takeLatest(types.IMPORT_PRODUCT_FROM_INTEGRATION, importProductFromIntegration);
 }
 
+export function* watchGetProductCategory() {
+  yield takeLatest(types.GET_PRODUCT_CATEGORY, getProductCategory);
+}
+
 export default function* productSaga() {
   yield all([watchGetProducts(), watchLinkProduct(), watchUnLinkProduct(), watchDeleteProduct(),
     watchBulkLinkProducts(), watchBulkUnlinkProducts(), watchGetProductsByIntegration(),
-    watchGetBulkEditProperties(), watchBulkEditProperties(), watchImportProductFromIntegration()]);
+    watchGetBulkEditProperties(), watchBulkEditProperties(), watchImportProductFromIntegration(),
+    watchGetProductCategory()]);
 }

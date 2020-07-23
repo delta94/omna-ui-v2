@@ -26,7 +26,9 @@ const styles = theme => ({
   },
 });
 
-function ToolbarActions({ classes, disableImport, onVariantClick, onLink, onUnlink, onImport }) {
+function ToolbarActions(props) {
+
+  const { classes, disableImport, onVariantClick, onLink, onUnlink, onImport } = props;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -45,32 +47,6 @@ function ToolbarActions({ classes, disableImport, onVariantClick, onLink, onUnli
 
   return (
     <div className={classes.topAction}>
-      {onImport && (
-        <Fragment>
-          <Tooltip title="Import">
-            <IconButton
-              aria-label="import"
-              aria-controls="import"
-              aria-haspopup="true"
-              onClick={handleOpenMenu}
-              disabled={disableImport}
-            >
-              <VerticalAlignBottomIcon />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={() => handleClick('import this product')}>Import this product</MenuItem>
-            <MenuItem onClick={() => handleClick('import categories')}>Import categories</MenuItem>
-            <MenuItem onClick={() => handleClick('import brands')}>Import brands</MenuItem>
-          </Menu>
-        </Fragment>
-      )}
       {onVariantClick && (
         <Button
           variant="contained"
@@ -100,6 +76,34 @@ function ToolbarActions({ classes, disableImport, onVariantClick, onLink, onUnli
       >
         Link
       </Button>
+      {onImport && (
+        <Fragment>
+          <Tooltip title="Import">
+            <span>
+              <IconButton
+                aria-label="import"
+                aria-controls="import"
+                aria-haspopup="true"
+                onClick={handleOpenMenu}
+                disabled={disableImport}
+              >
+                <VerticalAlignBottomIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={() => handleClick('import this product')}>Import this product</MenuItem>
+            <MenuItem onClick={() => handleClick('import categories')}>Import categories</MenuItem>
+            <MenuItem onClick={() => handleClick('import brands')}>Import brands</MenuItem>
+          </Menu>
+        </Fragment>
+      )}
     </div>
   );
 }

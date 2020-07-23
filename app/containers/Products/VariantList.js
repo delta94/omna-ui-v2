@@ -1,13 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
-
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { Link } from 'react-router-dom';
 import Ionicon from 'react-ionicons';
+import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -17,11 +19,12 @@ import Avatar from '@material-ui/core/Avatar';
 import { delay } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 
-import { getVariantList, deleteVariant } from 'dan-actions/variantActions';
+import { getVariantList, deleteVariant, updateRemoteIds } from 'dan-actions/variantActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ChipsArray from 'dan-components/ChipsArray/index';
+import { getProductCategory } from 'dan-actions/productActions';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -35,7 +38,8 @@ const getMuiTheme = () => createMuiTheme({
 
 function VariantList(props) {
   const {
-    match, loading, integrations, variantList, onGetVariants, onGetIntegrations, history, appStore, enqueueSnackbar
+    match, loading, integrations, variantList, onGetVariants, onGetIntegrations, history,
+    appStore, category, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
@@ -43,8 +47,29 @@ function VariantList(props) {
   const [serverSideFilterList, setServerSideFilterList] = useState([]);
   const [openConfirmDlg, setOpenConfirmDlg] = useState();
   const [selectedItem, setSelectedItem] = useState();
+  const [selectedIndexList, setSelectedIndexList] = useState([]);
+  const prevCategoryProp = useRef(category);
 
   const { data, pagination } = variantList;
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  useEffect(() => {
+    if (category && category !== prevCategoryProp.current) {
+      history.push(`${history.location.pathname}/bulk-edit`);
+    }
+  }, [category]);
+
+  const getIntegrationFilter = () => {
+    if (serverSideFilterList[5] && serverSideFilterList[5][0]) {
+      return serverSideFilterList[5][0];
+    }
+    return null;
+  };
 
   const makeQuery = () => {
     const params = {
@@ -52,7 +77,7 @@ function VariantList(props) {
       offset: page * limit,
       term: searchText,
       with_details: true,
-      integration_id: serverSideFilterList[5] && serverSideFilterList[5][0] ? integrations.data.find(item => item.name === serverSideFilterList[5][0]).id : ''
+      integration_id: getIntegrationFilter() ? integrations.data.find(item => item.name === getIntegrationFilter()).id : ''
     };
     onGetVariants(match.params.id, params, enqueueSnackbar);
   };
@@ -65,9 +90,24 @@ function VariantList(props) {
     onGetIntegrations({ params: { offset: 0, limit: 100 } });
   }, []);
 
+  const getRemoteIds = () => {
+    const remoteIds = [];
+    selectedIndexList.forEach(index => {
+      if (getIntegrationFilter) {
+        const filteredIntegration = data[index].integrations.find(item => item.id === getIntegrationFilter());
+        const { variant } = filteredIntegration;
+        remoteIds.push(variant.remote_variant_id);
+      }
+    });
+    return remoteIds;
+  };
+
   const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
-  const handleChangePage = (pageValue) => setPage(pageValue);
+  const handleChangePage = (pageValue) => {
+    setPage(pageValue);
+    setSelectedIndexList([]);
+  };
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
@@ -88,6 +128,14 @@ function VariantList(props) {
   };
 
   const handleCancelDlg = () => setOpenConfirmDlg(false);
+
+  const handleBulkEdit = (event) => {
+    if (getIntegrationFilter()) {
+      const { onGetProductCategory, onUpdateRemoteIds } = props;
+      onUpdateRemoteIds(getRemoteIds());
+      onGetProductCategory(match.params.id, getIntegrationFilter(), enqueueSnackbar);
+    } else setAnchorEl(event.currentTarget);
+  };
 
   const columns = [
     {
@@ -185,7 +233,8 @@ function VariantList(props) {
 
   const options = {
     filter: true,
-    selectableRows: 'none',
+    selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
+    rowsSelected: selectedIndexList,
     responsive: 'stacked',
     download: false,
     print: false,
@@ -225,6 +274,9 @@ function VariantList(props) {
         history.push(`${pathname}/${data[dataIndex].id}/edit-variant`);
       }
     },
+    onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {
+      setSelectedIndexList(indexList);
+    },
     customToolbar: () => (
       <Fragment>
         {!appStore.fromShopifyApp ? (
@@ -239,6 +291,35 @@ function VariantList(props) {
           </Tooltip>
         ) : null}
       </Fragment>
+    ),
+    customToolbarSelect: () => (
+      <div>
+        <Tooltip title="Bulk edit">
+          <IconButton
+            aria-label="edit"
+            aria-describedby={anchorEl ? 'simple-popover' : undefined}
+            onClick={handleBulkEdit}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <Popover
+          id={anchorEl ? 'simple-popover' : undefined}
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <Typography style={{ padding: '16px' }}>Apply integration filter for bulk edit.</Typography>
+        </Popover>
+      </div>
     )
   };
 
@@ -259,6 +340,10 @@ function VariantList(props) {
   );
 }
 
+VariantList.defaultProps = {
+  category: null
+};
+
 VariantList.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
@@ -266,15 +351,19 @@ VariantList.propTypes = {
   integrations: PropTypes.object.isRequired,
   appStore: PropTypes.object.isRequired,
   variantList: PropTypes.object.isRequired,
+  category: PropTypes.object,
   onGetVariants: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
   onDeleteVariant: PropTypes.func.isRequired,
+  onGetProductCategory: PropTypes.func.isRequired,
+  onUpdateRemoteIds: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   variantList: state.getIn(['variant', 'variantList']).toJS(),
   integrations: state.getIn(['integration', 'integrations']).toJS(),
+  category: state.getIn(['product', 'category']),
   loading: state.getIn(['variant', 'loading']),
   ...state
 });
@@ -282,7 +371,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
   onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
-  onDeleteVariant: bindActionCreators(deleteVariant, dispatch)
+  onGetProductCategory: bindActionCreators(getProductCategory, dispatch),
+  onDeleteVariant: bindActionCreators(deleteVariant, dispatch),
+  onUpdateRemoteIds: bindActionCreators(updateRemoteIds, dispatch)
 });
 
 const VariantListMapped = connect(

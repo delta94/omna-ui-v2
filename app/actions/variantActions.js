@@ -61,3 +61,24 @@ export const unlinkVariant = (productId, variantId, integrationIds, deleteFromIn
   deleteFromIntegration,
   enqueueSnackbar
 });
+
+export const getBulkEditVariantProperties = (shop, integrationId, categoryId, enqueueSnackbar) => ({
+  type: types.GET_BULK_EDIT_VARIANT_PROPERTIES,
+  shop,
+  integrationId,
+  categoryId,
+  enqueueSnackbar
+});
+
+export const bulkEditVariantProperties = (shop, remoteIds, properties, enqueueSnackbar) => ({
+  type: types.BULK_EDIT_VARIANT_PROPERTIES,
+  shop,
+  remoteIds,
+  properties,
+  enqueueSnackbar
+});
+
+export const updateRemoteIds = (remoteIds) => ({
+  type: types.UPDATE_VARIANT_REMOTE_IDS,
+  remoteIds
+});

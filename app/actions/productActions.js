@@ -88,3 +88,10 @@ export const importProductFromIntegration = (integrationId, remoteId, enqueueSna
   remoteId,
   enqueueSnackbar
 });
+
+export const getProductCategory = (productId, integrationId, enqueueSnackbar) => ({
+  type: types.GET_PRODUCT_CATEGORY,
+  productId,
+  integrationId,
+  enqueueSnackbar
+});

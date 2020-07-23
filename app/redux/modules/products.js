@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
@@ -8,7 +8,8 @@ const initialState = fromJS({
   deleted: false,
   task: null,
   error: null,
-  properties: []
+  properties: [],
+  category: null
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -60,6 +61,10 @@ export default function integrationsReducer(state = initialState, action) {
     case types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
         mutableState.set('task', action.data);
+      });
+    case types.GET_PRODUCT_CATEGORY_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('category', Map(action.data));
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {
