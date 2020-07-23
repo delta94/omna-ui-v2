@@ -26,7 +26,6 @@ class ShopifyMenu extends React.Component {
   };
 
   handleMenu = event => {
-    console.log('CLICK');
     this.setState({
       anchorEl: event.currentTarget
     });

@@ -16,7 +16,11 @@ import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import API from 'dan-containers/Utils/api';
 import { handleAuthorization } from 'dan-containers/Common/Utils';
-import { getChannels, updateIntegration } from 'dan-actions/integrationActions';
+import {
+  getChannels,
+  getIntegrations,
+  updateIntegration
+} from 'dan-actions/integrationActions';
 
 const styles = () => ({
   inputWidth: {
@@ -37,8 +41,9 @@ class IntegrationForm extends Component {
   };
 
   componentDidMount() {
-    const { onGetChannels } = this.props;
+    const { integrations, onGetChannels, onGetIntegrations } = this.props;
     onGetChannels();
+    if (!integrations) onGetIntegrations();
   }
 
   onInputChange = e => {
@@ -57,6 +62,7 @@ class IntegrationForm extends Component {
       editableIntegration,
       enqueueSnackbar,
       handleClose,
+      integrations,
       onUpdateIntegration
     } = this.props;
     const {
@@ -77,23 +83,33 @@ class IntegrationForm extends Component {
         authorized
       });
     } else {
-      API.post('/integrations', { data: { name, channel } })
-        .then(response => {
-          enqueueSnackbar('Integration created successfully', {
-            variant: 'success'
-          });
-          const { data } = response.data;
-          if (authorized && data.id) {
-            this.handleAuthorization(data.id);
-          }
-        })
-        .catch(error => {
-          if (error && error.response.data.message) {
-            enqueueSnackbar(error.response.data.message, {
-              variant: 'error'
-            });
-          }
+      const { data: jsIntegrations } = integrations.toJS();
+      const found = jsIntegrations.find(
+        integration => integration.channel === channel
+      );
+      if (found) {
+        enqueueSnackbar('An integration for this channel already exist.', {
+          variant: 'error'
         });
+      } else {
+        API.post('/integrations', { data: { name, channel } })
+          .then(response => {
+            enqueueSnackbar('Integration created successfully', {
+              variant: 'success'
+            });
+            const { data } = response.data;
+            if (authorized && data.id) {
+              this.handleAuthorization(data.id);
+            }
+          })
+          .catch(error => {
+            if (error && error.response.data.message) {
+              enqueueSnackbar(error.response.data.message, {
+                variant: 'error'
+              });
+            }
+          });
+      }
     }
 
     handleClose();
@@ -180,7 +196,7 @@ class IntegrationForm extends Component {
                 margin="normal"
                 variant="outlined"
                 className={classes.inputWidth}
-                error={!errors.integration}
+                error={!!errors.integration}
                 helperText={errors.integration}
               />
 
@@ -243,19 +259,23 @@ IntegrationForm.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   editableIntegration: PropTypes.object,
   handleClose: PropTypes.func.isRequired,
+  integrations: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
   onGetChannels: PropTypes.func.isRequired,
+  onGetIntegrations: PropTypes.func.isRequired,
   onUpdateIntegration: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
+  integrations: state.getIn(['integration', 'integrations']),
   channels: state.getIn(['integration', 'channels'])
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query)),
+  onGetIntegrations: query => dispatch(getIntegrations(query)),
   onUpdateIntegration: integration => dispatch(updateIntegration(integration))
 });
 

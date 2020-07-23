@@ -16,7 +16,11 @@ import {
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Block';
-import { getLogo, getResourceOptions } from 'dan-containers/Common/Utils';
+import {
+  getLogo,
+  getResourceOptions,
+  isOmnaShopify
+} from 'dan-containers/Common/Utils';
 
 const Integration = props => {
   const [anchorEl, setAnchorEl] = useState();
@@ -225,19 +229,24 @@ const Integration = props => {
         <Divider />
 
         <MenuItem key="brand" onClick={() => handleViewResource('brand')}>
-              View Brands
+          View Brands
         </MenuItem>
 
         <MenuItem key="brand" onClick={() => handleViewResource('categories')}>
-              View Categories
+          View Categories
         </MenuItem>
 
-        <Divider />
-        <Divider />
-
-        <MenuItem aria-label="edit" onClick={() => handleOptionClick('edit')}>
-          Edit
-        </MenuItem>
+        {(!isOmnaShopify || (isOmnaShopify && group !== 'Shopify')) && (
+          <div>
+            <Divider />
+            <MenuItem
+              aria-label="edit"
+              onClick={() => handleOptionClick('edit')}
+            >
+              Edit
+            </MenuItem>
+          </div>
+        )}
         {!authorized && (
           <MenuItem
             aria-label="delete"

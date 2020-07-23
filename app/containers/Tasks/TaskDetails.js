@@ -166,7 +166,6 @@ class TaskDetails extends React.Component {
     const notifications = get(data, 'notifications', []);
     const executions = get(data, 'executions', []);
     const id = get(data, 'id', '');
-    console.log(scheduler);
 
     return (
       <div>
