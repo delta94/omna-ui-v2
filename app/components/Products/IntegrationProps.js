@@ -4,8 +4,14 @@ import Typography from '@material-ui/core/Typography';
 import Alert from 'dan-components/Notification/Alert';
 import FormBuilder from './FormBuilder';
 
-const IntegrationProps = memo(({ properties, errors = '' }) => {
+const emptyProps = (list) => {
+  if (list && (list.size === 0 || list.length === 0)) {
+    return true;
+  }
+  return false;
+};
 
+const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
   const [properties_, setProperties_] = useState(properties);
 
   // handlePropertyChange to use in the future if the api makes changes on the properties
@@ -21,7 +27,7 @@ const IntegrationProps = memo(({ properties, errors = '' }) => {
         }
       }; */
 
-  const handlePropertyChange = (e) => {
+   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
     const index = properties_.findIndex(item => item.id === name);
     if (index >= 0) {
@@ -35,6 +41,7 @@ const IntegrationProps = memo(({ properties, errors = '' }) => {
       delete properties_[index];
       properties_.splice(index, 1, property);
       setProperties_([...properties]);
+      onTouchedProps(true);
     }
   };
 
@@ -43,22 +50,25 @@ const IntegrationProps = memo(({ properties, errors = '' }) => {
       <Typography variant="subtitle2" gutterBottom>
         Properties
       </Typography>
-      {(properties_ && !errors) ? (
+      {emptyProps(properties_) && !errors ? <Alert variant="error" message="Something wrong. No properties to show" /> : null}
+      {properties_ && !errors ? (
         <FormBuilder properties={properties_} onChange={handlePropertyChange} />
       ) : (
         <Alert variant="error" message={errors} />
-        )}
+      )}
     </div>
   );
 });
 
 IntegrationProps.propTypes = {
   properties: PropTypes.array.isRequired,
-  errors: PropTypes.string
+  errors: PropTypes.string,
+  onTouchedProps: PropTypes.func
 };
 
 IntegrationProps.defaultProps = {
-  errors: ''
+  errors: '',
+  onTouchedProps: () => {}
 };
 
 export default IntegrationProps;

@@ -13,6 +13,10 @@ export default function categoriesReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('categoryList', fromJS(action.data));
       });
+    case types.SET_LOADING:
+      return state.withMutations((mutableState) => {
+        mutableState.set('loading', action.loading);
+      });
     default:
       return state;
   }

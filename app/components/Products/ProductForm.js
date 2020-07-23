@@ -51,20 +51,25 @@ function ProductForm(props) {
     if (integrations.length > 0) {
       setMultipleTabs(true);
     }
-  }, [integrations])
+  }, [integrations]);
 
-  const handleChange = (event, newValue) => setValue(newValue);
+  const handleChange = (event, newValue) => {
+    const { onIntegrationChange } = props;
+    setValue(newValue);
+    const found = integrations.find(item => item.name === newValue);
+    onIntegrationChange(found ? { id: found.id, name: found.name } : newValue);
+  };
 
   const handleNameChange = useCallback((e) => {
     props.onNameChange(e);
   }, []);
 
   const handlePriceChange = useCallback((e) => {
-    props.onPriceChange(e)
+    props.onPriceChange(e);
   }, []);
 
   const handleDescriptionChange = useCallback((e) => {
-    props.onDescriptionChange(e)
+    props.onDescriptionChange(e);
   }, []);
 
   const handleDimensionChange = useCallback((e) => {
@@ -117,7 +122,7 @@ function ProductForm(props) {
       <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!name || !description || !price} />
     </form>
   );
-};
+}
 
 ProductForm.propTypes = {
   name: PropTypes.string.isRequired,
@@ -131,6 +136,7 @@ ProductForm.propTypes = {
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
   onDimensionChange: PropTypes.func.isRequired,
+  onIntegrationChange: PropTypes.func,
   onCancelClick: PropTypes.func,
   onSubmitForm: PropTypes.func.isRequired
 };
@@ -140,7 +146,8 @@ ProductForm.defaultProps = {
   images: [],
   integrations: [],
   dimension: null,
-  onCancelClick: () => { },
+  onCancelClick: () => {},
+  onIntegrationChange: undefined
 };
 
 export default ProductForm;

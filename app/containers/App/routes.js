@@ -6,6 +6,7 @@ import {
   Variants,
   Products,
   EditProduct,
+  BulkEditProducts,
   EditVariant,
   AddProduct,
   AddVariant,
@@ -53,6 +54,11 @@ export const AddProductRoute = {
 export const EditProductRoute = {
   link: '/products/:id/edit-product',
   component: EditProduct
+};
+
+export const BulkEditProductsRoute = {
+  link: '/products/bulk-edit',
+  component: BulkEditProducts
 };
 
 export const VariantsRoute = {
@@ -191,6 +197,7 @@ export const OmnaShopifyRoutes = [
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,
+  BulkEditProductsRoute,
   EditVariantRoute,
   // Inventory
   InventoryRoute,

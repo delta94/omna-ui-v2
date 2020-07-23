@@ -18,6 +18,10 @@ function InstallShopify(props) {
   const store = currentTenant ? currentTenant.name : '';
 
   useEffect(() => {
+
+    // verify Shopify entry
+
+    console.log('here')
     async function getPlans() {
       const result = await getPlanInfoAvailablePlans(store, enqueueSnackbar);
       if (result) {

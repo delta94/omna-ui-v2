@@ -2,7 +2,7 @@ import axios from 'axios';
 import { sha256 } from 'js-sha256';
 import get from 'lodash/get';
 import qs from 'qs';
-import { currentTenant } from 'dan-containers/Common/Utils';
+import { currentTenant, SECRET_SHOPIFY_APP } from 'dan-containers/Common/Utils';
 
 function setParams(config) {
   const params = get(config, 'params', {});
@@ -44,6 +44,22 @@ function setParams(config) {
   });
 }
 
+function setShopifyParams(config) {
+  const params = get(config, 'params', {});
+
+  params.token = currentTenant.token;
+  params.timestamp = Date.now();
+
+  const string = `timestamp=${params.timestamp}&token=${params.token}`
+  const secret = SECRET_SHOPIFY_APP
+  params.hmac = sha256.hmac.update(secret, string).hex();
+
+  return Object.assign(config, {
+    paramsSerializer: param => qs.stringify(param),
+    params
+  });
+}
+
 const API = axios.create({
   baseURL: 'https://cenit.io/app/ecapi-v1'
 });
@@ -53,5 +69,7 @@ export const CENIT_APP = axios.create({
 });
 
 API.interceptors.request.use(setParams, Promise.reject);
+CENIT_APP.interceptors.request.use(setShopifyParams, Promise.reject);
+
 
 export default API;
