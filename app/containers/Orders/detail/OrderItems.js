@@ -5,8 +5,18 @@ import MUIDataTable from 'mui-datatables';
 import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 
 class OrderItems extends Component {
+  state = {
+    limit: 10,
+    page: 0
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ limit: parseInt(event.target.value, 10) });
+  };
+
   render() {
     const { order } = this.props;
+    const { limit, page } = this.state;
 
     const columns = [
       {
@@ -87,8 +97,9 @@ class OrderItems extends Component {
       print: false,
       search: false,
       selectableRows: 'none',
-      // count,
-      // page,
+      rowsPerPage: limit,
+      count: order.data.line_items.length,
+      page,
       onTableChange: (action, tableState) => {
         switch (action) {
           case 'changePage':
