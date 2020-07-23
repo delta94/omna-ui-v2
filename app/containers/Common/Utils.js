@@ -3,8 +3,7 @@ import { sha256 } from 'js-sha256';
 const URL_LOCAL = 'http://127.0.0.1:4000';
 const URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
 const URL_PROD = 'https://app.omna.io';
-export const SECRET_SHOPIFY_APP = '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'
-const URL_SHOPIFY = 'https://playstoretestingone.myshopify.com/';
+export const SECRET_SHOPIFY_APP = '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';
 
 export const baseApiUrl = 'https://cenit.io/app/ecapi-v1';
 
@@ -136,6 +135,8 @@ export const currentTenant = localStorage.getItem('currentTenant')
   ? JSON.parse(localStorage.getItem('currentTenant'))
   : null;
 
+export const shopifyStoreName = currentTenant ? currentTenant.name : null;
+
 export const isAuthenticated = currentTenant;
 
 export const getDeactivationDate = deactivationDate => {
@@ -158,6 +159,8 @@ export const logout = () => {
   }
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
 };
+
+const URL_SHOPIFY = `https://${shopifyStoreName}/`;
 
 export const logoutShopify = () => {
   if (currentTenant) {
@@ -200,11 +203,11 @@ export const getResourceOptions = () => {
   return options;
 };
 
-export const checkTypes = (values) => {
+export const checkTypes = values => {
   if (values) {
     const obj = {};
-    Object.keys(values).forEach((key) => {
-      obj[key] = values[key] || undefined
+    Object.keys(values).forEach(key => {
+      obj[key] = values[key] || undefined;
     });
     return obj;
   }
