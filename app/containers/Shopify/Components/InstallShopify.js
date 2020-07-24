@@ -21,8 +21,8 @@ function InstallShopify(props) {
 
     // verify Shopify entry
 
-    console.log('here')
     async function getPlans() {
+
       const result = await getPlanInfoAvailablePlans(store, enqueueSnackbar);
       if (result) {
         const { availablePlans, currentPlan } = result;

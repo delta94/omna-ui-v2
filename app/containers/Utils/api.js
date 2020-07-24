@@ -29,6 +29,7 @@ function setParams(config) {
 
   // Join the service path and the ordered sequence of characters, excluding the quotes,
   // corresponding to the JSON of the parameters that will be sent.
+
   const msg = config.url
     + JSON.stringify(params)
       .replace(/["']/g, '')
@@ -47,6 +48,12 @@ function setParams(config) {
 function setShopifyParams(config) {
   const params = get(config, 'params', {});
 
+  if ( config.url.includes("request_tenant_info")) {
+    return Object.assign(config, {
+      paramsSerializer: param => qs.stringify(param),
+      params
+    });
+  }
   params.token = currentTenant.token;
   params.timestamp = Date.now();
 

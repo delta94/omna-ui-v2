@@ -1,6 +1,7 @@
 
 import { CENIT_APP } from 'dan-containers/Utils/api'
 import get from 'lodash/get';
+// import axios from 'axios';
 
   export async function getSettingsInfo(store, enqueueSnackbar) {
     try {
@@ -8,7 +9,7 @@ import get from 'lodash/get';
      const { data } = response.data;
      return data;
     } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      enqueueSnackbar(get(error, 'response.data.message', `Error: ${error}`), {
         variant: 'error'
       });
     }
