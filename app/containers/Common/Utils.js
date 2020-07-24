@@ -213,3 +213,5 @@ export const checkTypes = values => {
   }
   return undefined;
 };
+
+export const emptyArray = list => (list && (list.size === 0 || list.length === 0)) || false;
