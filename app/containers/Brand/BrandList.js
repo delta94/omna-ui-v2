@@ -14,20 +14,25 @@ import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
-const getMuiTheme = () => createMuiTheme({
-  overrides: {
-    MUIDataTableBodyCell: {
-      root: {
-        cursor: 'pointer'
+const getMuiTheme = () =>
+  createMuiTheme({
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          cursor: 'pointer'
+        }
       }
     }
-  }
-});
+  });
 
 function BrandList(props) {
-
   const {
-    match, loading, brandList, onGetBrands, history, enqueueSnackbar
+    match,
+    loading,
+    brandList,
+    onGetBrands,
+    history,
+    enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
@@ -44,9 +49,8 @@ function BrandList(props) {
       offset: page * limit,
       term: searchText
     };
-    onGetBrands(match.params.integration_id, params, enqueueSnackbar);
 
-    // onGetBrands('playstoretestingone_lazadasg', params, enqueueSnackbar);
+    onGetBrands(match.params.integration_id, params, enqueueSnackbar);
   };
 
   useEffect(() => {
@@ -57,10 +61,9 @@ function BrandList(props) {
   //   onGetBrands({ params: { offset: 0, limit: 100 } });
   // }, []);
 
-
   const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
-  const handleChangePage = (pageValue) => setPage(pageValue);
+  const handleChangePage = pageValue => setPage(pageValue);
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
@@ -70,9 +73,13 @@ function BrandList(props) {
     }
   }
 
-  const handleFilterChange = filterList => (filterList ? setServerSideFilterList(filterList) : setServerSideFilterList([]));
+  const handleFilterChange = filterList =>
+    filterList
+      ? setServerSideFilterList(filterList)
+      : setServerSideFilterList([]);
 
-  const handleResetFilters = () => (serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null);
+  const handleResetFilters = () =>
+    serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null;
 
   // const handleConfirmDlg = () => {
   //   const { onDeleteVariant } = props;
@@ -87,11 +94,10 @@ function BrandList(props) {
       name: 'name',
       label: 'Brand Name',
       options: {
-        filter: false,
+        filter: false
       }
     }
   ];
-
 
   const options = {
     filter: true,
@@ -137,12 +143,10 @@ function BrandList(props) {
       <MuiThemeProvider theme={getMuiTheme()}>
         <MUIDataTable columns={columns} data={data} options={options} />
       </MuiThemeProvider>
-      <AlertDialog
-      />
+      <AlertDialog />
     </div>
   );
 }
-
 
 BrandList.propTypes = {
   // enqueueSnackbar: PropTypes.func.isRequired
@@ -163,7 +167,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onGetBrands: bindActionCreators(getBrandList, dispatch)
 });
-
 
 const BrandMapped = connect(
   mapStateToProps,
