@@ -25,6 +25,16 @@ export default (state = initialState, action = {}) => {
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
       });
+    case actionConstants.CREATE_INTEGRATION_SUCCESS:
+      return state
+        .updateIn(['integrations', 'data'], data =>
+          data.unshift(fromJS(action.data))
+        )
+        .set('loading', false);
+    case actionConstants.CREATE_INTEGRATION_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error).set('loading', false);
+      });
     case actionConstants.UPDATE_INTEGRATION_SUCCESS:
       return state
         .updateIn(['integrations', 'data'], data =>

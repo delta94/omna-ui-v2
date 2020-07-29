@@ -1,4 +1,5 @@
 export {
+  createIntegration,
   getIntegrations,
   getChannels,
   importResource,

@@ -1,6 +1,7 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actionConstants from 'dan-actions/actionConstants';
 import api, { CENIT_APP } from 'dan-containers/Utils/api';
+import { handleAuthorization } from 'dan-containers/Common/Utils';
 import get from 'lodash/get';
 
 const url = '/integrations';
@@ -14,6 +15,36 @@ function* fetchIntegrations(params) {
     yield put({ type: actionConstants.GET_INTEGRATIONS_SUCCESS, data });
   } catch (error) {
     yield put({ type: actionConstants.GET_INTEGRATIONS_FAILED, error });
+  }
+}
+
+function* createIntegration(params) {
+  yield put({ type: actionConstants.ACTION_INTEGRATION_START });
+  const { authorized, channel, name, enqueueSnackbar } = params;
+
+  try {
+    const response = yield api.post(url, {
+      data: { name, channel }
+    });
+    const {
+      data: { data }
+    } = response;
+    if (authorized && data.id) {
+      const path = `integrations/${data.id}/authorize`;
+      handleAuthorization(path);
+    }
+    enqueueSnackbar('Integration created successfully', {
+      variant: 'success'
+    });
+    yield put({
+      type: actionConstants.CREATE_INTEGRATION_SUCCESS,
+      data
+    });
+  } catch (error) {
+    enqueueSnackbar(error.response.data.message, {
+      variant: 'error'
+    });
+    yield put({ type: actionConstants.CREATE_INTEGRATION_FAILED, error });
   }
 }
 
@@ -34,7 +65,6 @@ function* updateIntegration(params) {
       data
     });
   } catch (error) {
-    console.log(error);
     yield put({ type: actionConstants.UPDATE_INTEGRATION_FAILED, error });
   }
 }
@@ -96,6 +126,7 @@ function* importResource(params) {
 export default function* rootSaga() {
   yield all([
     takeLatest(actionConstants.GET_INTEGRATIONS, fetchIntegrations),
+    takeLatest(actionConstants.CREATE_INTEGRATION, createIntegration),
     takeLatest(actionConstants.UPDATE_INTEGRATION, updateIntegration),
     takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration),
     takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource),

@@ -1,18 +1,22 @@
 import * as actionConstants from './actionConstants';
 
-export const getIntegrations = query => {
-  return {
-    type: actionConstants.GET_INTEGRATIONS,
-    query
-  };
-};
+export const getIntegrations = query => ({
+  type: actionConstants.GET_INTEGRATIONS,
+  query
+});
 
-export const getChannels = query => {
-  return {
-    type: actionConstants.GET_CHANNELS,
-    query
-  };
-};
+export const getChannels = query => ({
+  type: actionConstants.GET_CHANNELS,
+  query
+});
+
+export const createIntegration = ({ authorized, channel, name, enqueueSnackbar }) => ({
+  type: actionConstants.CREATE_INTEGRATION,
+  authorized,
+  channel,
+  name,
+  enqueueSnackbar
+});
 
 export const updateIntegration = integration => ({
   type: actionConstants.UPDATE_INTEGRATION,

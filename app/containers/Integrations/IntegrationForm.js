@@ -14,11 +14,10 @@ import {
 } from '@material-ui/core';
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
-import API from 'dan-containers/Utils/api';
-import { handleAuthorization } from 'dan-containers/Common/Utils';
 import {
   getChannels,
   getIntegrations,
+  createIntegration,
   updateIntegration
 } from 'dan-actions/integrationActions';
 
@@ -63,6 +62,7 @@ class IntegrationForm extends Component {
       enqueueSnackbar,
       handleClose,
       integrations,
+      onCreateIntegration,
       onUpdateIntegration
     } = this.props;
     const {
@@ -92,32 +92,11 @@ class IntegrationForm extends Component {
           variant: 'error'
         });
       } else {
-        API.post('/integrations', { data: { name, channel } })
-          .then(response => {
-            enqueueSnackbar('Integration created successfully', {
-              variant: 'success'
-            });
-            const { data } = response.data;
-            if (authorized && data.id) {
-              this.handleAuthorization(data.id);
-            }
-          })
-          .catch(error => {
-            if (error && error.response.data.message) {
-              enqueueSnackbar(error.response.data.message, {
-                variant: 'error'
-              });
-            }
-          });
+        onCreateIntegration({ authorized, channel, name, enqueueSnackbar });
       }
     }
 
     handleClose();
-  };
-
-  handleAuthorization = id => {
-    const path = `integrations/${id}/authorize`;
-    handleAuthorization(path);
   };
 
   handleClose = () => {
@@ -263,6 +242,7 @@ IntegrationForm.propTypes = {
   open: PropTypes.bool.isRequired,
   onGetChannels: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
+  onCreateIntegration: PropTypes.func.isRequired,
   onUpdateIntegration: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
@@ -276,6 +256,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onGetChannels: query => dispatch(getChannels(query)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
+  onCreateIntegration: integration => dispatch(createIntegration(integration)),
   onUpdateIntegration: integration => dispatch(updateIntegration(integration))
 });
 
