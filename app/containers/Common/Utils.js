@@ -64,7 +64,7 @@ export const returnAfterAuthorization = () => {
 };
 
 export const getHeaders = url => {
-  const currentTenant = JSON.parse(localStorage.getItem('currentTenant'));
+  const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
   const params = {};
   params.token = currentTenant.token;
   params.timestamp = Date.now();
@@ -100,8 +100,13 @@ export const handleAuthorization = path => {
 };
 
 export const setTenant = tenant => {
-  localStorage.setItem('currentTenant', JSON.stringify(tenant));
+  const currentTenant = JSON.stringify(tenant);
+  sessionStorage.setItem('currentTenant', currentTenant);
 };
+
+export const currentTenant = sessionStorage.getItem('currentTenant')
+  ? JSON.parse(sessionStorage.getItem('currentTenant'))
+  : null;
 
 export const delay = (_search, callBack, _delay = 1000) => {
   if (_search) {
@@ -131,10 +136,6 @@ export const variantIcon = {
   view: 'md-eye'
 };
 
-export const currentTenant = localStorage.getItem('currentTenant')
-  ? JSON.parse(localStorage.getItem('currentTenant'))
-  : null;
-
 export const shopifyStoreName = currentTenant ? currentTenant.name : null;
 
 export const isAuthenticated = currentTenant;
@@ -155,7 +156,7 @@ export const isTenantEnabled = deactivationDate => {
 
 export const logout = () => {
   if (currentTenant) {
-    localStorage.removeItem('currentTenant');
+    sessionStorage.removeItem('currentTenant');
   }
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
 };
@@ -164,7 +165,7 @@ const URL_SHOPIFY = `https://${shopifyStoreName}/`;
 
 export const logoutShopify = () => {
   if (currentTenant) {
-    localStorage.removeItem('currentTenant');
+    sessionStorage.removeItem('currentTenant');
   }
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${URL_SHOPIFY}`);
 };
@@ -214,4 +215,5 @@ export const checkTypes = values => {
   return undefined;
 };
 
-export const emptyArray = list => (list && (list.size === 0 || list.length === 0)) || false;
+export const emptyArray = list =>
+  (list && (list.size === 0 || list.length === 0)) || false;

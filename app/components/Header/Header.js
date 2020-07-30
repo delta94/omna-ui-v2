@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
-import { currentTenant } from 'dan-containers/Common/Utils';
+import { currentTenant, isOmnaShopify } from 'dan-containers/Common/Utils';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
 import ShopifyMenu from './ShopifyMenu';
@@ -225,7 +225,7 @@ class Header extends React.Component {
           )} */}
 
           {currentTenant ? (
-            currentTenant.fromShopifyApp ? (
+            isOmnaShopify ? (
               <ShopifyMenu
                 name={currentTenant.shop}
                 title={currentTenant.shopDomain}

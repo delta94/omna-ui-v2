@@ -57,15 +57,15 @@ class LockScreen extends React.Component {
     }
 
     if (store) {
-        const data = await getSettingsInfo(store, enqueueSnackbar);
-        setTenant(data);
-        changeTenantStatus(data.isReadyToOmna);
-        changeTenantId(data.tenantId);
-        changeTenantName(data.name);
-        changeEnabledTenant(data.enabled);
-        if (data) {
-          history.push('/shopify');
-        }
+      const data = await getSettingsInfo(store, enqueueSnackbar);
+      setTenant(data);
+      changeTenantStatus(data.isReadyToOmna);
+      changeTenantId(data.tenantId);
+      changeTenantName(data.name);
+      changeEnabledTenant(data.enabled);
+      if (data) {
+        history.push('/shopify');
+      }
     }
 
     if (!code && !store) {
