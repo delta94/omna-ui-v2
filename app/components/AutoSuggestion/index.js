@@ -27,7 +27,7 @@ export default function AutoSuggestion(props) {
       onChange={onChange}
       onInputChange={onInputChange}
       getOptionSelected={(option, _value) => option.name === _value.name}
-      getOptionLabel={option => option.name}
+      getOptionLabel={option => option.name || ''}
       options={options}
       loading={loading}
       renderInput={params => (
@@ -92,7 +92,7 @@ AutoSuggestion.propTypes = {
   error: PropTypes.bool,
   helperText: PropTypes.string,
   placeholder: PropTypes.string,
-  className: PropTypes.object,
+  className: PropTypes.string,
   onChange: PropTypes.func,
   onInputChange: PropTypes.func
 };

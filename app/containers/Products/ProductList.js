@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -16,7 +17,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-
 import MUIDataTable from 'mui-datatables';
 import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
@@ -28,13 +28,15 @@ import {
   bulkUnlinkProducts,
   deleteProduct,
   resetDeleteProductFlag,
-  unsubscribeProducts
+  unsubscribeProducts,
+  getProductsByIntegration
 } from 'dan-actions/productActions';
 import { getCurrencySymbol } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
+import FilterTableBox from 'dan-components/Products/FilterTableBox';
 
 const styles = theme => ({
   table: {
@@ -56,7 +58,9 @@ class ProductList extends React.Component {
   state = {
     limit: 10,
     page: 0,
-    serverSideFilterList: [],
+    filters: [],
+    integrationFilter: undefined,
+    categoryFilter: undefined,
     searchTerm: '',
     rowsSelected: [],
     rowsSelectedIds: [],
@@ -68,16 +72,14 @@ class ProductList extends React.Component {
   };
 
   componentDidMount() {
-    const { onGetIntegrations } = this.props;
-    onGetIntegrations({ params: { offset: 0, limit: 100 } });
-    this.callAPI();
+    this.makeQuery();
   }
 
   componentDidUpdate(prevProps) {
     const { deleted, onResetDeleteProduct, task, history } = this.props;
     if (deleted && deleted !== prevProps.deleted) {
       onResetDeleteProduct();
-      this.callAPI();
+      this.makeQuery();
     }
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
@@ -89,18 +91,24 @@ class ProductList extends React.Component {
     onUnsubscribeProducts();
   }
 
-  callAPI = () => {
-    const { integrations, onGetProducts, enqueueSnackbar } = this.props;
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
+  makeQuery = () => {
+    const { onGetAllProducts, onGetProductsWithFilters, enqueueSnackbar } = this.props;
+    const { searchTerm, limit, page, filters } = this.state;
 
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
       with_details: true,
-      integration_id: serverSideFilterList[3] && serverSideFilterList[3][0] ? integrations.data.find(item => item.name === serverSideFilterList[3][0]).id : ''
     };
-    onGetProducts({ params, enqueueSnackbar });
+
+    const integrationFilter = filters[0] ? filters[0].value : null;
+    const categoryFilter = filters[1] ? filters[1].value : null;
+
+    if (integrationFilter || categoryFilter) {
+      categoryFilter ? params.category_id = categoryFilter : null;
+      onGetProductsWithFilters(integrationFilter, params, enqueueSnackbar);
+    } else onGetAllProducts({ params, enqueueSnackbar });
   };
 
   updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
@@ -118,18 +126,18 @@ class ProductList extends React.Component {
   };
 
   handleChangePage = (page, searchTerm) => {
-    this.setState({ page, searchTerm }, this.callAPI);
+    this.setState({ page, searchTerm }, this.makeQuery);
     this.setState({ rowsSelected: [] });
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
-    this.setState({ limit: rowsPerPage }, this.callAPI);
+    this.setState({ limit: rowsPerPage }, this.makeQuery);
   };
 
   handleSearch = searchTerm => {
     if (searchTerm) {
       const timer = setTimeout(() => {
-        this.setState({ searchTerm }, this.callAPI);
+        this.setState({ searchTerm }, this.makeQuery);
         clearTimeout(timer);
       }, 800);
       window.addEventListener('keydown', () => {
@@ -138,28 +146,38 @@ class ProductList extends React.Component {
     } else {
       const { searchTerm: _searchTerm } = this.state;
       if (_searchTerm) {
-        this.setState({ searchTerm: '' }, this.callAPI);
+        this.setState({ searchTerm: '' }, this.makeQuery);
       }
     }
   };
 
   onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
+    this.setState({ searchTerm: '' }, this.makeQuery);
   };
 
-  handleFilterChange = filterList => {
-    if (filterList) {
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
-    } else {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
+  handleIntegrationFilterChange = (integation) => {
+    this.setState({ integrationFilter: integation });
+  };
+
+  handleCategoryFilterChange = (category) => {
+    this.setState({ categoryFilter: category })
   };
 
   handleResetFilters = () => {
-    const { serverSideFilterList } = this.state;
-    if (serverSideFilterList.length > 0) {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
+    this.setState({ integrationFilter: null, categoryFilter: null });
+  };
+
+  handleFilterSubmit = applyFilters => {
+    const filterList = applyFilters();
+    const { integrationFilter, categoryFilter } = this.state;
+    if (integrationFilter) {
+      filterList[3][0] = integrationFilter;
     }
+    if (categoryFilter) {
+      filterList[3][1] = categoryFilter;
+    } else filterList[3].splice(1, 1);
+
+    this.setState({ filters: filterList[3] }, this.makeQuery);
   };
 
   handleConfirmDlg = () => {
@@ -219,7 +237,7 @@ class ProductList extends React.Component {
     const {
       limit,
       page,
-      serverSideFilterList,
+      filters,
       searchTerm,
       rowsSelected,
       bulkLinkerAction,
@@ -227,7 +245,7 @@ class ProductList extends React.Component {
       openConfirmDlg,
       selectedItem
     } = this.state;
-    const { classes, history, products, integrations, loading, appStore } = this.props;
+    const { classes, history, products, loading, appStore } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
@@ -297,10 +315,23 @@ class ProductList extends React.Component {
         options: {
           filter: true,
           sort: false,
-          filterType: 'dropdown',
-          filterList: serverSideFilterList[3],
+          filterType: 'custom',
+          filterList: filters,
+          customFilterListOptions: {
+            render: v => v.map(l => l.name)
+          },
           filterOptions: {
-            names: integrations.data.map(item => item.name),
+            display: () => {
+              const { integrationFilter, categoryFilter } = this.state;
+              return (
+                <FilterTableBox
+                  integration={integrationFilter}
+                  category={categoryFilter}
+                  onIntegrationChange={this.handleIntegrationFilterChange}
+                  onCategoryChange={this.handleCategoryFilterChange}
+                />
+              );
+            }
           },
           customBodyRender: value => <ChipsArray items={value} />
         }
@@ -343,7 +374,6 @@ class ProductList extends React.Component {
       print: false,
       serverSide: true,
       searchText: searchTerm,
-      serverSideFilterList,
       searchPlaceholder: 'Search by name',
       rowsPerPage: limit,
       count,
@@ -358,9 +388,6 @@ class ProductList extends React.Component {
             break;
           case 'search':
             this.handleSearch(tableState.searchText);
-            break;
-          case 'filterChange':
-            this.handleFilterChange(tableState.filterList);
             break;
           case 'resetFilters':
             this.handleResetFilters();
@@ -434,14 +461,34 @@ class ProductList extends React.Component {
           onLink={this.handleBulkLink}
           onUnlink={this.handleBulkUnlink}
         />
-      )
+      ),
+      setFilterChipProps: (colIndex, colName, chip) => {
+        return {
+          color: 'primary',
+          variant: 'outlined',
+          className: 'testClass123',
+          disabled: filters[1] && chip.value !== filters[1].value || false
+        }
+      },
+      customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
+        const { integrationFilter } = this.state;
+        return (
+          <div style={{ padding: '16px' }}>
+            <Button variant="contained" disabled={!integrationFilter} onClick={() => this.handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
+          </div>
+        );
+      },
+      onFilterChipClose: (index, removedFilter) => {
+        const removeChips = filters.filter(item => item.value !== removedFilter.value);
+        this.setState({ filters: removeChips }, this.makeQuery)
+      }
     };
 
     return (
       <div>
         <PageHeader title="Products" history={history} />
+        {loading ? <Loading /> : null}
         <div className={classes.table}>
-          {loading ? <Loading /> : null}
           <MUIDataTable columns={columns} data={data} options={options} />
           {this.renderTableActionsMenu()}
           <AlertDialog
@@ -465,7 +512,6 @@ class ProductList extends React.Component {
 
 const mapStateToProps = state => ({
   products: state.getIn(['product', 'products']),
-  integrations: state.getIn(['integration', 'integrations']).toJS(),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
@@ -477,7 +523,8 @@ const mapDispatchToProps = dispatch => ({
   onBulkLinkProducts: bindActionCreators(bulkLinkProducts, dispatch),
   onBulkUnlinkProducts: bindActionCreators(bulkUnlinkProducts, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
-  onGetProducts: bindActionCreators(getProducts, dispatch),
+  onGetAllProducts: bindActionCreators(getProducts, dispatch),
+  onGetProductsWithFilters: bindActionCreators(getProductsByIntegration, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
 });
@@ -494,14 +541,13 @@ ProductList.defaultProps = {
 ProductList.propTypes = {
   classes: PropTypes.object.isRequired,
   products: PropTypes.object.isRequired,
-  integrations: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
-  onGetProducts: PropTypes.func.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
+  onGetAllProducts: PropTypes.func.isRequired,
+  onGetProductsWithFilters: PropTypes.func.isRequired,
   onBulkLinkProducts: PropTypes.func.isRequired,
   onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
