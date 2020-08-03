@@ -215,3 +215,13 @@ export const checkTypes = values => {
 };
 
 export const emptyArray = list => (list && (list.size === 0 || list.length === 0)) || false;
+
+export function convertListToString(items, max=2) {
+  if (items.length > 0) {
+    const list = items.slice(0, max).map(item => item.name || item);
+    const more = items.length - max;
+    more > 0 ? list.push(`+${more}`) : null;
+    return list.join(', ');
+  }
+  return [];
+};

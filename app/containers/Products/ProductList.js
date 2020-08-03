@@ -16,12 +16,9 @@ import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
-
-import ChipsArray from 'dan-components/ChipsArray';
 import {
   getProducts,
   bulkLinkProducts,
@@ -31,28 +28,12 @@ import {
   unsubscribeProducts,
   getProductsByIntegration
 } from 'dan-actions/productActions';
-import { getCurrencySymbol } from 'dan-containers/Common/Utils';
+import { getCurrencySymbol, convertListToString } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FilterTableBox from 'dan-components/Products/FilterTableBox';
-
-const styles = theme => ({
-  table: {
-    '& > div': {
-      overflow: 'auto'
-    },
-    '& table': {
-      minWidth: 300,
-      [theme.breakpoints.down('md')]: {
-        '& td': {
-          height: 40
-        }
-      }
-    }
-  }
-});
 
 class ProductList extends React.Component {
   state = {
@@ -245,47 +226,45 @@ class ProductList extends React.Component {
       openConfirmDlg,
       selectedItem
     } = this.state;
-    const { classes, history, products, loading, appStore } = this.props;
+    const { history, products, loading, appStore } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
     const columns = [
       {
         name: 'images',
+        label: 'Image',
         options: {
           filter: false,
-          display: 'excluded'
+          customBodyRender: (value) => {
+            const imgSrc =
+              value.length > 0
+                ? value[0]
+                : '/images/image_placeholder_listItem.png';
+            return (
+              <Avatar
+                src={imgSrc}
+                style={{
+                  height: 72,
+                  width: 72,
+                  marginRight: 16,
+                  borderRadius: 0
+                }}
+                alt="product"
+              />)
+          }
         }
       },
       {
         name: 'name',
-        label: 'Product',
+        label: 'Name',
         options: {
           filter: false,
-          customBodyRender: (value, tableMeta) => {
-            const [images, name] = tableMeta.rowData;
-            const imgSrc =
-              images.length > 0
-                ? images[0]
-                : '/images/image_placeholder_listItem.png';
-            return (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar
-                  src={imgSrc}
-                  style={{
-                    height: 72,
-                    width: 72,
-                    marginRight: 16,
-                    borderRadius: 0
-                  }}
-                  alt="product"
-                />
-                <Typography noWrap variant="subtitle2" component="p">
-                  {name}
-                </Typography>
-              </div>
-            );
-          }
+          customBodyRender: (value) => (
+            <Typography noWrap variant="subtitle2" component="p">
+              {value}
+            </Typography>
+          )
         }
       },
       {
@@ -333,7 +312,7 @@ class ProductList extends React.Component {
               );
             }
           },
-          customBodyRender: value => <ChipsArray items={value} />
+          customBodyRender: value => convertListToString(value)
         }
       },
       {
@@ -444,16 +423,16 @@ class ProductList extends React.Component {
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="Bulk edit">
-              <IconButton
-                aria-label="edit"
-                component={Link}
-                to="/products/bulk-edit"
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+              <Tooltip title="Bulk edit">
+                <IconButton
+                  aria-label="edit"
+                  component={Link}
+                  to="/products/bulk-edit"
+                >
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            )}
         </Fragment>
       ),
       customToolbarSelect: () => (
@@ -488,7 +467,6 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         {loading ? <Loading /> : null}
-        <div className={classes.table}>
           <MUIDataTable columns={columns} data={data} options={options} />
           {this.renderTableActionsMenu()}
           <AlertDialog
@@ -504,7 +482,6 @@ class ProductList extends React.Component {
             onClose={() => this.setState({ openPublisherDlg: false })}
             onSave={this.handleBulkLinkerAction}
           />
-        </div>
       </div>
     );
   }
@@ -539,7 +516,6 @@ ProductList.defaultProps = {
 };
 
 ProductList.propTypes = {
-  classes: PropTypes.object.isRequired,
   products: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
@@ -556,4 +532,4 @@ ProductList.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(withStyles(styles)(ProductListMapped));
+export default withSnackbar(ProductListMapped);

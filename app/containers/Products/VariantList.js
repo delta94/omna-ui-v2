@@ -16,14 +16,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import Avatar from '@material-ui/core/Avatar';
-import { delay } from 'dan-containers/Common/Utils';
+import { delay, convertListToString } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 
 import { getVariantList, deleteVariant, updateRemoteIds } from 'dan-actions/variantActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
-import ChipsArray from 'dan-components/ChipsArray/index';
 import { getProductCategory } from 'dan-actions/productActions';
 
 const getMuiTheme = () => createMuiTheme({
@@ -207,7 +206,7 @@ function VariantList(props) {
         filterOptions: {
           names: integrations.data.map(item => item.name),
         },
-        customBodyRender: value => <ChipsArray items={value} />
+        customBodyRender: value => convertListToString(value)
       }
     },
     {
