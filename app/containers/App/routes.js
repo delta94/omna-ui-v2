@@ -1,3 +1,4 @@
+import { shopifyTrialDays } from 'dan-containers/Common/Utils';
 import {
   Tasks,
   TaskDetails,
@@ -129,7 +130,7 @@ export const EditWebhookRoute = {
 
 export const InstallShopifyRoute = {
   link: '/shopify',
-  component: InstallShopify
+  component: shopifyTrialDays > 0 ? DashboardPage : InstallShopify
 };
 
 export const DashboardPageRoute = { link: '/', component: DashboardPage };

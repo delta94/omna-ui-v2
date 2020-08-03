@@ -154,6 +154,8 @@ export const isTenantEnabled = deactivationDate => {
   return deactivation >= 1;
 };
 
+export const shopifyTrialDays = currentTenant ? currentTenant.trial_days : 0;
+
 export const logout = () => {
   if (currentTenant) {
     sessionStorage.removeItem('currentTenant');
