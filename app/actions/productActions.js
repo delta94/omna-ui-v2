@@ -95,3 +95,8 @@ export const getProductCategory = (productId, integrationId, enqueueSnackbar) =>
   integrationId,
   enqueueSnackbar
 });
+
+export const initBulkEditData = (payload) => ({
+  type: types.INIT_BULK_EDIT_PRODUCTS_DATA,
+  payload
+});

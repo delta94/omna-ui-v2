@@ -9,7 +9,14 @@ const initialState = fromJS({
   task: null,
   error: null,
   properties: [],
-  category: null
+  category: null,
+  remoteIds: [],
+  bulkEditData: Map({
+    remoteIds: [],
+    integration: '',
+    category: '',
+    properties: []
+  })
 });
 
 export default function integrationsReducer(state = initialState, action) {
@@ -50,9 +57,13 @@ export default function integrationsReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('products', { data: [], pagination: { total: 0 } });
       });
+    case types.INIT_BULK_EDIT_PRODUCTS_DATA:
+      return state.withMutations(mutableState => {
+        mutableState.set('bulkEditData', Map(action.payload));
+      });
     case types.GET_BULK_EDIT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('properties', action.data);
+        mutableState.setIn(['bulkEditData', 'properties'], action.data);
       });
     case types.BULK_EDIT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {

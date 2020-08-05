@@ -217,10 +217,9 @@ export const checkTypes = values => {
   return undefined;
 };
 
-export const emptyArray = list =>
-  (list && (list.size === 0 || list.length === 0)) || false;
+export const emptyArray = list => (list && (list.size === 0 || list.length === 0)) || false;
 
-export function convertListToString(items, max = 2) {
+export function convertListToString(items, max=2) {
   if (items.length > 0) {
     const list = items.slice(0, max).map(item => item.name || item);
     const more = items.length - max;
@@ -228,4 +227,17 @@ export function convertListToString(items, max = 2) {
     return list.join(', ');
   }
   return [];
-}
+};
+
+export const hasCategories = (integrations, selectedIntegration) => {
+  const integrationsWithNoCategory = ['Ov2Shopify'];
+  const selected = selectedIntegration ? selectedIntegration.value || selectedIntegration : null;
+  if (selected) {
+    const integration = integrations ? integrations.data.find(item => item.id === selected) : null;
+    if (integration) {
+      const founded = integrationsWithNoCategory.find(item => item === integration.channel);
+      if (founded) return false;
+    }
+  }
+  return true;
+};

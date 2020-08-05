@@ -18,7 +18,6 @@ const styles = theme => ({
     background: theme.palette.type === 'dark' ? theme.palette.grey[700] : theme.palette.grey[100],
     marginBottom: 5,
     alignItems: 'center',
-    padding: '0 20px',
     borderRadius: theme.rounded.medium,
   },
   button: {

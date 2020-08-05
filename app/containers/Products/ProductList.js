@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
+import Popover from '@material-ui/core/Popover';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
@@ -26,14 +27,34 @@ import {
   deleteProduct,
   resetDeleteProductFlag,
   unsubscribeProducts,
-  getProductsByIntegration
+  getProductsByIntegration,
+  initBulkEditData
 } from 'dan-actions/productActions';
-import { getCurrencySymbol, convertListToString } from 'dan-containers/Common/Utils';
+import { getCurrencySymbol, convertListToString, hasCategories } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FilterTableBox from 'dan-components/Products/FilterTableBox';
+
+const getRemoteIds = (data, selectedIndexList, integration, type = 'product') => {
+  const remoteIds = [];
+  if (integration) {
+    selectedIndexList.forEach(index => {
+      const filteredIntegration = data[index].integrations.find(item => item.id === integration);
+      if (filteredIntegration) {
+        if (type === 'product') {
+          const { product } = filteredIntegration;
+          remoteIds.push(product.remote_product_id);
+        } else {
+          const { variant } = filteredIntegration;
+          remoteIds.push(variant.remote_variant_id);
+        }
+      }
+    });
+  }
+  return remoteIds;
+};
 
 class ProductList extends React.Component {
   state = {
@@ -43,18 +64,18 @@ class ProductList extends React.Component {
     integrationFilter: undefined,
     categoryFilter: undefined,
     searchTerm: '',
-    rowsSelected: [],
+    rowsSelectedIndex: [],
     rowsSelectedIds: [],
     anchorEl: null,
+    anchorElBulkEdit: null,
     selectedItem: null,
     bulkLinkerAction: 'link',
     openPublisherDlg: false,
-    openConfirmDlg: false
+    openConfirmDlg: false,
+    filterPopover: 'Apply filters for bulk edit.'
   };
 
-  componentDidMount() {
-    this.makeQuery();
-  }
+  componentDidMount = () => this.makeQuery();
 
   componentDidUpdate(prevProps) {
     const { deleted, onResetDeleteProduct, task, history } = this.props;
@@ -94,21 +115,23 @@ class ProductList extends React.Component {
 
   updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
     const { rowsSelectedIds } = this.state;
-    const selectedIndex = rowsSelectedData[0].dataIndex || 0;
-    const selectedId = data[selectedIndex].id;
-    const row = allRows.findIndex(item => item === rowsSelectedData[0]);
-    if (row >= 0) {
-      rowsSelectedIds.push(selectedId);
-    } else {
-      const deleteIndex = rowsSelectedIds.findIndex(item => item === selectedId);
-      rowsSelectedIds.splice(deleteIndex, 1);
-    }
-    this.setState({ rowsSelectedIds });
+    if (allRows.length !== 0) {
+      const selectedIndex = rowsSelectedData[0].dataIndex;
+      const selectedId = data[selectedIndex].id;
+      const row = allRows.findIndex(item => item === rowsSelectedData[0]);
+      if (row >= 0) {
+        rowsSelectedIds.push(selectedId);
+      } else {
+        const deleteIndex = rowsSelectedIds.findIndex(item => item === selectedId);
+        rowsSelectedIds.splice(deleteIndex, 1);
+      }
+      this.setState({ rowsSelectedIds });
+    } else this.setState({ rowsSelectedIds: [] });
   };
 
   handleChangePage = (page, searchTerm) => {
     this.setState({ page, searchTerm }, this.makeQuery);
-    this.setState({ rowsSelected: [] });
+    this.setState({ rowsSelectedIndex: [] });
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
@@ -186,6 +209,24 @@ class ProductList extends React.Component {
     this.setState({ openPublisherDlg: false });
   };
 
+  handleBulkEdit = (event) => {
+    const { filters, rowsSelectedIndex } = this.state;
+    const { products, integrations, onInitBulkEditData, history } = this.props;
+    if (filters.length > 0) {
+      const integration = filters[0] ? filters[0].value : '';
+      const category = filters[1] ? filters[1].value : '';
+      if (hasCategories(integrations, integration) && !category) {
+        this.setState({ filterPopover: 'Category filter must be applied.' });
+        this.setState({ anchorElBulkEdit: event.currentTarget });
+      } else {
+        const { data } = products;
+        const remoteIds = getRemoteIds(data, rowsSelectedIndex, filters[0] ? filters[0].value : null);
+        onInitBulkEditData({ remoteIds, integration, category, properties: [] });
+        history.push('/products/bulk-edit');
+      }
+    } else this.setState({ filterPopover: 'Apply filters for bulk edit.', anchorElBulkEdit: event.currentTarget });
+  };
+
   handleMenu = event => this.setState({ anchorEl: event.currentTarget });
 
   handleCloseMenu = () => this.setState({ anchorEl: null });
@@ -220,11 +261,13 @@ class ProductList extends React.Component {
       page,
       filters,
       searchTerm,
-      rowsSelected,
+      rowsSelectedIndex,
       bulkLinkerAction,
       openPublisherDlg: openPublishDlg,
       openConfirmDlg,
-      selectedItem
+      selectedItem,
+      anchorElBulkEdit,
+      filterPopover
     } = this.state;
     const { history, products, loading, appStore } = this.props;
     const { pagination, data } = products;
@@ -237,10 +280,9 @@ class ProductList extends React.Component {
         options: {
           filter: false,
           customBodyRender: (value) => {
-            const imgSrc =
-              value.length > 0
-                ? value[0]
-                : '/images/image_placeholder_listItem.png';
+            const imgSrc = value.length > 0
+              ? value[0]
+              : '/images/image_placeholder_listItem.png';
             return (
               <Avatar
                 src={imgSrc}
@@ -251,7 +293,8 @@ class ProductList extends React.Component {
                   borderRadius: 0
                 }}
                 alt="product"
-              />)
+              />
+            );
           }
         }
       },
@@ -346,7 +389,7 @@ class ProductList extends React.Component {
     const options = {
       filter: true,
       selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
-      rowsSelected,
+      rowsSelected: rowsSelectedIndex,
       responsive: 'vertical',
       rowHover: true,
       download: false,
@@ -381,8 +424,8 @@ class ProductList extends React.Component {
           history.push(`/products/${data[dataIndex].id}/edit-product`);
         }
       },
-      onRowSelectionChange: (rowsSelectedData, allRows, rowsSelectedIndex) => {
-        this.setState({ rowsSelected: rowsSelectedIndex });
+      onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {
+        this.setState({ rowsSelectedIndex: indexList });
         this.updateRowsSelectedIds(rowsSelectedData, allRows, data);
       },
       customSort: (customSortData, colIndex, product) =>
@@ -412,7 +455,7 @@ class ProductList extends React.Component {
         }),
       customToolbar: () => (
         <Fragment>
-          {!appStore.fromShopifyApp ? (
+          {!appStore.fromShopifyApp && (
             <Tooltip title="add">
               <IconButton
                 aria-label="add"
@@ -422,24 +465,41 @@ class ProductList extends React.Component {
                 <AddCircleIcon />
               </IconButton>
             </Tooltip>
-          ) : (
-              <Tooltip title="Bulk edit">
-                <IconButton
-                  aria-label="edit"
-                  component={Link}
-                  to="/products/bulk-edit"
-                >
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-            )}
+          )}
         </Fragment>
       ),
       customToolbarSelect: () => (
-        <ToolbarActions
-          onLink={this.handleBulkLink}
-          onUnlink={this.handleBulkUnlink}
-        />
+        <div style={{ display: 'flex' }}>
+          <ToolbarActions
+            onLink={this.handleBulkLink}
+            onUnlink={this.handleBulkUnlink}
+          />
+          <Tooltip title="Bulk edit">
+            <IconButton
+              aria-label="edit"
+              aria-describedby={anchorElBulkEdit ? 'simple-popover' : undefined}
+              onClick={this.handleBulkEdit}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Popover
+            id={anchorElBulkEdit ? 'simple-popover' : undefined}
+            open={Boolean(anchorElBulkEdit)}
+            anchorEl={anchorElBulkEdit}
+            onClose={() => this.setState({ anchorElBulkEdit: null })}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Typography style={{ padding: '16px' }}>{filterPopover}</Typography>
+          </Popover>
+        </div>
       ),
       setFilterChipProps: (colIndex, colName, chip) => {
         return {
@@ -467,21 +527,21 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         {loading ? <Loading /> : null}
-          <MUIDataTable columns={columns} data={data} options={options} />
-          {this.renderTableActionsMenu()}
-          <AlertDialog
-            open={openConfirmDlg}
-            message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
-            handleCancel={this.handleCancelDlg}
-            handleConfirm={this.handleConfirmDlg}
-          />
-          <BulkLinker
-            action={bulkLinkerAction}
-            open={openPublishDlg}
-            fromShopifyApp={appStore.fromShopifyApp}
-            onClose={() => this.setState({ openPublisherDlg: false })}
-            onSave={this.handleBulkLinkerAction}
-          />
+        <MUIDataTable columns={columns} data={data} options={options} />
+        {this.renderTableActionsMenu()}
+        <AlertDialog
+          open={openConfirmDlg}
+          message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
+          handleCancel={this.handleCancelDlg}
+          handleConfirm={this.handleConfirmDlg}
+        />
+        <BulkLinker
+          action={bulkLinkerAction}
+          open={openPublishDlg}
+          fromShopifyApp={appStore.fromShopifyApp}
+          onClose={() => this.setState({ openPublisherDlg: false })}
+          onSave={this.handleBulkLinkerAction}
+        />
       </div>
     );
   }
@@ -489,6 +549,7 @@ class ProductList extends React.Component {
 
 const mapStateToProps = state => ({
   products: state.getIn(['product', 'products']),
+  integrations: state.getIn(['integration', 'integrations']).toJS(),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
@@ -504,6 +565,7 @@ const mapDispatchToProps = dispatch => ({
   onGetProductsWithFilters: bindActionCreators(getProductsByIntegration, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
+  onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
 });
 
 const ProductListMapped = connect(
@@ -517,6 +579,7 @@ ProductList.defaultProps = {
 
 ProductList.propTypes = {
   products: PropTypes.object.isRequired,
+  integrations: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
@@ -529,6 +592,7 @@ ProductList.propTypes = {
   onDeleteProduct: PropTypes.func.isRequired,
   onResetDeleteProduct: PropTypes.func.isRequired,
   onUnsubscribeProducts: PropTypes.func.isRequired,
+  onInitBulkEditData: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 

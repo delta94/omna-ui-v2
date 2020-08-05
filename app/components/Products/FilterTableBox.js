@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import { getCategoryList } from 'dan-actions/categoryAction';
 import { getIntegrations } from 'dan-actions/integrationActions';
-import { delay } from 'dan-containers/Common/Utils';
+import { delay, hasCategories } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion';
 
 const styles = theme => ({
@@ -27,19 +27,6 @@ const styles = theme => ({
   },
 });
 
-const getCategoryAvailability = (integrations, selectedIntegration) => {
-  const integrationsWithNoCategory = ['Ov2Shopify'];
-  if (selectedIntegration) {
-    const integration = integrations ? integrations.data.find(item => item.id === selectedIntegration.value) : null;
-    if (integration) {
-      const founded = integrationsWithNoCategory.find(item => item === integration.channel);
-      if (founded) return false;
-    }
-  }
-
-  return true;
-};
-
 function FilterTableBox(props) {
   const {
     integration, category, categories, onGetCategories, integrations, onGetIntegrations, loadingCategories,
@@ -54,7 +41,7 @@ function FilterTableBox(props) {
   const [initialLoad, setInitialLoad] = useState(true);
 
   const checkValidity = () => {
-    if (getCategoryAvailability(integrations, integration)) {
+    if (hasCategories(integrations, integration)) {
       if (!integration || categoryOptions.length === 0) {
         setCategoryHelperText('No available categories');
       } else setCategoryHelperText('');
