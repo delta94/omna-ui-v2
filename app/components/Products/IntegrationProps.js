@@ -38,18 +38,14 @@ const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
       onTouchedProps(true);
     }
   };
-
   return (
     <div>
       <Typography variant="subtitle2" gutterBottom>
         Properties
       </Typography>
-      {emptyArray(properties_) && !errors ? <Alert variant="error" message="Something wrong. No properties to show" /> : null}
-      {properties_ && !errors ? (
-        <FormBuilder properties={properties_} onChange={handlePropertyChange} />
-      ) : (
-        <Alert variant="error" message={errors} />
-      )}
+      {emptyArray(properties_) && errors ? (<Alert variant="error" message="Something wrong. No properties to show." />) : null}
+      {emptyArray(properties_) && !errors ? (<Alert variant="info" message="No properties to show." />) : null}
+      {properties_ && !errors && (<FormBuilder properties={properties_} onChange={handlePropertyChange} />)}
     </div>
   );
 });
