@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -54,16 +54,25 @@ function AvailableIntegrationList(props) {
   const {
     classes,
     history,
+    task,
     availableIntegrations,
     fetchAvailableIntegrations,
     loading,
+    onInstall,
+    onUninstall,
     enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
 
+  const previousTask = useRef(task);
+
   const { data, pagination } =  availableIntegrations;
+
+  useEffect(() => {
+    task && task !== previousTask.current ? history.push(`tasks/${task.id}`) : null;
+  }, [task])
 
   const makeQuery = () => {
     const params = {
@@ -79,15 +88,9 @@ function AvailableIntegrationList(props) {
     makeQuery();
   }, [limit, page, searchText]);
 
-  const handleInstall = async id => {
-    const { onInstall } = props;
-    onInstall(id, enqueueSnackbar);
-  };
+  const handleInstall = id => onInstall(id, enqueueSnackbar);
 
-  const handleUninstall = id => {
-    const { onUninstall } = props;
-    onUninstall(id, enqueueSnackbar);
-  };
+  const handleUninstall = id => onUninstall(id, enqueueSnackbar);
 
   const handleChangePage = (page_) => setPage(page_);
 
@@ -227,10 +230,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAvailableIntegrations: bindActionCreators(
-    getAvailableIntegrationList,
-    dispatch
-  ),
+  fetchAvailableIntegrations: bindActionCreators(getAvailableIntegrationList, dispatch),
   onInstall: bindActionCreators(installAvailableIntegration, dispatch),
   onUninstall: bindActionCreators(uninstallAvailableIntegration, dispatch)
 });
@@ -240,9 +240,14 @@ const CollectionListMapped = connect(
   mapDispatchToProps
 )(AvailableIntegrationList);
 
+AvailableIntegrationList.defaultProps = {
+  task: null
+};
+
 AvailableIntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   availableIntegrations: PropTypes.object.isRequired,

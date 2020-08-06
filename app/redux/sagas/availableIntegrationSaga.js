@@ -1,9 +1,7 @@
 import { takeLatest, put, all } from 'redux-saga/effects';
 import get from 'lodash/get';
-import * as types from '../../actions/actionConstants';
-import API from '../../containers/Utils/api';
-import { GENERATED_TASK_INFO } from '../../components/Notification/AlertConstants';
-import { goToTaskAction } from '../../components/Notification/AlertActions';
+import * as types from 'dan-actions/actionConstants';
+import API from 'dan-containers/Utils/api';
 
 function* fetchAvailableIntegrationAsync(payload) {
   const { params, enqueueSnackbar } = payload;
@@ -25,12 +23,10 @@ function* installAvailableIntegrationAsync(payload) {
     yield put({ type: types.SET_LOADING, data: true });
     const response = yield API.patch(`/available/integrations/${id}`);
     const { data } = response.data;
-    enqueueSnackbar('Installing started', {
-      variant: 'success'
+    enqueueSnackbar('Installing integration', {
+      variant: 'info'
     });
     yield put({ type: types.INSTALL_AVAILABLE_INTEGRATION, data });
-    const taskNotif = { message: GENERATED_TASK_INFO, variant: 'info', action: goToTaskAction(data.id)};
-    yield put({ type: types.PUSH_NOTIFICATION, data: taskNotif });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -45,12 +41,10 @@ function* uninstallAvailableIntegrationAsync(payload) {
     yield put({ type: types.SET_LOADING, data: true });
     const response = yield API.delete(`/available/integrations/${id}`);
     const { data } = response.data;
-    enqueueSnackbar('Uninstalling started', {
-      variant: 'success'
+    enqueueSnackbar('Uninstalling integration', {
+      variant: 'info'
     });
     yield put({ type: types.UNINSTALL_AVAILABLE_INTEGRATION, data });
-    const taskNotif = { message: GENERATED_TASK_INFO, variant: 'info', action: goToTaskAction(data.id)};
-    yield put({ type: types.PUSH_NOTIFICATION, data: taskNotif });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
