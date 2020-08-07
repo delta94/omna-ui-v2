@@ -1,7 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import { baseApiUrl, baseAppUrl, isAuthenticated } from './Utils';
+import {
+  baseApiUrl,
+  baseAppUrl,
+  isAuthenticated,
+  isOmnaShopify
+} from './Utils';
 
 const AuthGuardRoute = ({
   appStore,
@@ -15,7 +20,7 @@ const AuthGuardRoute = ({
 }) => {
   let code = null;
   let store = null;
-
+  console.log(location);
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
@@ -39,7 +44,10 @@ const AuthGuardRoute = ({
             to={{
               pathname: '/lock-screen',
               state: {
-                redirect: `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`,
+                redirect:
+                  !location.pathname.includes('shopify') && !isOmnaShopify
+                    ? `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`
+                    : 'https://accounts.shopify.com/store-login',
                 code,
                 path,
                 store
