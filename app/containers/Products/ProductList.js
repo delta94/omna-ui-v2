@@ -28,9 +28,10 @@ import {
   resetDeleteProductFlag,
   unsubscribeProducts,
   getProductsByIntegration,
-  initBulkEditData
+  initBulkEditData,
+  updateProductFilters
 } from 'dan-actions/productActions';
-import { getCurrencySymbol, convertListToString, hasCategories } from 'dan-containers/Common/Utils';
+import { getCurrencySymbol, convertListToString, hasCategories, emptyArray } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
@@ -60,7 +61,6 @@ class ProductList extends React.Component {
   state = {
     limit: 10,
     page: 0,
-    filters: [],
     integrationFilter: undefined,
     categoryFilter: undefined,
     searchTerm: '',
@@ -78,13 +78,16 @@ class ProductList extends React.Component {
   componentDidMount = () => this.makeQuery();
 
   componentDidUpdate(prevProps) {
-    const { deleted, onResetDeleteProduct, task, history } = this.props;
+    const { deleted, onResetDeleteProduct, task, history, filters } = this.props;
     if (deleted && deleted !== prevProps.deleted) {
       onResetDeleteProduct();
       this.makeQuery();
     }
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
+    }
+    if (filters && filters !== prevProps.filters) {
+      this.makeQuery();
     }
   }
 
@@ -94,8 +97,8 @@ class ProductList extends React.Component {
   }
 
   makeQuery = () => {
-    const { onGetAllProducts, onGetProductsWithFilters, enqueueSnackbar } = this.props;
-    const { searchTerm, limit, page, filters } = this.state;
+    const { onGetAllProducts, onGetProductsWithFilters, filters, enqueueSnackbar } = this.props;
+    const { searchTerm, limit, page } = this.state;
 
     const params = {
       offset: page * limit,
@@ -104,8 +107,8 @@ class ProductList extends React.Component {
       with_details: true,
     };
 
-    const integrationFilter = filters[0] ? filters[0].value : null;
-    const categoryFilter = filters[1] ? filters[1].value : null;
+    const integrationFilter = filters.get(0) ? filters.get(0).value : null;
+    const categoryFilter = filters.get(1) ? filters.get(1).value : null;
 
     if (integrationFilter || categoryFilter) {
       categoryFilter ? params.category_id = categoryFilter : null;
@@ -173,15 +176,18 @@ class ProductList extends React.Component {
 
   handleFilterSubmit = applyFilters => {
     const filterList = applyFilters();
+    const { onUpdateProductFilters } = this.props;
     const { integrationFilter, categoryFilter } = this.state;
+    let updateIntegration = [];
+    let updateCategory = [];
     if (integrationFilter) {
-      filterList[3][0] = integrationFilter;
+      updateIntegration = filterList[3].clear().insert(0, integrationFilter);
     }
     if (categoryFilter) {
-      filterList[3][1] = categoryFilter;
-    } else filterList[3].splice(1, 1);
-
-    this.setState({ filters: filterList[3] }, this.makeQuery);
+      updateCategory = filterList[3].clear().insert(1, categoryFilter);
+    } else filterList[3].get(1) ? updateCategory = filterList[3].clear() : null;
+    const resultList = updateIntegration.concat(updateCategory);
+    onUpdateProductFilters(resultList);
   };
 
   handleConfirmDlg = () => {
@@ -259,7 +265,6 @@ class ProductList extends React.Component {
     const {
       limit,
       page,
-      filters,
       searchTerm,
       rowsSelectedIndex,
       bulkLinkerAction,
@@ -269,7 +274,7 @@ class ProductList extends React.Component {
       anchorElBulkEdit,
       filterPopover
     } = this.state;
-    const { history, products, loading, appStore } = this.props;
+    const { history, products, loading, appStore, filters, onUpdateProductFilters } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
@@ -332,7 +337,7 @@ class ProductList extends React.Component {
         }
       },
       {
-        name: 'integrations',
+        name: emptyArray(filters) ? 'integrations' : 'integration',
         label: 'Integrations',
         options: {
           filter: true,
@@ -340,7 +345,7 @@ class ProductList extends React.Component {
           filterType: 'custom',
           filterList: filters,
           customFilterListOptions: {
-            render: v => v.map(l => l.name)
+            render: v => v.name
           },
           filterOptions: {
             display: () => {
@@ -355,7 +360,7 @@ class ProductList extends React.Component {
               );
             }
           },
-          customBodyRender: value => convertListToString(value)
+          customBodyRender: value => value && value.name || convertListToString(value)
         }
       },
       {
@@ -506,7 +511,7 @@ class ProductList extends React.Component {
           color: 'primary',
           variant: 'outlined',
           className: 'testClass123',
-          disabled: filters[1] && chip.value !== filters[1].value || false
+          disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
         }
       },
       customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
@@ -519,7 +524,7 @@ class ProductList extends React.Component {
       },
       onFilterChipClose: (index, removedFilter) => {
         const removeChips = filters.filter(item => item.value !== removedFilter.value);
-        this.setState({ filters: removeChips }, this.makeQuery)
+        onUpdateProductFilters(removeChips);
       }
     };
 
@@ -550,6 +555,7 @@ class ProductList extends React.Component {
 const mapStateToProps = state => ({
   products: state.getIn(['product', 'products']),
   integrations: state.getIn(['integration', 'integrations']).toJS(),
+  filters: state.getIn(['product', 'filters']),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
@@ -566,6 +572,7 @@ const mapDispatchToProps = dispatch => ({
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
   onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
+  onUpdateProductFilters: bindActionCreators(updateProductFilters, dispatch),
 });
 
 const ProductListMapped = connect(
@@ -580,6 +587,7 @@ ProductList.defaultProps = {
 ProductList.propTypes = {
   products: PropTypes.object.isRequired,
   integrations: PropTypes.object.isRequired,
+  filters: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
@@ -593,6 +601,7 @@ ProductList.propTypes = {
   onResetDeleteProduct: PropTypes.func.isRequired,
   onUnsubscribeProducts: PropTypes.func.isRequired,
   onInitBulkEditData: PropTypes.func.isRequired,
+  onUpdateProductFilters: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 

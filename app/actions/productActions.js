@@ -100,3 +100,9 @@ export const initBulkEditData = (payload) => ({
   type: types.INIT_BULK_EDIT_PRODUCTS_DATA,
   payload
 });
+
+export const updateProductFilters = (filters) => ({
+  type: types.UPDATE_PRODUCT_FILTERS,
+  filters
+});
+
