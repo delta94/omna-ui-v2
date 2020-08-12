@@ -27,7 +27,6 @@ import {
   deleteProduct,
   resetDeleteProductFlag,
   unsubscribeProducts,
-  getProductsByIntegration,
   initBulkEditData,
   updateProductFilters
 } from 'dan-actions/productActions';
@@ -97,7 +96,7 @@ class ProductList extends React.Component {
   }
 
   makeQuery = () => {
-    const { onGetAllProducts, onGetProductsWithFilters, filters, enqueueSnackbar } = this.props;
+    const { onGetProducts, filters, enqueueSnackbar } = this.props;
     const { searchTerm, limit, page } = this.state;
 
     const params = {
@@ -110,10 +109,13 @@ class ProductList extends React.Component {
     const integrationFilter = filters.get(0) ? filters.get(0).value : null;
     const categoryFilter = filters.get(1) ? filters.get(1).value : null;
 
-    if (integrationFilter || categoryFilter) {
-      categoryFilter ? params.category_id = categoryFilter : null;
-      onGetProductsWithFilters(integrationFilter, params, enqueueSnackbar);
-    } else onGetAllProducts({ params, enqueueSnackbar });
+    if (integrationFilter) {
+      params.integration_id = integrationFilter;
+      if (categoryFilter) {
+        params.category_id = categoryFilter;
+      }
+    }
+    onGetProducts({ params, enqueueSnackbar });
   };
 
   updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
@@ -174,19 +176,12 @@ class ProductList extends React.Component {
     this.setState({ integrationFilter: null, categoryFilter: null });
   };
 
-  handleFilterSubmit = applyFilters => {
-    const filterList = applyFilters();
+  handleFilterSubmit = () => {
     const { onUpdateProductFilters } = this.props;
     const { integrationFilter, categoryFilter } = this.state;
-    let updateIntegration = [];
-    let updateCategory = [];
-    if (integrationFilter) {
-      updateIntegration = filterList[3].clear().insert(0, integrationFilter);
-    }
-    if (categoryFilter) {
-      updateCategory = filterList[3].clear().insert(1, categoryFilter);
-    } else filterList[3].get(1) ? updateCategory = filterList[3].clear() : null;
-    const resultList = updateIntegration.concat(updateCategory);
+    const resultList = [];
+    integrationFilter ? resultList[0] = integrationFilter : null;
+    categoryFilter ? resultList[1] = categoryFilter : null;
     onUpdateProductFilters(resultList);
   };
 
@@ -216,17 +211,17 @@ class ProductList extends React.Component {
   };
 
   handleBulkEdit = (event) => {
-    const { filters, rowsSelectedIndex } = this.state;
-    const { products, integrations, onInitBulkEditData, history } = this.props;
-    if (filters.length > 0) {
-      const integration = filters[0] ? filters[0].value : '';
-      const category = filters[1] ? filters[1].value : '';
+    const { rowsSelectedIndex } = this.state;
+    const { products, integrations, filters, onInitBulkEditData, history } = this.props;
+    if (!emptyArray(filters)) {
+      const integration = filters.get(0) ? filters.get(0).value : '';
+      const category = filters.get(1) ? filters.get(1).value : '';
       if (hasCategories(integrations, integration) && !category) {
         this.setState({ filterPopover: 'Category filter must be applied.' });
         this.setState({ anchorElBulkEdit: event.currentTarget });
       } else {
         const { data } = products;
-        const remoteIds = getRemoteIds(data, rowsSelectedIndex, filters[0] ? filters[0].value : null);
+        const remoteIds = getRemoteIds(data, rowsSelectedIndex, integration);
         onInitBulkEditData({ remoteIds, integration, category, properties: [] });
         history.push('/products/bulk-edit');
       }
@@ -337,7 +332,7 @@ class ProductList extends React.Component {
         }
       },
       {
-        name: emptyArray(filters) ? 'integrations' : 'integration',
+        name: 'integrations',
         label: 'Integrations',
         options: {
           filter: true,
@@ -360,7 +355,7 @@ class ProductList extends React.Component {
               );
             }
           },
-          customBodyRender: value => value && value.name || convertListToString(value)
+          customBodyRender: value => convertListToString(value)
         }
       },
       {
@@ -567,8 +562,7 @@ const mapDispatchToProps = dispatch => ({
   onBulkLinkProducts: bindActionCreators(bulkLinkProducts, dispatch),
   onBulkUnlinkProducts: bindActionCreators(bulkUnlinkProducts, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
-  onGetAllProducts: bindActionCreators(getProducts, dispatch),
-  onGetProductsWithFilters: bindActionCreators(getProductsByIntegration, dispatch),
+  onGetProducts: bindActionCreators(getProducts, dispatch),
   onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
   onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
@@ -593,8 +587,7 @@ ProductList.propTypes = {
   appStore: PropTypes.object.isRequired,
   deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
-  onGetAllProducts: PropTypes.func.isRequired,
-  onGetProductsWithFilters: PropTypes.func.isRequired,
+  onGetProducts: PropTypes.func.isRequired,
   onBulkLinkProducts: PropTypes.func.isRequired,
   onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
