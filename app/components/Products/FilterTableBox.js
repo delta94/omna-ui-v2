@@ -134,7 +134,6 @@ function FilterTableBox(props) {
         options={categoryOptions}
         loading={loadingCategories}
         value={category}
-        disabled
         helperText={categoryHelperText}
         placeholder="Select a category from the selected integration"
         onChange={handleCategoryChange}
