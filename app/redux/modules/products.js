@@ -15,7 +15,8 @@ const initialState = fromJS({
     remoteIds: [],
     integration: '',
     category: '',
-    properties: []
+    properties: [],
+    baseProperties: []
   }),
   filters: List([])
 });
@@ -64,7 +65,8 @@ export default function integrationsReducer(state = initialState, action) {
       });
     case types.GET_BULK_EDIT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.setIn(['bulkEditData', 'properties'], action.data);
+        const { properties } = action.data;
+        mutableState.setIn(['bulkEditData', 'properties'], properties);
       });
     case types.BULK_EDIT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {

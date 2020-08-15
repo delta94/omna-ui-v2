@@ -25,7 +25,7 @@ function* getProductCategory(payload) {
     const response = yield api.get(`/products/${productId}`);
     const { data } = response.data;
     const integration = data.integrations.find(item => item.id === integrationId);
-    const { properties } = integration.product
+    const { properties } = integration.product;
     const category = properties.find(item => item.id.includes('category'));
     yield put({ type: types.GET_PRODUCT_CATEGORY_SUCCESS, data: { id: category.value, integration: integrationId } });
   } catch (error) {
@@ -58,7 +58,7 @@ function* linkProduct(payload) {
   const { productId, integrationIds, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
-    const response = yield api.put(`/products/${productId}`, { data: { integration_ids: integrationIds, link_with_its_variants: "All" } });
+    const response = yield api.put(`/products/${productId}`, { data: { integration_ids: integrationIds, link_with_its_variants: 'All' } });
     const { data } = response.data;
     enqueueSnackbar('Linking product', { variant: 'info' });
     yield put({ type: types.LINK_PRODUCT, data });
@@ -71,7 +71,9 @@ function* linkProduct(payload) {
 }
 
 function* unLinkProduct(payload) {
-  const { productId, integrationIds, deleteFromIntegration, enqueueSnackbar } = payload;
+  const {
+    productId, integrationIds, deleteFromIntegration, enqueueSnackbar
+  } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
@@ -87,7 +89,9 @@ function* unLinkProduct(payload) {
 }
 
 function* bulkLinkProducts(payload) {
-  const { shop, productIds, integrationIds, enqueueSnackbar } = payload;
+  const {
+    shop, productIds, integrationIds, enqueueSnackbar
+  } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&task=bulk_edit_link_products`;
@@ -104,7 +108,9 @@ function* bulkLinkProducts(payload) {
 }
 
 function* bulkUnlinkProducts(payload) {
-  const { shop, productIds, integrationIds, enqueueSnackbar } = payload;
+  const {
+    shop, productIds, integrationIds, enqueueSnackbar
+  } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&task=bulk_edit_unlink_products`;
@@ -137,13 +143,16 @@ function* deleteProduct(payload) {
 }
 
 function* getBulkEditProperties(payload) {
-  const { shop, integrationId, categoryId, enqueueSnackbar } = payload;
+  const {
+    shop, integrationId, categoryId, enqueueSnackbar
+  } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&integration_id=${integrationId}&category_id=${categoryId}&task=get_product_properties`;
     const response = yield CENIT_APP.get(url);
-    const { product_properties: data } = response.data;
-    yield put({ type: types.GET_BULK_EDIT_PROPERTIES_SUCCESS, data });
+    const { product } = response.data;
+    const { base_properties: baseProperties, category_properties: properties } = product;
+    yield put({ type: types.GET_BULK_EDIT_PROPERTIES_SUCCESS, data: { baseProperties, properties } });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -153,7 +162,9 @@ function* getBulkEditProperties(payload) {
 }
 
 function* bulkEditProperties(payload) {
-  const { shop, remoteIds, properties, enqueueSnackbar } = payload;
+  const {
+    shop, remoteIds, properties, enqueueSnackbar
+  } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&task=bulk_product_properties`;
