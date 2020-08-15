@@ -29,8 +29,8 @@ const IntegrationProps = memo(({ properties, errors = '', onTouchedProps }) => {
       if (property.input_type !== 'single_select_with_remote_options') {
         property.value = value;
       } else {
-        property.value = value.id;
-        property.options = [value];
+        property.value = value ? value.id : '';
+        property.options = value ? [value] : [];
       }
       delete properties_[index];
       properties_.splice(index, 1, property);

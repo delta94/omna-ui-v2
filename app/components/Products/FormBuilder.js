@@ -13,14 +13,18 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import AsyncSearch from 'dan-components/AsyncSearch';
+import AutoSuggestion from 'dan-components/AutoSuggestion';
 import API from 'dan-containers/Utils/api';
 import { delay } from 'dan-containers/Common/Utils';
 import RichEditor from './RichEditor';
 
 const styles = theme => ({
+  container: {
+    flex: 'grow',
+    marginTop: theme.spacing(2)
+  },
   inputWidth: {
-    width: '300px'
+    width: '100%'
   },
   formControl: {
     margin: theme.spacing(2, 0, 1, 0),
@@ -53,7 +57,7 @@ const MuiTextField = props => {
   } = props;
 
   return (
-    <Grid item>
+    <Grid item xs={12} sm={6}>
       <TextField
         id={id}
         name={id}
@@ -83,7 +87,7 @@ const MuiSelect = props => {
     classes
   } = props;
   return (
-    <Grid item>
+    <Grid item xs={12} sm={6}>
       <TextField
         id={id}
         name={id}
@@ -128,7 +132,7 @@ const MuiMultiSelect = props => {
   }, []);
 
   return (
-    <Grid item>
+    <Grid item xs={12} sm={6}>
       <FormControl
         variant="outlined"
         className={classNames(classes.inputWidth)}
@@ -169,15 +173,16 @@ const MuiAsyncSelect = props => {
     options_service_path: path,
     options,
     required,
+    classes,
     read_only: disabled,
     onChange,
   } = props;
 
-  const selectedValue = options.length > 0 ? { id: options[0].id, name: options[0].name } : '';
+  const selectedValue = options.length > 0 ? options[0] : '';
 
-  const [options_, setOptions_] = useState([]);
+  const [options_, setOptions_] = useState([selectedValue]);
   const [loading, setLoading] = useState(false);
-  const [term, setTerm] = useState('');
+  const [term, setTerm] = useState();
 
   const getResources = async () => {
     const params = { term };
@@ -185,7 +190,8 @@ const MuiAsyncSelect = props => {
     try {
       const response = await API.get(path, { params });
       const { data } = response.data;
-      setOptions_(data.map(item => ({ value: item.id, name: item.name })));
+      data.unshift({ id: '', name: 'All' });
+      setOptions_(data.map(item => ({ id: item.id, name: item.name })));
     } catch (error) {
       console.log(error);
     }
@@ -196,40 +202,31 @@ const MuiAsyncSelect = props => {
     getResources();
   }, [term]);
 
-  const handleOnChange = async (e, value_) => {
-    const target = { name: id, value: value_ };
+  const handleOnChange = async (e, element) => {
+    const target = { name: id, value: element };
     onChange({ target });
   };
 
-  const handleOnInputChange = async (e, value_) => {
-    try {
-      const filters = options_.filter(item => item.name === value_);
-      //  if(value_ !== '' && value_ !== (value ? value.name : '') && filters.length === 0) {
-      if (
-        value_ !== '' &&
-        value_ !== (selectedValue ? selectedValue.name : '') &&
-        filters.length === 0
-      ) {
-        delay(value_, () => setTerm(value_));
-      }
-      if (value_ === '' && filters.length === 0) {
-        delay(value_, () => setTerm(value_));
-      }
-    } catch (error) {
-      console.log(error);
+  const handleOnInputChange = async (e, element) => {
+    const index = options_.findIndex(item => item.name === element);
+    if (element === 'All') {
+      setTerm('');
+    } else if (index === -1) {
+      element === '' ? setTerm(element) : delay(element, () => setTerm(element));
     }
   };
 
   return (
-    <Grid item>
-      <AsyncSearch
+    <Grid item xs={12} sm={6}>
+      <AutoSuggestion
         id={id}
-        value={selectedValue}
         label={label}
-        loading={loading}
-        required={required}
+        className={classes.inputWidth}
         disabled={disabled}
+        required={required}
         options={options_}
+        loading={loading}
+        value={selectedValue}
         onChange={handleOnChange}
         onInputChange={handleOnInputChange}
       />
@@ -238,14 +235,18 @@ const MuiAsyncSelect = props => {
 };
 
 const MuiRichTextEditor = props => {
-  const { id, label, value = '', onChange } = props;
+  const {
+    id, label, value = '', onChange
+  } = props;
   return (
-    <RichEditor
-      id={id}
-      label={label}
-      text={value}
-      onTextEditorChange={onChange}
-    />
+    <Grid item xs={12}>
+      <RichEditor
+        id={id}
+        label={label}
+        text={value}
+        onTextEditorChange={onChange}
+      />
+    </Grid>
   );
 };
 
@@ -263,7 +264,7 @@ const MuiDate = props => {
   const handleChange = (e) => onChange({ target: { name: id, value: moment(e).format() } });
 
   return (
-    <Grid item>
+    <Grid item xs={12} sm={6}>
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <DatePicker
           id={id}
@@ -293,86 +294,97 @@ const FormBuilder = (props) => {
     : [];
 
   return (
-    <Grid container spacing={2} direction="row" justify="flex-start">
-      {[...mainProps, ...richEditorProps].map(item => {
-        switch (item.input_type) {
-          case 'text':
-            return (
-              <MuiTextField
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'single_select':
-            return (
-              <MuiSelect
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'enum_input':
-            return (
-              <MuiSelect
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'single_select_with_remote_options':
-            return (
-              <MuiAsyncSelect
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'multi_select':
-            return (
-              <MuiMultiSelect
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'rich_text':
-            return (
-              <MuiRichTextEditor
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          case 'date':
-            return (
-              <MuiDate
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-          default:
-            return (
-              <MuiTextField
-                key={item.id}
-                {...item}
-                classes={classes}
-                onChange={onChange}
-              />
-            );
-        }
-      })}
-    </Grid>
+    <div className={classes.container}>
+      <Grid container spacing={3}>
+        {[...mainProps, ...richEditorProps].map(item => {
+          switch (item.input_type) {
+            case 'text':
+              return (
+                <MuiTextField
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'single_select':
+              return (
+                <MuiSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'single_enum_input':
+              return (
+                <MuiSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'single_select_with_remote_options':
+              return (
+                <MuiAsyncSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'multi_select':
+              return (
+                <MuiMultiSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'multi_enum_input':
+              return (
+                <MuiMultiSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'rich_text':
+              return (
+                <MuiRichTextEditor
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'date':
+              return (
+                <MuiDate
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            default:
+              return (
+                <MuiTextField
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+          }
+        })}
+      </Grid>
+    </div>
   );
-}
+};
 
 FormBuilder.propTypes = {
   properties: PropTypes.any.isRequired,
@@ -441,6 +453,7 @@ MuiAsyncSelect.propTypes = {
   required: PropTypes.bool.isRequired,
   read_only: PropTypes.bool.isRequired,
   options: PropTypes.array,
+  classes: PropTypes.object.isRequired,
   options_service_path: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 };
