@@ -1,10 +1,8 @@
-import React, { useEffect, Fragment, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import TypographySkeleton from 'dan-components/Skeleton/index';
-import { PapperBlock } from 'dan-components';
 import { getBulkEditVariantProperties, bulkEditVariantProperties } from 'dan-actions/variantActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
@@ -12,7 +10,9 @@ import FormActions from 'dan-containers/Common/FormActions';
 import { emptyArray } from 'dan-containers/Common/Utils';
 
 function BulkEditVariants(props) {
-  const { history, appStore, loading, category, properties, bulkEditTask, onGetProperties, enqueueSnackbar } = props;
+  const {
+    history, appStore, loading, category, properties, bulkEditTask, onGetProperties, enqueueSnackbar
+  } = props;
 
   const prevBulkEditTaskProp = useRef(bulkEditTask);
   const [touched, setTouched] = useState(false);
@@ -39,14 +39,13 @@ function BulkEditVariants(props) {
   return (
     <div>
       <PageHeader title="Bulk edit variants" history={history} />
-      <PapperBlock title="" icon="ios-card" desc="At this point all common properties can be edited.">
-        {loading ? <TypographySkeleton /> : (
-          <Fragment>
-            <IntegrationProps properties={properties} onTouchedProps={handleTouchedProps} />
-            {!emptyArray(properties) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
-          </Fragment>
-        )}
-      </PapperBlock>
+      <IntegrationProps
+        description="At this point all common properties can be edited."
+        loading={loading}
+        properties={properties}
+        onTouchedProps={handleTouchedProps}
+      />
+      {!emptyArray(properties) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
     </div>
   );
 }
