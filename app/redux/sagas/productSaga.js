@@ -150,9 +150,8 @@ function* getBulkEditProperties(payload) {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&integration_id=${integrationId}&category_id=${categoryId}&task=get_product_properties`;
     const response = yield CENIT_APP.get(url);
-    const { product } = response.data;
-    const { base_properties: baseProperties, category_properties: properties } = product;
-    yield put({ type: types.GET_BULK_EDIT_PROPERTIES_SUCCESS, data: { baseProperties, properties } });
+    const { product_properties: data } = response.data;
+    yield put({ type: types.GET_BULK_EDIT_PROPERTIES_SUCCESS, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
