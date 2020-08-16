@@ -21,7 +21,6 @@ import RichEditor from './RichEditor';
 const styles = theme => ({
   container: {
     flex: 'grow',
-    marginTop: theme.spacing(2)
   },
   inputWidth: {
     width: '100%'
