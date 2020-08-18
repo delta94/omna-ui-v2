@@ -2,22 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
-import get from 'lodash/get';
 // material-ui
 import { withStyles } from '@material-ui/core/styles';
-import {
-  Grid,
-  Table,
-  TableRow,
-  TableFooter,
-  TablePagination
-} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { Loading } from 'dan-components';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
-import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getChannels, getIntegrations } from 'dan-actions/integrationActions';
-import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import IntegrationForm from '../IntegrationForm';
 import Integration from '../Integration';
 
@@ -51,8 +42,6 @@ class ChannelList extends Component {
       integrationName: '',
       message: ''
     },
-    limit: 5,
-    page: 0,
     searchTerm: ''
   };
 
@@ -68,36 +57,20 @@ class ChannelList extends Component {
     this.setState({ alertDialog: false });
   };
 
-  handleChangePage = (e, page) => {
-    this.setState({ page });
-    this.makeRequest();
-  };
-
   makeRequest = () => {
-    const { onGetChannels, onGetIntegrations, integrations } = this.props;
-    const { limit, page, searchTerm } = this.state;
+    const { onGetChannels, onGetIntegrations } = this.props;
+    const { searchTerm } = this.state;
     const params = {
-      offset: page * limit,
-      limit,
       term: searchTerm
     };
 
-    onGetChannels(params);
-
-    onGetIntegrations({ offset: 0, limit });
     const integrationsParams = {
       offset: 0,
-      limit: integrations.total
+      limit: 100
     };
-
     onGetIntegrations(integrationsParams);
-  };
 
-  handleChangeRowsPerPage = event => {
-    this.setState(
-      { limit: parseInt(event.target.value, 10) },
-      this.makeRequest
-    );
+    onGetChannels(params);
   };
 
   handleCloseForm = () => {
@@ -109,7 +82,7 @@ class ChannelList extends Component {
     this.setState({ openForm: true });
   };
 
-  renderIntegrationItem = (channel, classes, integrated) => (
+  renderIntegrationItem = (channel, classes, integrated = false) => (
     <Grid item md={3} xs={12}>
       <Integration
         classes={classes}
@@ -118,19 +91,18 @@ class ChannelList extends Component {
         group={channel.group}
         integrated={integrated}
         noActions
-        handleAddIntegration={event =>
-          this.handleAddIntegrationClick(event, channel)
-        }
+        handleAddIntegration={event => this.handleAddIntegrationClick(event, channel)}
       />
     </Grid>
   );
 
   render() {
-    const { channels, classes, history, integrations, loading } = this.props;
-    const { alertDialog, channel, limit, openForm, page } = this.state;
+    const {
+      channels, classes, history, integrations, loading
+    } = this.props;
+    const { alertDialog, channel, openForm } = this.state;
 
-    const { pagination, data } = channels;
-    const count = get(pagination, 'total', 0);
+    const { data } = channels;
 
     return (
       <div>
@@ -138,49 +110,18 @@ class ChannelList extends Component {
         {loading ? <Loading /> : null}
         <div>
           <Grid container spacing={2}>
-            {data &&
-              data.map(chan => {
-                const match = integrations
-                  .get('data')
-                  .find(
-                    integration => integration.get('channel') === chan.name
-                  );
-
-                return match
-                  ? null
-                  : isOmnaShopify
-                  ? !chan.name.includes('Shopify') &&
-                    this.renderIntegrationItem(chan, classes, Boolean(match))
-                  : this.renderIntegrationItem(chan, classes, Boolean(match));
-              })}
+            {data && data.map(chan => {
+              const match = integrations.get('data').find(integration => integration.get('channel') === chan.name);
+              return this.renderIntegrationItem(chan, classes, Boolean(match));
+            })}
           </Grid>
-          <Table>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50]}
-                  count={count}
-                  rowsPerPage={limit}
-                  page={page}
-                  SelectProps={{
-                    native: true
-                  }}
-                  onChangePage={this.handleChangePage}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  ActionsComponent={GenericTablePagination}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
         </div>
-
         <AlertDialog
           open={alertDialog.open}
           message={alertDialog.message}
           handleCancel={this.handleDialogCancel}
           handleConfirm={this.handleDialogConfirm}
         />
-
         <IntegrationForm
           channel={channel.name}
           classes={classes}

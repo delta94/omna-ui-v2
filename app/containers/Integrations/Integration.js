@@ -106,14 +106,16 @@ const Integration = props => {
               ) : null
             }
             title={
-              <Typography
-                component="h5"
-                variant="subtitle2"
-                color="inherit"
-                gutterBottom
-              >
-                {name}
-              </Typography>
+              (
+                <Typography
+                  component="h5"
+                  variant="subtitle2"
+                  color="inherit"
+                  gutterBottom
+                >
+                  {name}
+                </Typography>
+              )
             }
             style={{ padding: '48px 16px' }}
             subheader={subtitle}
@@ -152,17 +154,22 @@ const Integration = props => {
               {`${group} ${group !== 'Shopify' ? name.slice(-2) : ''}`}
             </Typography>
 
-            {!integrated && (
-              <Tooltip title="Add integration">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={handleAddIntegration}
-                >
-                  Add
-                </Button>
-              </Tooltip>
-            )}
+            {integrated && isOmnaShopify
+              ? (
+                <Tooltip title="Connected">
+                  <CheckCircleIcon style={{ color: '#4caf50' }} />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Add integration">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleAddIntegration}
+                  >
+                    Add
+                  </Button>
+                </Tooltip>
+              )}
           </div>
         ) : (
           <CardActions
@@ -216,15 +223,13 @@ const Integration = props => {
             Authorize
           </MenuItem>
         )}
-
         <Divider />
 
-        {resourceOptions &&
-          resourceOptions.map(({ name: _name, value }) => (
-            <MenuItem key={value} onClick={() => handleImportResource(value)}>
-              {`Import ${_name}`}
-            </MenuItem>
-          ))}
+        {resourceOptions && resourceOptions.map(({ name: _name, value }) => (
+          <MenuItem key={value} onClick={() => handleImportResource(value)}>
+            {`Import ${_name}`}
+          </MenuItem>
+        ))}
 
         <Divider />
 
@@ -263,15 +268,15 @@ const Integration = props => {
 Integration.defaultProps = {
   authorized: false,
   group: '',
-  handleAddIntegration: () => {},
+  handleAddIntegration: () => { },
   integrated: false,
   logo: false,
   name: '',
   noActions: false,
-  onAuthorizeIntegration: () => {},
-  onDeleteIntegration: () => {},
-  onEditIntegration: () => {},
-  onUnauthorizeIntegration: () => {}
+  onAuthorizeIntegration: () => { },
+  onDeleteIntegration: () => { },
+  onEditIntegration: () => { },
+  onUnauthorizeIntegration: () => { }
 };
 
 Integration.propTypes = {
