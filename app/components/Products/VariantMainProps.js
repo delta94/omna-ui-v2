@@ -22,7 +22,7 @@ const VariantMainProps = memo((props) => {
 
   return (
     <div>
-      <Grid className={classes.root} container spacing={4}>
+      <Grid className={classes.root} container>
         <Grid item md={4} sm={12} xs={12}>
           <Carousel images={images} />
         </Grid>
