@@ -30,7 +30,9 @@ import {
   initBulkEditData,
   updateProductFilters
 } from 'dan-actions/productActions';
-import { getCurrencySymbol, convertListToString, hasCategories, emptyArray } from 'dan-containers/Common/Utils';
+import {
+  getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay
+} from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
@@ -77,7 +79,9 @@ class ProductList extends React.Component {
   componentDidMount = () => this.makeQuery();
 
   componentDidUpdate(prevProps) {
-    const { deleted, onResetDeleteProduct, task, history, filters } = this.props;
+    const {
+      deleted, onResetDeleteProduct, task, history, filters
+    } = this.props;
     if (deleted && deleted !== prevProps.deleted) {
       onResetDeleteProduct();
       this.makeQuery();
@@ -145,13 +149,7 @@ class ProductList extends React.Component {
 
   handleSearch = searchTerm => {
     if (searchTerm) {
-      const timer = setTimeout(() => {
-        this.setState({ searchTerm }, this.makeQuery);
-        clearTimeout(timer);
-      }, 800);
-      window.addEventListener('keydown', () => {
-        clearTimeout(timer);
-      });
+      this.setState({ searchTerm }, delay(() => this.makeQuery()));
     } else {
       const { searchTerm: _searchTerm } = this.state;
       if (_searchTerm) {
@@ -169,7 +167,7 @@ class ProductList extends React.Component {
   };
 
   handleCategoryFilterChange = (category) => {
-    this.setState({ categoryFilter: category })
+    this.setState({ categoryFilter: category });
   };
 
   handleResetFilters = () => {
@@ -199,11 +197,13 @@ class ProductList extends React.Component {
   handleBulkUnlink = () => this.setState({ openPublisherDlg: true, bulkLinkerAction: 'unlink' });
 
   handleBulkLinkerAction = async value => {
-    const { appStore: { name }, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts } = this.props;
+    const {
+      appStore: { name }, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts
+    } = this.props;
     const { bulkLinkerAction, rowsSelectedIds } = this.state;
     const { integrationIds, deleteFromIntegration } = value;
     if (bulkLinkerAction === 'link') {
-      onBulkLinkProducts(name, rowsSelectedIds, integrationIds, enqueueSnackbar)
+      onBulkLinkProducts(name, rowsSelectedIds, integrationIds, enqueueSnackbar);
     } else {
       onBulkUnlinkProducts(name, rowsSelectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
     }
@@ -212,7 +212,9 @@ class ProductList extends React.Component {
 
   handleBulkEdit = (event) => {
     const { rowsSelectedIndex } = this.state;
-    const { products, integrations, filters, onInitBulkEditData, history } = this.props;
+    const {
+      products, integrations, filters, onInitBulkEditData, history
+    } = this.props;
     if (!emptyArray(filters)) {
       const integration = filters.get(0) ? filters.get(0).value : '';
       const category = filters.get(1) ? filters.get(1).value : '';
@@ -222,7 +224,9 @@ class ProductList extends React.Component {
       } else {
         const { data } = products;
         const remoteIds = getRemoteIds(data, rowsSelectedIndex, integration);
-        onInitBulkEditData({ remoteIds, integration, category, properties: [] });
+        onInitBulkEditData({
+          remoteIds, integration, category, properties: []
+        });
         history.push('/products/bulk-edit');
       }
     } else this.setState({ filterPopover: 'Apply filters for bulk edit.', anchorElBulkEdit: event.currentTarget });
@@ -269,7 +273,9 @@ class ProductList extends React.Component {
       anchorElBulkEdit,
       filterPopover
     } = this.state;
-    const { history, products, loading, appStore, filters, onUpdateProductFilters } = this.props;
+    const {
+      history, products, loading, appStore, filters, onUpdateProductFilters
+    } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
 
@@ -428,31 +434,30 @@ class ProductList extends React.Component {
         this.setState({ rowsSelectedIndex: indexList });
         this.updateRowsSelectedIds(rowsSelectedData, allRows, data);
       },
-      customSort: (customSortData, colIndex, product) =>
-        customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                  parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                  b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (product === 'desc' ? 1 : -1)
-              );
-          }
-        }),
+      customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                  < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                  < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (product === 'desc' ? 1 : -1)
+            );
+        }
+      }),
       customToolbar: () => (
         <Fragment>
           {!appStore.fromShopifyApp && (
@@ -501,14 +506,12 @@ class ProductList extends React.Component {
           </Popover>
         </div>
       ),
-      setFilterChipProps: (colIndex, colName, chip) => {
-        return {
-          color: 'primary',
-          variant: 'outlined',
-          className: 'testClass123',
-          disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
-        }
-      },
+      setFilterChipProps: (colIndex, colName, chip) => ({
+        color: 'primary',
+        variant: 'outlined',
+        className: 'testClass123',
+        disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
+      }),
       customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
         const { integrationFilter } = this.state;
         return (

@@ -39,16 +39,15 @@ const styles = theme => ({
   }
 });
 
-const getMuiTheme = () =>
-  createMuiTheme({
-    overrides: {
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: '50%'
-        }
+const getMuiTheme = () => createMuiTheme({
+  overrides: {
+    MUIDataTableToolbar: {
+      filterPaper: {
+        width: '50%'
       }
     }
-  });
+  }
+});
 
 function AvailableIntegrationList(props) {
   const {
@@ -68,11 +67,11 @@ function AvailableIntegrationList(props) {
 
   const previousTask = useRef(task);
 
-  const { data, pagination } =  availableIntegrations;
+  const { data, pagination } = availableIntegrations;
 
   useEffect(() => {
     task && task !== previousTask.current ? history.push(`tasks/${task.id}`) : null;
-  }, [task])
+  }, [task]);
 
   const makeQuery = () => {
     const params = {
@@ -98,11 +97,11 @@ function AvailableIntegrationList(props) {
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
-      delay(searchTerm, () => setSearchText(searchTerm));
+      delay(() => setSearchText(searchTerm));
     } else if (searchText) {
       setSearchText('');
     }
-  };
+  }
 
   const columns = [
     {
@@ -156,16 +155,14 @@ function AvailableIntegrationList(props) {
             <Tooltip title="install">
               <VerticalAlignBottomIcon
                 color="action"
-                onClick={() =>
-                  handleInstall(tableMeta ? tableMeta.rowData[0] : null)
+                onClick={() => handleInstall(tableMeta ? tableMeta.rowData[0] : null)
                 }
               />
             </Tooltip>
             <Tooltip title="uninstall">
               <CloseIcon
                 color="action"
-                onClick={() =>
-                  handleUninstall(tableMeta ? tableMeta.rowData[0] : null)
+                onClick={() => handleUninstall(tableMeta ? tableMeta.rowData[0] : null)
                 }
               />
             </Tooltip>

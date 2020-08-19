@@ -12,8 +12,8 @@ const currentLocation = window.location.href;
 export const baseAppUrl = currentLocation.includes('app.omna.io')
   ? URL_PROD
   : currentLocation.includes('https://develop.d2px3nipkhew1t.amplifyapp.com')
-  ? URL_DEV
-  : URL_LOCAL;
+    ? URL_DEV
+    : URL_LOCAL;
 
 export const fullChannelName = channel => {
   if (channel) {
@@ -59,9 +59,7 @@ export const getCurrencySymbol = currency => {
   }
 };
 
-export const returnAfterAuthorization = () => {
-  return `${baseAppUrl}/installed-integrations`;
-};
+export const returnAfterAuthorization = () => `${baseAppUrl}/installed-integrations`;
 
 export const getHeaders = url => {
   const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
@@ -72,9 +70,8 @@ export const getHeaders = url => {
 
   // Join the service path and the ordered sequence of characters, excluding the quotes,
   // corresponding to the JSON of the parameters that will be sent.
-  const msg =
-    url +
-    JSON.stringify(params)
+  const msg = url
+    + JSON.stringify(params)
       .replace(/["']/g, '')
       .split('')
       .sort()
@@ -108,16 +105,14 @@ export const currentTenant = sessionStorage.getItem('currentTenant')
   ? JSON.parse(sessionStorage.getItem('currentTenant'))
   : null;
 
-export const delay = (_search, callBack, _delay = 1000) => {
-  if (_search) {
-    const timer = setTimeout(() => {
-      callBack(_search);
-      clearTimeout(timer);
-    }, _delay);
-    window.addEventListener('keydown', () => {
-      clearTimeout(timer);
-    });
-  }
+export const delay = (callBack, _delay = 1000) => {
+  const timer = setTimeout(() => {
+    callBack();
+    clearTimeout(timer);
+  }, _delay);
+  window.addEventListener('keydown', () => {
+    clearTimeout(timer);
+  });
 };
 
 export const variantIcon = {
@@ -227,7 +222,7 @@ export function convertListToString(items, max = 2) {
     return list.join(', ');
   }
   return [];
-};
+}
 
 export const hasCategories = (integrations, selectedIntegration) => {
   const integrationsWithNoCategory = ['Ov2Shopify'];

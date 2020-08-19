@@ -1,4 +1,6 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
+import React, {
+  useState, useEffect, Fragment, useRef
+} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -110,7 +112,7 @@ function VariantList(props) {
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
-      delay(searchTerm, () => setSearchText(searchTerm));
+      delay(() => setSearchText(searchTerm));
     } else if (searchText) {
       setSearchText('');
     }

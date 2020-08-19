@@ -211,7 +211,7 @@ const MuiAsyncSelect = props => {
     if (element === 'All') {
       setTerm('');
     } else if (index === -1) {
-      element === '' ? setTerm(element) : delay(element, () => setTerm(element));
+      element === '' ? setTerm(element) : delay(() => setTerm(element));
     }
   };
 

@@ -14,16 +14,15 @@ import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
-const getMuiTheme = () =>
-  createMuiTheme({
-    overrides: {
-      MUIDataTableBodyCell: {
-        root: {
-          cursor: 'pointer'
-        }
+const getMuiTheme = () => createMuiTheme({
+  overrides: {
+    MUIDataTableBodyCell: {
+      root: {
+        cursor: 'pointer'
       }
     }
-  });
+  }
+});
 
 function BrandList(props) {
   const {
@@ -38,8 +37,6 @@ function BrandList(props) {
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
   const [serverSideFilterList, setServerSideFilterList] = useState([]);
-  // const [openConfirmDlg, setOpenConfirmDlg] = useState();
-  // const [selectedItem, setSelectedItem] = useState();
 
   const { data, pagination } = brandList;
 
@@ -57,37 +54,23 @@ function BrandList(props) {
     makeQuery();
   }, [page, limit, searchText, serverSideFilterList]);
 
-  // useEffect(() => {
-  //   onGetBrands({ params: { offset: 0, limit: 100 } });
-  // }, []);
-
   const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
   const handleChangePage = pageValue => setPage(pageValue);
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
-      delay(searchTerm, () => setSearchText(searchTerm));
+      delay(() => setSearchText(searchTerm));
     } else if (searchText) {
       setSearchText('');
     }
   }
 
-  const handleFilterChange = filterList =>
-    filterList
-      ? setServerSideFilterList(filterList)
-      : setServerSideFilterList([]);
+  const handleFilterChange = filterList => {
+    filterList ? setServerSideFilterList(filterList) : setServerSideFilterList([]);
+  };
 
-  const handleResetFilters = () =>
-    serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null;
-
-  // const handleConfirmDlg = () => {
-  //   const { onDeleteVariant } = props;
-  //   onDeleteVariant(match.params.id, selectedItem.id, enqueueSnackbar);
-  //   setOpenConfirmDlg(false);
-  // };
-
-  // const handleCancelDlg = () => setOpenConfirmDlg(false);
+  const handleResetFilters = () => (serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null);
 
   const columns = [
     {
@@ -149,7 +132,6 @@ function BrandList(props) {
 }
 
 BrandList.propTypes = {
-  // enqueueSnackbar: PropTypes.func.isRequired
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,

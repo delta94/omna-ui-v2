@@ -18,7 +18,7 @@ const styles = theme => ({
     margin: theme.spacing(1),
   },
   select: {
-    margin: theme.spacing(1,1,2,1),
+    margin: theme.spacing(1, 1, 2, 1),
     width: '100%'
   },
   instructions: {
@@ -97,7 +97,7 @@ function FilterTableBox(props) {
   const handleCategoryInputChange = async (e, value) => {
     const index = categoryOptions.findIndex(item => item.name === value);
     if (index === -1) {
-      value === '' ? setCategoryTerm(value) : delay(value, () => setCategoryTerm(value));
+      value === '' ? setCategoryTerm(value) : delay(() => setCategoryTerm(value));
     }
   };
 
@@ -111,7 +111,7 @@ function FilterTableBox(props) {
   const handleIntegrationInputChange = async (e, value) => {
     const index = integrationOptions.findIndex(item => item.name === value);
     if (index === -1) {
-      value === '' ? setIntegrationTerm(value) : delay(value, () => setIntegrationTerm(value));
+      value === '' ? setIntegrationTerm(value) : delay(() => setIntegrationTerm(value));
     }
   };
 

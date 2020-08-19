@@ -29,7 +29,8 @@ import { Loading } from 'dan-components';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
-  currentTenant
+  currentTenant,
+  delay
 } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion/index';
 import IntegrationForm from './IntegrationForm';
@@ -188,16 +189,16 @@ class IntegrationList extends Component {
     this.setState({ openForm: false });
   };
 
-  handleSearch = (e) => {
+  handleSearch = e => {
     const searchTerm = e.target.value;
-    this.setState({ searchTerm });
-    const timer = setTimeout(() => {
-      this.makeRequest();
-      clearTimeout(timer);
-    }, 1000);
-    window.addEventListener('keydown', () => {
-      clearTimeout(timer);
-    });
+    if (searchTerm) {
+      this.setState({ searchTerm }, delay(() => this.makeRequest()));
+    } else {
+      const { searchTerm: _searchTerm } = this.state;
+      if (_searchTerm) {
+        this.setState({ searchTerm: '' }, this.makeQuery);
+      }
+    }
   };
 
   handleClearSearch = (e) => {

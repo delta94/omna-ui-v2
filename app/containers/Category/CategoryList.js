@@ -25,17 +25,14 @@ const getMuiTheme = () => createMuiTheme({
 });
 
 function CategoryList(props) {
-
-
   const {
     match, loading, categoryList, onGetCategory, history, enqueueSnackbar
   } = props;
+
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
   const [serverSideFilterList, setServerSideFilterList] = useState([]);
-  // const [openConfirmDlg, setOpenConfirmDlg] = useState();
-  // const [selectedItem, setSelectedItem] = useState();
 
   const { data, pagination } = categoryList;
 
@@ -46,18 +43,11 @@ function CategoryList(props) {
       term: searchText
     };
     onGetCategory(match.params.integration_id, params, enqueueSnackbar);
-
-    // onGetBrands('playstoretestingone_lazadasg', params, enqueueSnackbar);
   };
 
   useEffect(() => {
     makeQuery();
   }, [page, limit, searchText, serverSideFilterList]);
-
-  // useEffect(() => {
-  //   onGetBrands({ params: { offset: 0, limit: 100 } });
-  // }, []);
-
 
   const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
@@ -65,7 +55,7 @@ function CategoryList(props) {
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
-      delay(searchTerm, () => setSearchText(searchTerm));
+      delay(() => setSearchText(searchTerm));
     } else if (searchText) {
       setSearchText('');
     }
@@ -74,14 +64,6 @@ function CategoryList(props) {
   const handleFilterChange = filterList => (filterList ? setServerSideFilterList(filterList) : setServerSideFilterList([]));
 
   const handleResetFilters = () => (serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null);
-
-  // const handleConfirmDlg = () => {
-  //   const { onDeleteVariant } = props;
-  //   onDeleteVariant(match.params.id, selectedItem.id, enqueueSnackbar);
-  //   setOpenConfirmDlg(false);
-  // };
-
-  // const handleCancelDlg = () => setOpenConfirmDlg(false);
 
   const columns = [
     {
@@ -92,7 +74,6 @@ function CategoryList(props) {
       }
     }
   ];
-
 
   const options = {
     filter: true,
@@ -138,15 +119,13 @@ function CategoryList(props) {
       <MuiThemeProvider theme={getMuiTheme()}>
         <MUIDataTable columns={columns} data={data} options={options} />
       </MuiThemeProvider>
-      <AlertDialog
-      />
+      <AlertDialog />
     </div>
   );
 }
 
 
 CategoryList.propTypes = {
-  // enqueueSnackbar: PropTypes.func.isRequired
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
