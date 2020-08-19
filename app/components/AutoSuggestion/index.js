@@ -7,7 +7,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 
 export default function AutoSuggestion(props) {
-  const { id, label, options, loading, value, style, className, disabled, required, error, helperText, placeholder, inputValue, onChange, onInputChange } = props;
+  const {
+    id, label, options, loading, value, style, className, freeSolo, disabled, required, error, helperText, placeholder, inputValue, onChange, onInputChange
+  } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -16,6 +18,7 @@ export default function AutoSuggestion(props) {
       style={style}
       className={className}
       open={open}
+      freeSolo={freeSolo}
       onOpen={() => {
         setOpen(true);
       }}
