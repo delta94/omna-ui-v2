@@ -62,6 +62,7 @@ class IntegrationForm extends Component {
       enqueueSnackbar,
       handleClose,
       integrations,
+      fromShopify,
       onCreateIntegration,
       onUpdateIntegration
     } = this.props;
@@ -87,12 +88,14 @@ class IntegrationForm extends Component {
       const found = jsIntegrations.find(
         integration => integration.channel === channel
       );
-      if (found) {
+      if (found && fromShopify) {
         enqueueSnackbar('An integration for this channel already exist.', {
           variant: 'error'
         });
       } else {
-        onCreateIntegration({ authorized, channel, name, enqueueSnackbar });
+        onCreateIntegration({
+          authorized, channel, name, enqueueSnackbar
+        });
       }
     }
 
@@ -125,8 +128,8 @@ class IntegrationForm extends Component {
     } = this.state;
 
     if (selectedChannel === '' && open) {
-      channel &&
-        this.setState({
+      channel
+        && this.setState({
           selectedChannel: channel,
           integration: `integration_${channel
             .slice(3, -2)
@@ -134,9 +137,6 @@ class IntegrationForm extends Component {
             .toLowerCase()}`
         });
     }
-
-    // const hasCustomDefaultProperties =
-    //   channel && (channel.includes('Shopee') || channel.includes('Qoo10'));
 
     if (editableIntegration && integration === '') {
       this.setState({
@@ -155,7 +155,8 @@ class IntegrationForm extends Component {
           open={open}
         >
           <DialogTitle id="form-dialog-title">
-            {editableIntegration ? 'Edit' : 'Add'} Integration
+            {editableIntegration ? 'Edit' : 'Add'}
+            Integration
           </DialogTitle>
           <DialogContent className={classes.formContainer}>
             <form
@@ -198,8 +199,8 @@ class IntegrationForm extends Component {
                 error={!!errors.channel}
                 helperText={errors.channel}
               >
-                {channels.data &&
-                  channels.data.map(option => (
+                {channels.data
+                  && channels.data.map(option => (
                     <MenuItem key={option.name} value={option.name}>
                       {option.title}
                     </MenuItem>
@@ -208,12 +209,14 @@ class IntegrationForm extends Component {
 
               <FormControlLabel
                 control={
-                  <Checkbox
-                    name="authorized"
-                    checked={authorized}
-                    onChange={this.onCheckBoxChange}
-                    value="authorized"
-                  />
+                  (
+                    <Checkbox
+                      name="authorized"
+                      checked={authorized}
+                      onChange={this.onCheckBoxChange}
+                      value="authorized"
+                    />
+                  )
                 }
                 label="Authorized"
               />
@@ -228,13 +231,15 @@ class IntegrationForm extends Component {
 }
 
 IntegrationForm.defaultProps = {
-  editableIntegration: null
+  editableIntegration: null,
+  fromShopify: undefined
 };
 
 IntegrationForm.propTypes = {
   classes: PropTypes.object.isRequired,
   channel: PropTypes.object.isRequired,
   channels: PropTypes.object.isRequired,
+  fromShopify: PropTypes.bool,
   enqueueSnackbar: PropTypes.func.isRequired,
   editableIntegration: PropTypes.object,
   handleClose: PropTypes.func.isRequired,

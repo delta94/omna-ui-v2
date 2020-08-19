@@ -26,12 +26,12 @@ import {
   unauthorizeIntegration
 } from 'dan-actions';
 import { Loading } from 'dan-components';
-import AsyncSearch from 'dan-components/AsyncSearch/index2';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
   currentTenant
 } from 'dan-containers/Common/Utils';
+import AutoSuggestion from 'dan-components/AutoSuggestion/index';
 import IntegrationForm from './IntegrationForm';
 import Integration from './Integration';
 
@@ -52,7 +52,7 @@ const styles = theme => ({
   },
   actions: {
     display: 'flex',
-    justifyContent: 'flex-end'
+    justifyContent: 'space-between'
   },
   background: {
     backgroundColor: theme.palette.background.paper
@@ -67,7 +67,7 @@ class IntegrationList extends Component {
       integrationId: '',
       message: ''
     },
-    limit: 5,
+    limit: 10,
     page: 0,
     searchTerm: '',
     editableIntegration: null
@@ -116,9 +116,8 @@ class IntegrationList extends Component {
   handleDeleteIntegration = () => {
     const { onDeleteIntegration, enqueueSnackbar } = this.props;
     const { alertDialog } = this.state;
-
     try {
-      onDeleteIntegration(alertDialog.integrationId);
+      onDeleteIntegration(alertDialog.integrationId, enqueueSnackbar);
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -128,16 +127,14 @@ class IntegrationList extends Component {
 
   handleImportResource = (id, resource) => {
     const { appStore, onImportResource, enqueueSnackbar } = this.props;
-    onImportResource({ id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar });
+    onImportResource({
+      id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar
+    });
   };
-
 
   handleViewResource = (id, resource) => {
     const { history } = this.props;
-    if (resource === 'brand')
-      history.push(`/${id}/brands`);
-    else
-      history.push(`/${id}/categories`);
+    resource === 'brand' ? history.push(`/${id}/brands`) : history.push(`/${id}/categories`);
   };
 
   handleDialogConfirm = () => {
@@ -160,7 +157,7 @@ class IntegrationList extends Component {
   };
 
   handleChangePage = (e, page) => {
-    this.setState({ page }, this.makeRequest());
+    this.setState({ page }, this.makeRequest);
   };
 
   makeRequest = () => {
@@ -191,22 +188,39 @@ class IntegrationList extends Component {
     this.setState({ openForm: false });
   };
 
-  handleSearch = e => {
-    this.setState({ searchTerm: e.target.value }, this.makeRequest());
+  handleSearch = (e) => {
+    const searchTerm = e.target.value;
+    this.setState({ searchTerm });
+    const timer = setTimeout(() => {
+      this.makeRequest();
+      clearTimeout(timer);
+    }, 1000);
+    window.addEventListener('keydown', () => {
+      clearTimeout(timer);
+    });
+  };
+
+  handleClearSearch = (e) => {
+    const { searchTerm } = this.state;
+    if (!e.target.value && searchTerm) {
+      this.setState({ searchTerm: '' }, this.makeRequest);
+    }
   };
 
   render() {
-    const { classes, history, integrations, loading } = this.props;
+    const {
+      classes, history, integrations, loading, appStore: { fromShopifyApp }
+    } = this.props;
     const {
       alertDialog,
       editableIntegration,
       limit,
       openForm,
-      page
+      page,
+      searchTerm
     } = this.state;
     const { pagination, data } = integrations.toJS();
     const count = get(pagination, 'total', 0);
-
     return (
       <div>
         <PageHeader title="Installed integrations" history={history} />
@@ -214,12 +228,15 @@ class IntegrationList extends Component {
         <div>
           <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
             <div className={classes.actions}>
-              <AsyncSearch
-                label="Search integration name"
-                loading={loading}
-                onChange={this.handleSearch}
+              <AutoSuggestion
+                label="Search by name"
+                inputValue={searchTerm}
+                freeSolo
+                onChange={this.handleClearSearch}
+                onInputChange={this.handleSearch}
+                style={{ width: '300px' }}
               />
-              <Tooltip title="add">
+              <Tooltip title="Add integration">
                 <IconButton
                   aria-label="add"
                   onClick={this.handleAddIntegrationClick}
@@ -230,8 +247,8 @@ class IntegrationList extends Component {
             </div>
           </Paper>
           <Grid container>
-            {data &&
-              data.map(integration => (
+            {data
+              && data.slice(0, limit).map(integration => (
                 <Grid item md={3} xs={12}>
                   <Integration
                     key={integration.id}
@@ -240,21 +257,16 @@ class IntegrationList extends Component {
                     logo
                     channel={integration.channel}
                     authorized={integration.authorized}
-                    onAuthorizeIntegration={() =>
-                      this.handleAuthorization(integration.id)
+                    onAuthorizeIntegration={() => this.handleAuthorization(integration.id)
                     }
                     onEditIntegration={() => this.handleEditClick(integration)}
-                    onUnauthorizeIntegration={() =>
-                      this.handleUnAuthorization(integration.id)
+                    onUnauthorizeIntegration={() => this.handleUnAuthorization(integration.id)
                     }
-                    onDeleteIntegration={() =>
-                      this.handleDeleteClick(integration.id, integration.name)
+                    onDeleteIntegration={() => this.handleDeleteClick(integration.id, integration.name)
                     }
-                    onImportResource={resource =>
-                      this.handleImportResource(integration.id, resource)
+                    onImportResource={resource => this.handleImportResource(integration.id, resource)
                     }
-                    onViewResource={resource =>
-                      this.handleViewResource(integration.id, resource)
+                    onViewResource={resource => this.handleViewResource(integration.id, resource)
                     }
                     classes={classes}
                   />
@@ -265,7 +277,7 @@ class IntegrationList extends Component {
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  rowsPerPageOptions={[10, 25, 100]}
                   count={count}
                   rowsPerPage={limit}
                   page={page}
@@ -289,6 +301,7 @@ class IntegrationList extends Component {
         />
 
         <IntegrationForm
+          fromShopify={fromShopifyApp}
           editableIntegration={editableIntegration}
           classes={classes}
           handleClose={this.handleCloseForm}
@@ -324,7 +337,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onDeleteIntegration: id => dispatch(deleteIntegration(id)),
+  onDeleteIntegration: (id, enqueueSnackbar) => dispatch(deleteIntegration(id, enqueueSnackbar)),
   onGetIntegrations: query => dispatch(getIntegrations(query)),
   onImportResource: query => dispatch(importResource(query)),
   onSetLoading: query => dispatch(setLoading(query)),

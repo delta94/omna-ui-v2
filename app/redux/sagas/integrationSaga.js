@@ -20,7 +20,9 @@ function* fetchIntegrations(params) {
 
 function* createIntegration(params) {
   yield put({ type: actionConstants.ACTION_INTEGRATION_START });
-  const { authorized, channel, name, enqueueSnackbar } = params;
+  const {
+    authorized, channel, name, enqueueSnackbar
+  } = params;
 
   try {
     const response = yield api.post(url, {
@@ -71,14 +73,12 @@ function* updateIntegration(params) {
 
 function* deleteIntegration(params) {
   yield put({ type: actionConstants.ACTION_INTEGRATION_START });
-  const { integrationId } = params;
-
+  const { integrationId, enqueueSnackbar } = params;
   try {
-    yield api.delete(`${url}/${integrationId}`);
-    yield put({
-      type: actionConstants.DELETE_INTEGRATION_SUCCESS,
-      integrationId
-    });
+    const response = yield api.delete(`${url}/${integrationId}`);
+    const { data } = response.data;
+    yield put({ type: actionConstants.DELETE_INTEGRATION_SUCCESS, data });
+    enqueueSnackbar('Deleting integration ', { variant: 'info' });
   } catch (error) {
     yield put({ type: actionConstants.DELETE_INTEGRATION_FAILED, error });
   }
@@ -101,7 +101,9 @@ function* unauthorizeIntegration(params) {
 }
 
 function* importResource(params) {
-  const { id, resource, fromShopify, shop, enqueueSnackbar } = params.query;
+  const {
+    id, resource, fromShopify, shop, enqueueSnackbar
+  } = params.query;
   try {
     yield put({ type: actionConstants.SET_LOADING, loading: true });
     let response = null;

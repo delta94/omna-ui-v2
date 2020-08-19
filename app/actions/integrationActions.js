@@ -10,7 +10,9 @@ export const getChannels = query => ({
   query
 });
 
-export const createIntegration = ({ authorized, channel, name, enqueueSnackbar }) => ({
+export const createIntegration = ({
+  authorized, channel, name, enqueueSnackbar
+}) => ({
   type: actionConstants.CREATE_INTEGRATION,
   authorized,
   channel,
@@ -23,9 +25,10 @@ export const updateIntegration = integration => ({
   integration
 });
 
-export const deleteIntegration = integrationId => ({
+export const deleteIntegration = (integrationId, enqueueSnackbar) => ({
   type: actionConstants.DELETE_INTEGRATION,
-  integrationId
+  integrationId,
+  enqueueSnackbar
 });
 
 export const unauthorizeIntegration = id => ({

@@ -27,9 +27,8 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.CREATE_INTEGRATION_SUCCESS:
       return state
-        .updateIn(['integrations', 'data'], data =>
-          data.unshift(fromJS(action.data))
-        )
+        .updateIn(['integrations', 'data'], data => data.unshift(fromJS(action.data))
+        ).updateIn(['integrations', 'pagination', 'total'], total => total + 1)
         .set('loading', false);
     case actionConstants.CREATE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
@@ -37,11 +36,10 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.UPDATE_INTEGRATION_SUCCESS:
       return state
-        .updateIn(['integrations', 'data'], data =>
-          data.set(
-            data.findIndex(item => item.get('id') === action.data.id),
-            fromJS(action.data)
-          )
+        .updateIn(['integrations', 'data'], data => data.set(
+          data.findIndex(item => item.get('id') === action.data.id),
+          fromJS(action.data)
+        )
         )
         .set('loading', false);
     case actionConstants.UPDATE_INTEGRATION_FAILED:
@@ -50,15 +48,7 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.DELETE_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
-        const dataFiltered = mutableState
-          .getIn(['integrations', 'data'])
-          .filter(
-            integration => integration.get('id') !== action.integrationId
-          );
-
-        mutableState
-          .setIn(['integrations', 'data'], dataFiltered)
-          .set('loading', false);
+        mutableState.set('task', action.data);
       });
     case actionConstants.DELETE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
