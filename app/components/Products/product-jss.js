@@ -84,7 +84,6 @@ const styles = theme => ({
   },
   price: {
     display: 'flex',
-    flexDirection: 'row',
     flexWrap: 'wrap',
     '& > *': {
       marginRight: 10
@@ -194,8 +193,8 @@ const styles = theme => ({
     zIndex: 1000
   },
   formControl: {
-    width: '300px',
-    margin: theme.spacing(1,1,1,0)
+    width: '100%',
+    margin: theme.spacing(1, 0, 1, 0)
   }
 });
 

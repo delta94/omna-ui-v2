@@ -23,7 +23,7 @@ function AddProduct(props) {
     width: undefined,
     length: undefined,
     content: '',
-    overwrite: false
+    overwrite: undefined
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,8 +31,7 @@ function AddProduct(props) {
 
   const handleAdd = async () => {
     const { enqueueSnackbar } = props;
-    const data = { name, price: parseFloat(price), description };
-    dimension ? data.package = dimension : null;
+    const data = { name, price: parseFloat(price), description, package: dimension };
     setIsLoading(true);
     try {
       await API.post('/products', { data });
@@ -59,6 +58,7 @@ function AddProduct(props) {
         price={price}
         description={description}
         dimension={dimension}
+        action="add"
         onNameChange={(e) => setName(e)}
         onPriceChange={(e) => setPrice(e)}
         onDescriptionChange={(e) => setDescription(e)}

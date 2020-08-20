@@ -39,7 +39,7 @@ TabPanel.defaultProps = {
 
 function ProductForm(props) {
   const {
-    name, price, description, variants, images, integrations = [], dimension, onDimensionChange,
+    name, price, description, variants, images, integrations = [], dimension, action, onDimensionChange,
     onCancelClick,
   } = props;
 
@@ -104,11 +104,12 @@ function ProductForm(props) {
           price={price}
           description={description}
           variants={variants}
+          action={action}
           onNameChange={handleNameChange}
           onPriceChange={handlePriceChange}
           onDescriptionChange={handleDescriptionChange}
         />
-        <DimensionProps {...dimension} overwriteOption onDimensionChange={handleDimensionChange} />
+        <DimensionProps {...dimension} overwriteOption={action === 'edit' || false} onDimensionChange={handleDimensionChange} />
       </TabPanel>
       {multipleTabs && integrations.map(({ id, name: name_, product: { properties, errors } }) => (
         <TabPanel key={id} value={value} index={name_}>
@@ -132,6 +133,7 @@ ProductForm.propTypes = {
   images: PropTypes.array,
   dimension: PropTypes.object,
   integrations: PropTypes.array,
+  action: PropTypes.string,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
@@ -142,9 +144,10 @@ ProductForm.propTypes = {
 };
 
 ProductForm.defaultProps = {
-  variants: null,
+  variants: 0,
   images: [],
   integrations: [],
+  action: 'edit',
   dimension: null,
   onCancelClick: () => {},
   onIntegrationChange: undefined

@@ -45,7 +45,7 @@ NumberFormatCustom.propTypes = {
 
 const ProductInfo = memo((props) => {
   const {
-    name, rating, thumbnail, description, price, variants, editable, classes
+    name, rating, thumbnail, description, price, variants, editable, action, classes
   } = props;
 
   const settings = {
@@ -104,19 +104,18 @@ const ProductInfo = memo((props) => {
                       onChange={handleNameChange}
                       required
                       variant="outlined"
-                      style={{ flexGrow: '2', margin: '5px 5px 5px 0px' }}
+                      className={classes.formControl}
                     />
                     <TextField
-                      className={classes.formControl}
+                      id="formatted-numberformat-input"
                       label="Price"
                       value={price}
                       onChange={handlePriceChange}
                       variant="outlined"
-                      id="formatted-numberformat-input"
+                      className={classes.formControl}
                       InputProps={{
                         inputComponent: NumberFormatCustom,
                       }}
-                      style={{ margin: '5px 5px 5px 0px' }}
                     />
                   </Fragment>
                 )
@@ -130,10 +129,10 @@ const ProductInfo = memo((props) => {
                   )}
               </div>
               <RichEditor text={description} onTextEditorChange={handleDescriptionChange} />
-              {variants !== 0 && (
+              {action === 'edit' && (
                 <div className={classes.btnArea}>
                   <span className={classes.variant}>
-                    <Typography variant="h6">
+                    <Typography variant="subtitle2">
                       variants:
                     </Typography>
                     <p>{variants}</p>
@@ -157,6 +156,7 @@ ProductInfo.propTypes = {
   classes: PropTypes.object.isRequired,
   rating: PropTypes.number,
   editable: PropTypes.bool,
+  action: PropTypes.string,
   onNameChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onDescriptionChange: PropTypes.func.isRequired,
@@ -164,6 +164,7 @@ ProductInfo.propTypes = {
 
 ProductInfo.defaultProps = {
   variants: 0,
+  action: 'edit',
   editable: true,
   rating: null
 };
