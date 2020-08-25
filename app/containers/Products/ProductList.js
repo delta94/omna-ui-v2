@@ -498,7 +498,7 @@ class ProductList extends React.Component {
       setFilterChipProps: (colIndex, colName, chip) => ({
         color: 'primary',
         variant: 'outlined',
-        className: 'testClass123',
+        style: { overflow: 'hidden' },
         disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
       }),
       customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
