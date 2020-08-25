@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import Popover from '@material-ui/core/Popover';
 import IconButton from '@material-ui/core/IconButton';
@@ -89,6 +90,22 @@ class ProductList extends React.Component {
     const { onUnsubscribeProducts } = this.props;
     onUnsubscribeProducts();
   }
+
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          cursor: 'pointer'
+        }
+      },
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '40%',
+          minWidth: '300px'
+        }
+      }
+    }
+  });
 
   getParams = () => {
     const { filters } = this.props;
@@ -254,6 +271,7 @@ class ProductList extends React.Component {
         label: 'Image',
         options: {
           filter: false,
+          viewColumns: false,
           customBodyRender: (value) => {
             const imgSrc = value.length > 0
               ? value[0]
@@ -278,6 +296,7 @@ class ProductList extends React.Component {
         label: 'Name',
         options: {
           filter: false,
+          viewColumns: false,
           customBodyRender: (value) => (
             <Typography noWrap variant="subtitle2" component="p">
               {value}
@@ -363,6 +382,7 @@ class ProductList extends React.Component {
 
     const options = {
       filter: true,
+      sort: false,
       selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
       rowsSelected: rowsSelectedIndex,
       responsive: 'vertical',
@@ -498,7 +518,9 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         {loading ? <Loading /> : null}
-        <MUIDataTable columns={columns} data={data} options={options} />
+        <MuiThemeProvider theme={this.getMuiTheme()}>
+          <MUIDataTable columns={columns} data={data} options={options} />
+        </MuiThemeProvider>
         <AlertDialog
           open={openConfirmDlg}
           message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}" ?`}

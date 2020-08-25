@@ -11,7 +11,6 @@ import AutoSuggestion from 'dan-components/AutoSuggestion';
 
 const styles = theme => ({
   root: {
-    width: '480px',
     padding: theme.spacing(1)
   },
   button: {
