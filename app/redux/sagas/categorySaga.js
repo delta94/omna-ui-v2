@@ -7,21 +7,21 @@ import get from 'lodash/get';
 function* getCategories(payload) {
   const { integrationId, params, enqueueSnackbar } = payload;
 
-  yield put({ type: types.SET_LOADING, loading: true });
+  yield put({ type: types.GET_CATEGORIES_START, loading: true });
   try {
     const response = yield api.get(`/integrations/${integrationId}/categories`, { params });
     const { data } = response;
-    yield put({ type: types.GET_CATEGORIES, data });
+    yield put({ type: types.GET_CATEGORIES_SUCCESS, data });
   } catch (error) {
+    yield put({ type: types.GET_CATEGORIES_FAILED, error });
     enqueueSnackbar(get(error, 'response.data.message', 'Getting categories error'), {
       variant: 'error'
     });
   }
-  yield put({ type: types.SET_LOADING, loading: false });
 }
 
 export function* watchgetCategories() {
-  yield takeLatest(types.GET_CATEGROIES_ASYNC, getCategories);
+  yield takeLatest(types.GET_CATEGORIES, getCategories);
 }
 
 export default function* categorySaga() {
