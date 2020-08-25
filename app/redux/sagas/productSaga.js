@@ -6,16 +6,16 @@ import api, { CENIT_APP } from 'dan-containers/Utils/api';
 function* getProducts(payload) {
   const { params, enqueueSnackbar } = payload;
   try {
-    yield put({ type: types.SET_LOADING, loading: true });
+    yield put({ type: types.GET_PRODUCTS_START, loading: true });
     const response = yield api.get('/products', { params });
     const { data } = response;
-    yield put({ type: types.GET_PRODUCTS, data });
+    yield put({ type: types.GET_PRODUCTS_SUCCESS, data });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
     });
+    yield put({ type: types.GET_PRODUCTS_FAILED, error });
   }
-  yield put({ type: types.SET_LOADING, loading: false });
 }
 
 function* getProductCategory(payload) {
@@ -127,19 +127,24 @@ function* bulkUnlinkProducts(payload) {
 }
 
 function* deleteProduct(payload) {
-  const { productId, enqueueSnackbar } = payload;
+  const { productId, params, enqueueSnackbar } = payload;
   try {
-    yield put({ type: types.SET_LOADING, loading: true });
+    yield put({ type: types.DELETE_PRODUCT_START, loading: true });
     const response = yield api.delete(`/products/${productId}`);
     const { success } = response.data;
-    enqueueSnackbar('Deleted product successfully', { variant: 'success' });
-    yield put({ type: types.DELETE_PRODUCT, data: success });
+    if (success) {
+      const productsResponse = yield api.get('/products', { params });
+      const { data } = productsResponse;
+      yield put({ type: types.GET_PRODUCTS_SUCCESS, data });
+      yield put({ type: types.DELETE_PRODUCT_SUCCESS, loading: false });
+      enqueueSnackbar('Product deleted successfully', { variant: 'success' });
+    }
   } catch (error) {
+    yield put({ type: types.DELETE_PRODUCT_FAILED, error });
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
     });
   }
-  yield put({ type: types.SET_LOADING, loading: false });
 }
 
 function* getBulkEditProperties(payload) {
@@ -217,11 +222,11 @@ export function* watchBulkUnlinkProducts() {
 }
 
 export function* watchDeleteProduct() {
-  yield takeLatest(types.DELETE_PRODUCT_ASYNC, deleteProduct);
+  yield takeLatest(types.DELETE_PRODUCT, deleteProduct);
 }
 
 export function* watchGetProducts() {
-  yield takeLatest(types.GET_PRODUCTS_ASYNC, getProducts);
+  yield takeLatest(types.GET_PRODUCTS, getProducts);
 }
 
 export function* watchGetProductsByIntegration() {

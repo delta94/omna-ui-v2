@@ -5,7 +5,6 @@ const initialState = fromJS({
   products: { data: [], pagination: { total: 0 } },
   loading: false,
   disabledForm: false,
-  deleted: false,
   task: null,
   error: null,
   properties: [],
@@ -22,9 +21,29 @@ const initialState = fromJS({
 
 export default function integrationsReducer(state = initialState, action) {
   switch (action.type) {
-    case types.GET_PRODUCTS:
+    case types.GET_PRODUCTS_START:
+      return state.withMutations(mutableState => {
+        mutableState.set('loading', action.loading);
+      });
+    case types.GET_PRODUCTS_SUCCESS:
       return state.withMutations((mutableState) => {
-        mutableState.set('products', action.data);
+        mutableState.set('products', action.data).set('loading', false);
+      });
+    case types.GET_PRODUCTS_FAILED:
+      return state.withMutations(mutableState => {
+        mutableState.set('error', action.error).set('loading', false);
+      });
+    case types.DELETE_PRODUCT_START:
+      return state.withMutations((mutableState) => {
+        mutableState.set('loading', action.loading);
+      });
+    case types.DELETE_PRODUCT_SUCCESS:
+      return state.withMutations((mutableState) => {
+        mutableState.set('loading', action.loading);
+      });
+    case types.DELETE_PRODUCT_FAILED:
+      return state.withMutations((mutableState) => {
+        mutableState.set('error', action.error).set('loading', false);
       });
     case types.LINK_PRODUCT:
       return state.withMutations((mutableState) => {
@@ -41,18 +60,6 @@ export default function integrationsReducer(state = initialState, action) {
     case types.BULK_UNLINK_PRODUCTS:
       return state.withMutations((mutableState) => {
         mutableState.set('task', action.data);
-      });
-    case types.DELETE_PRODUCT:
-      return state.withMutations((mutableState) => {
-        mutableState.set('deleted', action.data);
-      });
-    case types.RESET_DELETE_PRODUCT_FLAG:
-      return state.withMutations((mutableState) => {
-        mutableState.set('deleted', false);
-      });
-    case types.GET_PRODUCTS_FAILED:
-      return state.withMutations(mutableState => {
-        mutableState.set('error', action.error);
       });
     case types.UNSUBSCRIBE_PRODUCTS:
       return state.withMutations((mutableState) => {

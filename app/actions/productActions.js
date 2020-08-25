@@ -8,7 +8,7 @@ export const getProductVariantList = (productId, params, enqueueSnackbar) => ({
 });
 
 export const getProducts = (payload) => ({
-  type: types.GET_PRODUCTS_ASYNC,
+  type: types.GET_PRODUCTS,
   params: payload.params,
   enqueueSnackbar: payload.enqueueSnackbar
 });
@@ -35,9 +35,10 @@ export const unLinkProduct = (productId, integrationIds, deleteFromIntegration, 
   enqueueSnackbar
 });
 
-export const deleteProduct = (productId, enqueueSnackbar) => ({
-  type: types.DELETE_PRODUCT_ASYNC,
+export const deleteProduct = (productId, params, enqueueSnackbar) => ({
+  type: types.DELETE_PRODUCT,
   productId,
+  params,
   enqueueSnackbar
 });
 

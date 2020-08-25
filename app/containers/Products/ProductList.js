@@ -10,13 +10,10 @@ import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { Avatar, Typography, ListItemIcon } from '@material-ui/core';
+import { Avatar, Typography } from '@material-ui/core';
 import MUIDataTable from 'mui-datatables';
 import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
@@ -25,7 +22,6 @@ import {
   bulkLinkProducts,
   bulkUnlinkProducts,
   deleteProduct,
-  resetDeleteProductFlag,
   unsubscribeProducts,
   initBulkEditData,
   updateProductFilters
@@ -67,7 +63,6 @@ class ProductList extends React.Component {
     searchTerm: '',
     rowsSelectedIndex: [],
     rowsSelectedIds: [],
-    anchorEl: null,
     anchorElBulkEdit: null,
     selectedItem: null,
     bulkLinkerAction: 'link',
@@ -80,12 +75,8 @@ class ProductList extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {
-      deleted, onResetDeleteProduct, task, history, filters
+      task, history, filters
     } = this.props;
-    if (deleted && deleted !== prevProps.deleted) {
-      onResetDeleteProduct();
-      this.makeQuery();
-    }
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
@@ -99,8 +90,8 @@ class ProductList extends React.Component {
     onUnsubscribeProducts();
   }
 
-  makeQuery = () => {
-    const { onGetProducts, filters, enqueueSnackbar } = this.props;
+  getParams = () => {
+    const { filters } = this.props;
     const { searchTerm, limit, page } = this.state;
 
     const params = {
@@ -119,7 +110,13 @@ class ProductList extends React.Component {
         params.category_id = categoryFilter;
       }
     }
-    onGetProducts({ params, enqueueSnackbar });
+
+    return params;
+  };
+
+  makeQuery = () => {
+    const { onGetProducts, enqueueSnackbar } = this.props;
+    onGetProducts({ params: this.getParams(), enqueueSnackbar });
   };
 
   updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
@@ -187,7 +184,7 @@ class ProductList extends React.Component {
     const { selectedItem } = this.state;
     const { onDeleteProduct, enqueueSnackbar } = this.props;
     this.setState({ openConfirmDlg: false });
-    onDeleteProduct(selectedItem.id, enqueueSnackbar);
+    onDeleteProduct(selectedItem.id, this.getParams(), enqueueSnackbar);
   };
 
   handleCancelDlg = () => this.setState({ openConfirmDlg: false });
@@ -230,34 +227,6 @@ class ProductList extends React.Component {
         history.push('/products/bulk-edit');
       }
     } else this.setState({ filterPopover: 'Apply filters for bulk edit.', anchorElBulkEdit: event.currentTarget });
-  };
-
-  handleMenu = event => this.setState({ anchorEl: event.currentTarget });
-
-  handleCloseMenu = () => this.setState({ anchorEl: null });
-
-  renderTableActionsMenu = () => {
-    const { anchorEl } = this.state;
-    return (
-      <div>
-        <Menu
-          id="long-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={this.handleCloseMenu}
-        >
-          <MenuItem
-            onClick={() => this.setState({ openConfirmDlg: true }, this.handleClose)}
-          >
-            <ListItemIcon>
-              <DeleteIcon />
-            </ListItemIcon>
-            Delete
-          </MenuItem>
-        </Menu>
-      </div>
-    );
   };
 
   render() {
@@ -383,9 +352,9 @@ class ProductList extends React.Component {
               aria-label="more"
               aria-controls="long-menu"
               aria-haspopup="true"
-              onClick={this.handleMenu}
+              onClick={() => this.setState({ openConfirmDlg: true })}
             >
-              <MoreVertIcon />
+              <DeleteIcon />
             </IconButton>
           )
         }
@@ -513,10 +482,9 @@ class ProductList extends React.Component {
         disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
       }),
       customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
-        const { integrationFilter } = this.state;
         return (
           <div style={{ padding: '16px' }}>
-            <Button variant="contained" disabled={!integrationFilter} onClick={() => this.handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
+            <Button variant="contained" onClick={() => this.handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
           </div>
         );
       },
@@ -531,10 +499,9 @@ class ProductList extends React.Component {
         <PageHeader title="Products" history={history} />
         {loading ? <Loading /> : null}
         <MUIDataTable columns={columns} data={data} options={options} />
-        {this.renderTableActionsMenu()}
         <AlertDialog
           open={openConfirmDlg}
-          message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}"`}
+          message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}" ?`}
           handleCancel={this.handleCancelDlg}
           handleConfirm={this.handleConfirmDlg}
         />
@@ -566,7 +533,6 @@ const mapDispatchToProps = dispatch => ({
   onBulkUnlinkProducts: bindActionCreators(bulkUnlinkProducts, dispatch),
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
   onGetProducts: bindActionCreators(getProducts, dispatch),
-  onResetDeleteProduct: bindActionCreators(resetDeleteProductFlag, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
   onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
   onUpdateProductFilters: bindActionCreators(updateProductFilters, dispatch),
@@ -588,13 +554,11 @@ ProductList.propTypes = {
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   appStore: PropTypes.object.isRequired,
-  deleted: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   onGetProducts: PropTypes.func.isRequired,
   onBulkLinkProducts: PropTypes.func.isRequired,
   onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
-  onResetDeleteProduct: PropTypes.func.isRequired,
   onUnsubscribeProducts: PropTypes.func.isRequired,
   onInitBulkEditData: PropTypes.func.isRequired,
   onUpdateProductFilters: PropTypes.func.isRequired,
