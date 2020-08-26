@@ -39,6 +39,18 @@ function FilterTableBox(props) {
   const [categoryHelperText, setCategoryHelperText] = useState('No available categories');
   const [initialLoad, setInitialLoad] = useState(true);
 
+  useEffect(() => {
+    if (integrations) {
+      setIntegrationOptions(integrations.data.map(item => ({ name: item.name, value: item.id })));
+    }
+  }, [integrations]);
+
+  useEffect(() => {
+    if (categories && integration) {
+      setCategoryOptions(categories.data.map(item => ({ name: item.name, value: item.id })));
+    }
+  }, [categories]);
+
   const checkValidity = () => {
     if (hasCategories(integrations, integration)) {
       if (!integration || categoryOptions.length === 0) {
@@ -76,25 +88,13 @@ function FilterTableBox(props) {
     makeIntegrationsQuery();
   }, [integrationTerm]);
 
-  useEffect(() => {
-    if (categories && integration) {
-      setCategoryOptions(categories.data.map(item => ({ name: item.name, value: item.id })));
-    }
-  }, [categories]);
-
-  useEffect(() => {
-    if (integrations) {
-      setIntegrationOptions(integrations.data.map(item => ({ name: item.name, value: item.id })));
-    }
-  }, [integrations]);
-
   const handleCategoryChange = async (e, element) => {
     const { onCategoryChange } = props;
     onCategoryChange(element);
   };
 
   const handleCategoryInputChange = async (e, value) => {
-    const index = categoryOptions.findIndex(item => item.name === value);
+    const index = categories.data.findIndex(item => item.name === value);
     if (index === -1) {
       value === '' ? setCategoryTerm(value) : delay(() => setCategoryTerm(value));
     }
@@ -108,7 +108,7 @@ function FilterTableBox(props) {
   };
 
   const handleIntegrationInputChange = async (e, value) => {
-    const index = integrationOptions.findIndex(item => item.name === value);
+    const index = integrations.data.findIndex(item => item.name === value);
     if (index === -1) {
       value === '' ? setIntegrationTerm(value) : delay(() => setIntegrationTerm(value));
     }
