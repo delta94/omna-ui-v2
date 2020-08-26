@@ -100,7 +100,7 @@ class ProductList extends React.Component {
       },
       MUIDataTableToolbar: {
         filterPaper: {
-          width: '40%',
+          width: '100%',
           minWidth: '300px'
         }
       }
