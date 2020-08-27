@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { withSnackbar } from 'notistack';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import get from 'lodash/get';
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -61,7 +64,7 @@ const MuiTextField = props => {
         id={id}
         name={id}
         label={label}
-        value={value}
+        value={value || ''}
         placeholder={placeholder}
         onChange={onChange}
         required={required}
@@ -69,6 +72,111 @@ const MuiTextField = props => {
         variant="outlined"
         className={classes.inputWidth}
       />
+    </Grid>
+  );
+};
+
+const MuiNumericField = props => {
+  const {
+    id,
+    label,
+    value = '',
+    required,
+    placeholder,
+    read_only: disabled,
+    onChange,
+    classes
+  } = props;
+
+  const handleChange = (e) => {
+    onChange({ target: { name: e.target.name, value: Number(e.target.value) } });
+  };
+
+  return (
+    <Grid item xs={12} sm={6}>
+      <TextField
+        id={id}
+        name={id}
+        label={label}
+        value={value || ''}
+        type="number"
+        placeholder={placeholder}
+        onChange={handleChange}
+        required={required}
+        disabled={disabled}
+        variant="outlined"
+        className={classes.inputWidth}
+      />
+    </Grid>
+  );
+};
+
+const MuiMultiTextField = props => {
+  const {
+    id,
+    label,
+    value = '',
+    required,
+    read_only: disabled,
+    onChange,
+    classes
+  } = props;
+
+  return (
+    <Grid item xs={12} sm={6}>
+      <TextField
+        id={id}
+        name={id}
+        label={label}
+        value={value || ''}
+        placeholder="Place multiple values separated by comma"
+        onChange={onChange}
+        required={required}
+        disabled={disabled}
+        variant="outlined"
+        className={classes.inputWidth}
+      />
+    </Grid>
+  );
+};
+
+const MuiBooleanSelect = props => {
+  const {
+    id,
+    label,
+    value,
+    required,
+    read_only: disabled,
+    onChange,
+    classes
+  } = props;
+
+  const inputLabel = React.useRef(null);
+  const [labelWidth, setLabelWidth] = React.useState(0);
+  React.useEffect(() => {
+    setLabelWidth(inputLabel.current.offsetWidth);
+  }, []);
+
+  return (
+    <Grid item xs={12} sm={6}>
+      <FormControl required={required} variant="outlined" className={classes.inputWidth}>
+        <InputLabel ref={inputLabel} id={id}>
+          {label}
+        </InputLabel>
+        <Select
+          labelId="boolean-label"
+          id={id}
+          name={id}
+          disabled={disabled}
+          value={value}
+          onChange={onChange}
+          labelWidth={labelWidth}
+        >
+          <MenuItem value>Yes</MenuItem>
+          <MenuItem value={false}>No</MenuItem>
+        </Select>
+        {required && (<FormHelperText>Required</FormHelperText>)}
+      </FormControl>
     </Grid>
   );
 };
@@ -91,7 +199,7 @@ const MuiSelect = props => {
         id={id}
         name={id}
         label={label}
-        value={value}
+        value={value || ''}
         placeholder={placeholder}
         onChange={onChange}
         required={required}
@@ -165,7 +273,7 @@ const MuiMultiSelect = props => {
   );
 };
 
-const MuiAsyncSelect = props => {
+const MuiAsyncSelect = withSnackbar((props) => {
   const {
     id,
     label,
@@ -175,6 +283,7 @@ const MuiAsyncSelect = props => {
     classes,
     read_only: disabled,
     onChange,
+    enqueueSnackbar
   } = props;
 
   const selectedValue = options.length > 0 ? options[0] : '';
@@ -192,7 +301,9 @@ const MuiAsyncSelect = props => {
       data.unshift({ id: '', name: 'All' });
       setOptions_(data.map(item => ({ id: item.id, name: item.name })));
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     setLoading(false);
   };
@@ -231,7 +342,7 @@ const MuiAsyncSelect = props => {
       />
     </Grid>
   );
-};
+});
 
 const MuiRichTextEditor = props => {
   const {
@@ -306,6 +417,24 @@ const FormBuilder = (props) => {
                   onChange={onChange}
                 />
               );
+            case 'numeric':
+              return (
+                <MuiNumericField
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'multi_text_input':
+              return (
+                <MuiMultiTextField
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
             case 'single_select':
               return (
                 <MuiSelect
@@ -318,6 +447,15 @@ const FormBuilder = (props) => {
             case 'single_enum_input':
               return (
                 <MuiSelect
+                  key={item.id}
+                  {...item}
+                  classes={classes}
+                  onChange={onChange}
+                />
+              );
+            case 'boolean':
+              return (
+                <MuiBooleanSelect
                   key={item.id}
                   {...item}
                   classes={classes}
@@ -407,6 +545,36 @@ MuiTextField.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
+MuiNumericField.defaultProps = {
+  value: '',
+  placeholder: ''
+};
+
+MuiNumericField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  placeholder: PropTypes.string,
+  required: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  read_only: PropTypes.bool.isRequired,
+  classes: PropTypes.object.isRequired
+};
+
+MuiMultiTextField.defaultProps = {
+  value: ''
+};
+
+MuiMultiTextField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  required: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  read_only: PropTypes.bool.isRequired,
+  classes: PropTypes.object.isRequired
+};
+
 MuiSelect.defaultProps = {
   value: '',
   options: [],
@@ -423,6 +591,21 @@ MuiSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   options: PropTypes.array
+};
+
+MuiBooleanSelect.defaultProps = {
+  value: undefined,
+  read_only: undefined
+};
+
+MuiBooleanSelect.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  required: PropTypes.bool.isRequired,
+  read_only: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 MuiMultiSelect.defaultProps = {
@@ -443,7 +626,8 @@ MuiMultiSelect.propTypes = {
 };
 
 MuiAsyncSelect.defaultProps = {
-  options: []
+  options: [],
+  enqueueSnackbar: undefined
 };
 
 MuiAsyncSelect.propTypes = {
@@ -454,7 +638,8 @@ MuiAsyncSelect.propTypes = {
   options: PropTypes.array,
   classes: PropTypes.object.isRequired,
   options_service_path: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  enqueueSnackbar: PropTypes.func
 };
 
 MuiRichTextEditor.propTypes = {
