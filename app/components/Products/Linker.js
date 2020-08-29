@@ -12,7 +12,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Chip from '@material-ui/core/Chip';
+import CancelIcon from '@material-ui/icons/Block';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Tooltip from '@material-ui/core/Tooltip';
 import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -22,12 +24,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 const styles = () => ({
-  inputWidth: {
-    width: '300px'
-  },
   content: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   }
 });
 
@@ -45,7 +44,7 @@ const MenuProps = {
 const LINK_TITLE = (strings, value) => `Link ${value}`;
 const UNLINK_TITLE = (strings, value) => `Unlink ${value}`;
 const LINK_TEXT = (strings, value) => `To link this ${value} check one of the integrations below`;
-const UNLINK_TEXT = (strings, value) => `To unlink this ${value} uncheck one of the linked integrations below`;
+const UNLINK_TEXT = (strings, value) => `To unlink this ${value} check one of the linked integrations below`;
 
 function Linker(props) {
   const { classes, action, type, open, id, linkedIntegrations, integrations, fromShopifyApp, onClose, onGetIntegrations } = props;
@@ -57,14 +56,21 @@ function Linker(props) {
     delete: ''
   });
   const [dirty, setDirty] = useState(false);
-  const [labelWidth] = useState(0);
   const inputLabel = React.useRef(null);
-
+  const [labelWidth, setLabelWidth] = useState(0);
 
   useEffect(() => {
-    if (id && linkedIntegrations) {
+    inputLabel.current ? setLabelWidth(inputLabel.current.offsetWidth) : null;
+  });
+
+  useEffect(() => {
+    if (id && action === 'link' && linkedIntegrations) {
       const items = linkedIntegrations.map(item => item.id);
       setSelectedItems(items);
+    }
+    if (!open) {
+      setSelectedItems([]);
+      setDirty(false);
     }
   }, [id, open]);
 
@@ -81,24 +87,42 @@ function Linker(props) {
   };
 
   const checkValidity = () => {
-    if (fromShopifyApp && linkedIntegrations.length > 0) {
-      const shopifyItem = linkedIntegrations.find(item => item.channel === 'Ov2Shopify');
-      if(shopifyItem) {
-        const found = selectedItems.find(item => item === shopifyItem.id);
-        if (!found) {
-          setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
-        } else
-          setErrors((prevState) => ({ ...prevState, integrations: '' }));
+    if (action === 'unlink') {
+      if (fromShopifyApp && linkedIntegrations.length > 0) {
+        const shopifyItem = linkedIntegrations.find(item => item.channel === 'Ov2Shopify');
+        if (shopifyItem) {
+          const found = selectedItems.find(item => item === shopifyItem.id);
+          if (found) {
+            setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
+          } else
+            setErrors((prevState) => ({ ...prevState, integrations: '' }));
+        }
+      }
+      if (deleteFromIntegration && selectedItems.length === 0) {
+        setErrors((prevState) => ({ ...prevState, delete: 'You have to check some integration' }));
+      } else
+        setErrors((prevState) => ({ ...prevState, delete: '' }));
+
+      if (selectedItems.length === 0) {
+        setDirty(false);
       }
     }
-    const linkedItems = linkedIntegrations.map(item => item.id);
-    if (deleteFromIntegration && JSON.stringify(selectedItems.sort()) === JSON.stringify(linkedItems.sort())) {
-      setErrors((prevState) => ({ ...prevState, delete: 'You have to uncheck some integration' }));
-    } else
-      setErrors((prevState) => ({ ...prevState, delete: '' }));
 
-    if (JSON.stringify(selectedItems.sort()) === JSON.stringify(linkedItems.sort())) {
-      setDirty(false);
+    if (action === 'link') {
+      if (selectedItems.length > 0) {
+        for (let i = 0; i < selectedItems.length; i += 1) {
+          const iterator = selectedItems[i];
+          const found = integrations.data.find(element => element.id === iterator && !element.authorized);
+          if (found) {
+            setErrors((prevState) => ({ ...prevState, integrations: 'Unauthorized integrations can not be linked' }));
+            break;
+          } else setErrors((prevState) => ({ ...prevState, integrations: '' }));
+        }
+      } else setErrors((prevState) => ({ ...prevState, integrations: '' }));
+      const linkedItems = linkedIntegrations.map(item => item.id);
+      if (JSON.stringify(selectedItems.sort()) === JSON.stringify(linkedItems.sort())) {
+        setDirty(false);
+      }
     }
   };
 
@@ -115,38 +139,35 @@ function Linker(props) {
 
   const handleOnSave = async () => {
     const { onSave } = props;
-    const list = [];
+    let list = [];
     if (action === 'link') {
       selectedItems.forEach(element => {
         const index = linkedIntegrations.findIndex(item => item.id === element);
         index === -1 ? list.push(element) : null;
       });
     } else {
-      linkedIntegrations.forEach(element => {
-        const index = selectedItems.findIndex(item => item === element.id);
-        index === -1 ? list.push(element.id) : null;
-      });
+      list = selectedItems;
     }
     onSave({ id, list, deleteFromIntegration });
   };
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+    <Dialog open={open} onClose={onClose} fullWidth aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">{action === 'link' ? LINK_TITLE`${type}` : UNLINK_TITLE`${type}`}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           {action === 'link' ? LINK_TEXT`${type}` : UNLINK_TEXT`${type}`}
         </DialogContentText>
         <div className={classes.content}>
-          <FormControl variant="outlined" className={classes.inputWidth} error={errors.integrations !== '' || false}>
-            <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
+          <FormControl variant="outlined" error={errors.integrations !== '' || false}>
+            <InputLabel ref={inputLabel} id="id-integrations">
               Integrations
             </InputLabel>
             <Select
               multiple
-              labelId="Integrations"
+              labelId="id-integrations"
               id="id-integrations"
-              name="integrations"
+              name="id-integrations"
               value={selectedItems}
               onChange={handleOnChange}
               labelWidth={labelWidth}
@@ -161,9 +182,15 @@ function Linker(props) {
                     <ListItemText primary={option.name} secondary={found ? 'Already linked' : ''} />
                     {!option.authorized ? (
                       <ListItemSecondaryAction>
-                        <Chip label="unauthorized" color="default" />
+                        <Tooltip title="Unauthorized">
+                          <CancelIcon />
+                        </Tooltip>
                       </ListItemSecondaryAction>
-                    ) : null}
+                    ) : (
+                        <Tooltip title="Authorized">
+                          <CheckCircleIcon style={{ color: '#4caf50' }} />
+                        </Tooltip>
+                      )}
                   </MenuItem>
                 );
               })}

@@ -12,7 +12,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Chip from '@material-ui/core/Chip';
+import CancelIcon from '@material-ui/icons/Block';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Tooltip from '@material-ui/core/Tooltip';
 import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -22,9 +24,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { getIntegrations } from 'dan-actions/integrationActions';
 
 const styles = () => ({
-  inputWidth: {
-    width: '300px'
-  },
   content: {
     display: 'flex',
     flexDirection: 'column'
@@ -57,9 +56,13 @@ function BulkLinker(props) {
     integrations: '',
     delete: ''
   });
-  const [labelWidth] = useState(0);
+  const [labelWidth, setLabelWidth] = useState(0);
   const inputLabel = React.useRef(null);
   const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    inputLabel.current ? setLabelWidth(inputLabel.current.offsetWidth) : null;
+  });
 
   useEffect(() => {
     action === 'link' ? onGetIntegrations({ limit: 100, offset: 0, with_details: true }) : null;
@@ -84,7 +87,7 @@ function BulkLinker(props) {
   };
 
   const checkValidity = () => {
-    if (fromShopifyApp && selectedItems.length > 0) {
+    if (fromShopifyApp && action === 'unlink' && selectedItems.length > 0) {
       let i = 0;
       let found = false;
       const shopifyItem = integrations.data.find(item => item.channel === 'Ov2Shopify');
@@ -94,11 +97,22 @@ function BulkLinker(props) {
         }
         i += 1;
       };
+      if (found) {
+        setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
+      } else
+        setErrors((prevState) => ({ ...prevState, integrations: '' }));
+    }
+
+    if (selectedItems && action === 'link') {
+      for (let i = 0; i < selectedItems.length; i += 1) {
+        const iterator = selectedItems[i];
+        const found = integrations.data.find(element => element.id === iterator && !element.authorized);
         if (found) {
-          setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
-        } else
-          setErrors((prevState) => ({ ...prevState, integrations: '' }));
+          setErrors((prevState) => ({ ...prevState, integrations: 'Unauthorized integrations can not be linked' }));
+          break;
+        } else setErrors((prevState) => ({ ...prevState, integrations: '' }));
       }
+    }
 
     if ((dirty || deleteFromIntegration) && selectedItems.length === 0) {
       setErrors((prevState) => ({ ...prevState, integrations: 'You have to check some integration' }));
@@ -121,14 +135,14 @@ function BulkLinker(props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+    <Dialog open={open} onClose={onClose} fullWidth aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">{action === 'link' ? LINK_TITLE : UNLINK_TITLE}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           {action === 'link' ? LINK_TEXT : UNLINK_TEXT}
         </DialogContentText>
         <div className={classes.content}>
-          <FormControl variant="outlined" className={classes.inputWidth} error={errors.integrations !== '' || false}>
+          <FormControl variant="outlined" error={errors.integrations !== '' || false}>
             <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
               Integrations
             </InputLabel>
@@ -150,9 +164,15 @@ function BulkLinker(props) {
                     <ListItemText primary={option.name} />
                     {!option.authorized ? (
                       <ListItemSecondaryAction>
-                        <Chip label="unauthorized" color="default" />
+                        <Tooltip title="Unauthorized">
+                          <CancelIcon />
+                        </Tooltip>
                       </ListItemSecondaryAction>
-                    ) : null}
+                    ) : (
+                        <Tooltip title="Authorized">
+                          <CheckCircleIcon style={{ color: '#4caf50' }} />
+                        </Tooltip>
+                      )}
                   </MenuItem>
                 );
               })}
