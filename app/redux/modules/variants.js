@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
@@ -9,9 +9,13 @@ const initialState = fromJS({
   link: null,
   unlink: null,
   bulkEdit: null,
-  properties: [],
-  loading: true,
-  remoteIds: []
+  bulkEditData: Map({
+    remoteIds: [],
+    integration: '',
+    category: '',
+    properties: []
+  }),
+  loading: true
 });
 
 export default function variantsReducer(state = initialState, action) {
@@ -48,17 +52,21 @@ export default function variantsReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('unlink', action.data);
       });
+    case types.GET_PRODUCT_CATEGORY_SUCCESS:
+      return state.withMutations(mutableState => {
+        mutableState.set('bulkEditData', Map(action.bulkEditData));
+      });
     case types.GET_BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('properties', action.data);
+        mutableState.setIn(['bulkEditData', 'properties'], action.data);
       });
     case types.BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {
         mutableState.set('bulkEdit', action.data);
       });
-    case types.UPDATE_VARIANT_REMOTE_IDS:
+    case types.INIT_BULK_EDIT_VARIANTS_DATA:
       return state.withMutations(mutableState => {
-        mutableState.set('remoteIds', action.remoteIds);
+        mutableState.set('bulkEditData', Map(action.payload));
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

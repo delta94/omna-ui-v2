@@ -7,9 +7,6 @@ const initialState = fromJS({
   disabledForm: false,
   task: null,
   error: null,
-  properties: [],
-  category: null,
-  remoteIds: [],
   bulkEditData: Map({
     remoteIds: [],
     integration: '',
@@ -80,10 +77,6 @@ export default function integrationsReducer(state = initialState, action) {
     case types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
         mutableState.set('task', action.data);
-      });
-    case types.GET_PRODUCT_CATEGORY_SUCCESS:
-      return state.withMutations(mutableState => {
-        mutableState.set('category', Map(action.data));
       });
     case types.UPDATE_PRODUCT_FILTERS:
       return state.withMutations(mutableState => {

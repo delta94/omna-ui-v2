@@ -11,7 +11,7 @@ import { emptyArray } from 'dan-containers/Common/Utils';
 
 function BulkEditVariants(props) {
   const {
-    history, appStore, loading, category, properties, bulkEditTask, onGetProperties, enqueueSnackbar
+    history, appStore, loading, bulkEditData, bulkEditTask, onGetProperties, enqueueSnackbar
   } = props;
 
   const prevBulkEditTaskProp = useRef(bulkEditTask);
@@ -24,16 +24,16 @@ function BulkEditVariants(props) {
   }, [bulkEditTask]);
 
   useEffect(() => {
-    if (category) {
-      onGetProperties(appStore.name, category.get('integration'), category.get('id'), enqueueSnackbar);
+    if (bulkEditData) {
+      onGetProperties(appStore.name, bulkEditData.get('integration'), bulkEditData.get('category'), enqueueSnackbar);
     }
   }, []);
 
   const handleTouchedProps = () => setTouched(true);
 
   const handleBulkEdit = () => {
-    const { remoteIds, onBulkEditProperties } = props;
-    onBulkEditProperties(appStore.name, remoteIds, properties, enqueueSnackbar);
+    const { onBulkEditProperties } = props;
+    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), bulkEditData.get('properties'), enqueueSnackbar);
   };
 
   return (
@@ -42,16 +42,15 @@ function BulkEditVariants(props) {
       <IntegrationProps
         description="At this point all common properties can be edited."
         loading={loading}
-        properties={properties}
+        properties={bulkEditData.get('properties')}
         onTouchedProps={handleTouchedProps}
       />
-      {!emptyArray(properties) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
+      {!emptyArray(bulkEditData.get('properties')) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
     </div>
   );
 }
 
 BulkEditVariants.defaultProps = {
-  category: undefined,
   bulkEditTask: null
 };
 
@@ -59,9 +58,7 @@ BulkEditVariants.propTypes = {
   history: PropTypes.object.isRequired,
   appStore: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
-  category: PropTypes.object,
-  properties: PropTypes.any.isRequired,
-  remoteIds: PropTypes.any.isRequired,
+  bulkEditData: PropTypes.any.isRequired,
   bulkEditTask: PropTypes.object,
   onGetProperties: PropTypes.func.isRequired,
   onBulkEditProperties: PropTypes.func.isRequired,
@@ -69,10 +66,8 @@ BulkEditVariants.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  category: state.getIn(['product', 'category']),
   loading: state.getIn(['variant', 'loading']),
-  properties: state.getIn(['variant', 'properties']),
-  remoteIds: state.getIn(['variant', 'remoteIds']),
+  bulkEditData: state.getIn(['variant', 'bulkEditData']),
   bulkEditTask: state.getIn(['variant', 'bulkEdit']),
   ...state
 });

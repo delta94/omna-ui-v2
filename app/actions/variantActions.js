@@ -82,3 +82,8 @@ export const updateRemoteIds = (remoteIds) => ({
   type: types.UPDATE_VARIANT_REMOTE_IDS,
   remoteIds
 });
+
+export const initBulkEditData = (payload) => ({
+  type: types.INIT_BULK_EDIT_VARIANTS_DATA,
+  payload
+});

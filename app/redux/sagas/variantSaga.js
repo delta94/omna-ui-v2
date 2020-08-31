@@ -166,6 +166,25 @@ function* bulkEditProperties(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
+function* getProductCategory(payload) {
+  const { productId, integrationId, enqueueSnackbar } = payload;
+  try {
+    yield put({ type: types.SET_LOADING, loading: true });
+    const response = yield api.get(`/products/${productId}`);
+    const { data } = response.data;
+    const integration = data.integrations.find(item => item.id === integrationId);
+    const { properties } = integration.product;
+    const category = properties.find(item => item.id.includes('category'));
+    const bulkEditData = { remoteIds: [], category: category.value, integration: '', properties: [] }
+    yield put({ type: types.GET_PRODUCT_CATEGORY_SUCCESS, bulkEditData });
+  } catch (error) {
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  yield put({ type: types.SET_LOADING, loading: false });
+}
+
 export function* watchGetVariants() {
   yield takeLatest(types.GET_VARIANTS_ASYNC, getVariants);
 }
@@ -206,8 +225,12 @@ export function* watchBulkEditProperties() {
   yield takeLatest(types.BULK_EDIT_VARIANT_PROPERTIES, bulkEditProperties);
 }
 
+export function* watchGetProductCategory() {
+  yield takeLatest(types.GET_PRODUCT_CATEGORY, getProductCategory);
+}
+
 export default function* variantSaga() {
   yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(),
     watchDeleteVariant(), watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant(),
-    watchGetBulkEditProperties(), watchBulkEditProperties()]);
+    watchGetBulkEditProperties(), watchBulkEditProperties(), watchGetProductCategory()]);
 }
