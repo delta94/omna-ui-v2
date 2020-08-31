@@ -236,3 +236,22 @@ export const hasCategories = (integrations, selectedIntegration) => {
   }
   return true;
 };
+
+export const getRemoteIds = (data, selectedIndexList, integration, type = 'product') => {
+  const remoteIds = [];
+  if (integration) {
+    selectedIndexList.forEach(index => {
+      const filteredIntegration = data[index].integrations.find(item => item.id === integration);
+      if (filteredIntegration) {
+        if (type === 'product') {
+          const { product } = filteredIntegration;
+          remoteIds.push(product.remote_product_id);
+        } else {
+          const { variant } = filteredIntegration;
+          remoteIds.push(variant.remote_variant_id);
+        }
+      }
+    });
+  }
+  return remoteIds;
+};
