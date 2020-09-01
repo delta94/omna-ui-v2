@@ -28,32 +28,13 @@ import {
   updateProductFilters
 } from 'dan-actions/productActions';
 import {
-  getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay
+  getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay, getRemoteIds
 } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FilterTableBox from 'dan-components/Products/FilterTableBox';
-
-const getRemoteIds = (data, selectedIndexList, integration, type = 'product') => {
-  const remoteIds = [];
-  if (integration) {
-    selectedIndexList.forEach(index => {
-      const filteredIntegration = data[index].integrations.find(item => item.id === integration);
-      if (filteredIntegration) {
-        if (type === 'product') {
-          const { product } = filteredIntegration;
-          remoteIds.push(product.remote_product_id);
-        } else {
-          const { variant } = filteredIntegration;
-          remoteIds.push(variant.remote_variant_id);
-        }
-      }
-    });
-  }
-  return remoteIds;
-};
 
 class ProductList extends React.Component {
   state = {
