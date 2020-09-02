@@ -75,11 +75,12 @@ export const getBulkEditProperties = (shop, integrationId, categoryId, enqueueSn
   enqueueSnackbar
 });
 
-export const bulkEditProperties = (shop, remoteIds, properties, enqueueSnackbar) => ({
+export const bulkEditProperties = (shop, remoteIds, basicProperties, integrationProperties, enqueueSnackbar) => ({
   type: types.BULK_EDIT_PROPERTIES,
   shop,
   remoteIds,
-  properties,
+  basicProperties,
+  integrationProperties,
   enqueueSnackbar
 });
 

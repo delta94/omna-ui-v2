@@ -5,14 +5,22 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import { getBulkEditProperties, bulkEditProperties } from 'dan-actions/productActions';
+import GeneralProps from 'dan-components/Products/GeneralProps';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
 import FormActions from 'dan-containers/Common/FormActions';
-import { emptyArray } from 'dan-containers/Common/Utils';
 
 function BulkEditProducts(props) {
   const {
     history, loading, appStore, bulkEditData, task, onGetProperties, enqueueSnackbar
   } = props;
+  const [price, setPrice] = useState(0);
+  const [dimension, setDimension] = useState({
+    weight: undefined,
+    height: undefined,
+    width: undefined,
+    length: undefined,
+    content: ''
+  });
   const [touched, setTouched] = useState(false);
   const prevTaskProp = useRef(task);
 
@@ -30,21 +38,41 @@ function BulkEditProducts(props) {
 
   const handleTouchedProps = () => setTouched(true);
 
+  const handleChange = e => {
+    setPrice(e.target.value);
+    handleTouchedProps();
+  };
+
+  const handleDimensionChange = e => {
+    setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+    handleTouchedProps();
+  };
+
   const handleBulkEdit = () => {
     const { onBulkEditProperties } = props;
-    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), bulkEditData.get('properties'), enqueueSnackbar);
+    const basicProperties = { price, package: dimension };
+    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
   };
 
   return (
     <div>
       <PageHeader title="Bulk edit products" history={history} />
+      <GeneralProps
+        description="At this point all general properties can be edited."
+        price={price}
+        loading={loading}
+        onChange={handleChange}
+        dimensions={dimension}
+        onDimensionChange={handleDimensionChange}
+      />
       <IntegrationProps
-        description="At this point all common properties can be edited."
+        title="Integration Properties"
+        description="At this point all common properties from an integration and category can be edited."
         loading={loading}
         properties={bulkEditData.get('properties')}
         onTouchedProps={handleTouchedProps}
       />
-      {!emptyArray(bulkEditData.get('properties')) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
+      {!loading && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
     </div>
   );
 }

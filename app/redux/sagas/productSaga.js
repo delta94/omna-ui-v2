@@ -149,12 +149,12 @@ function* getBulkEditProperties(payload) {
 
 function* bulkEditProperties(payload) {
   const {
-    shop, remoteIds, properties, enqueueSnackbar
+    shop, remoteIds, basicProperties, integrationProperties, enqueueSnackbar
   } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&task=bulk_product_properties`;
-    const response = yield CENIT_APP.post(url, { data: { remotes_id: remoteIds, properties } });
+    const response = yield CENIT_APP.post(url, { data: { remotes_id: remoteIds, basic_properties: basicProperties, integration_properties: integrationProperties } });
     const { data } = response.data;
     enqueueSnackbar('Updating products', { variant: 'info' });
     yield put({ type: types.BULK_EDIT_PROPERTIES_SUCCESS, data });
