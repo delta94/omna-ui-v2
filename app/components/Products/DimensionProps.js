@@ -2,7 +2,6 @@
 import React, { memo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import { PapperBlock } from 'dan-components';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,14 +18,13 @@ const styles = theme => ({
     flexWrap: 'wrap'
   },
   dimensionContainer: {
-    marginTop: theme.spacing(2),
-    padding: theme.spacing(1)
+    marginTop: theme.spacing(3)
   },
   paperBlockContainer: {
     marginTop: theme.spacing(2)
   },
   title: {
-    margin: theme.spacing(1, 1, 3, 0)
+    margin: theme.spacing(1, 1, 2, 0)
   },
   formControl: {
     width: '100%'
@@ -174,7 +172,7 @@ const DimensionProps = memo((props) => {
           </PapperBlock>
         </div>
       ) : (
-        <Paper className={classes.dimensionContainer} elevation={1}>
+        <div className={classes.dimensionContainer}>
           <Typography className={classes.title} component="div" gutterBottom>
             <Box fontSize="h6.fontSize" m={1} fontWeight="fontWeightRegular">
               Package
@@ -193,7 +191,7 @@ const DimensionProps = memo((props) => {
             onContentChange={handleContentChange}
             onOverwriteChange={handleOverwriteChange}
           />
-        </Paper>
+        </div>
       )}
     </Fragment>
   );
