@@ -5,14 +5,24 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getBulkEditVariantProperties, bulkEditVariantProperties } from 'dan-actions/variantActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import GeneralProps from 'dan-components/Products/GeneralProps';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
 import FormActions from 'dan-containers/Common/FormActions';
-import { emptyArray } from 'dan-containers/Common/Utils';
 
 function BulkEditVariants(props) {
   const {
     history, appStore, loading, bulkEditData, bulkEditTask, onGetProperties, enqueueSnackbar
   } = props;
+  const [price, setPrice] = useState();
+  const [originalPrice, setOriginalPrice] = useState();
+  const [quantity, setQuantity] = useState();
+  const [dimension, setDimension] = useState({
+    weight: undefined,
+    height: undefined,
+    width: undefined,
+    length: undefined,
+    content: ''
+  });
 
   const prevBulkEditTaskProp = useRef(bulkEditTask);
   const [touched, setTouched] = useState(false);
@@ -31,21 +41,56 @@ function BulkEditVariants(props) {
 
   const handleTouchedProps = () => setTouched(true);
 
+  const handleChange = e => {
+    switch (e.target.name) {
+      case 'price':
+        setPrice(e.target.value);
+        break;
+      case 'originalPrice':
+        setOriginalPrice(e.target.value);
+        break;
+      case 'quantity':
+        setQuantity(e.target.value);
+        break;
+      default:
+        break;
+    }
+    handleTouchedProps();
+  };
+
+  const handleDimensionChange = e => {
+    setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+    handleTouchedProps();
+  };
+
   const handleBulkEdit = () => {
     const { onBulkEditProperties } = props;
-    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), bulkEditData.get('properties'), enqueueSnackbar);
+    const basicProperties = { price, original_price: originalPrice, quantity, package: dimension };
+    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
   };
 
   return (
     <div>
       <PageHeader title="Bulk edit variants" history={history} />
+      <GeneralProps
+        description="At this point all general properties can be edited."
+        price={price}
+        originalPrice={originalPrice}
+        quantity={quantity}
+        loading={loading}
+        type="variant"
+        onChange={handleChange}
+        dimensions={dimension}
+        onDimensionChange={handleDimensionChange}
+      />
       <IntegrationProps
+        title="Integration properties"
         description="At this point all common properties can be edited."
         loading={loading}
         properties={bulkEditData.get('properties')}
         onTouchedProps={handleTouchedProps}
       />
-      {!emptyArray(bulkEditData.get('properties')) && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
+      {!loading && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
     </div>
   );
 }

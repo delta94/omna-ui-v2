@@ -70,11 +70,12 @@ export const getBulkEditVariantProperties = (shop, integrationId, categoryId, en
   enqueueSnackbar
 });
 
-export const bulkEditVariantProperties = (shop, remoteIds, properties, enqueueSnackbar) => ({
+export const bulkEditVariantProperties = (shop, remoteIds, basicProperties, integrationProperties, enqueueSnackbar) => ({
   type: types.BULK_EDIT_VARIANT_PROPERTIES,
   shop,
   remoteIds,
-  properties,
+  basicProperties,
+  integrationProperties,
   enqueueSnackbar
 });
 
