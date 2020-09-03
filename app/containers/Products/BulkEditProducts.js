@@ -13,7 +13,7 @@ function BulkEditProducts(props) {
   const {
     history, loading, appStore, bulkEditData, task, onGetProperties, enqueueSnackbar
   } = props;
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState();
   const [dimension, setDimension] = useState({
     weight: undefined,
     height: undefined,
