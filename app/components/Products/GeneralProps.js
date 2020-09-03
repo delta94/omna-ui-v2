@@ -68,10 +68,15 @@ const GeneralProps = memo((props) => {
                     name="quantity"
                     value={quantity}
                     onChange={onChange}
-                    type="number"
                     variant="outlined"
                     id="quantity-input"
                     className={classes.formControl}
+                    inputProps={{
+                      decimalScale: 0,
+                    }}
+                    InputProps={{
+                      inputComponent: NumberFormatCustom,
+                    }}
                   />
                 </Grid>
               </Fragment>
@@ -103,8 +108,8 @@ GeneralProps.propTypes = {
 };
 
 GeneralProps.defaultProps = {
-  originalPrice: 0,
-  quantity: 0,
+  originalPrice: undefined,
+  quantity: undefined,
   type: 'product',
   loading: false,
   title: 'General Properties',
