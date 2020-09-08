@@ -91,7 +91,7 @@ class LockScreen extends React.Component {
     const { shopifyAppStatus } = this.state;
     return (
       <div className={classes.root}>
-        {shopifyAppStatus === 'ready' ? <Loading /> : <Loading text="Installing OMNA" /> }
+        {shopifyAppStatus === 'ready_installing' ? <Loading text="Installing OMNA" /> : <Loading /> }
       </div>
     );
   }
