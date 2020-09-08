@@ -20,10 +20,11 @@ const AuthGuardRoute = ({
 }) => {
   let code = null;
   let store = null;
-  console.log(location);
+
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
+    console.log(`store ${store}`)
   }
 
   if (location.search.includes('code') && !isAuthenticated) {
@@ -47,7 +48,7 @@ const AuthGuardRoute = ({
                 redirect:
                   !location.pathname.includes('shopify') && !isOmnaShopify
                     ? `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`
-                    : 'https://accounts.shopify.com/store-login',
+                    : `${location.pathname}`,
                 code,
                 path,
                 store

@@ -33,7 +33,8 @@ const styles = {
   },
   loadingText: {
     fontSize: 16,
-    fontWeight: '600'
+    fontWeight: '600',
+    color: '#eeeeee'
   },
   spinner: {
     margin: 16

@@ -4,6 +4,7 @@ import NotFound from 'containers/Pages/Standalone/NotFoundDedicated';
 import Application from './Application';
 import ThemeWrapper, { AppContext } from './ThemeWrapper';
 import { OmnaContext } from './OmnaContext';
+
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
 class App extends React.Component {

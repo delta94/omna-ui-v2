@@ -1,4 +1,5 @@
 import { shopifyTrialDays } from 'dan-containers/Common/Utils';
+
 import {
   Tasks,
   TaskDetails,

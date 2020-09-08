@@ -18,7 +18,11 @@ import { getSettingsInfo } from 'dan-containers/Shopify/Services/ShopifyService'
 import API from 'dan-containers/Utils/api';
 
 class LockScreen extends React.Component {
+
+  state = { shopifyAppStatus: null };
+
   async componentDidMount() {
+
     const {
       history,
       location,
@@ -57,15 +61,24 @@ class LockScreen extends React.Component {
     }
 
     if (store) {
-      const data = await getSettingsInfo(store, enqueueSnackbar);
-      setTenant(data);
-      changeTenantStatus(data.isReadyToOmna);
-      changeTenantId(data.tenantId);
-      changeTenantName(data.name);
-      changeEnabledTenant(data.enabled);
-      if (data) {
-        history.push('/shopify');
-      }
+
+      const intervalStatus = setInterval(async () => {
+        const data = await getSettingsInfo(store, enqueueSnackbar);
+        setTenant(data);
+        changeTenantStatus(data.isReadyToOmna);
+        changeTenantId(data.tenantId);
+        changeTenantName(data.name);
+        changeEnabledTenant(data.enabled);
+
+        const status = data.ShopifyAppStatus;
+        this.setState({ shopifyAppStatus: status });
+
+        if (status === 'ready') {
+          clearInterval(intervalStatus);
+          history.push('/shopify');
+        }
+      }, 3000);
+
     }
 
     if (!code && !store) {
@@ -75,9 +88,10 @@ class LockScreen extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { shopifyAppStatus } = this.state;
     return (
       <div className={classes.root}>
-        <Loading />
+        {shopifyAppStatus === 'ready' ? <Loading /> : <Loading text="Installing OMNA" /> }
       </div>
     );
   }

@@ -17,27 +17,28 @@ function InstallShopify(props) {
   const [plansAvailable, setPlansAvailable] = useState([]);
   const store = currentTenant ? currentTenant.name : '';
 
-  useEffect(() => {
 
-    // verify Shopify entry
+  async function getPlans() {
 
-    async function getPlans() {
+    const result = await getPlanInfoAvailablePlans(store, enqueueSnackbar);
+    if (result) {
+      const { availablePlans, currentPlan } = result;
+      setPlansAvailable(availablePlans);
 
-      const result = await getPlanInfoAvailablePlans(store, enqueueSnackbar);
-      if (result) {
-        const { availablePlans, currentPlan } = result;
-        setPlansAvailable(availablePlans);
-
-        if (currentPlan) {
-          setPlanCurrent(currentPlan);
-          setPlanCurrentStatus(currentPlan.status);
-        }
-
-        setLoading(false);
+      if (currentPlan) {
+        setPlanCurrent(currentPlan);
+        setPlanCurrentStatus(currentPlan.status);
       }
+
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     getPlans();
   }, []);
+
+
 
   function handleCurrentPlan(plan) {
     setPlanCurrent(plan);
