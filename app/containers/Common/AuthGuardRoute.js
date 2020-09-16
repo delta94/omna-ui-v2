@@ -24,7 +24,7 @@ const AuthGuardRoute = ({
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
-    console.log(`store ${store}`)
+
   }
 
   if (location.search.includes('code') && !isAuthenticated) {

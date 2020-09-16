@@ -135,7 +135,7 @@ class IntegrationList extends Component {
 
   handleViewResource = (id, resource) => {
     const { history } = this.props;
-    resource === 'brand' ? history.push(`/${id}/brands`) : history.push(`/${id}/categories`);
+    resource === 'brand' ? history.push(`/${id}/brands`) : history.push(`/installed-integrations/${id}/categories`);
   };
 
   handleDialogConfirm = () => {

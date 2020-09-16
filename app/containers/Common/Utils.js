@@ -171,6 +171,12 @@ export const isOmnaShopify = currentTenant
   ? currentTenant.fromShopifyApp
   : null;
 
+
+export const isOmnaShopifyAdmin = currentTenant
+? currentTenant.fromShopifyAppAdmin
+: null;
+
+
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');
   switch (option) {

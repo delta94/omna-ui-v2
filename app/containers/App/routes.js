@@ -152,12 +152,12 @@ export const ApiKeysRoute = {
 };
 
 export const BrandRoute = {
-  link: '/:integration_id/brands',
+  link: '/installed-integrations/:integration_id/brands',
   component: BrandList
 };
 
 export const CategoryRoute = {
-  link: '/:integration_id/categories',
+  link: '/installed-integrations/:integration_id/categories',
   component: CategoryList
 };
 

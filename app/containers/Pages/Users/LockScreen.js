@@ -33,7 +33,7 @@ class LockScreen extends React.Component {
       changeEnabledTenant,
       changeTenantName
     } = this.props;
-    const { redirect, code, pathname, store } = location.state;
+    const { redirect, code, pathname, store, admin } = location.state;
 
     if (code) {
       API.post('get_access_token', { code }).then(response => {
@@ -63,7 +63,7 @@ class LockScreen extends React.Component {
     if (store) {
 
       const intervalStatus = setInterval(async () => {
-        const data = await getSettingsInfo(store, enqueueSnackbar);
+        const data = await getSettingsInfo(store, admin, enqueueSnackbar);
         setTenant(data);
         changeTenantStatus(data.isReadyToOmna);
         changeTenantId(data.tenantId);

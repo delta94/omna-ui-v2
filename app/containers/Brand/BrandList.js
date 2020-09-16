@@ -75,7 +75,14 @@ function BrandList(props) {
   const columns = [
     {
       name: 'name',
-      label: 'Brand Name',
+      label: 'Name',
+      options: {
+        filter: false
+      }
+    },
+    {
+      name: 'updated_at',
+      label: 'Updated at',
       options: {
         filter: false
       }
@@ -83,7 +90,7 @@ function BrandList(props) {
   ];
 
   const options = {
-    filter: true,
+    filter: false,
     selectableRows: 'none',
     responsive: 'stacked',
     download: false,

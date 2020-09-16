@@ -68,7 +68,14 @@ function CategoryList(props) {
   const columns = [
     {
       name: 'name',
-      label: 'Category Name',
+      label: 'Name',
+      options: {
+        filter: false,
+      }
+    },
+    {
+      name: 'updated_at',
+      label: 'Updated at',
       options: {
         filter: false,
       }
@@ -76,7 +83,7 @@ function CategoryList(props) {
   ];
 
   const options = {
-    filter: true,
+    filter: false,
     selectableRows: 'none',
     responsive: 'stacked',
     download: false,
@@ -115,7 +122,7 @@ function CategoryList(props) {
   return (
     <div>
       {loading ? <Loading /> : null}
-      <PageHeader title="Category" history={history} />
+      <PageHeader title="Categories" history={history} />
       <MuiThemeProvider theme={getMuiTheme()}>
         <MUIDataTable columns={columns} data={data} options={options} />
       </MuiThemeProvider>

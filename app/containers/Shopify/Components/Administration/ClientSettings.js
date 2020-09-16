@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import MUIDataTable from 'mui-datatables';
@@ -6,7 +6,14 @@ import Loading from 'dan-components/Loading';
 import { getClientSettings } from '../../Services/ShopifyService';
 
 function ClientSettings(props) {
-  const { enqueueSnackbar } = props;
+
+  const {
+    location,
+    enqueueSnackbar
+  } = props;
+
+  const { admin } = location.state;
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,9 +26,13 @@ function ClientSettings(props) {
   }
 
   useEffect(()=>{
-    if (data.length === 0){
-      getSettings();
+
+    if (admin === true){
+      if (data.length === 0){
+        getSettings();
+      }
     }
+
 
   })
 
@@ -35,20 +46,28 @@ function ClientSettings(props) {
   }
   return(
     <div>
-      {loading && <Loading />}
-      <MUIDataTable
-        title="Client Settings"
-        data={data}
-        columns={columns}
-        options={options}
-      />
+      {admin ?
+      <Fragment>
+        {loading && <Loading />}
+        <MUIDataTable
+          title="Client Settings"
+          data={data}
+          columns={columns}
+          options={options}
+        />
+      </Fragment>
+      :
+      <h1>No esta en admin</h1>
+      }
+
     </div>
   )
 
 }
 
 ClientSettings.propTypes = {
-  enqueueSnackbar: PropTypes.func.isRequired
+  enqueueSnackbar: PropTypes.func.isRequired,
+  location: PropTypes.object
 };
 
 export default withSnackbar(ClientSettings);

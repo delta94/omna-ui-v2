@@ -7,8 +7,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
 import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
-import shopifyMenu from 'dan-api/ui/shopifyMenu';
-import { isOmnaShopify } from 'dan-containers/Common/Utils';
+import {ShopifyAdminMenu, ShopifyMenu} from 'dan-api/ui/shopifyMenu';
+import { isOmnaShopify, isOmnaShopifyAdmin } from 'dan-containers/Common/Utils';
 import { GET_TENANT } from 'dan-actions/actionConstants';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
@@ -32,7 +32,16 @@ class LeftSidebarLayout extends React.Component {
       handleOpenGuide,
       notifications
     } = this.props;
-    
+
+    let data = ''
+    if (isOmnaShopify && isOmnaShopifyAdmin){
+      data = ShopifyAdminMenu;
+    }else if (isOmnaShopify && !isOmnaShopifyAdmin){
+      data = ShopifyMenu;
+    }else {
+      data = dataMenu
+    }
+
     return (
       <Fragment>
         <Header
@@ -46,11 +55,12 @@ class LeftSidebarLayout extends React.Component {
           history={history}
           openGuide={handleOpenGuide}
         />
+
         <Sidebar
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}
           loadTransition={loadTransition}
-          dataMenu={isOmnaShopify ? shopifyMenu : dataMenu}
+          dataMenu={data}
           leftSidebar
         />
         <main

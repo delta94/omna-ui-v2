@@ -3,9 +3,9 @@ import { CENIT_APP } from 'dan-containers/Utils/api'
 import get from 'lodash/get';
 // import axios from 'axios';
 
-  export async function getSettingsInfo(store, enqueueSnackbar) {
+  export async function getSettingsInfo(store, admin, enqueueSnackbar) {
     try {
-     const response = await CENIT_APP.get(`/request_tenant_info?search=${store}`);
+     const response = await CENIT_APP.get(`/request_tenant_info?search=${store}&admin=${admin}`);
      const { data } = response.data;
      return data;
     } catch (error) {
