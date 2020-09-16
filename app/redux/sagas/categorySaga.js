@@ -14,7 +14,7 @@ function* getCategories(payload) {
     yield put({ type: types.GET_CATEGORIES_SUCCESS, data });
   } catch (error) {
     yield put({ type: types.GET_CATEGORIES_FAILED, error });
-    enqueueSnackbar(get(error, 'response.data.message', 'Getting categories error'), {
+    enqueueSnackbar(get(error, 'response.data.message', 'Failed to load categories'), {
       variant: 'error'
     });
   }

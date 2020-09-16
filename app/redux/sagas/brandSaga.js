@@ -7,13 +7,14 @@ import get from 'lodash/get';
 function* getBrands(payload) {
   const { integrationId, params, enqueueSnackbar } = payload;
 
-  yield put({ type: types.SET_LOADING, loading: true });
+  yield put({ type: types.GET_BRANDS_START, loading: true });
   try {
     const response = yield api.get(`/integrations/${integrationId}/brands`, { params });
     const { data } = response;
     yield put({ type: types.GET_BRANDS, data });
   } catch (error) {
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+    yield put({ type: types.GET_BRANDS_FAILED, error });
+    enqueueSnackbar(get(error, 'response.data.message', 'Failed to load brands'), {
       variant: 'error'
     });  }
 }
