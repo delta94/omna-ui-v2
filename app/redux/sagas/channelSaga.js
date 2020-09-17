@@ -5,9 +5,8 @@ import api from 'dan-containers/Utils/api';
 function* fetchChannels(params) {
   yield put({ type: actionConstants.ACTION_INTEGRATION_START });
   const { query } = params;
-
   try {
-    const response = yield api.get(`/integrations/channels`, {
+    const response = yield api.get(`/available/integrations/channels`, {
       params: query
     });
     const { data } = response;

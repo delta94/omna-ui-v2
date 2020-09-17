@@ -9,7 +9,8 @@ function* getCategories(payload) {
 
   yield put({ type: types.GET_CATEGORIES_START, loading: true });
   try {
-    const response = yield api.get(`/integrations/${integrationId}/categories`, { params });
+    console.log(params)
+    const response = yield api.get(`/integrations/${integrationId}/categories`, {params});
     const { data } = response;
     yield put({ type: types.GET_CATEGORIES_SUCCESS, data });
   } catch (error) {
