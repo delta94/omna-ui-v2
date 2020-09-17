@@ -10,10 +10,13 @@ import Healing from '@material-ui/icons/Healing';
 import Avatar from '@material-ui/core/Avatar';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import Typography from '@material-ui/core/Typography';
+import { appStore } from 'dan-containers/App/OmnaContext';
+
 import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
   render() {
+
     const { classes, flows, orders, webhooks, tasks } = this.props;
 
     return (
@@ -35,7 +38,8 @@ class PerformanceChartWidget extends PureComponent {
               </Typography>
             </Button>
           </li>
-          <li>
+          { appStore.fromShopifyAppAdmin === false &&
+            <li>
             <Button color="primary" component={Link} to="/webhooks">
               <Avatar
                 className={classNames(classes.avatar, classes.tealAvatar)}
@@ -49,7 +53,8 @@ class PerformanceChartWidget extends PureComponent {
                 <Typography>Webhooks</Typography>
               </Typography>
             </Button>
-          </li>
+            </li>
+          }
           <li>
             <Button color="primary" component={Link} to="/workflows">
               <Avatar

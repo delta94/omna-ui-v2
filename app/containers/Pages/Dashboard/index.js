@@ -25,11 +25,13 @@ class Dashboard extends Component {
 
   callAPI = () => {
     const { onGetOrders, onGetFlows, onGetTasks, onGetWebhooks } = this.props;
+
     this.setState({ loadingState: true });
     onGetOrders(this.buildParams());
     onGetFlows(this.buildParams());
     onGetTasks(this.buildParams());
     onGetWebhooks(this.buildParams());
+
   };
 
   buildParams = () => {
@@ -41,6 +43,7 @@ class Dashboard extends Component {
   };
 
   render() {
+
     const { loadingState } = this.state;
     const {
       flows,
@@ -49,8 +52,8 @@ class Dashboard extends Component {
       // loadingTasks,
       // loadingWebhooks,
       orders,
-      tasks,
-      webhooks
+      webhooks,
+      tasks
     } = this.props;
 
     const title = brand.name + ' - Dashboard';
@@ -92,6 +95,7 @@ class Dashboard extends Component {
           webhooks={webhooks}
           tasks={tasks}
         />
+
         {/* } */}
         <Grid container spacing={2}>
           <Grid item md={8} xs={12}>
