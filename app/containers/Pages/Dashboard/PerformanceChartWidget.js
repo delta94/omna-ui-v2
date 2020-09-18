@@ -38,7 +38,7 @@ class PerformanceChartWidget extends PureComponent {
               </Typography>
             </Button>
           </li>
-          { appStore.fromShopifyAppAdmin === false &&
+          { appStore.fromShopifyAppAdmin === undefined &&
             <li>
             <Button color="primary" component={Link} to="/webhooks">
               <Avatar

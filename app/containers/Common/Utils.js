@@ -131,8 +131,6 @@ export const variantIcon = {
   view: 'md-eye'
 };
 
-export const shopifyStoreName = currentTenant ? currentTenant.name : null;
-
 export const isAuthenticated = currentTenant;
 
 export const getDeactivationDate = deactivationDate => {
@@ -158,6 +156,12 @@ export const logout = () => {
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
 };
 
+export const isOmnaShopify = currentTenant
+  ? currentTenant.fromShopifyApp
+  : null;
+
+export const shopifyStoreName = isOmnaShopify ? currentTenant.name : null;
+
 const URL_SHOPIFY = `https://${shopifyStoreName}/`;
 
 export const logoutShopify = () => {
@@ -167,12 +171,7 @@ export const logoutShopify = () => {
   window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${URL_SHOPIFY}`);
 };
 
-export const isOmnaShopify = currentTenant
-  ? currentTenant.fromShopifyApp
-  : null;
-
-
-export const isOmnaShopifyAdmin = currentTenant
+export const isOmnaShopifyAdmin = isOmnaShopify
 ? currentTenant.fromShopifyAppAdmin
 : null;
 

@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
-import { currentTenant, isOmnaShopify } from 'dan-containers/Common/Utils';
+import { isOmnaShopify, shopifyStoreName } from 'dan-containers/Common/Utils';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
 import ShopifyMenu from './ShopifyMenu';
@@ -224,7 +224,24 @@ class Header extends React.Component {
             </div>
           )} */}
 
-          {currentTenant ? (
+          {isOmnaShopify ? (
+              <ShopifyMenu
+                name={shopifyStoreName}
+                title={shopifyStoreName}
+              />
+              ) : (
+                <div
+                  className={classNames(classes.headerProperties)}
+                  style={{ flex: 'auto 0' }}
+                >
+                  <TenantMenu history={history} />
+                  <Hidden xsDown>
+                    <span className={classes.separatorV} />
+                  </Hidden>
+                  <UserMenu />
+                </div>
+              )}
+          {/* {currentTenant ? (
             isOmnaShopify ? (
               <ShopifyMenu
                 name={currentTenant.shop}
@@ -242,7 +259,7 @@ class Header extends React.Component {
                 <UserMenu />
               </div>
             )
-          ) : null}
+          ) : null} */}
         </Toolbar>
       </AppBar>
     );
