@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+// import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
+// import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Loading from 'dan-components/Loading';
-import PlanInfo from './PlanInfo';
+// import { activatePlan, createPlan, cancelPlan, shopifyNotification } from '../Services/ShopifyService';
 import { activatePlan, createPlan, cancelPlan } from '../Services/ShopifyService';
+import PlanInfo from './PlanInfo';
+// import {
+//   pushNotification
+// } from '../../../actions/NotificationActions';
+
+
 const useStyles = makeStyles(() => ({
   container: {
     padding: '20px',
@@ -21,7 +29,9 @@ function PlansBoard(props) {
     currentPlanAction,
     currentPlanStatusAction,
     store,
-    enqueueSnackbar
+    // history,
+    enqueueSnackbar,
+    // onPushNotification
   } = props;
   const containerStyles = useStyles();
   const [loading, setLoading] = useState(true);
@@ -31,11 +41,22 @@ function PlansBoard(props) {
   }, [planCurrent]);
 
   async function handleCreatePlan(name) {
+
+
     setLoading(true);
     const result = await createPlan(name, store, enqueueSnackbar);
     if (result) {
       currentPlanAction(result);
       currentPlanStatusAction(result.status);
+
+      // const notification = {
+      //   message: `test`,
+      //   variant: 'warning',
+      //   action: ''
+      // };
+      // onPushNotification(notification);
+
+
       setLoading(false);
     }
   }
@@ -45,10 +66,10 @@ function PlansBoard(props) {
   }
   async function handleActivatePlan(id) {
     setLoading(true);
-    const planAccepted = await activatePlan(id, store, enqueueSnackbar);
-    if (planAccepted) {
-      currentPlanAction(planAccepted);
-      currentPlanStatusAction(planAccepted.status);
+    const plan = await activatePlan(id, store, enqueueSnackbar);
+    if (plan) {
+      currentPlanAction(plan);
+      currentPlanStatusAction(plan.status);
     }
     setLoading(false);
   }
@@ -56,6 +77,7 @@ function PlansBoard(props) {
   async function handelCancelPlan(planId) {
     setLoading(true);
     const planCancelled = await cancelPlan(planId, store, enqueueSnackbar);
+
     if (planCancelled) {
       currentPlanAction(planCancelled);
       currentPlanStatusAction(planCancelled.status);
@@ -99,6 +121,8 @@ PlansBoard.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   currentPlanAction: PropTypes.func,
   currentPlanStatusAction: PropTypes.func
+  // onPushNotification: PropTypes.func.isRequired,
+  // history: PropTypes.object.isRequired,
 };
 
 PlansBoard.defaultProps = {
@@ -108,6 +132,19 @@ PlansBoard.defaultProps = {
   planCurrentStatus: '',
   currentPlanAction: () => {},
   currentPlanStatusAction: () => {},
+
 };
 
+// const mapDispatchToProps = dispatch => ({
+//   onPushNotification: bindActionCreators(pushNotification, dispatch)
+// });
+
 export default withSnackbar(PlansBoard);
+// const PlansBoardMapped = withSnackbar(withStyles(useStyles)(PlansBoard));
+
+// export default connect(
+//   null,
+//   mapDispatchToProps
+// )(PlansBoardMapped);
+
+

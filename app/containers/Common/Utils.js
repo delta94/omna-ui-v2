@@ -160,6 +160,11 @@ export const isOmnaShopify = currentTenant
   ? currentTenant.fromShopifyApp
   : null;
 
+
+export const shopifyOmnaPlanStatus = isOmnaShopify
+? currentTenant.plan_status
+: null;
+
 export const shopifyStoreName = isOmnaShopify ? currentTenant.name : null;
 
 const URL_SHOPIFY = `https://${shopifyStoreName}/`;

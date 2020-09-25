@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -225,11 +225,17 @@ class Header extends React.Component {
           )} */}
 
           {isOmnaShopify ? (
+            <Fragment>
               <ShopifyMenu
                 name={shopifyStoreName}
                 title={shopifyStoreName}
+                history={history}
               />
-              ) : (
+
+            </Fragment>
+              )
+              :
+              (
                 <div
                   className={classNames(classes.headerProperties)}
                   style={{ flex: 'auto 0' }}
@@ -240,7 +246,8 @@ class Header extends React.Component {
                   </Hidden>
                   <UserMenu />
                 </div>
-              )}
+              )
+          }
           {/* {currentTenant ? (
             isOmnaShopify ? (
               <ShopifyMenu

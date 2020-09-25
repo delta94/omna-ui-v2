@@ -1,7 +1,47 @@
+// import React from 'react';
 
 import { CENIT_APP } from 'dan-containers/Utils/api'
 import get from 'lodash/get';
 // import axios from 'axios';
+// import { IconButton, Link } from '@material-ui/core';
+
+import { setTenant, currentTenant } from 'dan-containers/Common/Utils';
+
+export function shopifyNotification( subscribeAction ) {
+
+  const planStatus = currentTenant.plan_status;
+  const planName = currentTenant.plan_name;
+
+  let notification = {};
+  switch (planStatus) {
+    case 'expired':
+      notification = {
+        message: `The ${planName} plan is ${planStatus}, please select a plan to use the app completely`,
+        variant: 'error',
+        action: subscribeAction
+      };
+      break;
+    case 'pending':
+      notification = {
+        message: `The ${planName} plan is ${planStatus}, please confirm the plan to use the app completely`,
+        variant: 'warning',
+        action: subscribeAction
+      };
+      break;
+    case 'cancelled':
+      notification = {
+        message: `The ${planName} plan is ${planStatus}, please select a plan to use the app completely`,
+        variant: 'error',
+        action: subscribeAction
+      };
+      break;
+    default:
+      return null;
+  };
+
+  return notification;
+
+}
 
   export async function getSettingsInfo(store, admin, enqueueSnackbar) {
     try {
@@ -16,16 +56,37 @@ import get from 'lodash/get';
     return null;
   };
 
+  async function reloadTenantInfo(store, admin, enqueueSnackbar ){
+    try {
+      const response = await CENIT_APP.get(`/request_tenant_info?search=${store}&admin=${admin}`);
+      const { data } = response.data;
+      if (data){
+        setTenant(data);
+        // enqueueSnackbar('Reload app information successfully', {
+        //   variant: 'success'
+        // });
+        return data;
+      }
+
+     } catch (error) {
+       enqueueSnackbar(get(error, 'response.data.message', `Error reloading tenant info: ${error}`), {
+         variant: 'error'
+       });
+     }
+     return null;
+  }
+
   export async function getPlanInfoAvailablePlans(store, enqueueSnackbar) {
     try {
-      const response = await CENIT_APP.get(`/plan?task=get&shop=${store}`);
-      if (response) {
-        const availablePlans = response.data.available_plans;
-        const currentPlan = response.data.current_plan;
-        return { availablePlans, currentPlan };
+      const {data} = await CENIT_APP.get(`/plan?task=get&shop=${store}`);
+
+      if (data) {
+        const availablePlans = data.available_plans;
+        const currentPlan = data.current_plan;
+        return {availablePlans, currentPlan} ;
       }
     } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error getting the tenant information'), {
         variant: 'error'
       });
     }
@@ -36,11 +97,16 @@ import get from 'lodash/get';
     try {
       const response = await CENIT_APP.get(`/plan?task=create&plan_name=${name}&shop=${store}`);
       if (response) {
+
+
+        await reloadTenantInfo(store, false, enqueueSnackbar);
+
         enqueueSnackbar('Plan was created successfully, please confirm it', {
-          variant: 'success'
+            variant: 'success'
         });
         return response.data.plan_created;
       }
+
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -51,34 +117,37 @@ import get from 'lodash/get';
 
   export async function activatePlan(planId, store, enqueueSnackbar) {
     try {
-      const response = await CENIT_APP.get(`/plan?task=activate&plan_id=${planId}&shop=${store}`);
-      if (response) {
-        const plan = await getPlanInfoAvailablePlans(store);
-        if (plan) {
+      const {data} = await CENIT_APP.get(`/plan?task=activate&plan_id=${planId}&shop=${store}`);
+
+      if (data) {
+        const { currentPlan }  =  await getPlanInfoAvailablePlans(store);
+          await reloadTenantInfo(store, false, enqueueSnackbar);
           enqueueSnackbar('Plan was activated successfully', {
-            variant: 'success'
+              variant: 'success'
           });
-          return plan[1];
-        }
+          return currentPlan;
       }
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
       });
+
     }
     return null;
   };
 
   export async function cancelPlan(planId, store, enqueueSnackbar) {
     try {
-      const response = await CENIT_APP.get(`/plan?task=cancel&plan_id=${planId}&shop=${store}`);
-      if (response) {
-        const plan = await getPlanInfoAvailablePlans(store);
-        if (plan) {
-          enqueueSnackbar('Plan was cancelled successfully', {
-            variant: 'success'
-          });
-          return plan[1];
+      const {data} = await CENIT_APP.get(`/plan?task=cancel&plan_id=${planId}&shop=${store}`);
+
+      if (data) {
+        const { currentPlan }  = await getPlanInfoAvailablePlans(store);
+        if (currentPlan) {
+          await reloadTenantInfo(store, false, enqueueSnackbar);
+            enqueueSnackbar('Plan was cancelled successfully', {
+              variant: 'success'
+            });
+          return currentPlan;
         }
       }
     } catch (error) {

@@ -1,12 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Hidden } from '@material-ui/core';
+import { bindActionCreators } from 'redux';
+import { withSnackbar } from 'notistack';
+import { connect } from 'react-redux';
+import { Button, Hidden, IconButton, Link } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { withStyles } from '@material-ui/core/styles';
-import { logoutShopify } from 'dan-containers/Common/Utils';
+import { shopifyNotification } from 'dan-containers/Shopify/Services/ShopifyService';
+
+import {
+  logoutShopify
+} from 'dan-containers/Common/Utils';
+import {
+  pushNotification
+} from '../../actions/NotificationActions';
+
+
 
 const styles = theme => ({
   info: {
@@ -40,10 +52,29 @@ class ShopifyMenu extends React.Component {
     logoutShopify();
   };
 
+
   render() {
-    const { classes, name } = this.props;
+
+    const { classes, name, onPushNotification, history } = this.props;
     const { anchorEl } = this.state;
     // const user = currentTenant ? currentTenant.user : null;
+
+    const subscribeAction = (
+
+      <IconButton onClick={() => history.push('/shopify')}>
+        <Link
+          variant="body2"
+          style={{ marginRight: '10px' }}
+        >
+          plan settings
+        </Link>
+      </IconButton>
+    );
+
+    const notification = shopifyNotification(subscribeAction)
+    if (notification){
+      onPushNotification(notification);
+    }
 
     return (
       <div>
@@ -85,7 +116,21 @@ class ShopifyMenu extends React.Component {
 
 ShopifyMenu.propTypes = {
   classes: PropTypes.object.isRequired,
-  name: PropTypes.string
+  name: PropTypes.string,
+  onPushNotification: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ShopifyMenu);
+// export default withStyles(styles)(ShopifyMenu);
+
+const mapDispatchToProps = dispatch => ({
+  onPushNotification: bindActionCreators(pushNotification, dispatch)
+});
+
+const ShopifyMenuMapped = withSnackbar(withStyles(styles)(ShopifyMenu));
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ShopifyMenuMapped);
+

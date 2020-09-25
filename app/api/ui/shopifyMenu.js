@@ -150,3 +150,55 @@ export const ShopifyAdminMenu = [
     ]
   }
 ];
+
+
+export const dataMenuPlanUnactive = [
+  {
+    key: 'dashboard',
+    name: 'Dashboard',
+    icon: <DashboardIcon />,
+    link: '/dashboard'
+  },
+  {
+    key: 'data',
+    name: 'Data',
+    icon: <DataIcon />,
+    child: [
+      {
+        key: 'products',
+        name: 'Products',
+        link: '/products'
+      }
+    ]
+  },
+  {
+    key: 'integrations',
+    name: 'Integrations',
+    icon: 'md-git-pull-request',
+    child: [
+      {
+        key: 'channels',
+        name: 'Channels',
+        link: '/channels'
+      }
+    ]
+  },
+  {
+    key: 'tasks',
+    name: 'Tasks',
+    icon: <TasksIcon />,
+    link: '/tasks'
+  },
+  {
+    key: 'settings',
+    name: 'Settings',
+    icon: <SettingsIcon />,
+    child: [
+      {
+        key: 'plan',
+        name: 'Plans',
+        link: '/shopify'
+      }
+    ]
+  }
+];
