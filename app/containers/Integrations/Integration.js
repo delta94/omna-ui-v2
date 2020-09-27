@@ -208,7 +208,9 @@ const Integration = props => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+
         {authorized ? (
+          group !== 'Shopify'&&
           <MenuItem
             aria-label="unauthorize"
             onClick={() => handleOptionClick('unauthorize')}
@@ -221,9 +223,10 @@ const Integration = props => {
             onClick={() => handleOptionClick('authorize')}
           >
             Authorize
-          </MenuItem>
+          </MenuItem> &&
+          <Divider />
         )}
-        <Divider />
+
 
         {resourceOptions && resourceOptions.map(({ name: _name, value }) => (
           <MenuItem key={value} onClick={() => handleImportResource(value)}>
