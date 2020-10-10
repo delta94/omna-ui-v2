@@ -1,5 +1,11 @@
 import * as types from './actionConstants';
 
+export const setUser = (data) => ({
+  type: types.SET_USER,
+  data
+});
+
+// ------------------------------------------------------
 export const getTenant = () => ({
   type: types.GET_TENANT
 });
@@ -57,4 +63,9 @@ export const setEnabledTenant = (enabled) => ({
 export const setTenantName = (tenantName) => ({
   type: types.SET_TENANT_NAME,
   tenantName
+});
+
+export const setCode = (code) => ({
+  type: types.SET_CODE,
+  code
 });

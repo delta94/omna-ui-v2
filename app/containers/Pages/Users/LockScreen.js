@@ -5,80 +5,57 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Loading from 'dan-components/Loading';
-import { isTenantEnabled, setTenant } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Forms/user-jss';
-import {
-  setTenantStatus,
-  setTenantId,
-  setDeactivationDate,
-  setEnabledTenant,
-  setTenantName
-} from 'dan-actions/TenantActions';
-import { getSettingsInfo } from 'dan-containers/Shopify/Services/ShopifyService';
+import { pushNotification } from 'dan-actions/NotificationActions';
+import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
+import { setUser } from 'dan-actions/UserActions';
+import { getSettingsInfo, planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
 import API from 'dan-containers/Utils/api';
 
 class LockScreen extends React.Component {
-
   state = { shopifyAppStatus: null };
 
   async componentDidMount() {
-
     const {
       history,
       location,
       enqueueSnackbar,
-      changeTenantStatus,
-      changeTenantId,
-      changeDeactivationDate,
-      changeEnabledTenant,
-      changeTenantName
+      onSetUser,
+      onPushNotification
     } = this.props;
-    const { redirect, code, pathname, store, admin } = location.state;
+
+    const { redirect, code, path, store, admin } = location.state;
 
     if (code) {
       API.post('get_access_token', { code }).then(response => {
         const { data } = response.data;
-        const currentTenant = {
-          secret: data.secret,
-          token: data.token,
-          name: data.name,
-          user: {
-            name: data.user.name,
-            picture: data.user.picture
-          },
-          isReadyToOmna: data.is_ready_to_omna,
-          enabled: isTenantEnabled(data.deactivation),
-          tenantId: data.id
-        };
-        setTenant(currentTenant);
-        changeTenantStatus(currentTenant.isReadyToOmna);
-        changeTenantId(data.id);
-        changeTenantName(data.name);
-        changeDeactivationDate(data.deactivation);
-        changeEnabledTenant(currentTenant.enabled);
-        pathname ? history.push(pathname) : history.push('/');
+        onSetUser(data);
+        path ? history.push(path) : history.push('/');
       });
     }
 
     if (store) {
+      const firstQuery = await getSettingsInfo(store, admin, enqueueSnackbar);
+      if (firstQuery.shopifyAppStatus !== 'ready') {
+        const intervalStatus = setInterval(async () => {
+          const data = await getSettingsInfo(store, admin, enqueueSnackbar);
+          const status = data.shopifyAppStatus;
+          this.setState({ shopifyAppStatus: status });
 
-      const intervalStatus = setInterval(async () => {
-        const data = await getSettingsInfo(store, admin, enqueueSnackbar);
-        setTenant(data);
-        changeTenantStatus(data.isReadyToOmna);
-        changeTenantId(data.tenantId);
-        changeTenantName(data.name);
-        changeEnabledTenant(data.enabled);
-
-        const status = data.ShopifyAppStatus;
-        this.setState({ shopifyAppStatus: status });
-
-        if (status === 'ready') {
-          clearInterval(intervalStatus);
-          history.push('/shopify');
-        }
-      }, 3000);
-
+          if (status === 'ready') {
+            onSetUser(data);
+            clearInterval(intervalStatus);
+            const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
+            notif ? onPushNotification(notif) : null;
+            history.push('/shopify');
+          }
+        }, 3000);
+      } else {
+        onSetUser(firstQuery);
+        const notif = planStatusNotification(firstQuery.plan_name, firstQuery.plan_status, subscribeShopifyPlanAction);
+        notif ? onPushNotification(notif) : null;
+        history.push('/shopify');
+      }
     }
 
     if (!code && !store) {
@@ -91,7 +68,7 @@ class LockScreen extends React.Component {
     const { shopifyAppStatus } = this.state;
     return (
       <div className={classes.root}>
-        {shopifyAppStatus === 'ready_installing' ? <Loading text="Installing OMNA" /> : <Loading /> }
+        {shopifyAppStatus === 'ready_installing' ? <Loading text="Installing OMNA" /> : <Loading />}
       </div>
     );
   }
@@ -102,29 +79,17 @@ LockScreen.propTypes = {
   location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  changeTenantStatus: PropTypes.func.isRequired,
-  changeTenantId: PropTypes.func.isRequired,
-  changeDeactivationDate: PropTypes.func.isRequired,
-  changeEnabledTenant: PropTypes.func.isRequired,
-  changeTenantName: PropTypes.func.isRequired
+  onSetUser: PropTypes.func.isRequired,
+  onPushNotification: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  isReadyToOmna: state.getIn(['tenant', 'isReadyToOmna']),
-  tenantId: state.getIn(['tenant', 'tenantId']),
-  ...state
-});
-
 const dispatchToProps = dispatch => ({
-  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch),
-  changeTenantId: bindActionCreators(setTenantId, dispatch),
-  changeDeactivationDate: bindActionCreators(setDeactivationDate, dispatch),
-  changeEnabledTenant: bindActionCreators(setEnabledTenant, dispatch),
-  changeTenantName: bindActionCreators(setTenantName, dispatch)
+  onSetUser: bindActionCreators(setUser, dispatch),
+  onPushNotification: bindActionCreators(pushNotification, dispatch),
 });
 
 const LockScreenMapped = connect(
-  mapStateToProps,
+  null,
   dispatchToProps
 )(LockScreen);
 

@@ -3,8 +3,6 @@ import { Helmet } from 'react-helmet';
 import brand from 'dan-api/dummy/brand';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Button from '@material-ui/core/Button';
@@ -15,9 +13,6 @@ import Hidden from '@material-ui/core/Hidden';
 import Settings from '@material-ui/icons/SettingsApplications';
 import Warning from '@material-ui/icons/Warning';
 import Loading from 'dan-components/Loading';
-import { currentTenant, setTenant } from 'dan-containers/Common/Utils';
-import { GET_TENANT_ID } from 'dan-actions/actionConstants';
-import { setTenantStatus } from 'dan-actions/TenantActions';
 import API from '../../Utils/api';
 
 const styles = theme => ({
@@ -72,53 +67,7 @@ class TenantConfiguration extends React.Component {
     loading: false
   };
 
-  updateTenant = status => {
-    const { changeTenantStatus } = this.props;
-    changeTenantStatus(status);
-
-    if (currentTenant) {
-      currentTenant.isReadyToOmna = status;
-      setTenant(currentTenant);
-    }
-  };
-
-  /*   startUpTenant = async () => {
-      const { enqueueSnackbar, history } = this.props;
-      this.setState({ loading: true });
-      try {
-        const startUpResponse = await API.get('startup');
-        if (startUpResponse) {
-          enqueueSnackbar('Start up process initialized successfully', {
-            variant: 'success'
-          });
-        }
-        const startupDataResponse = startUpResponse.data.data;
-        const intervalObj = setInterval(async () => {
-          const taskResponse = await API.get(`tasks/${startupDataResponse.id}`);
-          const { data } = taskResponse.data;
-          if (data.status === 'failed') {
-            const notificationList = data.notifications.filter(item => item.type === 'error' && item.message.includes('tenant') && item.message.includes('not enabled')).map(notif => {
-              const value = notif;
-              value.message = 'The current Tenant is not enabled. Subscribe to a plan for Tenant Activation.';
-              return value;
-            });
-            this.setState({ notifications: notificationList });
-            this.setState({ loading: false });
-            clearInterval(intervalObj);
-          }
-          if (data.status === 'completed') {
-            this.setState({ loading: false });
-            clearInterval(intervalObj);
-            history.push('/');
-          }
-        }, 8000);
-      } catch (error) {
-        this.setState({ loading: false });
-        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-          variant: 'error'
-        });
-      }
-    } */
+  updateTenant = () => {};
 
   startUpTenant = async () => {
     const { enqueueSnackbar, tenantId, history } = this.props;
@@ -219,23 +168,6 @@ TenantConfiguration.propTypes = {
   tenantId: PropTypes.string.isRequired,
   enabledTenant: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
-  changeTenantStatus: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  tenantId: state.getIn(['tenant', 'tenantId']),
-  enabledTenant: state.getIn(['tenant', 'enabled']),
-  ...state
-});
-
-const mapDispatchToProps = dispatch => ({
-  getTenantId: () => dispatch({ type: GET_TENANT_ID }),
-  changeTenantStatus: bindActionCreators(setTenantStatus, dispatch)
-});
-
-const TenantConfigurationMaped = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TenantConfiguration);
-
-export default withSnackbar(withStyles(styles)(TenantConfigurationMaped));
+export default withSnackbar(withStyles(styles)(TenantConfiguration));

@@ -7,9 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Header, Sidebar } from 'dan-components';
 import Notifications from 'dan-components/Notification/Notifications';
 import dataMenu from 'dan-api/ui/menu';
-import {ShopifyAdminMenu, ShopifyMenu, dataMenuPlanUnactive} from 'dan-api/ui/shopifyMenu';
-import { isOmnaShopify, shopifyOmnaPlanStatus, isOmnaShopifyAdmin } from 'dan-containers/Common/Utils';
-import { GET_TENANT } from 'dan-actions/actionConstants';
+import { ShopifyAdminMenu, ShopifyMenu, dataMenuPlanUnactive } from 'dan-api/ui/shopifyMenu';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 
@@ -30,23 +28,23 @@ class LeftSidebarLayout extends React.Component {
       changeMode,
       place,
       handleOpenGuide,
-      notifications
+      notifications,
+      fromShopifyApp,
+      fromShopifyAppAdmin,
+      planStatus
     } = this.props;
 
-    let data = ''
+    let data = dataMenu;
 
-    if (isOmnaShopify){
-      if (shopifyOmnaPlanStatus !== "active"){
-        data = dataMenuPlanUnactive
-      }else if (isOmnaShopifyAdmin === true){
-          data = ShopifyAdminMenu;
-        }else{
-          data = ShopifyMenu;
-        }
-    }else{
-      data = dataMenu
+    if (fromShopifyApp) {
+      if (planStatus !== 'active') {
+        data = dataMenuPlanUnactive;
+      } else if (fromShopifyAppAdmin) {
+        data = ShopifyAdminMenu;
+      } else {
+        data = ShopifyMenu;
+      }
     }
-
 
     return (
       <Fragment>
@@ -136,7 +134,10 @@ LeftSidebarLayout.propTypes = {
   place: PropTypes.string.isRequired,
   titleException: PropTypes.array.isRequired,
   handleOpenGuide: PropTypes.func.isRequired,
-  notifications: PropTypes.object
+  notifications: PropTypes.object,
+  fromShopifyApp: PropTypes.bool.isRequired,
+  fromShopifyAppAdmin: PropTypes.bool.isRequired,
+  planStatus: PropTypes.string.isRequired
 };
 
 LeftSidebarLayout.defaultProps = {
@@ -145,16 +146,15 @@ LeftSidebarLayout.defaultProps = {
 
 const mapStateToProps = state => ({
   notifications: state.getIn(['notification', 'notifications']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  fromShopifyAppAdmin: state.getIn(['user', 'fromShopifyAppAdmin']),
+  planStatus: state.getIn(['user', 'planStatus']),
   ...state
-});
-
-const mapDispatchToProps = dispatch => ({
-  getTenant: () => dispatch({ type: GET_TENANT })
 });
 
 const LeftSidebarLayoutMaped = connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(LeftSidebarLayout);
 
 export default withStyles(styles)(LeftSidebarLayoutMaped);

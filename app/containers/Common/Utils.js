@@ -15,6 +15,56 @@ export const baseAppUrl = currentLocation.includes('app.omna.io')
     ? URL_DEV
     : URL_LOCAL;
 
+// Authentication
+export const getLocalStorage = () => {
+  if (localStorage.getItem('currentTenant')) {
+    return JSON.parse(localStorage.getItem('currentTenant'));
+  }
+  return null;
+};
+
+export const setLocalStorage = tenant => {
+  const currentTenant = JSON.stringify(tenant);
+  localStorage.setItem('currentTenant', currentTenant);
+};
+
+export const getter = {
+  get IS_AUTHENTICATED() {
+    if (getLocalStorage()) {
+      return true;
+    }
+    return false;
+  },
+  get TENANT_ID() {
+    if (getLocalStorage()) {
+      const { tenantId } = getLocalStorage();
+      return tenantId;
+    }
+    return '';
+  },
+  get STORE() {
+    if (getLocalStorage()) {
+      const { store } = getLocalStorage();
+      return store;
+    }
+    return '';
+  }
+};
+
+export const logout = () => {
+  if (getter.IS_AUTHENTICATED) {
+    localStorage.removeItem('currentTenant');
+  }
+  window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
+};
+
+export const logoutShopify = () => {
+  if (getter.IS_AUTHENTICATED) {
+    window.location.replace(`https://${getter.STORE}/`);
+    localStorage.removeItem('currentTenant');
+  }
+};
+
 export const fullChannelName = channel => {
   if (channel) {
     const name = channel.substring(0, channel.length - 2);
@@ -62,7 +112,7 @@ export const getCurrencySymbol = currency => {
 export const returnAfterAuthorization = () => `${baseAppUrl}/installed-integrations`;
 
 export const getHeaders = url => {
-  const currentTenant = JSON.parse(sessionStorage.getItem('currentTenant'));
+  const currentTenant = JSON.parse(localStorage.getItem('currentTenant'));
   const params = {};
   params.token = currentTenant.token;
   params.timestamp = Date.now();
@@ -96,15 +146,6 @@ export const handleAuthorization = path => {
   );
 };
 
-export const setTenant = tenant => {
-  const currentTenant = JSON.stringify(tenant);
-  sessionStorage.setItem('currentTenant', currentTenant);
-};
-
-export const currentTenant = sessionStorage.getItem('currentTenant')
-  ? JSON.parse(sessionStorage.getItem('currentTenant'))
-  : null;
-
 export const delay = (callBack, _delay = 1000) => {
   const timer = setTimeout(() => {
     callBack();
@@ -131,14 +172,11 @@ export const variantIcon = {
   view: 'md-eye'
 };
 
-export const isAuthenticated = currentTenant;
-
 export const getDeactivationDate = deactivationDate => {
   if (deactivationDate) {
     const time = new Date(deactivationDate).getTime() - new Date().getTime();
     return Math.round(time / (1000 * 3600 * 24));
   }
-
   return -1;
 };
 
@@ -146,40 +184,6 @@ export const isTenantEnabled = deactivationDate => {
   const deactivation = getDeactivationDate(deactivationDate);
   return deactivation >= 1;
 };
-
-export const shopifyTrialDays = currentTenant ? currentTenant.trial_days : 0;
-
-export const logout = () => {
-  if (currentTenant) {
-    sessionStorage.removeItem('currentTenant');
-  }
-  window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${baseAppUrl}`);
-};
-
-export const isOmnaShopify = currentTenant
-  ? currentTenant.fromShopifyApp
-  : null;
-
-
-export const shopifyOmnaPlanStatus = isOmnaShopify
-? currentTenant.plan_status
-: null;
-
-export const shopifyStoreName = isOmnaShopify ? currentTenant.name : null;
-
-const URL_SHOPIFY = `https://${shopifyStoreName}/`;
-
-export const logoutShopify = () => {
-  if (currentTenant) {
-    sessionStorage.removeItem('currentTenant');
-  }
-  window.location.replace(`${baseApiUrl}/sign_out?redirect_uri=${URL_SHOPIFY}`);
-};
-
-export const isOmnaShopifyAdmin = isOmnaShopify
-? currentTenant.fromShopifyAppAdmin
-: null;
-
 
 export const getLogo = channel => {
   const option = channel.replace(/[A-Z]{2}$/, '');

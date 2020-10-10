@@ -40,7 +40,7 @@ const getMuiTheme = () => createMuiTheme({
 function VariantList(props) {
   const {
     match, loading, integrations, variantList, bulkEditData, onGetVariants, onGetIntegrations, onInitBulkEditData,
-    history, appStore, enqueueSnackbar
+    history, fromShopifyApp, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
@@ -212,7 +212,7 @@ function VariantList(props) {
         filter: false,
         sort: false,
         empty: true,
-        display: appStore.fromShopifyApp ? 'excluded' : true,
+        display: fromShopifyApp ? 'excluded' : true,
         customBodyRender: () => (
           <IconButton
             aria-label="more"
@@ -229,7 +229,7 @@ function VariantList(props) {
 
   const options = {
     filter: true,
-    selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
+    selectableRows: fromShopifyApp ? 'multiple' : 'none',
     rowsSelected: selectedIndexList,
     responsive: 'stacked',
     download: false,
@@ -275,7 +275,7 @@ function VariantList(props) {
     },
     customToolbar: () => (
       <Fragment>
-        {!appStore.fromShopifyApp ? (
+        {!fromShopifyApp ? (
           <Tooltip title="add variant">
             <IconButton
               aria-label="add"
@@ -341,9 +341,9 @@ VariantList.propTypes = {
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   integrations: PropTypes.object.isRequired,
-  appStore: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
   variantList: PropTypes.object.isRequired,
-  bulkEditData: PropTypes.object,
+  bulkEditData: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
   onGetIntegrations: PropTypes.func.isRequired,
   onDeleteVariant: PropTypes.func.isRequired,
@@ -357,6 +357,7 @@ const mapStateToProps = state => ({
   integrations: state.getIn(['integration', 'integrations']).toJS(),
   bulkEditData: state.getIn(['variant', 'bulkEditData']),
   loading: state.getIn(['variant', 'loading']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
 

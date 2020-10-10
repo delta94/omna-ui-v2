@@ -25,6 +25,17 @@ export const goToTaskAction = (id) => (
   </Link>
 );
 
+export const subscribeShopifyPlanAction = (
+  <Link
+    variant="body2"
+    style={{ marginRight: '10px' }}
+    component={RouterLink}
+    to="shopify"
+  >
+    Plan settings
+  </Link>
+);
+
 export const installOv2AvailableIntegrationAction = (onInstallCollection) => (
   <IconButton
     key="install"

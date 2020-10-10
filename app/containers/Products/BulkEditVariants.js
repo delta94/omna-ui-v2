@@ -11,7 +11,7 @@ import FormActions from 'dan-containers/Common/FormActions';
 
 function BulkEditVariants(props) {
   const {
-    history, appStore, loading, bulkEditData, bulkEditTask, onGetProperties, enqueueSnackbar
+    history, store, loading, bulkEditData, bulkEditTask, onGetProperties, enqueueSnackbar
   } = props;
   const [price, setPrice] = useState();
   const [originalPrice, setOriginalPrice] = useState();
@@ -35,7 +35,7 @@ function BulkEditVariants(props) {
 
   useEffect(() => {
     if (bulkEditData) {
-      onGetProperties(appStore.name, bulkEditData.get('integration'), bulkEditData.get('category'), enqueueSnackbar);
+      onGetProperties(store, bulkEditData.get('integration'), bulkEditData.get('category'), enqueueSnackbar);
     }
   }, []);
 
@@ -66,7 +66,7 @@ function BulkEditVariants(props) {
   const handleBulkEdit = () => {
     const { onBulkEditProperties } = props;
     const basicProperties = { price, original_price: originalPrice, quantity, package: dimension };
-    onBulkEditProperties(appStore.name, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
+    onBulkEditProperties(store, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
   };
 
   return (
@@ -101,7 +101,7 @@ BulkEditVariants.defaultProps = {
 
 BulkEditVariants.propTypes = {
   history: PropTypes.object.isRequired,
-  appStore: PropTypes.object.isRequired,
+  store: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   bulkEditData: PropTypes.any.isRequired,
   bulkEditTask: PropTypes.object,
@@ -114,6 +114,7 @@ const mapStateToProps = state => ({
   loading: state.getIn(['variant', 'loading']),
   bulkEditData: state.getIn(['variant', 'bulkEditData']),
   bulkEditTask: state.getIn(['variant', 'bulkEdit']),
+  store: state.getIn(['user', 'tenantName']),
   ...state
 });
 

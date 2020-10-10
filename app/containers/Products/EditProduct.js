@@ -30,7 +30,9 @@ export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
 );
 
 function EditProduct(props) {
-  const { match, history, loading, task, importTask, appStore, enqueueSnackbar } = props;
+  const {
+    match, history, loading, task, importTask, fromShopifyApp, enqueueSnackbar
+  } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -243,7 +245,7 @@ function EditProduct(props) {
         action={action}
         id={id}
         linkedIntegrations={integrations}
-        fromShopifyApp={appStore.fromShopifyApp}
+        fromShopifyApp={fromShopifyApp}
         open={openLinkerDlg}
         onClose={() => setOpenLinkerDlg(false)}
         onSave={handleLinker}
@@ -256,6 +258,7 @@ const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
   task: state.getIn(['product', 'task']),
   importTask: state.getIn(['integration', 'task']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
 
@@ -280,7 +283,7 @@ EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
-  appStore: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
   task: PropTypes.object,
   importTask: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,

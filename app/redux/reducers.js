@@ -9,7 +9,7 @@ import history from '../utils/history';
 import availableIntegrationsReducer from './modules/availableIntegrations';
 import login from './modules/login';
 import uiReducer from './modules/ui';
-import tenantReducer from './modules/tenant';
+import userReducer from './modules/user';
 import initval from './modules/initForm';
 import auth from './modules/auth';
 import flowsReducer from './modules/flows';
@@ -33,7 +33,7 @@ export default function createReducer(injectedReducers = {}) {
     form,
     login,
     ui: uiReducer,
-    tenant: tenantReducer,
+    user: userReducer,
     integration: integrationsReducer,
     inventory: inventoryReducer,
     notification: notificationsReducer,

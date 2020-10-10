@@ -29,7 +29,6 @@ import { Loading } from 'dan-components';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
-  currentTenant,
   delay
 } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion/index';
@@ -89,9 +88,9 @@ class IntegrationList extends Component {
   };
 
   handleAuthorization = id => {
+    const { fromShopifyApp, store } = this.props;
     const path = `integrations/${id}/authorize`;
-    const shop = currentTenant.name;
-    CENIT_APP.post(`/request_create_flow?integration_id=${id}&shop=${shop}`);
+    fromShopifyApp ? CENIT_APP.post(`/request_create_flow?integration_id=${id}&shop=${store}`) : null;
     handleAuthorization(path);
   };
 
@@ -127,9 +126,9 @@ class IntegrationList extends Component {
   };
 
   handleImportResource = (id, resource) => {
-    const { appStore, onImportResource, enqueueSnackbar } = this.props;
+    const { fromShopifyApp, store, onImportResource, enqueueSnackbar } = this.props;
     onImportResource({
-      id, resource, fromShopify: appStore.fromShopifyApp, shop: appStore.name, enqueueSnackbar
+      id, resource, fromShopify: fromShopifyApp, shop: store, enqueueSnackbar
     });
   };
 
@@ -210,7 +209,7 @@ class IntegrationList extends Component {
 
   render() {
     const {
-      classes, history, integrations, loading, appStore: { fromShopifyApp }
+      classes, history, integrations, loading, fromShopifyApp
     } = this.props;
     const {
       alertDialog,
@@ -256,6 +255,7 @@ class IntegrationList extends Component {
                     name={integration.name}
                     group={integration.channel_title}
                     logo
+                    fromShopifyApp={fromShopifyApp}
                     channel={integration.channel}
                     authorized={integration.authorized}
                     onAuthorizeIntegration={() => this.handleAuthorization(integration.id)
@@ -321,7 +321,8 @@ IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   task: PropTypes.object,
-  appStore: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
+  store: PropTypes.string.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   integrations: PropTypes.array.isRequired,
   onDeleteIntegration: PropTypes.func.isRequired,
@@ -334,7 +335,9 @@ IntegrationList.propTypes = {
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
   integrations: state.getIn(['integration', 'integrations']),
-  task: state.getIn(['integration', 'task'])
+  task: state.getIn(['integration', 'task']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  store: state.getIn(['user', 'tenantName'])
 });
 
 const mapDispatchToProps = dispatch => ({

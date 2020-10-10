@@ -1,4 +1,6 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { Button, Divider, Hidden } from '@material-ui/core';
@@ -7,7 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { Link } from 'react-router-dom';
-import { currentTenant, logout } from 'dan-containers/Common/Utils';
+import { logout, logoutShopify } from 'dan-containers/Common/Utils';
 import dummy from 'dan-api/dummy/dummyContents';
 import styles from './header-jss';
 
@@ -30,29 +32,25 @@ class UserMenu extends React.Component {
   };
 
   handleLogout = () => {
+    const { fromShopifyApp } = this.props;
     this.setState({ anchorEl: null, openMenu: null });
-    logout();
-  };
-
-  handleLogout = () => {
-    this.setState({ anchorEl: null, openMenu: null });
-    logout();
+    fromShopifyApp ? logoutShopify() : logout();
   };
 
   render() {
     const { anchorEl, openMenu } = this.state;
-    const user = currentTenant ? currentTenant.user : null;
+    const { user, fromShopifyApp } = this.props;
 
     return (
       <div>
         <Button onClick={this.handleMenu('user-setting')}>
           <Avatar
-            alt={user ? user.name : 'user-avatar'}
-            src={user ? user.picture : dummy.user.avatar}
+            alt={user.get('name') || 'user-avatar'}
+            src={user.get('picture') || dummy.user.avatar}
           />
           <Hidden xsDown>
             <div style={{ color: 'white', marginLeft: 8 }}>
-              {user ? user.name : ''}
+              {user.get('name') || ''}
             </div>
           </Hidden>
         </Button>
@@ -70,14 +68,16 @@ class UserMenu extends React.Component {
           open={openMenu === 'user-setting'}
           onClose={this.handleClose}
         >
-          <MenuItem
-            onClick={this.handleClose}
-            component={Link}
-            to="/add-tenant"
-          >
-            Create Tenant
-          </MenuItem>
-          <Divider />
+          {!fromShopifyApp && (
+            <MenuItem
+              onClick={this.handleClose}
+              component={Link}
+              to="/add-tenant"
+            >
+              Create Tenant
+            </MenuItem>
+          )}
+          {!fromShopifyApp && <Divider />}
           <MenuItem onClick={this.handleLogout}>
             <ListItemIcon>
               <ExitToApp />
@@ -90,4 +90,19 @@ class UserMenu extends React.Component {
   }
 }
 
-export default withStyles(styles)(UserMenu);
+UserMenu.propTypes = {
+  fromShopifyApp: PropTypes.bool.isRequired,
+  user: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  user: state.getIn(['user', 'user']),
+  ...state
+});
+
+const UserMenuMapped = withStyles(styles)(UserMenu);
+
+export default connect(
+  mapStateToProps,
+  null
+)(UserMenuMapped);

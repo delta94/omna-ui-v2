@@ -18,8 +18,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Block';
 import {
   getLogo,
-  getResourceOptions,
-  isOmnaShopify
+  getResourceOptions
 } from 'dan-containers/Common/Utils';
 
 const Integration = props => {
@@ -29,6 +28,7 @@ const Integration = props => {
     group,
     logo,
     authorized,
+    fromShopifyApp,
     classes,
     integrated,
     onAuthorizeIntegration,
@@ -154,7 +154,7 @@ const Integration = props => {
               {`${group} ${group !== 'Shopify' ? name.slice(-2) : ''}`}
             </Typography>
 
-            {integrated && isOmnaShopify
+            {integrated && fromShopifyApp
               ? (
                 <Tooltip title="Connected">
                   <CheckCircleIcon style={{ color: '#4caf50' }} />
@@ -244,7 +244,7 @@ const Integration = props => {
           View Categories
         </MenuItem>
 
-        {(!isOmnaShopify || (isOmnaShopify && group !== 'Shopify')) && (
+        {(!fromShopifyApp || (fromShopifyApp && group !== 'Shopify')) && (
           <div>
             <Divider />
             <MenuItem
@@ -288,6 +288,7 @@ Integration.propTypes = {
   group: PropTypes.string,
   handleAddIntegration: PropTypes.func,
   integrated: PropTypes.bool,
+  fromShopifyApp: PropTypes.bool.isRequired,
   logo: PropTypes.bool,
   name: PropTypes.string,
   noActions: PropTypes.bool,

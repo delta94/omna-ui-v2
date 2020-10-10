@@ -25,9 +25,6 @@ import './styles/layout/base.scss';
 // Import Language Provider
 import LanguageProvider from 'containers/LanguageProvider';
 
-// Import global fields of Omna app
-import { appStore, OmnaContext } from 'dan-containers/App/OmnaContext';
-
 // Load the favicon and the .htaccess file
 import '!file-loader?name=[name].[ext]!../public/favicons/favicon.ico'; // eslint-disable-line
 import 'file-loader?name=.htaccess!./.htaccess'; // eslint-disable-line
@@ -56,9 +53,7 @@ const render = messages => {
     <Provider store={store}>
       <LanguageProvider messages={messages}>
         <ConnectedRouter history={history}>
-          <OmnaContext.Provider value={appStore}>
-            <App />
-          </OmnaContext.Provider>
+          <App />
         </ConnectedRouter>
       </LanguageProvider>
     </Provider>,

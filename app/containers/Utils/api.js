@@ -2,11 +2,12 @@ import axios from 'axios';
 import { sha256 } from 'js-sha256';
 import get from 'lodash/get';
 import qs from 'qs';
-import { currentTenant, SECRET_SHOPIFY_APP } from 'dan-containers/Common/Utils';
+import { SECRET_SHOPIFY_APP, getLocalStorage } from 'dan-containers/Common/Utils';
 
 function setParams(config) {
   const params = get(config, 'params', {});
   const data = get(config, 'data', {});
+  const currentTenant = getLocalStorage();
   if (config.data) {
     if (config.url !== 'get_access_token') {
       data.token = currentTenant.token;
@@ -47,8 +48,9 @@ function setParams(config) {
 
 function setShopifyParams(config) {
   const params = get(config, 'params', {});
+  const currentTenant = getLocalStorage();
 
-  if ( config.url.includes("request_tenant_info")) {
+  if (config.url.includes('request_tenant_info')) {
     return Object.assign(config, {
       paramsSerializer: param => qs.stringify(param),
       params
@@ -57,8 +59,8 @@ function setShopifyParams(config) {
   params.token = currentTenant.token;
   params.timestamp = Date.now();
 
-  const string = `timestamp=${params.timestamp}&token=${params.token}`
-  const secret = SECRET_SHOPIFY_APP
+  const string = `timestamp=${params.timestamp}&token=${params.token}`;
+  const secret = SECRET_SHOPIFY_APP;
   params.hmac = sha256.hmac.update(secret, string).hex();
 
   return Object.assign(config, {

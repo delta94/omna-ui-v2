@@ -10,14 +10,12 @@ import Healing from '@material-ui/icons/Healing';
 import Avatar from '@material-ui/core/Avatar';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import Typography from '@material-ui/core/Typography';
-import { appStore } from 'dan-containers/App/OmnaContext';
 
 import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
   render() {
-
-    const { classes, flows, orders, webhooks, tasks } = this.props;
+    const { classes, flows, orders, webhooks, tasks, fromShopifyApp } = this.props;
 
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
@@ -38,23 +36,23 @@ class PerformanceChartWidget extends PureComponent {
               </Typography>
             </Button>
           </li>
-          { appStore.fromShopifyAppAdmin === undefined &&
+          {!fromShopifyApp && (
             <li>
-            <Button color="primary" component={Link} to="/webhooks">
-              <Avatar
-                className={classNames(classes.avatar, classes.tealAvatar)}
-              >
-                <CheckCircle />
-              </Avatar>
-              <Typography variant="h6">
-                <span className={classes.tealText}>
-                  {webhooks.getIn(['pagination', 'total'])}
-                </span>
-                <Typography>Webhooks</Typography>
-              </Typography>
-            </Button>
+              <Button color="primary" component={Link} to="/webhooks">
+                <Avatar
+                  className={classNames(classes.avatar, classes.tealAvatar)}
+                >
+                  <CheckCircle />
+                </Avatar>
+                <Typography variant="h6">
+                  <span className={classes.tealText}>
+                    {webhooks.getIn(['pagination', 'total'])}
+                  </span>
+                  <Typography>Webhooks</Typography>
+                </Typography>
+              </Button>
             </li>
-          }
+          )}
           <li>
             <Button color="primary" component={Link} to="/workflows">
               <Avatar
@@ -93,10 +91,11 @@ class PerformanceChartWidget extends PureComponent {
 
 PerformanceChartWidget.propTypes = {
   classes: PropTypes.object.isRequired,
-  orders: PropTypes.object,
-  webhooks: PropTypes.object,
-  flows: PropTypes.object,
-  tasks: PropTypes.object
+  orders: PropTypes.object.isRequired,
+  webhooks: PropTypes.object.isRequired,
+  flows: PropTypes.object.isRequired,
+  tasks: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired
 };
 
 export default withStyles(styles)(PerformanceChartWidget);

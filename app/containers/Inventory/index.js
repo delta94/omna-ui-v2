@@ -46,7 +46,7 @@ class InventoryEntries extends Component {
   }
 
   callAPI = () => {
-    const { enqueueSnackbar, onGetInventoryEntries, error } = this.props;
+    const { enqueueSnackbar, onGetInventoryEntries, store, error } = this.props;
     const { searchTerm, limit, page, sortCriteria, sortDirection } = this.state;
 
     const params = {
@@ -60,12 +60,9 @@ class InventoryEntries extends Component {
       params.sort = JSON.parse(sortParam);
     }
 
-    onGetInventoryEntries(params);
+    onGetInventoryEntries({ store, params });
 
-    if (error)
-      enqueueSnackbar(error, {
-        variant: 'error'
-      });
+    if (error) enqueueSnackbar(error, { variant: 'error' });
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -269,6 +266,7 @@ InventoryEntries.propTypes = {
   loading: PropTypes.bool.isRequired,
   inventoryEntries: PropTypes.object.isRequired,
   onGetInventoryEntries: PropTypes.func.isRequired,
+  store: PropTypes.string.isRequired,
   error: PropTypes.object.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
@@ -280,7 +278,8 @@ InventoryEntries.propTypes = {
 const mapStateToProps = state => ({
   loading: state.getIn(['inventory', 'loading']),
   inventoryEntries: state.getIn(['inventory', 'inventoryEntries']),
-  error: state.getIn(['inventory', 'error'])
+  error: state.getIn(['inventory', 'error']),
+  store: state.getIn(['user', 'tenantName'])
 });
 
 const mapDispatchToProps = dispatch => ({

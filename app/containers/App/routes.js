@@ -1,4 +1,3 @@
-// import { shopifyTrialDays } from 'dan-containers/Common/Utils';
 
 import {
   Tasks,
@@ -129,15 +128,9 @@ export const EditWebhookRoute = {
   component: EditWebhook
 };
 
-// export const InstallShopifyRoute = {
-//   link: '/shopify',
-//   component: shopifyTrialDays > 0 ? DashboardPage : InstallShopify
-// };
-
-
 export const InstallShopifyRoute = {
   link: '/shopify',
-  component:InstallShopify
+  component: InstallShopify
 };
 
 export const DashboardPageRoute = { link: '/', component: DashboardPage };
@@ -198,7 +191,6 @@ export const OmnaAppRoutes = [
   InstallShopifyRoute,
   DashboardPageRoute,
   TenantConfigurationRoute,
-  ClientSettingsRoute,
   ApiKeysRoute,
   BrandRoute,
   CategoryRoute
@@ -233,8 +225,11 @@ export const OmnaShopifyRoutes = [
   InstallShopifyRoute,
   DashboardPageRoute,
   TenantConfigurationRoute,
-  ClientSettingsRoute,
   ApiKeysRoute,
   BrandRoute,
   CategoryRoute
+];
+
+export const OmnaShopifyAdminRoutes = [
+  ClientSettingsRoute
 ];

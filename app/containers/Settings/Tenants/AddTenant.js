@@ -7,9 +7,9 @@ import { withSnackbar } from 'notistack';
 //
 import get from 'lodash/get';
 import Loading from 'dan-components/Loading';
+import { setReloadTenants } from 'dan-actions/UserActions';
 import TenantForm from './TenantForm';
 import API from '../../Utils/api';
-import { setReloadTenants } from '../../../actions/TenantActions';
 import PageHeader from '../../Common/PageHeader';
 
 
@@ -62,7 +62,7 @@ AddTenant.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  reloadTenants: state.getIn(['tenant', 'reloadTenants']),
+  reloadTenants: state.getIn(['user', 'reloadTenants']),
   ...state,
 });
 

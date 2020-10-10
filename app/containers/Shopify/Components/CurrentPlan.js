@@ -55,7 +55,11 @@ function CurrentPlan({ planCurrent }) {
             id="panel1bh-header"
           >
             <Typography className={classes.heading}>
-              Current Plan: {planCurrent.name} - {planCurrent.status} -
+              Current Plan:
+              {planCurrent.name}
+              -
+              {planCurrent.status}
+              -
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>

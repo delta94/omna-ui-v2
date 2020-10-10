@@ -1,9 +1,9 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 import NotFound from 'containers/Pages/Standalone/NotFoundDedicated';
 import Application from './Application';
 import ThemeWrapper, { AppContext } from './ThemeWrapper';
-import { OmnaContext } from './OmnaContext';
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
@@ -11,23 +11,21 @@ class App extends React.Component {
   render() {
     return (
       <ThemeWrapper>
-        <OmnaContext.Consumer>
-          {(value) => (
-            <AppContext.Consumer>
-              {changeMode => (
-                <Switch>
-                  <Route
-                    path="/"
-                    render={props => (
-                      <Application {...props} changeMode={changeMode} appStore={value} />
-                    )}
-                  />
-                  <Route component={NotFound} />
-                </Switch>
-              )}
-            </AppContext.Consumer>
-          )}
-        </OmnaContext.Consumer>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+          <AppContext.Consumer>
+            {changeMode => (
+              <Switch>
+                <Route
+                  path="/"
+                  render={props => (
+                    <Application {...props} changeMode={changeMode} />
+                  )}
+                />
+                <Route component={NotFound} />
+              </Switch>
+            )}
+          </AppContext.Consumer>
+        </SnackbarProvider>
       </ThemeWrapper>
     );
   }

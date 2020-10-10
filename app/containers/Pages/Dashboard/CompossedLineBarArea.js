@@ -17,8 +17,8 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import moment from 'moment';
+import { setReloadLandingPage } from 'dan-actions/UserActions';
 import LoadingState from '../../Common/LoadingState';
-import { setReloadLandingPage } from '../../../actions/TenantActions';
 
 const styles = {
   chartFluid: {
@@ -133,7 +133,7 @@ CompossedLineBarArea.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  reloadLandingPage: state.getIn(['tenant', 'reloadLandingPage']),
+  reloadLandingPage: state.getIn(['user', 'reloadLandingPage']),
   ...state
 });
 

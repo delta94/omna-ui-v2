@@ -193,14 +193,14 @@ class ProductList extends React.Component {
 
   handleBulkLinkerAction = async value => {
     const {
-      appStore: { name }, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts
+      store, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts
     } = this.props;
     const { bulkLinkerAction, rowsSelectedIds } = this.state;
     const { integrationIds, deleteFromIntegration } = value;
     if (bulkLinkerAction === 'link') {
-      onBulkLinkProducts(name, rowsSelectedIds, integrationIds, enqueueSnackbar);
+      onBulkLinkProducts(store, rowsSelectedIds, integrationIds, enqueueSnackbar);
     } else {
-      onBulkUnlinkProducts(name, rowsSelectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
+      onBulkUnlinkProducts(store, rowsSelectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
     }
     this.setState({ openPublisherDlg: false });
   };
@@ -241,7 +241,7 @@ class ProductList extends React.Component {
       filterPopover
     } = this.state;
     const {
-      history, products, loading, appStore, filters, onUpdateProductFilters
+      history, products, loading, fromShopifyApp, filters, onUpdateProductFilters
     } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
@@ -346,7 +346,7 @@ class ProductList extends React.Component {
           filter: false,
           sort: false,
           empty: true,
-          display: appStore.fromShopifyApp ? 'excluded' : true,
+          display: fromShopifyApp ? 'excluded' : true,
           customBodyRender: () => (
             <IconButton
               aria-label="more"
@@ -364,7 +364,7 @@ class ProductList extends React.Component {
     const options = {
       filter: true,
       sort: false,
-      selectableRows: appStore.fromShopifyApp ? 'multiple' : 'none',
+      selectableRows: fromShopifyApp ? 'multiple' : 'none',
       rowsSelected: rowsSelectedIndex,
       responsive: 'vertical',
       rowHover: true,
@@ -430,7 +430,7 @@ class ProductList extends React.Component {
       }),
       customToolbar: () => (
         <Fragment>
-          {!appStore.fromShopifyApp && (
+          {!fromShopifyApp && (
             <Tooltip title="add">
               <IconButton
                 aria-label="add"
@@ -511,7 +511,7 @@ class ProductList extends React.Component {
         <BulkLinker
           action={bulkLinkerAction}
           open={openPublishDlg}
-          fromShopifyApp={appStore.fromShopifyApp}
+          fromShopifyApp={fromShopifyApp}
           onClose={() => this.setState({ openPublisherDlg: false })}
           onSave={this.handleBulkLinkerAction}
         />
@@ -527,6 +527,8 @@ const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
   task: state.getIn(['product', 'task']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  store: state.getIn(['user', 'tenantName']),
   ...state
 });
 
@@ -556,7 +558,8 @@ ProductList.propTypes = {
   filters: PropTypes.object.isRequired,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  appStore: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
+  store: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   onGetProducts: PropTypes.func.isRequired,
   onBulkLinkProducts: PropTypes.func.isRequired,

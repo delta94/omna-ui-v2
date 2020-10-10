@@ -18,7 +18,6 @@ import MUIDataTable from 'mui-datatables';
 import { EmptyState, Loading } from 'dan-components';
 import { getFlows } from 'dan-actions/flowActions';
 import { getIntegrations } from 'dan-actions/integrationActions';
-import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
 import PageHeader from '../../Common/PageHeader';
@@ -205,6 +204,7 @@ class Flows extends Component {
   };
 
   renderActionsMenu = () => {
+    const { fromShopifyApp } = this.props;
     const { anchorEl, selectedItem } = this.state;
     const { id, task, title } = selectedItem;
 
@@ -221,7 +221,7 @@ class Flows extends Component {
           </ListItemIcon>
           Start
         </MenuItem>
-        {!isOmnaShopify && (
+        {!fromShopifyApp && (
           <MenuItem onClick={() => this.handleOnClickDeleteFlow(id, title)}>
             <ListItemIcon>
               <Ionicon icon="md-trash" />
@@ -246,7 +246,7 @@ class Flows extends Component {
   };
 
   render() {
-    const { classes, flows, history, loading } = this.props;
+    const { classes, flows, history, loading, fromShopifyApp } = this.props;
     const {
       integrationFilterOptions,
       alertDialog,
@@ -376,14 +376,14 @@ class Flows extends Component {
             case 3:
               return (
                 (parseFloat(a.customSortData[colIndex]) <
-                parseFloat(b.customSortData[colIndex])
+                  parseFloat(b.customSortData[colIndex])
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
             case 4:
               return (
                 (a.customSortData[colIndex].name.toLowerCase() <
-                b.customSortData[colIndex].name.toLowerCase()
+                  b.customSortData[colIndex].name.toLowerCase()
                   ? -1
                   : 1) * (order === 'desc' ? 1 : -1)
               );
@@ -395,16 +395,15 @@ class Flows extends Component {
               );
           }
         }),
-      customToolbar: () =>
-        !isOmnaShopify && (
-          <Tooltip title="add">
-            <IconButton aria-label="add" onClick={this.handleAddAction}>
-              <Ionicon icon="md-add-circle" />
-            </IconButton>
-          </Tooltip>
-        ),
+      customToolbar: () => !fromShopifyApp && (
+        <Tooltip title="add">
+          <IconButton aria-label="add" onClick={this.handleAddAction}>
+            <Ionicon icon="md-add-circle" />
+          </IconButton>
+        </Tooltip>
+      ),
       onCellClick: (rowData, { colIndex, dataIndex }) => {
-        if (colIndex !== 6 && isOmnaShopify) {
+        if (colIndex !== 6 && fromShopifyApp) {
           const flow = data[dataIndex];
           this.handleEditFlow(flow.id);
         }
@@ -430,9 +429,9 @@ class Flows extends Component {
           </div>
         ) : (
           <EmptyState
-            action={!isOmnaShopify && this.handleAddAction}
+            action={!fromShopifyApp && this.handleAddAction}
             actionText="Add Flow"
-            text={`There's nothing here now, but products data will show up here later. You can add them clicking the button below.`}
+            text="There is nothing here now, but products data will show up here later. You can add them clicking the button below."
           />
         )}
       </div>
@@ -448,13 +447,15 @@ Flows.propTypes = {
   onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['flow', 'loading']),
   flows: state.getIn(['flow', 'flows']),
-  integrations: state.getIn(['integration', 'integrations'])
+  integrations: state.getIn(['integration', 'integrations']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp'])
 });
 
 const mapDispatchToProps = dispatch => ({

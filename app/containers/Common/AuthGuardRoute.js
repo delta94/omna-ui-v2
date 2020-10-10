@@ -4,12 +4,10 @@ import { Route, Redirect } from 'react-router-dom';
 import {
   baseApiUrl,
   baseAppUrl,
-  isAuthenticated,
-  isOmnaShopify
+  getter
 } from './Utils';
 
 const AuthGuardRoute = ({
-  appStore,
   changeMode,
   component: Component,
   history,
@@ -18,16 +16,16 @@ const AuthGuardRoute = ({
   path,
   ...rest
 }) => {
+  const isAuth = getter.IS_AUTHENTICATED;
   let code = null;
   let store = null;
 
   if (location.search.includes('store')) {
     const searchParams = new URLSearchParams(location.search);
     store = searchParams.get('store');
-
   }
 
-  if (location.search.includes('code') && !isAuthenticated) {
+  if (location.search.includes('code') && !isAuth) {
     const searchParams = new URLSearchParams(location.search);
     code = searchParams.get('code');
   }
@@ -36,35 +34,34 @@ const AuthGuardRoute = ({
     <Route
       {...rest}
       render={props =>
-        isAuthenticated ? (
+        isAuth ? (
           <Layout history={history} changeMode={changeMode}>
-            <Component {...props} appStore={appStore} />
+            <Component {...props} />
           </Layout>
         ) : (
-          <Redirect
-            to={{
-              pathname: '/lock-screen',
-              state: {
-                redirect:
-                  !location.pathname.includes('shopify') && !isOmnaShopify
-                    ? `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`
-                    : `${location.pathname}`,
-                code,
-                path,
-                store
-              }
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: '/lock-screen',
+                state: {
+                  redirect:
+                    !location.pathname.includes('shopify') && !getter.STORE
+                      ? `${baseApiUrl}/sign_in?redirect_uri=${baseAppUrl}${path}`
+                      : `${location.pathname}`,
+                  code,
+                  path,
+                  store
+                }
+              }}
+            />
+          )
       }
     />
   );
 };
 
 AuthGuardRoute.propTypes = {
-  appStore: PropTypes.object.isRequired,
   changeMode: PropTypes.func.isRequired,
-  component: PropTypes.func.isRequired,
+  component: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   layout: PropTypes.object.isRequired,
   location: PropTypes.object,

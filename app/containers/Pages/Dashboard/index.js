@@ -25,13 +25,11 @@ class Dashboard extends Component {
 
   callAPI = () => {
     const { onGetOrders, onGetFlows, onGetTasks, onGetWebhooks } = this.props;
-
     this.setState({ loadingState: true });
     onGetOrders(this.buildParams());
     onGetFlows(this.buildParams());
     onGetTasks(this.buildParams());
     onGetWebhooks(this.buildParams());
-
   };
 
   buildParams = () => {
@@ -43,7 +41,6 @@ class Dashboard extends Component {
   };
 
   render() {
-
     const { loadingState } = this.state;
     const {
       flows,
@@ -53,7 +50,8 @@ class Dashboard extends Component {
       // loadingWebhooks,
       orders,
       webhooks,
-      tasks
+      tasks,
+      fromShopifyApp
     } = this.props;
 
     const title = brand.name + ' - Dashboard';
@@ -94,6 +92,7 @@ class Dashboard extends Component {
           orders={orders}
           webhooks={webhooks}
           tasks={tasks}
+          fromShopifyApp={fromShopifyApp}
         />
 
         {/* } */}
@@ -139,7 +138,8 @@ Dashboard.propTypes = {
   onGetWebhooks: PropTypes.func.isRequired,
   orders: PropTypes.object.isRequired,
   tasks: PropTypes.object.isRequired,
-  webhooks: PropTypes.object.isRequired
+  webhooks: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -150,7 +150,8 @@ const mapStateToProps = state => ({
   loadingWebhooks: state.getIn(['webhook', 'loading']),
   orders: state.getIn(['order', 'orders']),
   tasks: state.getIn(['task', 'tasks']),
-  webhooks: state.getIn(['webhook', 'webhooks'])
+  webhooks: state.getIn(['webhook', 'webhooks']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp'])
 });
 
 const mapDispatchToProps = dispatch => ({

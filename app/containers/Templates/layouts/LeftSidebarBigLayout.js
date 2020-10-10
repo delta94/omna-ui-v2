@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import { Header, SidebarBig, BreadCrumb } from 'dan-components';
 import dataMenu from 'dan-api/ui/menu';
-import shopifyMenu from 'dan-api/ui/shopifyMenu';
-import { isOmnaShopify } from 'dan-containers/Common/Utils';
 import Decoration from '../Decoration';
 import styles from '../appStyles-jss';
 
@@ -44,7 +42,7 @@ class LeftSidebarBigLayout extends React.Component {
           openGuide={handleOpenGuide}
         />
         <SidebarBig
-          dataMenu={isOmnaShopify ? shopifyMenu : dataMenu}
+          dataMenu={dataMenu}
           loadTransition={loadTransition}
           open={sidebarOpen}
           toggleDrawerOpen={toggleDrawer}

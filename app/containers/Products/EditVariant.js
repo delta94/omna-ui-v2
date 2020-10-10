@@ -24,7 +24,9 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 };
 
 function EditVariant(props) {
-  const { match, loading, history, variant, linkTask, unlinkTask, onGetVariant, appStore, enqueueSnackbar } = props;
+  const {
+    match, loading, history, variant, linkTask, unlinkTask, onGetVariant, fromShopifyApp, enqueueSnackbar
+  } = props;
   const [id, setId] = useState();
   const [sku, setSKU] = useState('');
   const [price, setPrice] = useState();
@@ -131,7 +133,7 @@ function EditVariant(props) {
     <div>
       {loading ? <Loading /> : null}
       <PageHeader title="Edit variant" history={history} />
-      {!appStore.fromShopifyApp && (
+      {!fromShopifyApp && (
         <ToolbarActions
           onLink={handleLink}
           onUnlink={handleUnlink}
@@ -180,6 +182,7 @@ const mapStateToProps = state => ({
   update: state.getIn(['variant', 'update']),
   linkTask: state.getIn(['variant', 'link']),
   unlinkTask: state.getIn(['variant', 'unlink']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
 
@@ -203,7 +206,7 @@ EditVariant.propTypes = {
   loading: PropTypes.bool.isRequired,
   linkTask: PropTypes.object,
   unlinkTask: PropTypes.object,
-  appStore: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
   onGetVariant: PropTypes.func.isRequired,
   onUpdateVariant: PropTypes.func.isRequired,
   onLinkVariant: PropTypes.func.isRequired,

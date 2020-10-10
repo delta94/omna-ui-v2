@@ -82,7 +82,7 @@ class ChannelList extends Component {
     this.setState({ openForm: true });
   };
 
-  renderIntegrationItem = (channel, classes, integrated = false) => (
+  renderIntegrationItem = (channel, classes, fromShopifyApp, integrated = false) => (
     <Grid item md={3} xs={12}>
       <Integration
         classes={classes}
@@ -90,6 +90,7 @@ class ChannelList extends Component {
         name={channel.name}
         group={channel.group}
         integrated={integrated}
+        fromShopifyApp={fromShopifyApp}
         noActions
         handleAddIntegration={event => this.handleAddIntegrationClick(event, channel)}
       />
@@ -98,7 +99,7 @@ class ChannelList extends Component {
 
   render() {
     const {
-      channels, classes, history, integrations, loading
+      channels, classes, history, integrations, loading, fromShopifyApp
     } = this.props;
     const { alertDialog, channel, openForm } = this.state;
 
@@ -112,7 +113,7 @@ class ChannelList extends Component {
           <Grid container spacing={2}>
             {data && data.map(chan => {
               const match = integrations.get('data').find(integration => integration.get('channel') === chan.name);
-              return this.renderIntegrationItem(chan, classes, Boolean(match));
+              return this.renderIntegrationItem(chan, classes, fromShopifyApp, Boolean(match));
             })}
           </Grid>
         </div>
@@ -137,6 +138,7 @@ ChannelList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   channels: PropTypes.array.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired,
   integrations: PropTypes.array.isRequired,
   onGetIntegrations: PropTypes.array.isRequired,
   onGetChannels: PropTypes.func.isRequired,
@@ -146,7 +148,8 @@ ChannelList.propTypes = {
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
   channels: state.getIn(['integration', 'channels']),
-  integrations: state.getIn(['integration', 'integrations'])
+  integrations: state.getIn(['integration', 'integrations']),
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp'])
 });
 
 const mapDispatchToProps = dispatch => ({

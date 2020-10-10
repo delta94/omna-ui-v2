@@ -11,11 +11,11 @@ import {
 import ArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import { currentTenant } from 'dan-containers/Common/Utils';
+import { getLocalStorage } from 'dan-containers/Common/Utils';
 
 const ApiKeys = () => {
   const [secretVisibility, setSecretVisibility] = useState(false);
-  const { secret, token } = currentTenant;
+  const { secret, token } = getLocalStorage();
 
   const changeSecretVisibility = () => {
     setSecretVisibility(!secretVisibility);

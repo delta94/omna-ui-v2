@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import {
@@ -15,10 +16,8 @@ import {
 } from '@material-ui/core';
 import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
-import { isOmnaShopify, shopifyStoreName } from 'dan-containers/Common/Utils';
 import UserMenu from './UserMenu';
 import TenantMenu from './TenantMenu';
-import ShopifyMenu from './ShopifyMenu';
 // import SearchUi from '../Search/SearchUi';
 import styles from './header-jss';
 
@@ -111,8 +110,10 @@ class Header extends React.Component {
       position,
       gradient,
       title,
-      history
+      history,
+      fromShopifyApp
     } = this.props;
+
     const { open, turnDarker, showTitle, anchorEl } = this.state;
 
     const setMargin = sidebarPosition => {
@@ -212,61 +213,16 @@ class Header extends React.Component {
               </Typography>
             </div>
           </Hidden>
-
-          {/* {disableSearchBox && (
-            <div className={classes.searchWrapper}>
-              <div className={classNames(classes.wrapper, classes.light)}>
-                <div className={classes.search}>
-                  <SearchIcon />
-                </div>
-                <SearchUi history={history} />
-              </div>
-            </div>
-          )} */}
-
-          {isOmnaShopify ? (
-            <Fragment>
-              <ShopifyMenu
-                name={shopifyStoreName}
-                title={shopifyStoreName}
-                history={history}
-              />
-
-            </Fragment>
-              )
-              :
-              (
-                <div
-                  className={classNames(classes.headerProperties)}
-                  style={{ flex: 'auto 0' }}
-                >
-                  <TenantMenu history={history} />
-                  <Hidden xsDown>
-                    <span className={classes.separatorV} />
-                  </Hidden>
-                  <UserMenu />
-                </div>
-              )
-          }
-          {/* {currentTenant ? (
-            isOmnaShopify ? (
-              <ShopifyMenu
-                name={currentTenant.shop}
-                title={currentTenant.shopDomain}
-              />
-            ) : (
-              <div
-                className={classNames(classes.headerProperties)}
-                style={{ flex: 'auto 0' }}
-              >
-                <TenantMenu history={history} />
-                <Hidden xsDown>
-                  <span className={classes.separatorV} />
-                </Hidden>
-                <UserMenu />
-              </div>
-            )
-          ) : null} */}
+          <div
+            className={classNames(classes.headerProperties)}
+            style={{ flex: 'auto 0' }}
+          >
+            {!fromShopifyApp && <TenantMenu history={history} />}
+            <Hidden xsDown>
+              <span className={classes.separatorV} />
+            </Hidden>
+            <UserMenu fromShopifyApp={fromShopifyApp} />
+          </div>
         </Toolbar>
       </AppBar>
     );
@@ -281,7 +237,18 @@ Header.propTypes = {
   position: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   changeMode: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  fromShopifyApp: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(Header);
+const mapStateToProps = state => ({
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  ...state
+});
+
+const HeaderMapped = withStyles(styles)(Header);
+
+export default connect(
+  mapStateToProps,
+  null
+)(HeaderMapped);
