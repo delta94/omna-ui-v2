@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -7,6 +7,7 @@ import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -45,6 +46,17 @@ const MenuProps = {
     }
   }
 };
+
+const WrapSection = ({ label, component }) => (
+  <Fragment>
+    {label && (
+      <Grid item xs={12}>
+        <Typography variant="subtitle2" style={{ marginTop: '8px' }}>{label}</Typography>
+      </Grid>
+    )}
+    {component}
+  </Fragment>
+);
 
 const MuiTextField = props => {
   const {
@@ -407,120 +419,130 @@ const FormBuilder = (props) => {
     <div className={classes.container}>
       <Grid container spacing={3}>
         {[...mainProps, ...richEditorProps].map(item => {
+          let node;
           switch (item.input_type) {
             case 'text':
-              return (
+              node = (
                 <MuiTextField
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'numeric':
-              return (
+              node = (
                 <MuiNumericField
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'multi_text_input':
-              return (
+              node = (
                 <MuiMultiTextField
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'single_select':
-              return (
+              node = (
                 <MuiSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'single_enum_input':
-              return (
+              node = (
                 <MuiSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'boolean':
-              return (
+              node = (
                 <MuiBooleanSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'single_select_with_remote_options':
-              return (
+              node = (
                 <MuiAsyncSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'multi_select':
-              return (
+              node = (
                 <MuiMultiSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'multi_enum_input':
-              return (
+              node = (
                 <MuiMultiSelect
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'rich_text':
-              return (
+              node = (
                 <MuiRichTextEditor
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             case 'date':
-              return (
+              node = (
                 <MuiDate
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
             default:
-              return (
+              node = (
                 <MuiTextField
-                  key={item.id}
                   {...item}
                   classes={classes}
                   onChange={onChange}
                 />
               );
+              return <WrapSection key={item.id} label={item.start_section} component={node} />;
           }
         })}
       </Grid>
     </div>
   );
+};
+
+WrapSection.defaultProps = {
+  label: ''
+};
+
+WrapSection.propTypes = {
+  label: PropTypes.string,
+  component: PropTypes.node.isRequired
 };
 
 FormBuilder.propTypes = {
