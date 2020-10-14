@@ -1,7 +1,6 @@
 {
   "extends": [
     "eslint-config-airbnb",
-    "eslint-config-prettier",
     "plugin:flowtype/recommended",
     "plugin:jest/recommended",
     "plugin:jest/style"
@@ -18,7 +17,7 @@
     "import/no-named-as-default": 0,
     "no-unused-expressions": 0,
     "comma-dangle": 0, // not sure why airbnb turned this on. gross!
-    "indent": "off",
+    "indent": [2, 2, {"SwitchCase": 1}],
     "no-console": 0,
     "no-alert": 0,
     "id-length": 0,
@@ -47,8 +46,6 @@
     "react/jsx-first-prop-new-line": 0,
     "react/jsx-indent": 0,
     "react/jsx-indent-props": 0,
-    "react/require-default-props": 0,
-    "no-trailing-spaces": 0,
     "react/jsx-closing-bracket-location": 0,
     "react/jsx-one-expression-per-line": "off",
     "object-curly-newline": "off",
