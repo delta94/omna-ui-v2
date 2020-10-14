@@ -1,4 +1,4 @@
-import { fromJS, Map } from 'immutable';
+import { fromJS, Map, List } from 'immutable';
 import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
@@ -15,6 +15,7 @@ const initialState = fromJS({
     category: '',
     properties: []
   }),
+  filters: List([]),
   loading: true
 });
 
@@ -66,7 +67,15 @@ export default function variantsReducer(state = initialState, action) {
       });
     case types.INIT_BULK_EDIT_VARIANTS_DATA:
       return state.withMutations(mutableState => {
-        mutableState.set('bulkEditData', Map(action.payload));
+        const { remoteIds, category, integration, properties } = action.payload;
+        mutableState.setIn(['bulkEditData', 'remoteIds'], remoteIds)
+          .setIn(['bulkEditData', 'category'], category)
+          .setIn(['bulkEditData', 'integration'], integration.value || integration)
+          .setIn(['bulkEditData', 'properties'], properties);
+      });
+    case types.UPDATE_VARIANT_FILTERS:
+      return state.withMutations(mutableState => {
+        mutableState.set('filters', List(action.filters));
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

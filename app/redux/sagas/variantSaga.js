@@ -154,8 +154,11 @@ function* bulkEditProperties(payload) {
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const url = `/request_products?shop=${shop}&task=bulk_variant_properties`;
-    const response = yield CENIT_APP.post(url, { data:
-      { remotes_variants_id: remoteIds, basic_properties: basicProperties,
+    const response = yield CENIT_APP.post(url, {
+      data:
+      {
+        remotes_variants_id: remoteIds,
+        basic_properties: basicProperties,
         integration_properties: integrationProperties
       }
     });
@@ -171,15 +174,16 @@ function* bulkEditProperties(payload) {
 }
 
 function* getProductCategory(payload) {
-  const { productId, integrationId, enqueueSnackbar } = payload;
+  const { productId, integration, enqueueSnackbar } = payload;
   try {
     yield put({ type: types.SET_LOADING, loading: true });
     const response = yield api.get(`/products/${productId}`);
     const { data } = response.data;
-    const integration = data.integrations.find(item => item.id === integrationId);
-    const { properties } = integration.product;
+    const id = integration ? integration.value || integration : '';
+    const found = data.integrations.find(item => item.id === id);
+    const { properties } = found.product;
     const category = properties.find(item => item.id.includes('category'));
-    const bulkEditData = { remoteIds: [], category: category.value, integration: '', properties: [] }
+    const bulkEditData = { remoteIds: [], category: category.value, integration: '', properties: [] };
     yield put({ type: types.GET_PRODUCT_CATEGORY_SUCCESS, bulkEditData });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {

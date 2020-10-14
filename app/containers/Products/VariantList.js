@@ -9,6 +9,7 @@ import get from 'lodash/get';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
 import Ionicon from 'react-ionicons';
 import EditIcon from '@material-ui/icons/Edit';
@@ -16,16 +17,19 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+
 import MUIDataTable from 'mui-datatables';
 import Avatar from '@material-ui/core/Avatar';
 import { delay, convertListToString, getRemoteIds } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
-
-import { getVariantList, deleteVariant, initBulkEditData } from 'dan-actions/variantActions';
-import { getIntegrations } from 'dan-actions/integrationActions';
+import FiltersDlg from 'dan-components/Products/FiltersDlg';
+import {
+  getVariantList, deleteVariant, initBulkEditData, updateFilters
+} from 'dan-actions/variantActions';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { getProductCategory } from 'dan-actions/productActions';
+import filterDlgSizeHelper from 'utils/mediaQueries';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -33,22 +37,28 @@ const getMuiTheme = () => createMuiTheme({
       root: {
         cursor: 'pointer'
       }
+    },
+    MUIDataTableToolbar: {
+      filterPaper: {
+        width: filterDlgSizeHelper,
+        minWidth: '300px'
+      }
     }
   }
 });
 
 function VariantList(props) {
   const {
-    match, loading, integrations, variantList, bulkEditData, onGetVariants, onGetIntegrations, onInitBulkEditData,
-    history, fromShopifyApp, enqueueSnackbar
+    match, loading, variantList, bulkEditData, onGetVariants, onInitBulkEditData,
+    history, fromShopifyApp, filters, onUpdateFilters, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
-  const [serverSideFilterList, setServerSideFilterList] = useState([]);
   const [openConfirmDlg, setOpenConfirmDlg] = useState();
   const [selectedItem, setSelectedItem] = useState();
   const [selectedIndexList, setSelectedIndexList] = useState([]);
+  const [integrationFilter, setIntegrationFilter] = useState(undefined);
 
   const { data, pagination } = variantList;
 
@@ -60,40 +70,26 @@ function VariantList(props) {
     setAnchorEl(null);
   };
 
-  const getIntegrationFilter = () => {
-    if (serverSideFilterList[5] && serverSideFilterList[5][0]) {
-      const integration = integrations.data.find(item => item.name === serverSideFilterList[5][0]);
-      if (integration) {
-        return integration.id;
-      }
-    }
-    return null;
-  };
-
   const makeQuery = () => {
     const params = {
       limit,
       offset: page * limit,
       term: searchText,
       with_details: true,
-      integration_id: getIntegrationFilter()
+      integration_id: filters.get(0) ? filters.get(0).value : undefined
     };
     onGetVariants(match.params.id, params, enqueueSnackbar);
   };
 
   useEffect(() => {
     makeQuery();
-  }, [page, limit, searchText, serverSideFilterList]);
+  }, [page, limit, searchText, filters]);
 
   useEffect(() => {
-    onGetIntegrations({ params: { offset: 0, limit: 100 } });
-  }, []);
-
-  useEffect(() => {
-    if (bulkEditData && bulkEditData !== previousBulkEditData.current) {
-      const remoteIds = getRemoteIds(data, selectedIndexList, getIntegrationFilter(), 'variant');
+    if (bulkEditData && !bulkEditData.equals(previousBulkEditData.current)) {
+      const remoteIds = getRemoteIds(data, selectedIndexList, filters.get(0), 'variant');
       onInitBulkEditData({
-        remoteIds, integration: getIntegrationFilter(), category: bulkEditData.get('category'), properties: []
+        remoteIds, integration: filters.get(0), category: bulkEditData.get('category'), properties: []
       });
       history.push(`${history.location.pathname}/bulk-edit`);
     }
@@ -114,9 +110,15 @@ function VariantList(props) {
     }
   }
 
-  const handleFilterChange = filterList => (filterList ? setServerSideFilterList(filterList) : setServerSideFilterList([]));
+  const handleIntegrationFilterChange = (integation) => setIntegrationFilter(integation);
 
-  const handleResetFilters = () => (serverSideFilterList.length > 0 ? setServerSideFilterList([]) : null);
+  const handleFilterSubmit = () => {
+    const resultList = [];
+    integrationFilter ? resultList[0] = integrationFilter : null;
+    onUpdateFilters(resultList);
+  };
+
+  const handleResetFilters = () => setIntegrationFilter('');
 
   const handleConfirmDlg = () => {
     const { onDeleteVariant } = props;
@@ -127,9 +129,10 @@ function VariantList(props) {
   const handleCancelDlg = () => setOpenConfirmDlg(false);
 
   const handleBulkEdit = (event) => {
-    if (getIntegrationFilter()) {
+    const integFilter = filters.get(0);
+    if (integFilter) {
       const { onGetProductCategory } = props;
-      onGetProductCategory(match.params.id, getIntegrationFilter(), enqueueSnackbar);
+      onGetProductCategory(match.params.id, integFilter, enqueueSnackbar);
     } else setAnchorEl(event.currentTarget);
   };
 
@@ -146,6 +149,7 @@ function VariantList(props) {
       label: 'Image',
       options: {
         filter: false,
+        viewColumns: false,
         customBodyRender: (value, { columnIndex, rowData }) => {
           const [image] = rowData[columnIndex];
           const imgSrc = image || '/images/image_placeholder_listItem.png';
@@ -169,6 +173,7 @@ function VariantList(props) {
       label: 'Sku',
       options: {
         filter: false,
+        viewColumns: false
       }
     },
     {
@@ -198,10 +203,18 @@ function VariantList(props) {
       options: {
         filter: true,
         sort: false,
-        filterType: 'dropdown',
-        filterList: serverSideFilterList[5],
+        filterType: 'custom',
+        filterList: filters,
+        customFilterListOptions: {
+          render: v => v.name
+        },
         filterOptions: {
-          names: integrations.data.map(item => item.name),
+          display: () => (
+            <FiltersDlg
+              integration={integrationFilter}
+              onIntegrationChange={handleIntegrationFilterChange}
+            />
+          )
         },
         customBodyRender: value => convertListToString(value)
       }
@@ -231,13 +244,12 @@ function VariantList(props) {
     filter: true,
     selectableRows: fromShopifyApp ? 'multiple' : 'none',
     rowsSelected: selectedIndexList,
-    responsive: 'stacked',
+    responsive: 'vertical',
     download: false,
     print: false,
     serverSide: true,
     searchText,
     searchPlaceholder: 'Search by sku',
-    serverSideFilterList,
     rowsPerPage: limit,
     count: get(pagination, 'total', 0),
     page,
@@ -252,9 +264,6 @@ function VariantList(props) {
           break;
         case 'search':
           handleSearch(tableState.searchText);
-          break;
-        case 'filterChange':
-          handleFilterChange(tableState.filterList);
           break;
         case 'resetFilters':
           handleResetFilters();
@@ -316,7 +325,21 @@ function VariantList(props) {
           <Typography style={{ padding: '16px' }}>Apply integration filter for bulk edit.</Typography>
         </Popover>
       </div>
-    )
+    ),
+    setFilterChipProps: () => ({
+      color: 'primary',
+      variant: 'outlined',
+      style: { overflow: 'hidden' }
+    }),
+    customFilterDialogFooter: (currentFilterList, applyNewFilters) => (
+      <div style={{ padding: '16px' }}>
+        <Button variant="contained" onClick={() => handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
+      </div>
+    ),
+    onFilterChipClose: (index, removedFilter) => {
+      const removeChips = filters.filter(item => item.value !== removedFilter.value);
+      onUpdateFilters(removeChips);
+    }
   };
 
   return (
@@ -340,22 +363,22 @@ VariantList.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
-  integrations: PropTypes.object.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
   variantList: PropTypes.object.isRequired,
   bulkEditData: PropTypes.object.isRequired,
+  filters: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
   onDeleteVariant: PropTypes.func.isRequired,
   onGetProductCategory: PropTypes.func.isRequired,
   onInitBulkEditData: PropTypes.func.isRequired,
+  onUpdateFilters: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   variantList: state.getIn(['variant', 'variantList']).toJS(),
-  integrations: state.getIn(['integration', 'integrations']).toJS(),
   bulkEditData: state.getIn(['variant', 'bulkEditData']),
+  filters: state.getIn(['variant', 'filters']),
   loading: state.getIn(['variant', 'loading']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
@@ -363,10 +386,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
-  onGetIntegrations: bindActionCreators(getIntegrations, dispatch),
   onGetProductCategory: bindActionCreators(getProductCategory, dispatch),
   onDeleteVariant: bindActionCreators(deleteVariant, dispatch),
-  onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch)
+  onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
+  onUpdateFilters: bindActionCreators(updateFilters, dispatch)
 });
 
 const VariantListMapped = connect(

@@ -88,3 +88,8 @@ export const initBulkEditData = (payload) => ({
   type: types.INIT_BULK_EDIT_VARIANTS_DATA,
   payload
 });
+
+export const updateFilters = (filters) => ({
+  type: types.UPDATE_VARIANT_FILTERS,
+  filters
+});

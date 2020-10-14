@@ -91,10 +91,10 @@ export const importProductFromIntegration = (integrationId, remoteId, enqueueSna
   enqueueSnackbar
 });
 
-export const getProductCategory = (productId, integrationId, enqueueSnackbar) => ({
+export const getProductCategory = (productId, integration, enqueueSnackbar) => ({
   type: types.GET_PRODUCT_CATEGORY,
   productId,
-  integrationId,
+  integration,
   enqueueSnackbar
 });
 
@@ -107,4 +107,3 @@ export const updateProductFilters = (filters) => ({
   type: types.UPDATE_PRODUCT_FILTERS,
   filters
 });
-

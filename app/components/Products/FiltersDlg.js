@@ -10,15 +10,11 @@ import { delay, hasCategories } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion';
 
 const styles = theme => ({
-  root: {
-    padding: theme.spacing(1)
-  },
   button: {
     margin: theme.spacing(1),
   },
   select: {
-    margin: theme.spacing(1, 1, 2, 1),
-    width: '100%'
+    margin: theme.spacing(1, 1, 2, 1)
   },
   instructions: {
     marginTop: theme.spacing(3),
@@ -26,10 +22,10 @@ const styles = theme => ({
   },
 });
 
-function FilterTableBox(props) {
+function FiltersDlg(props) {
   const {
     integration, category, categories, onGetCategories, integrations, onGetIntegrations, loadingCategories,
-    loadingIntegrations, enqueueSnackbar, classes
+    loadingIntegrations, onCategoryChange, enqueueSnackbar, classes
   } = props;
 
   const [categoryOptions, setCategoryOptions] = useState([]);
@@ -46,7 +42,7 @@ function FilterTableBox(props) {
   }, [integrations]);
 
   useEffect(() => {
-    if (categories && integration) {
+    if (categories && integration && onCategoryChange) {
       setCategoryOptions(categories.data.map(item => ({ name: item.name, value: item.id })));
     }
   }, [categories]);
@@ -60,7 +56,7 @@ function FilterTableBox(props) {
   };
 
   useEffect(() => {
-    !initialLoad ? checkValidity() : null;
+    !initialLoad && onCategoryChange ? checkValidity() : null;
     setInitialLoad(false);
   }, [integration, categoryOptions]);
 
@@ -72,7 +68,7 @@ function FilterTableBox(props) {
   };
 
   useEffect(() => {
-    if (integration) {
+    if (integration && onCategoryChange) {
       makeCategoriesQuery();
     }
   }, [integration, categoryTerm]);
@@ -88,10 +84,7 @@ function FilterTableBox(props) {
     makeIntegrationsQuery();
   }, [integrationTerm]);
 
-  const handleCategoryChange = async (e, element) => {
-    const { onCategoryChange } = props;
-    onCategoryChange(element);
-  };
+  const handleCategoryChange = async (e, element) => onCategoryChange(element);
 
   const handleCategoryInputChange = async (e, value) => {
     const index = categories.data.findIndex(item => item.name === value);
@@ -101,9 +94,11 @@ function FilterTableBox(props) {
   };
 
   const handleIntegrationChange = async (e, element) => {
-    const { onIntegrationChange, onCategoryChange } = props;
-    onCategoryChange(undefined);
-    setCategoryOptions([]);
+    const { onIntegrationChange } = props;
+    if (onCategoryChange) {
+      onCategoryChange(undefined);
+      setCategoryOptions([]);
+    }
     onIntegrationChange(element);
   };
 
@@ -115,7 +110,7 @@ function FilterTableBox(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <div>
       <AutoSuggestion
         id="integration-select-id"
         label="Integrations"
@@ -126,18 +121,20 @@ function FilterTableBox(props) {
         onChange={handleIntegrationChange}
         onInputChange={handleIntegrationInputChange}
       />
-      <AutoSuggestion
-        id="category-select-id"
-        label="Categories"
-        className={classes.select}
-        options={categoryOptions}
-        loading={loadingCategories}
-        value={category}
-        helperText={categoryHelperText}
-        placeholder="Select a category from the selected integration"
-        onChange={handleCategoryChange}
-        onInputChange={handleCategoryInputChange}
-      />
+      {onCategoryChange && (
+        <AutoSuggestion
+          id="category-select-id"
+          label="Categories"
+          className={classes.select}
+          options={categoryOptions}
+          loading={loadingCategories}
+          value={category}
+          helperText={categoryHelperText}
+          placeholder="Select a category from the selected integration"
+          onChange={handleCategoryChange}
+          onInputChange={handleCategoryInputChange}
+        />
+      )}
     </div>
   );
 }
@@ -159,14 +156,15 @@ const mapDispatchToProps = dispatch => ({
 const FilterTableBoxMapped = connect(
   mapStateToProps,
   mapDispatchToProps
-)(FilterTableBox);
+)(FiltersDlg);
 
-FilterTableBox.defaultProps = {
+FiltersDlg.defaultProps = {
   integration: undefined,
-  category: undefined
+  category: undefined,
+  onCategoryChange: undefined
 };
 
-FilterTableBox.propTypes = {
+FiltersDlg.propTypes = {
   integration: PropTypes.object,
   category: PropTypes.object,
   loadingIntegrations: PropTypes.bool.isRequired,
@@ -176,7 +174,7 @@ FilterTableBox.propTypes = {
   onGetIntegrations: PropTypes.func.isRequired,
   onGetCategories: PropTypes.func.isRequired,
   onIntegrationChange: PropTypes.func.isRequired,
-  onCategoryChange: PropTypes.func.isRequired,
+  onCategoryChange: PropTypes.func,
   enqueueSnackbar: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired
 };

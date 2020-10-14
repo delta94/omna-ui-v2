@@ -13,6 +13,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
+import filterDlgSizeHelper from 'utils/mediaQueries';
 
 import { Avatar, Typography } from '@material-ui/core';
 import MUIDataTable from 'mui-datatables';
@@ -34,7 +35,7 @@ import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
-import FilterTableBox from 'dan-components/Products/FilterTableBox';
+import FiltersDlg from 'dan-components/Products/FiltersDlg';
 
 class ProductList extends React.Component {
   state = {
@@ -81,7 +82,7 @@ class ProductList extends React.Component {
       },
       MUIDataTableToolbar: {
         filterPaper: {
-          width: '100%',
+          width: filterDlgSizeHelper,
           minWidth: '300px'
         }
       }
@@ -321,7 +322,7 @@ class ProductList extends React.Component {
             display: () => {
               const { integrationFilter, categoryFilter } = this.state;
               return (
-                <FilterTableBox
+                <FiltersDlg
                   integration={integrationFilter}
                   category={categoryFilter}
                   onIntegrationChange={this.handleIntegrationFilterChange}
@@ -409,14 +410,14 @@ class ProductList extends React.Component {
           case 3:
             return (
               (parseFloat(a.customSortData[colIndex])
-                  < parseFloat(b.customSortData[colIndex])
+                < parseFloat(b.customSortData[colIndex])
                 ? -1
                 : 1) * (product === 'desc' ? 1 : -1)
             );
           case 4:
             return (
               (a.customSortData[colIndex].name.toLowerCase()
-                  < b.customSortData[colIndex].name.toLowerCase()
+                < b.customSortData[colIndex].name.toLowerCase()
                 ? -1
                 : 1) * (product === 'desc' ? 1 : -1)
             );
@@ -482,13 +483,11 @@ class ProductList extends React.Component {
         style: { overflow: 'hidden' },
         disabled: (filters.get(1) && chip.value !== filters.get(1).value) || false
       }),
-      customFilterDialogFooter: (currentFilterList, applyNewFilters) => {
-        return (
-          <div style={{ padding: '16px' }}>
-            <Button variant="contained" onClick={() => this.handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
-          </div>
-        );
-      },
+      customFilterDialogFooter: (currentFilterList, applyNewFilters) => (
+        <div style={{ padding: '16px' }}>
+          <Button variant="contained" onClick={() => this.handleFilterSubmit(applyNewFilters)}>Apply Filters</Button>
+        </div>
+      ),
       onFilterChipClose: (index, removedFilter) => {
         const removeChips = filters.filter(item => item.value !== removedFilter.value);
         onUpdateProductFilters(removeChips);
