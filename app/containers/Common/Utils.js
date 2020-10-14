@@ -253,9 +253,10 @@ export const hasCategories = (integrations, selectedIntegration) => {
 
 export const getRemoteIds = (data, selectedIndexList, integration, type = 'product') => {
   const remoteIds = [];
-  if (integration) {
+  const selectedIntegration = integration ? integration.value || integration : null;
+  if (selectedIntegration) {
     selectedIndexList.forEach(index => {
-      const filteredIntegration = data[index].integrations.find(item => item.id === integration);
+      const filteredIntegration = data[index].integrations.find(item => item.id === selectedIntegration);
       if (filteredIntegration) {
         if (type === 'product') {
           const { product } = filteredIntegration;
