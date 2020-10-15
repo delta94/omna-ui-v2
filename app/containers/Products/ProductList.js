@@ -97,7 +97,7 @@ class ProductList extends React.Component {
       offset: page * limit,
       limit,
       term: searchTerm || '',
-      with_details: true,
+      with_details: false,
     };
 
     const integrationFilter = filters.get(0) ? filters.get(0).value : null;
