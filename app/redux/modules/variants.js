@@ -37,10 +37,6 @@ export default function variantsReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('update', action.data);
       });
-    case types.DELETE_VARIANT:
-      return state.withMutations((mutableState) => {
-        mutableState.updateIn(['variantList', 'data'], list => list.filter(item => item.get('id') !== action.id));
-      });
     case types.UPDATE_INTEGRATION_VARIANT:
       return state.withMutations((mutableState) => {
         mutableState.set('update', action.data);

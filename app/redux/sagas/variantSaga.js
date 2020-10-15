@@ -67,23 +67,6 @@ function* updateVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
-function* deleteVariant(payload) {
-  const { productId, variantId, enqueueSnackbar } = payload;
-  try {
-    yield put({ type: types.SET_LOADING, loading: true });
-    yield api.delete(`/products/${productId}/variants/${variantId}`);
-    yield put({ type: types.DELETE_VARIANT, id: variantId });
-    enqueueSnackbar('Variant deleted successfuly', {
-      variant: 'success'
-    });
-  } catch (error) {
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-      variant: 'error'
-    });
-  }
-  yield put({ type: types.SET_LOADING, loading: false });
-}
-
 function* updateIntegrationVariant(payload) {
   const { integrationId, remoteProductId, remoteVariantId, data, enqueueSnackbar } = payload;
   try {
@@ -209,10 +192,6 @@ export function* watchUpdateVariant() {
   yield takeLatest(types.UPDATE_VARIANT_ASYNC, updateVariant);
 }
 
-export function* watchDeleteVariant() {
-  yield takeLatest(types.DELETE_VARIANT_ASYNC, deleteVariant);
-}
-
 export function* watchUpdateIntegrationVariant() {
   yield takeLatest(types.UPDATE_INTEGRATION_VARIANT_ASYNC, updateIntegrationVariant);
 }
@@ -239,6 +218,6 @@ export function* watchGetProductCategory() {
 
 export default function* variantSaga() {
   yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(),
-    watchDeleteVariant(), watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant(),
+    watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant(),
     watchGetBulkEditProperties(), watchBulkEditProperties(), watchGetProductCategory()]);
 }

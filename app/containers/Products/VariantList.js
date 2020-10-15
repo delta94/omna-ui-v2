@@ -24,8 +24,9 @@ import { delay, convertListToString, getRemoteIds } from 'dan-containers/Common/
 import Loading from 'dan-components/Loading';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import {
-  getVariantList, deleteVariant, initBulkEditData, updateFilters
+  getVariantList, initBulkEditData, updateFilters
 } from 'dan-actions/variantActions';
+import deleteVariant from 'dan-api/services/variants';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { getProductCategory } from 'dan-actions/productActions';
@@ -59,6 +60,7 @@ function VariantList(props) {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedIndexList, setSelectedIndexList] = useState([]);
   const [integrationFilter, setIntegrationFilter] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data, pagination } = variantList;
 
@@ -120,10 +122,14 @@ function VariantList(props) {
 
   const handleResetFilters = () => setIntegrationFilter('');
 
-  const handleConfirmDlg = () => {
-    const { onDeleteVariant } = props;
-    onDeleteVariant(match.params.id, selectedItem.id, enqueueSnackbar);
+  const handleConfirmDlg = async () => {
+    setIsLoading(true);
     setOpenConfirmDlg(false);
+    const response = await deleteVariant({ productId: match.params.id, variantId: selectedItem.id, enqueueSnackbar });
+    if(response.data) {
+      makeQuery();
+    }
+    setIsLoading(false);
   };
 
   const handleCancelDlg = () => setOpenConfirmDlg(false);
@@ -344,7 +350,7 @@ function VariantList(props) {
 
   return (
     <div>
-      {loading ? <Loading /> : null}
+      {loading || isLoading ? <Loading /> : null}
       <PageHeader title="Variants" history={history} />
       <MuiThemeProvider theme={getMuiTheme()}>
         <MUIDataTable columns={columns} data={data} options={options} />
@@ -368,7 +374,6 @@ VariantList.propTypes = {
   bulkEditData: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
-  onDeleteVariant: PropTypes.func.isRequired,
   onGetProductCategory: PropTypes.func.isRequired,
   onInitBulkEditData: PropTypes.func.isRequired,
   onUpdateFilters: PropTypes.func.isRequired,
@@ -387,7 +392,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
   onGetProductCategory: bindActionCreators(getProductCategory, dispatch),
-  onDeleteVariant: bindActionCreators(deleteVariant, dispatch),
   onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
   onUpdateFilters: bindActionCreators(updateFilters, dispatch)
 });
