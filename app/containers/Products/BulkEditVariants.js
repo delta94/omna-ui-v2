@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getBulkEditVariantProperties, bulkEditVariantProperties } from 'dan-actions/variantActions';
+import { getBulkEditProperties, bulkEditProperties } from 'dan-api/services/variants';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import GeneralProps from 'dan-components/Products/GeneralProps';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
@@ -11,7 +10,7 @@ import FormActions from 'dan-containers/Common/FormActions';
 
 function BulkEditVariants(props) {
   const {
-    history, store, loading, bulkEditData, bulkEditTask, onGetProperties, enqueueSnackbar
+    history, store, bulkEditData, enqueueSnackbar
   } = props;
   const [price, setPrice] = useState();
   const [originalPrice, setOriginalPrice] = useState();
@@ -23,20 +22,23 @@ function BulkEditVariants(props) {
     length: undefined,
     content: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [integrationProps, setIntegrationProps] = useState([]);
 
-  const prevBulkEditTaskProp = useRef(bulkEditTask);
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    if (bulkEditTask && bulkEditTask !== prevBulkEditTaskProp.current) {
-      history.push(`/tasks/${bulkEditTask.id}`);
+    async function getIntegrationProps() {
+      if (bulkEditData) {
+        setLoading(true);
+        const response = await getBulkEditProperties({
+          store, integrationId: bulkEditData.get('integration'), categoryId: bulkEditData.get('category'), enqueueSnackbar
+        });
+        response.data ? setIntegrationProps(response.data) : null;
+        setLoading(false);
+      }
     }
-  }, [bulkEditTask]);
-
-  useEffect(() => {
-    if (bulkEditData) {
-      onGetProperties(store, bulkEditData.get('integration'), bulkEditData.get('category'), enqueueSnackbar);
-    }
+    getIntegrationProps();
   }, []);
 
   const handleTouchedProps = () => setTouched(true);
@@ -63,10 +65,13 @@ function BulkEditVariants(props) {
     handleTouchedProps();
   };
 
-  const handleBulkEdit = () => {
-    const { onBulkEditProperties } = props;
+  const handleBulkEdit = async () => {
+    setLoading(true);
     const basicProperties = { price, original_price: originalPrice, quantity, package: dimension };
-    onBulkEditProperties(store, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
+    await bulkEditProperties({
+      store, remoteIds: bulkEditData.get('remoteIds'), basicProperties, properties: bulkEditData.get('properties'), enqueueSnackbar
+    });
+    setLoading(false);
   };
 
   return (
@@ -87,7 +92,7 @@ function BulkEditVariants(props) {
         title="Integration properties"
         description="At this point all common properties can be edited."
         loading={loading}
-        properties={bulkEditData.get('properties')}
+        properties={integrationProps}
         onTouchedProps={handleTouchedProps}
       />
       {!loading && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
@@ -95,37 +100,22 @@ function BulkEditVariants(props) {
   );
 }
 
-BulkEditVariants.defaultProps = {
-  bulkEditTask: null
-};
-
 BulkEditVariants.propTypes = {
   history: PropTypes.object.isRequired,
   store: PropTypes.string.isRequired,
-  loading: PropTypes.bool.isRequired,
   bulkEditData: PropTypes.any.isRequired,
-  bulkEditTask: PropTypes.object,
-  onGetProperties: PropTypes.func.isRequired,
-  onBulkEditProperties: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  loading: state.getIn(['variant', 'loading']),
   bulkEditData: state.getIn(['variant', 'bulkEditData']),
-  bulkEditTask: state.getIn(['variant', 'bulkEdit']),
   store: state.getIn(['user', 'tenantName']),
   ...state
 });
 
-const mapDispatchToProps = dispatch => ({
-  onGetProperties: bindActionCreators(getBulkEditVariantProperties, dispatch),
-  onBulkEditProperties: bindActionCreators(bulkEditVariantProperties, dispatch)
-});
-
 const BulkEditVariantsMapped = connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(BulkEditVariants);
 
 export default withSnackbar(BulkEditVariantsMapped);

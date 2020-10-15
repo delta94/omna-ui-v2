@@ -53,14 +53,6 @@ export default function variantsReducer(state = initialState, action) {
       return state.withMutations(mutableState => {
         mutableState.set('bulkEditData', Map(action.bulkEditData));
       });
-    case types.GET_BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
-      return state.withMutations(mutableState => {
-        mutableState.setIn(['bulkEditData', 'properties'], action.data);
-      });
-    case types.BULK_EDIT_VARIANT_PROPERTIES_SUCCESS:
-      return state.withMutations(mutableState => {
-        mutableState.set('bulkEdit', action.data);
-      });
     case types.INIT_BULK_EDIT_VARIANTS_DATA:
       return state.withMutations(mutableState => {
         const { remoteIds, category, integration, properties } = action.payload;

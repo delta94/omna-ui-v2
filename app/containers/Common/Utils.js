@@ -270,3 +270,11 @@ export const getRemoteIds = (data, selectedIndexList, integration, type = 'produ
   }
   return remoteIds;
 };
+
+export const getCategoryVariant = (data, selectedIndexList, integration) => {
+  const integrationValue = integration ? integration.value || integration : null;
+  const variantItem = selectedIndexList && selectedIndexList.length > 0 ? data[selectedIndexList[0]] : null;
+  const filteredIntegration = variantItem.integrations.find(item => item.id === integrationValue);
+  const { category_id: categoryId } = filteredIntegration.variant;
+  return categoryId;
+};

@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, Fragment, useRef
+  useState, useEffect, Fragment
 } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -20,7 +20,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Avatar from '@material-ui/core/Avatar';
-import { delay, convertListToString, getRemoteIds } from 'dan-containers/Common/Utils';
+import { delay, convertListToString, getRemoteIds, getCategoryVariant } from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import {
@@ -29,7 +29,6 @@ import {
 import deleteVariant from 'dan-api/services/variants';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
-import { getProductCategory } from 'dan-actions/productActions';
 import filterDlgSizeHelper from 'utils/mediaQueries';
 
 const getMuiTheme = () => createMuiTheme({
@@ -50,7 +49,7 @@ const getMuiTheme = () => createMuiTheme({
 
 function VariantList(props) {
   const {
-    match, loading, variantList, bulkEditData, onGetVariants, onInitBulkEditData,
+    match, loading, variantList, onGetVariants, onInitBulkEditData,
     history, fromShopifyApp, filters, onUpdateFilters, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
@@ -65,8 +64,6 @@ function VariantList(props) {
   const { data, pagination } = variantList;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const previousBulkEditData = useRef(bulkEditData);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -86,16 +83,6 @@ function VariantList(props) {
   useEffect(() => {
     makeQuery();
   }, [page, limit, searchText, filters]);
-
-  useEffect(() => {
-    if (bulkEditData && !bulkEditData.equals(previousBulkEditData.current)) {
-      const remoteIds = getRemoteIds(data, selectedIndexList, filters.get(0), 'variant');
-      onInitBulkEditData({
-        remoteIds, integration: filters.get(0), category: bulkEditData.get('category'), properties: []
-      });
-      history.push(`${history.location.pathname}/bulk-edit`);
-    }
-  }, [bulkEditData]);
 
   const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
 
@@ -137,8 +124,12 @@ function VariantList(props) {
   const handleBulkEdit = (event) => {
     const integFilter = filters.get(0);
     if (integFilter) {
-      const { onGetProductCategory } = props;
-      onGetProductCategory(match.params.id, integFilter, enqueueSnackbar);
+      const remoteIds = getRemoteIds(data, selectedIndexList, filters.get(0), 'variant');
+      const categoryId = getCategoryVariant(data, selectedIndexList, filters.get(0));
+      onInitBulkEditData({
+        remoteIds, integration: filters.get(0), category: categoryId, properties: []
+      });
+      history.push(`${history.location.pathname}/bulk-edit`);
     } else setAnchorEl(event.currentTarget);
   };
 
@@ -371,10 +362,8 @@ VariantList.propTypes = {
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
   variantList: PropTypes.object.isRequired,
-  bulkEditData: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
-  onGetProductCategory: PropTypes.func.isRequired,
   onInitBulkEditData: PropTypes.func.isRequired,
   onUpdateFilters: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
@@ -382,7 +371,6 @@ VariantList.propTypes = {
 
 const mapStateToProps = state => ({
   variantList: state.getIn(['variant', 'variantList']).toJS(),
-  bulkEditData: state.getIn(['variant', 'bulkEditData']),
   filters: state.getIn(['variant', 'filters']),
   loading: state.getIn(['variant', 'loading']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
@@ -391,7 +379,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
-  onGetProductCategory: bindActionCreators(getProductCategory, dispatch),
   onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
   onUpdateFilters: bindActionCreators(updateFilters, dispatch)
 });

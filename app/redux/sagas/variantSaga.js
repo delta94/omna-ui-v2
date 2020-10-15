@@ -1,7 +1,7 @@
 import { takeLatest, put, all } from 'redux-saga/effects';
 import * as types from 'dan-actions/actionConstants';
 import get from 'lodash/get';
-import api, { CENIT_APP } from 'dan-containers/Utils/api';
+import api from 'dan-containers/Utils/api';
 
 function* getVariants(payload) {
   const { productId, params, enqueueSnackbar } = payload;
@@ -116,46 +116,6 @@ function* unlinkVariant(payload) {
   yield put({ type: types.SET_LOADING, loading: false });
 }
 
-function* getBulkEditProperties(payload) {
-  const { shop, integrationId, categoryId, enqueueSnackbar } = payload;
-  try {
-    yield put({ type: types.SET_LOADING, loading: true });
-    const url = `/request_products?shop=${shop}&integration_id=${integrationId}&category_id=${categoryId}&task=get_product_properties`;
-    const response = yield CENIT_APP.get(url);
-    const { variant_properties: data } = response.data;
-    yield put({ type: types.GET_BULK_EDIT_VARIANT_PROPERTIES_SUCCESS, data });
-  } catch (error) {
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-      variant: 'error'
-    });
-  }
-  yield put({ type: types.SET_LOADING, loading: false });
-}
-
-function* bulkEditProperties(payload) {
-  const { shop, remoteIds, basicProperties, integrationProperties, enqueueSnackbar } = payload;
-  try {
-    yield put({ type: types.SET_LOADING, loading: true });
-    const url = `/request_products?shop=${shop}&task=bulk_variant_properties`;
-    const response = yield CENIT_APP.post(url, {
-      data:
-      {
-        remotes_variants_id: remoteIds,
-        basic_properties: basicProperties,
-        integration_properties: integrationProperties
-      }
-    });
-    const { data } = response.data;
-    enqueueSnackbar('Updating variants', { variant: 'info' });
-    yield put({ type: types.BULK_EDIT_VARIANT_PROPERTIES_SUCCESS, data });
-  } catch (error) {
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-      variant: 'error'
-    });
-  }
-  yield put({ type: types.SET_LOADING, loading: false });
-}
-
 function* getProductCategory(payload) {
   const { productId, integration, enqueueSnackbar } = payload;
   try {
@@ -204,20 +164,11 @@ export function* watchUnlinkVariant() {
   yield takeLatest(types.UNLINK_VARIANT_ASYNC, unlinkVariant);
 }
 
-export function* watchGetBulkEditProperties() {
-  yield takeLatest(types.GET_BULK_EDIT_VARIANT_PROPERTIES, getBulkEditProperties);
-}
-
-export function* watchBulkEditProperties() {
-  yield takeLatest(types.BULK_EDIT_VARIANT_PROPERTIES, bulkEditProperties);
-}
-
 export function* watchGetProductCategory() {
   yield takeLatest(types.GET_PRODUCT_CATEGORY, getProductCategory);
 }
 
 export default function* variantSaga() {
   yield all([watchGetVariants(), watchGetVariant(), watchCreateVariant(), watchUpdateVariant(),
-    watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant(),
-    watchGetBulkEditProperties(), watchBulkEditProperties(), watchGetProductCategory()]);
+    watchUpdateIntegrationVariant(), watchLinkVariant(), watchUnlinkVariant(), watchGetProductCategory()]);
 }
