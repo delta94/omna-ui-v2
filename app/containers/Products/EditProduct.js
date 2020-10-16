@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
+import get from 'lodash/get';
+import cloneDeep from 'lodash/cloneDeep';
 import { withStyles } from '@material-ui/core/styles';
 import Loading from 'dan-components/Loading';
 
@@ -74,11 +75,9 @@ function EditProduct(props) {
         setImages(data.images);
         setDimension({ ...checkTypes(data.package), overwrite: false });
       } catch (error) {
-        if (error && error.response.data.message) {
-          enqueueSnackbar(error.response.data.message, {
-            variant: 'error'
-          });
-        }
+        enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+          variant: 'error'
+        });
       }
       setIsLoading(false);
     }
@@ -109,22 +108,31 @@ function EditProduct(props) {
     const found = integrations.find(item => item.name === integrationName);
     const { remote_product_id: remoteProductId, properties } = found.product;
     const data = { properties };
-    await API.post(`integrations/${found.id}/products/${remoteProductId}`, { data });
+    const result = await API.post(`integrations/${found.id}/products/${remoteProductId}`, { data });
+    return result;
   };
 
   const handleEdit = async () => {
     setIsLoading(true);
     try {
-      form === 'general' ? await editBasicInfo() : await editIntegrationProps();
+      if (form === 'general') {
+        await editBasicInfo();
+      } else {
+        const resp = await editIntegrationProps();
+        const { data } = resp.data;
+        const index = integrations.findIndex(item => item.id === data.integration.id);
+        if (index !== -1) {
+          integrations[index] = data.integration;
+          setIntegrations(cloneDeep(integrations));
+        }
+      }
       enqueueSnackbar('Product edited successfuly', {
         variant: 'success'
       });
     } catch (error) {
-      if (error && error.response.data.message) {
-        enqueueSnackbar(error.response.data.message, {
-          variant: 'error'
-        });
-      }
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
     setIsLoading(false);
   };
@@ -252,7 +260,7 @@ function EditProduct(props) {
       />
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
