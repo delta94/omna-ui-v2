@@ -11,8 +11,9 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import VariantForm from 'dan-components/Products/VariantForm';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import Linker from 'dan-components/Products/Linker';
+import { getVariant } from 'dan-api/services/variants';
 import {
-  getVariant, updateVariant, linkVariant, unlinkVariant, updateIntegrationVariant
+  updateVariant, linkVariant, unlinkVariant, updateIntegrationVariant
 } from 'dan-actions/variantActions';
 import { checkTypes } from 'dan-containers/Common/Utils';
 
@@ -25,7 +26,7 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 
 function EditVariant(props) {
   const {
-    match, loading, history, variant, linkTask, unlinkTask, onGetVariant, fromShopifyApp, enqueueSnackbar
+    match, loading, history, linkTask, unlinkTask, fromShopifyApp, enqueueSnackbar
   } = props;
   const [id, setId] = useState();
   const [sku, setSKU] = useState('');
@@ -42,28 +43,35 @@ function EditVariant(props) {
     content: ''
   });
   const [action, setAction] = useState('link');
+  const [isLoading, setIsLoading] = useState(false);
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [form, setForm] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
   const prevLinkTaskProp = useRef(linkTask);
   const prevUnlinkTaskProp = useRef(unlinkTask);
 
-  useEffect(() => {
-    onGetVariant(match.params.productId, match.params.variantId, enqueueSnackbar);
-  }, [match.params.variantId]);
 
   useEffect(() => {
-    if (variant) {
-      setId(variant.id);
-      setSKU(variant.sku);
-      setPrice(variant.price);
-      setQuantity(variant.quantity);
-      setOriginalPrice(variant.original_price);
-      setIntegrations(variant.integrations);
-      setImages(variant.images);
-      setDimension(checkTypes(variant.package));
+    async function onGetVariant() {
+      setIsLoading(true);
+      const response = await getVariant({
+        productId: match.params.productId, variantId: match.params.variantId, enqueueSnackbar
+      });
+      if (response.data) {
+        const { data } = response;
+        setId(data.id);
+        setSKU(data.sku);
+        setPrice(data.price);
+        setQuantity(data.quantity);
+        setOriginalPrice(data.original_price);
+        setIntegrations(data.integrations);
+        setImages(data.images);
+        setDimension(checkTypes(data.package));
+      }
+      setIsLoading(false);
     }
-  }, [variant]);
+    onGetVariant();
+  }, [match.params.variantId]);
 
   useEffect(() => {
     if (linkTask && linkTask !== prevLinkTaskProp.current) {
@@ -131,7 +139,7 @@ function EditVariant(props) {
 
   return (
     <div>
-      {loading ? <Loading /> : null}
+      {loading || isLoading ? <Loading /> : null}
       <PageHeader title="Edit variant" history={history} />
       {!fromShopifyApp && (
         <ToolbarActions
@@ -177,7 +185,6 @@ function EditVariant(props) {
 }
 
 const mapStateToProps = state => ({
-  variant: state.getIn(['variant', 'variant']),
   loading: state.getIn(['variant', 'loading']),
   update: state.getIn(['variant', 'update']),
   linkTask: state.getIn(['variant', 'link']),
@@ -187,7 +194,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetVariant: bindActionCreators(getVariant, dispatch),
   onUpdateVariant: bindActionCreators(updateVariant, dispatch),
   onLinkVariant: bindActionCreators(linkVariant, dispatch),
   onUnlinkVariant: bindActionCreators(unlinkVariant, dispatch),
@@ -202,12 +208,10 @@ const EditVariantMapped = connect(
 EditVariant.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  variant: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   linkTask: PropTypes.object,
   unlinkTask: PropTypes.object,
   fromShopifyApp: PropTypes.bool.isRequired,
-  onGetVariant: PropTypes.func.isRequired,
   onUpdateVariant: PropTypes.func.isRequired,
   onLinkVariant: PropTypes.func.isRequired,
   onUnlinkVariant: PropTypes.func.isRequired,
@@ -216,7 +220,6 @@ EditVariant.propTypes = {
 };
 
 EditVariant.defaultProps = {
-  variant: null,
   linkTask: null,
   unlinkTask: null
 };

@@ -2,6 +2,21 @@ import history from 'utils/history';
 import get from 'lodash/get';
 import api, { CENIT_APP } from 'dan-containers/Utils/api';
 
+export const getVariant = async (payload) => {
+  const { productId, variantId, enqueueSnackbar } = payload;
+  let response;
+  try {
+    const resp = await api.get(`/products/${productId}/variants/${variantId}`);
+    response = resp.data;
+  } catch (error) {
+    response = { error };
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  return response;
+};
+
 const deleteVariant = async (payload) => {
   const { productId, variantId, enqueueSnackbar } = payload;
   let response;

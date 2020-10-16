@@ -16,7 +16,7 @@ const initialState = fromJS({
     properties: []
   }),
   filters: List([]),
-  loading: true
+  loading: false
 });
 
 export default function variantsReducer(state = initialState, action) {
