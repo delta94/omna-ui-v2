@@ -35,16 +35,18 @@ const deleteVariant = async (payload) => {
 };
 
 export const getBulkEditProperties = async (payload) => {
-  const { store, integrationId, categoryId, enqueueSnackbar } = payload;
+  const { store, integration, category, enqueueSnackbar } = payload;
   let response;
   try {
+    const integrationId = integration ? integration.value || integration : '';
+    const categoryId = category ? category.value || category : '';
     const url = `/request_products?shop=${store}&integration_id=${integrationId}&category_id=${categoryId}&task=get_product_properties`;
     const resp = await CENIT_APP.get(url);
     const { variant_properties: data } = resp.data;
     response = { data };
   } catch (error) {
-    response = error;
-    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+    response = { error };
+    enqueueSnackbar(get(response, ['error', 'message'], 'Error getting properties'), {
       variant: 'error'
     });
   }
@@ -52,18 +54,11 @@ export const getBulkEditProperties = async (payload) => {
 };
 
 export const bulkEditProperties = async (payload) => {
-  const { store, remoteIds, basicProperties, integrationProperties, enqueueSnackbar } = payload;
+  const { store, data, enqueueSnackbar } = payload;
   let response;
   try {
     const url = `/request_products?shop=${store}&task=bulk_variant_properties`;
-    const resp = await CENIT_APP.post(url, {
-      data:
-      {
-        remotes_variants_id: remoteIds,
-        basic_properties: basicProperties,
-        integration_properties: integrationProperties
-      }
-    });
+    const resp = await CENIT_APP.post(url, { data });
     response = resp.data;
     history.push(`/tasks/${response.data.id}`);
     enqueueSnackbar('Updating variants', { variant: 'info' });

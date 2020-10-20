@@ -24,12 +24,13 @@ import { delay, convertListToString, getRemoteIds, getCategoryVariant } from 'da
 import Loading from 'dan-components/Loading';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import {
-  getVariantList, initBulkEditData, updateFilters
+  getVariantList, updateFilters
 } from 'dan-actions/variantActions';
 import deleteVariant from 'dan-api/services/variants';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import filterDlgSizeHelper from 'utils/mediaQueries';
+import BulkEditVariants from './BulkEditVariants';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -49,13 +50,15 @@ const getMuiTheme = () => createMuiTheme({
 
 function VariantList(props) {
   const {
-    match, loading, variantList, onGetVariants, onInitBulkEditData,
-    history, fromShopifyApp, filters, onUpdateFilters, enqueueSnackbar
+    match, loading, variantList, onGetVariants,
+    history, fromShopifyApp, store, filters, onUpdateFilters, enqueueSnackbar
   } = props;
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchText, setSearchText] = useState('');
   const [openConfirmDlg, setOpenConfirmDlg] = useState();
+  const [openBulkEdit, setOpenBulkEdit] = useState(false);
+  const [bulkEditParams, setBulkEditParams] = useState();
   const [selectedItem, setSelectedItem] = useState();
   const [selectedIndexList, setSelectedIndexList] = useState([]);
   const [integrationFilter, setIntegrationFilter] = useState(undefined);
@@ -113,7 +116,7 @@ function VariantList(props) {
     setIsLoading(true);
     setOpenConfirmDlg(false);
     const response = await deleteVariant({ productId: match.params.id, variantId: selectedItem.id, enqueueSnackbar });
-    if(response.data) {
+    if (response.data) {
       makeQuery();
     }
     setIsLoading(false);
@@ -121,15 +124,17 @@ function VariantList(props) {
 
   const handleCancelDlg = () => setOpenConfirmDlg(false);
 
+  const handleCloseBulkEdit = () => setOpenBulkEdit(false);
+
   const handleBulkEdit = (event) => {
     const integFilter = filters.get(0);
     if (integFilter) {
-      const remoteIds = getRemoteIds(data, selectedIndexList, filters.get(0), 'variant');
-      const categoryId = getCategoryVariant(data, selectedIndexList, filters.get(0));
-      onInitBulkEditData({
-        remoteIds, integration: filters.get(0), category: categoryId, properties: []
+      const remoteIds = getRemoteIds(data, selectedIndexList, integFilter, 'variant');
+      const category = getCategoryVariant(data, selectedIndexList, integFilter);
+      setBulkEditParams({
+        remoteIds, integration: integFilter, category, store
       });
-      history.push(`${history.location.pathname}/bulk-edit`);
+      setOpenBulkEdit(true);
     } else setAnchorEl(event.currentTarget);
   };
 
@@ -352,6 +357,11 @@ function VariantList(props) {
         handleConfirm={handleConfirmDlg}
         handleCancel={handleCancelDlg}
       />
+      <BulkEditVariants
+        open={openBulkEdit}
+        params={bulkEditParams}
+        onClose={handleCloseBulkEdit}
+      />
     </div>
   );
 }
@@ -361,10 +371,10 @@ VariantList.propTypes = {
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
+  store: PropTypes.string.isRequired,
   variantList: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
-  onInitBulkEditData: PropTypes.func.isRequired,
   onUpdateFilters: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
@@ -374,12 +384,12 @@ const mapStateToProps = state => ({
   filters: state.getIn(['variant', 'filters']),
   loading: state.getIn(['variant', 'loading']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  store: state.getIn(['user', 'tenantName']),
   ...state
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
-  onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
   onUpdateFilters: bindActionCreators(updateFilters, dispatch)
 });
 

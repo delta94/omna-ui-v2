@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import PageHeader from 'dan-containers/Common/PageHeader';
-import { getBulkEditProperties, bulkEditProperties } from 'dan-actions/productActions';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
+import { getBulkEditProperties, bulkEditProperties } from 'dan-api/services/products';
+import { editDynamicPropsHelper } from 'dan-containers/Common/Utils';
 import GeneralProps from 'dan-components/Products/GeneralProps';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
-import FormActions from 'dan-containers/Common/FormActions';
+import FullScreenDlg from 'dan-components/FullScreenDlg/index';
 
 function BulkEditProducts(props) {
   const {
-    history, loading, store, bulkEditData, task, onGetProperties, enqueueSnackbar
+    open, params, onClose, enqueueSnackbar
   } = props;
   const [price, setPrice] = useState();
   const [dimension, setDimension] = useState({
@@ -21,93 +21,101 @@ function BulkEditProducts(props) {
     length: undefined,
     content: ''
   });
-  const [touched, setTouched] = useState(false);
-  const prevTaskProp = useRef(task);
+  const [initialBasicProps, setInitialBasicProps] = useState();
+  const [initialIntegrationProps, setInitialIntegrationProps] = useState();
+  const [loading, setLoading] = useState(false);
+  const [integrationProperties, setIntegrationProperties] = useState([]);
+  const [errorProps, setErrorProps] = useState();
+  const [isValidForm, setIsValidForm] = useState(false);
 
   useEffect(() => {
-    if (task && task !== prevTaskProp.current) {
-      history.push(`/tasks/${task.id}`);
+    async function getProps() {
+      if (open) {
+        setLoading(true);
+        const { data, error } = await getBulkEditProperties({ ...params, enqueueSnackbar });
+        data ? setIntegrationProperties(data) : null;
+        error ? setErrorProps(error) : null;
+        setLoading(false);
+        setInitialBasicProps(cloneDeep({
+          price, package: dimension
+        }));
+        setInitialIntegrationProps(cloneDeep(data));
+      }
     }
-  }, [task]);
+    getProps();
+  }, [open]);
 
-  useEffect(() => {
-    if (bulkEditData) {
-      onGetProperties(store, bulkEditData.get('integration'), bulkEditData.get('category'), enqueueSnackbar);
-    }
-  }, []);
+  const handleChange = e => setPrice(e.target.value);
 
-  const handleTouchedProps = () => setTouched(true);
-
-  const handleChange = e => {
-    setPrice(e.target.value);
-    handleTouchedProps();
+  const handlePropertiesChange = (e) => {
+    const newProps = editDynamicPropsHelper(e, integrationProperties);
+    setIntegrationProperties(newProps);
   };
 
   const handleDimensionChange = e => {
     setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
-    handleTouchedProps();
   };
 
-  const handleBulkEdit = () => {
-    const { onBulkEditProperties } = props;
+  const checkValidityForm = () => {
+    const touchedBasicProps = { price, package: dimension };
+    if ((!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProperties))) {
+      setIsValidForm(true);
+    } else setIsValidForm(false);
+  };
+
+  useEffect(() => {
+    open ? checkValidityForm() : null;
+  }, [price, dimension, integrationProperties]);
+
+  const handleBulkEdit = async () => {
+    const { store, remoteIds } = params;
     const basicProperties = { price, package: dimension };
-    onBulkEditProperties(store, bulkEditData.get('remoteIds'), basicProperties, bulkEditData.get('properties'), enqueueSnackbar);
+    const data = {
+      remotes_id: remoteIds
+    };
+    !isEqual(initialBasicProps, basicProperties) ? data.basic_properties = basicProperties : null;
+    !isEqual(initialIntegrationProps, integrationProperties) ? data.integration_properties = integrationProperties : null;
+    setLoading(true);
+    await bulkEditProperties({
+      store, data, enqueueSnackbar
+    });
+    setLoading(false);
   };
 
   return (
     <div>
-      <PageHeader title="Bulk edit products" history={history} />
-      <GeneralProps
-        description="At this point all general properties can be edited."
-        price={price}
-        loading={loading}
-        onChange={handleChange}
-        dimensions={dimension}
-        onDimensionChange={handleDimensionChange}
-      />
-      <IntegrationProps
-        title="Integration Properties"
-        description="At this point all common properties from an integration and category can be edited."
-        loading={loading}
-        properties={bulkEditData.get('properties')}
-        onTouchedProps={handleTouchedProps}
-      />
-      {!loading && <FormActions acceptButtonDisabled={!touched} onAcceptClick={handleBulkEdit} history={history} />}
+      <FullScreenDlg title="Bulk edit" open={open} handleConfirm={handleBulkEdit} handleClose={onClose} disableConfirm={!isValidForm || loading}>
+        <GeneralProps
+          description="At this point all general properties can be edited."
+          price={price}
+          loading={loading}
+          onChange={handleChange}
+          dimensions={dimension}
+          onDimensionChange={handleDimensionChange}
+        />
+        <br />
+        <IntegrationProps
+          title="Integration Properties"
+          description="At this point all common properties from an integration and category can be edited."
+          loading={loading}
+          properties={integrationProperties}
+          errors={errorProps}
+          onChange={handlePropertiesChange}
+        />
+      </FullScreenDlg>
     </div>
   );
 }
 
 BulkEditProducts.defaultProps = {
-  task: null
+  params: null
 };
 
 BulkEditProducts.propTypes = {
-  history: PropTypes.object.isRequired,
-  store: PropTypes.string.isRequired,
-  task: PropTypes.object,
-  loading: PropTypes.bool.isRequired,
-  bulkEditData: PropTypes.object.isRequired,
-  onGetProperties: PropTypes.func.isRequired,
-  onBulkEditProperties: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  params: PropTypes.object,
   enqueueSnackbar: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  loading: state.getIn(['product', 'loading']),
-  bulkEditData: state.getIn(['product', 'bulkEditData']),
-  task: state.getIn(['product', 'task']),
-  store: state.getIn(['user', 'tenantName']),
-  ...state
-});
-
-const mapDispatchToProps = dispatch => ({
-  onGetProperties: bindActionCreators(getBulkEditProperties, dispatch),
-  onBulkEditProperties: bindActionCreators(bulkEditProperties, dispatch)
-});
-
-const BulkEditProductsMapped = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BulkEditProducts);
-
-export default withSnackbar(BulkEditProductsMapped);
+export default withSnackbar(BulkEditProducts);

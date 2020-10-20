@@ -25,7 +25,6 @@ import {
   bulkUnlinkProducts,
   deleteProduct,
   unsubscribeProducts,
-  initBulkEditData,
   updateProductFilters
 } from 'dan-actions/productActions';
 import {
@@ -36,6 +35,7 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
+import BulkEditProducts from './BulkEditProducts';
 
 class ProductList extends React.Component {
   state = {
@@ -51,6 +51,8 @@ class ProductList extends React.Component {
     bulkLinkerAction: 'link',
     openPublisherDlg: false,
     openConfirmDlg: false,
+    openBulkEdit: false,
+    bulkEditParams: null,
     filterPopover: 'Apply filters for bulk edit.'
   };
 
@@ -206,10 +208,12 @@ class ProductList extends React.Component {
     this.setState({ openPublisherDlg: false });
   };
 
+  handleCloseBulkEdit = () => this.setState({ openBulkEdit: false });
+
   handleBulkEdit = (event) => {
     const { rowsSelectedIndex } = this.state;
     const {
-      products, integrations, filters, onInitBulkEditData, history
+      products, integrations, filters, store
     } = this.props;
     if (!emptyArray(filters)) {
       const integration = filters.get(0) ? filters.get(0).value : '';
@@ -220,10 +224,12 @@ class ProductList extends React.Component {
       } else {
         const { data } = products;
         const remoteIds = getRemoteIds(data, rowsSelectedIndex, integration);
-        onInitBulkEditData({
-          remoteIds, integration, category, properties: []
+        this.setState({
+          bulkEditParams: {
+            remoteIds, integration, category, store
+          }
         });
-        history.push('/products/bulk-edit');
+        this.setState({ openBulkEdit: true });
       }
     } else this.setState({ filterPopover: 'Apply filters for bulk edit.', anchorElBulkEdit: event.currentTarget });
   };
@@ -237,7 +243,9 @@ class ProductList extends React.Component {
       bulkLinkerAction,
       openPublisherDlg: openPublishDlg,
       openConfirmDlg,
+      openBulkEdit,
       selectedItem,
+      bulkEditParams,
       anchorElBulkEdit,
       filterPopover
     } = this.state;
@@ -514,6 +522,11 @@ class ProductList extends React.Component {
           onClose={() => this.setState({ openPublisherDlg: false })}
           onSave={this.handleBulkLinkerAction}
         />
+        <BulkEditProducts
+          open={openBulkEdit}
+          params={bulkEditParams}
+          onClose={this.handleCloseBulkEdit}
+        />
       </div>
     );
   }
@@ -538,7 +551,6 @@ const mapDispatchToProps = dispatch => ({
   onDeleteProduct: bindActionCreators(deleteProduct, dispatch),
   onGetProducts: bindActionCreators(getProducts, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
-  onInitBulkEditData: bindActionCreators(initBulkEditData, dispatch),
   onUpdateProductFilters: bindActionCreators(updateProductFilters, dispatch),
 });
 
@@ -565,7 +577,6 @@ ProductList.propTypes = {
   onBulkUnlinkProducts: PropTypes.func.isRequired,
   onDeleteProduct: PropTypes.func.isRequired,
   onUnsubscribeProducts: PropTypes.func.isRequired,
-  onInitBulkEditData: PropTypes.func.isRequired,
   onUpdateProductFilters: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
