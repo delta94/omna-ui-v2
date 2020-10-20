@@ -1,6 +1,4 @@
-import React, {
-  useState, memo, Fragment, useEffect
-} from 'react';
+import React, { memo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'dan-components/Notification/Alert';
 import { PapperBlock } from 'dan-components';
@@ -10,13 +8,8 @@ import FormBuilder from './FormBuilder';
 
 const IntegrationProps = memo((props) => {
   const {
-    properties, errors = '', title, description, loading, onTouchedProps
+    properties, errors = '', title, description, loading, onChange
   } = props;
-  const [properties_, setProperties_] = useState(properties);
-
-  useEffect(() => {
-    setProperties_(properties);
-  }, [properties]);
 
   // handlePropertyChange to use in the future if the api makes changes on the properties
   /*   const handlePropertyChange = (e) => {
@@ -31,30 +24,13 @@ const IntegrationProps = memo((props) => {
         }
       }; */
 
-  const handlePropertyChange = (e) => {
-    const { name, value } = e.target;
-    const index = properties_.findIndex(item => item.id === name);
-    if (index >= 0) {
-      const property = properties_[index];
-      if (property.input_type !== 'single_select_with_remote_options') {
-        property.value = value;
-      } else {
-        property.value = value ? value.id : '';
-        property.options = value ? [value] : [];
-      }
-      delete properties_[index];
-      properties_.splice(index, 1, property);
-      setProperties_([...properties]);
-      onTouchedProps(true);
-    }
-  };
   return (
     <PapperBlock title={title} icon="ios-card" desc={description}>
       {loading ? <TypographySkeleton /> : (
         <Fragment>
-          {emptyArray(properties_) && errors ? (<Alert variant="error" message="Something wrong. No properties to show." />) : null}
-          {emptyArray(properties_) && !errors ? (<Alert variant="info" message="No properties to show." />) : null}
-          {properties_ && !errors && (<FormBuilder properties={properties_} onChange={handlePropertyChange} />)}
+          {emptyArray(properties) && errors ? (<Alert variant="error" message="Something wrong. No properties to show." />) : null}
+          {emptyArray(properties) && !errors ? (<Alert variant="info" message="No properties to show." />) : null}
+          {properties && !errors && (<FormBuilder properties={properties} onChange={onChange} />)}
         </Fragment>
       )}
     </PapperBlock>
@@ -67,15 +43,14 @@ IntegrationProps.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   loading: PropTypes.bool,
-  onTouchedProps: PropTypes.func
+  onChange: PropTypes.func.isRequired
 };
 
 IntegrationProps.defaultProps = {
   errors: '',
   title: 'Properties',
   description: '',
-  loading: false,
-  onTouchedProps: () => { }
+  loading: false
 };
 
 export default IntegrationProps;

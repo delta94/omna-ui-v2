@@ -278,3 +278,18 @@ export const getCategoryVariant = (data, selectedIndexList, integration) => {
   const { category_id: categoryId } = filteredIntegration.variant;
   return categoryId;
 };
+
+export const editDynamicPropsHelper = (event, properties) => {
+  const { name: nme, value: val } = event.target;
+  const index = properties.findIndex(item => item.id === nme);
+  if (index >= 0) {
+    const property = properties[index];
+    if (property.input_type !== 'single_select_with_remote_options') {
+      property.value = val;
+    } else {
+      property.value = val ? val.id : '';
+      property.options = val ? [val] : [];
+    }
+  }
+  return [...properties];
+};

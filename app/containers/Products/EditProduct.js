@@ -50,7 +50,6 @@ function EditProduct(props) {
     overwrite: false
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [form, setForm] = useState('general');
   const [selectedTab, setSelectedTab] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
   const [action, setAction] = useState('link');
@@ -104,8 +103,7 @@ function EditProduct(props) {
   };
 
   const editIntegrationProps = async () => {
-    const integrationName = form;
-    const found = integrations.find(item => item.name === integrationName);
+    const found = integrations.find(item => item.id === selectedTab.id);
     const { remote_product_id: remoteProductId, properties } = found.product;
     const data = { properties };
     const result = await API.post(`integrations/${found.id}/products/${remoteProductId}`, { data });
@@ -115,7 +113,7 @@ function EditProduct(props) {
   const handleEdit = async () => {
     setIsLoading(true);
     try {
-      if (form === 'general') {
+      if (selectedTab === 'general') {
         await editBasicInfo();
       } else {
         const resp = await editIntegrationProps();
@@ -197,10 +195,7 @@ function EditProduct(props) {
     setIntegrationActionsDialog(false);
   };
 
-  const handleSubmitForm = (form_) => {
-    setForm(form_);
-    setOpenDialog(true);
-  };
+  const handleSubmitForm = () => setOpenDialog(true);
 
   const handleImportAction = (actionType) => {
     setIntegrationAction(actionType);
@@ -239,7 +234,7 @@ function EditProduct(props) {
       )}
       <AlertDialog
         open={openDialog}
-        message={EDIT_PRODUCT_CONFIRM`${form !== 'general' ? form : ''}`}
+        message={EDIT_PRODUCT_CONFIRM`${selectedTab !== 'general' ? selectedTab.name : ''}`}
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />

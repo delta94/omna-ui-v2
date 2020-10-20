@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { editDynamicPropsHelper } from 'dan-containers/Common/Utils';
 import FormActions from 'dan-containers/Common/FormActions';
 import ProductInfo from './ProductInfo';
 import DimensionProps from './DimensionProps';
@@ -34,7 +36,7 @@ TabPanel.propTypes = {
 };
 
 TabPanel.defaultProps = {
-  children: () => {}
+  children: () => { }
 };
 
 function ProductForm(props) {
@@ -47,6 +49,9 @@ function ProductForm(props) {
 
   const [multipleTabs, setMultipleTabs] = useState(integrations.length > 0);
 
+  const [properties, setProperties] = useState(get(integrations[0], ['product', 'properties']));
+  const [errorProps, setErrorProps] = useState(get(integrations[0], ['product', 'errors']));
+
   useEffect(() => {
     if (integrations.length > 0) {
       setMultipleTabs(true);
@@ -58,6 +63,10 @@ function ProductForm(props) {
     setValue(newValue);
     const found = integrations.find(item => item.name === newValue);
     onIntegrationChange(found ? { id: found.id, name: found.name } : newValue);
+    if (found) {
+      setProperties(get(found, ['product', 'properties']));
+      setErrorProps(get(found, ['product', 'errors']));
+    }
   };
 
   const handleNameChange = useCallback((e) => {
@@ -75,6 +84,11 @@ function ProductForm(props) {
   const handleDimensionChange = useCallback((e) => {
     onDimensionChange(e);
   }, []);
+
+  const handlePropertiesChange = (e) => {
+    const newProps = editDynamicPropsHelper(e, properties);
+    setProperties(newProps);
+  };
 
   const onSubmitForm = (e) => {
     e.preventDefault();
@@ -111,11 +125,12 @@ function ProductForm(props) {
         />
         <DimensionProps {...dimension} overwriteOption={action === 'edit' || false} onDimensionChange={handleDimensionChange} />
       </TabPanel>
-      {multipleTabs && integrations.map(({ id, name: name_, product: { properties, errors } }) => (
+      {multipleTabs && integrations.map(({ id, name: name_ }) => (
         <TabPanel key={id} value={value} index={name_}>
           <IntegrationProps
             properties={properties}
-            errors={errors}
+            errors={errorProps}
+            onChange={handlePropertiesChange}
           />
         </TabPanel>
       )
@@ -149,7 +164,7 @@ ProductForm.defaultProps = {
   integrations: [],
   action: 'edit',
   dimension: null,
-  onCancelClick: () => {},
+  onCancelClick: () => { },
   onIntegrationChange: undefined
 };
 

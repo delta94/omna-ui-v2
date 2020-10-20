@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import get from 'lodash/get';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { editDynamicPropsHelper } from 'dan-containers/Common/Utils';
 import FormActions from 'dan-containers/Common/FormActions';
 import DimensionProps from './DimensionProps';
 import IntegrationProps from './IntegrationProps';
@@ -47,13 +49,25 @@ function VariantForm(props) {
 
   const [multipleTabs, setMultipleTabs] = useState(integrations.length > 0);
 
+  const [properties, setProperties] = useState(get(integrations[0], ['variant', 'properties']));
+  const [errorProps, setErrorProps] = useState(get(integrations[0], ['variant', 'errors']));
+
   useEffect(() => {
     if (integrations.length > 0) {
       setMultipleTabs(true);
     }
-  }, [integrations])
+  }, [integrations]);
 
-  const handleChange = (event, newValue) => setValue(newValue);
+  const handleChange = (event, newValue) => {
+    const { onIntegrationChange } = props;
+    setValue(newValue);
+    const found = integrations.find(item => item.name === newValue);
+    onIntegrationChange(found ? { id: found.id, name: found.name } : newValue);
+    if (found) {
+      setProperties(get(found, ['variant', 'properties']));
+      setErrorProps(get(found, ['variant', 'errors']));
+    }
+  };
 
 
   const handleSKUChange = useCallback((e) => {
@@ -76,9 +90,14 @@ function VariantForm(props) {
     onDimensionChange(e);
   }, []);
 
+  const handlePropertiesChange = (e) => {
+    const newProps = editDynamicPropsHelper(e, properties);
+    setProperties(newProps);
+  };
+
   const onSubmitForm = (e) => {
     e.preventDefault();
-    props.onSubmitForm(value);
+    props.onSubmitForm();
   };
 
   return (
@@ -112,11 +131,12 @@ function VariantForm(props) {
         />
         <DimensionProps {...dimension} onDimensionChange={handleDimensionChange} />
       </TabPanel>
-      {multipleTabs && integrations.map(({ id, name: name_, variant: { properties, errors } }) => (
+      {multipleTabs && integrations.map(({ id, name: name_ }) => (
         <TabPanel key={id} value={value} index={name_}>
           <IntegrationProps
             properties={properties}
-            errors={errors}
+            errors={errorProps}
+            onChange={handlePropertiesChange}
           />
         </TabPanel>
       )
@@ -124,7 +144,7 @@ function VariantForm(props) {
       <FormActions onCancelClick={onCancelClick} />
     </form>
   );
-};
+}
 
 VariantForm.propTypes = {
   sku: PropTypes.string,
@@ -140,6 +160,7 @@ VariantForm.propTypes = {
   onPriceChange: PropTypes.func.isRequired,
   onOriginalPriceChange: PropTypes.func.isRequired,
   onDimensionChange: PropTypes.func.isRequired,
+  onIntegrationChange: PropTypes.func.isRequired,
   onCancelClick: PropTypes.func,
   onSubmitForm: PropTypes.func.isRequired
 };

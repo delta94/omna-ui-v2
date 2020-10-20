@@ -45,7 +45,7 @@ function EditVariant(props) {
   const [action, setAction] = useState('link');
   const [isLoading, setIsLoading] = useState(false);
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
-  const [form, setForm] = useState('general');
+  const [selectedTab, setSelectedTab] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
   const prevLinkTaskProp = useRef(linkTask);
   const prevUnlinkTaskProp = useRef(unlinkTask);
@@ -95,14 +95,13 @@ function EditVariant(props) {
 
   const editIntegrationProps = async () => {
     const { onUpdateIntegrationVariant } = props;
-    const integrationName = form;
-    const found = integrations.find(item => item.name === integrationName);
+    const found = integrations.find(item => item.id === selectedTab.id);
     const { remote_variant_id: remoteVariantId, remote_product_id: remoteProductId, properties } = found.variant;
     const data = { properties };
     onUpdateIntegrationVariant(found.id, remoteProductId, remoteVariantId, data, enqueueSnackbar);
   };
 
-  const handleEdit = async () => (form === 'general' ? editBasicInfo() : editIntegrationProps());
+  const handleEdit = async () => (selectedTab === 'general' ? editBasicInfo() : editIntegrationProps());
 
   const handleDialogCancel = () => setOpenDialog(false);
 
@@ -111,10 +110,7 @@ function EditVariant(props) {
     handleEdit();
   };
 
-  const handleSubmitForm = (form_) => {
-    setForm(form_);
-    setOpenDialog(true);
-  };
+  const handleSubmitForm = () => setOpenDialog(true);
 
   const handleLink = () => {
     setAction('link');
@@ -161,6 +157,7 @@ function EditVariant(props) {
           onPriceChange={e => setPrice(e)}
           onOriginalPriceChange={e => setOriginalPrice(e)}
           onDimensionChange={handleDimensionChange}
+          onIntegrationChange={(e) => setSelectedTab(e)}
           onCancelClick={() => history.goBack()}
           onSubmitForm={handleSubmitForm}
         />
@@ -176,7 +173,7 @@ function EditVariant(props) {
       />
       <AlertDialog
         open={openDialog}
-        message={EDIT_VARIANT_CONFIRM`${form !== 'general' ? form : ''}`}
+        message={EDIT_VARIANT_CONFIRM`${selectedTab !== 'general' ? selectedTab.name : ''}`}
         handleCancel={handleDialogCancel}
         handleConfirm={handleDialogConfirm}
       />
