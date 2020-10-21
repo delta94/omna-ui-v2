@@ -176,7 +176,6 @@ export const OmnaAppRoutes = [
   AddWebhookRoute,
   EditWebhookRoute,
   // Settings
-  InstallShopifyRoute,
   DashboardPageRoute,
   TenantConfigurationRoute,
   ApiKeysRoute,
