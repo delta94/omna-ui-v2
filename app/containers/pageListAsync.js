@@ -33,12 +33,9 @@ export const Logout = loadable(() => import('./Auth/Logout'), {
   fallback: <Loading />
 });
 
-export const TenantConfiguration = loadable(
-  () => import('./Pages/TenantConfiguration'),
-  {
-    fallback: <Loading />
-  }
-);
+export const TenantConfiguration = loadable(() => import('./Pages/TenantConfiguration'), {
+  fallback: <Loading />
+});
 
 // OMNA
 export const Dashboard = loadable(() => import('./Tasks/TaskList'), {
@@ -101,19 +98,11 @@ export const EditVariant = loadable(() => import('./Products/EditVariant'), {
   fallback: <Loading />
 });
 
-export const BulkEditVariants = loadable(() => import('./Products/BulkEditVariants'), {
-  fallback: <Loading />
-});
-
 export const Products = loadable(() => import('./Products/ProductList'), {
   fallback: <Loading />
 });
 
 export const EditProduct = loadable(() => import('./Products/EditProduct'), {
-  fallback: <Loading />
-});
-
-export const BulkEditProducts = loadable(() => import('./Products/BulkEditProducts'), {
   fallback: <Loading />
 });
 

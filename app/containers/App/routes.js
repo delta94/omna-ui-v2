@@ -7,9 +7,7 @@ import {
   Variants,
   Products,
   EditProduct,
-  BulkEditProducts,
   EditVariant,
-  BulkEditVariants,
   AddProduct,
   AddVariant,
   AvailableIntegrations,
@@ -58,11 +56,6 @@ export const EditProductRoute = {
   component: EditProduct
 };
 
-export const BulkEditProductsRoute = {
-  link: '/products/bulk-edit',
-  component: BulkEditProducts
-};
-
 export const VariantsRoute = {
   link: '/products/:id/variants',
   component: Variants
@@ -76,11 +69,6 @@ export const AddVariantRoute = {
 export const EditVariantRoute = {
   link: '/products/:productId/variants/:variantId/edit-variant',
   component: EditVariant
-};
-
-export const BulkEditVariantsRoute = {
-  link: '/products/:productId/variants/bulk-edit',
-  component: BulkEditVariants
 };
 
 export const InventoryRoute = { link: '/inventory', component: Inventory };
@@ -203,9 +191,7 @@ export const OmnaShopifyRoutes = [
   ProductsRoute,
   AddProductRoute,
   EditProductRoute,
-  BulkEditProductsRoute,
   EditVariantRoute,
-  BulkEditVariantsRoute,
   // Inventory
   InventoryRoute,
   // Integrations
@@ -224,7 +210,6 @@ export const OmnaShopifyRoutes = [
   // Settings
   InstallShopifyRoute,
   DashboardPageRoute,
-  TenantConfigurationRoute,
   ApiKeysRoute,
   BrandRoute,
   CategoryRoute
