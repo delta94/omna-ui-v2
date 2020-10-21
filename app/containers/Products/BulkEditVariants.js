@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 import { getBulkEditProperties, bulkEditProperties } from 'dan-api/services/variants';
 import GeneralProps from 'dan-components/Products/GeneralProps';
@@ -75,7 +76,7 @@ function BulkEditVariants(props) {
 
   const checkValidityForm = () => {
     const touchedBasicProps = { price, original_price: originalPrice, quantity, package: dimension };
-    if ((!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProps))) {
+    if (!isEmpty(initialBasicProps) && (!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProps))) {
       setIsValidForm(true);
     } else setIsValidForm(false);
   };

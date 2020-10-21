@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { getBulkEditProperties, bulkEditProperties } from 'dan-api/services/products';
 import { editDynamicPropsHelper } from 'dan-containers/Common/Utils';
@@ -58,7 +59,7 @@ function BulkEditProducts(props) {
 
   const checkValidityForm = () => {
     const touchedBasicProps = { price, package: dimension };
-    if ((!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProperties))) {
+    if (!isEmpty(initialBasicProps) && (!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProperties))) {
       setIsValidForm(true);
     } else setIsValidForm(false);
   };
