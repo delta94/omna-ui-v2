@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
+import PageHeader from 'dan-containers/Common/PageHeader';
 import { getClientSettings } from '../../Services/ShopifyService';
 
 function ClientSettings(props) {
-  const { enqueueSnackbar } = props;
+  const { enqueueSnackbar, history } = props;
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +35,9 @@ function ClientSettings(props) {
 
   return (
     <div>
+      <PageHeader title="Client Settings" history={history} />
       {loading && <Loading />}
       <MUIDataTable
-        title="Client Settings"
         data={data}
         columns={columns}
         options={options}
@@ -46,6 +47,7 @@ function ClientSettings(props) {
 }
 
 ClientSettings.propTypes = {
+  history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
