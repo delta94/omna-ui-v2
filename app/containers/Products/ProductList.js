@@ -6,8 +6,10 @@ import { withSnackbar } from 'notistack';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import Popover from '@material-ui/core/Popover';
+import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -60,13 +62,16 @@ class ProductList extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {
-      task, history, filters
+      task, history, filters, products
     } = this.props;
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
     if (filters && filters !== prevProps.filters) {
       this.makeQuery();
+    }
+    if (products && products !== prevProps.products) {
+      this.updateRowsSelected(products.data);
     }
   }
 
@@ -94,7 +99,6 @@ class ProductList extends React.Component {
   getParams = () => {
     const { filters } = this.props;
     const { searchTerm, limit, page } = this.state;
-
     const params = {
       offset: page * limit,
       limit,
@@ -120,25 +124,38 @@ class ProductList extends React.Component {
     onGetProducts({ params: this.getParams(), enqueueSnackbar });
   };
 
-  updateRowsSelectedIds = (rowsSelectedData, allRows, data) => {
-    const { rowsSelectedIds } = this.state;
-    if (allRows.length !== 0) {
-      const selectedIndex = rowsSelectedData[0].dataIndex;
-      const selectedId = data[selectedIndex].id;
-      const row = allRows.findIndex(item => item === rowsSelectedData[0]);
-      if (row >= 0) {
-        rowsSelectedIds.push(selectedId);
+  handleRefreshTable = () => {
+    const { onUpdateProductFilters, } = this.props;
+    onUpdateProductFilters([]);
+    this.setState({ page: 0, limit: 10, searchTerm: '' }, this.makeQuery);
+  };
+
+  updateRowsSelected = (data, indexList) => {
+    const ids = [];
+    const indexes = [];
+    if (indexList) {
+      if (indexList.length > 0) {
+        indexList.forEach(index => ids.push(data[index].id));
+        this.setState({ rowsSelectedIds: ids });
       } else {
-        const deleteIndex = rowsSelectedIds.findIndex(item => item === selectedId);
-        rowsSelectedIds.splice(deleteIndex, 1);
+        this.setState({ rowsSelectedIds: [] });
       }
-      this.setState({ rowsSelectedIds });
-    } else this.setState({ rowsSelectedIds: [] });
+      this.setState({ rowsSelectedIndex: indexList });
+    } else {
+      const { rowsSelectedIds } = this.state;
+      data.forEach((item, index) => {
+        if (rowsSelectedIds.includes(item.id)) {
+          ids.push(item.id);
+          indexes.push(index);
+        }
+      });
+      this.setState({ rowsSelectedIds: ids });
+      this.setState({ rowsSelectedIndex: indexes });
+    }
   };
 
   handleChangePage = (page, searchTerm) => {
     this.setState({ page, searchTerm }, this.makeQuery);
-    this.setState({ rowsSelectedIndex: [] });
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
@@ -209,6 +226,23 @@ class ProductList extends React.Component {
   };
 
   handleCloseBulkEdit = () => this.setState({ openBulkEdit: false });
+
+  bulkEditStatus = () => {
+    const status = { available: false, tooltip: 'filters must be applied' };
+    const { integrations, filters } = this.props;
+    if (!emptyArray(filters)) {
+      const integration = filters.get(0) ? filters.get(0).value : '';
+      const category = filters.get(1) ? filters.get(1).value : '';
+      if (hasCategories(integrations, integration) && !category) {
+        status.available = false;
+        status.tooltip = 'Category filter must be applied';
+      } else {
+        status.available = true;
+        status.tooltip = 'Bulk edit';
+      }
+    }
+    return status;
+  }
 
   handleBulkEdit = (event) => {
     const { rowsSelectedIndex } = this.state;
@@ -375,6 +409,7 @@ class ProductList extends React.Component {
       sort: false,
       selectableRows: fromShopifyApp ? 'multiple' : 'none',
       rowsSelected: rowsSelectedIndex,
+      selectToolbarPlacement: 'above',
       responsive: 'vertical',
       rowHover: true,
       download: false,
@@ -410,8 +445,7 @@ class ProductList extends React.Component {
         }
       },
       onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {
-        this.setState({ rowsSelectedIndex: indexList });
-        this.updateRowsSelectedIds(rowsSelectedData, allRows, data);
+        this.updateRowsSelected(data, indexList);
       },
       customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
         switch (colIndex) {
@@ -450,6 +484,14 @@ class ProductList extends React.Component {
               </IconButton>
             </Tooltip>
           )}
+          <Tooltip title="Reset table">
+            <IconButton
+              aria-label="refresh"
+              onClick={this.handleRefreshTable}
+            >
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
         </Fragment>
       ),
       customToolbarSelect: () => (
@@ -458,13 +500,15 @@ class ProductList extends React.Component {
             onLink={this.handleBulkLink}
             onUnlink={this.handleBulkUnlink}
           />
-          <Tooltip title="Bulk edit">
+          <Tooltip title={this.bulkEditStatus().tooltip}>
             <IconButton
               aria-label="edit"
               aria-describedby={anchorElBulkEdit ? 'simple-popover' : undefined}
               onClick={this.handleBulkEdit}
             >
-              <EditIcon />
+              <Badge badgeContent="X" color="error" invisible={this.bulkEditStatus().available}>
+                <EditIcon />
+              </Badge>
             </IconButton>
           </Tooltip>
           <Popover
