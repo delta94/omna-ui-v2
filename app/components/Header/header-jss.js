@@ -489,7 +489,11 @@ const styles = theme => ({
     flexDirection: 'row-reverse',
     display: 'flex',
     alignItems: 'center'
-  }
+  },
+  avatar: {
+    width: theme.spacing(6),
+    height: theme.spacing(7),
+  },
 });
 
 export default styles;

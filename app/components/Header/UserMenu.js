@@ -39,7 +39,7 @@ class UserMenu extends React.Component {
 
   render() {
     const { anchorEl, openMenu } = this.state;
-    const { user, fromShopifyApp } = this.props;
+    const { user, fromShopifyApp, classes } = this.props;
 
     return (
       <div>
@@ -47,6 +47,7 @@ class UserMenu extends React.Component {
           <Avatar
             alt={user.get('name') || 'user-avatar'}
             src={user.get('picture') || dummy.user.avatar}
+            className={fromShopifyApp ? classes.avatar : ''}
           />
           <Hidden xsDown>
             <div style={{ color: 'white', marginLeft: 8 }}>
@@ -92,7 +93,8 @@ class UserMenu extends React.Component {
 
 UserMenu.propTypes = {
   fromShopifyApp: PropTypes.bool.isRequired,
-  user: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
