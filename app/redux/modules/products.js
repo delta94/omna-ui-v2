@@ -3,6 +3,9 @@ import * as types from 'dan-actions/actionConstants';
 
 const initialState = fromJS({
   products: { data: [], pagination: { total: 0 } },
+  page: 0,
+  limit: 10,
+  term: '',
   loading: false,
   disabledForm: false,
   task: null,
@@ -81,6 +84,25 @@ export default function integrationsReducer(state = initialState, action) {
     case types.UPDATE_PRODUCT_FILTERS:
       return state.withMutations(mutableState => {
         mutableState.set('filters', List(action.filters));
+      });
+    case types.CHANGE_PRODUCTS_PAGE:
+      return state.withMutations(mutableState => {
+        mutableState.set('page', action.page);
+      });
+    case types.CHANGE_PRODUCTS_ROWS_PER_PAGE:
+      return state.withMutations(mutableState => {
+        mutableState.set('limit', action.limit);
+      });
+    case types.CHANGE_PRODUCTS_SEARCH_TERM:
+      return state.withMutations(mutableState => {
+        mutableState.set('term', action.term);
+      });
+    case types.RESET_PRODUCTS_TABLE:
+      return state.withMutations(mutableState => {
+        mutableState.set('limit', 10)
+          .set('page', 0)
+          .set('term', '')
+          .set('filters', List([]));
       });
     case types.SET_LOADING:
       return state.withMutations((mutableState) => {

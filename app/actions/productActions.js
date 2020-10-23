@@ -107,3 +107,22 @@ export const updateProductFilters = (filters) => ({
   type: types.UPDATE_PRODUCT_FILTERS,
   filters
 });
+
+export const changePage = (page) => ({
+  type: types.CHANGE_PRODUCTS_PAGE,
+  page
+});
+
+export const changeRowsPerPage = (limit) => ({
+  type: types.CHANGE_PRODUCTS_ROWS_PER_PAGE,
+  limit
+});
+
+export const resetTable = () => ({
+  type: types.RESET_PRODUCTS_TABLE
+});
+
+export const changeSearchTerm = (term) => ({
+  type: types.CHANGE_PRODUCTS_SEARCH_TERM,
+  term
+});

@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import isEqual from 'lodash/isEqual';
 import { withSnackbar } from 'notistack';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import get from 'lodash/get';
@@ -27,7 +28,11 @@ import {
   bulkUnlinkProducts,
   deleteProduct,
   unsubscribeProducts,
-  updateProductFilters
+  updateProductFilters,
+  changePage,
+  changeRowsPerPage,
+  changeSearchTerm,
+  resetTable
 } from 'dan-actions/productActions';
 import {
   getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay, getRemoteIds
@@ -41,11 +46,8 @@ import BulkEditProducts from './BulkEditProducts';
 
 class ProductList extends React.Component {
   state = {
-    limit: 10,
-    page: 0,
     integrationFilter: undefined,
     categoryFilter: undefined,
-    searchTerm: '',
     rowsSelectedIndex: [],
     rowsSelectedIds: [],
     anchorElBulkEdit: null,
@@ -62,12 +64,13 @@ class ProductList extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {
-      task, history, filters, products
+      task, history, filters, products, page, limit, term
     } = this.props;
     if (task && task !== prevProps.task) {
       history.push(`tasks/${task.id}`);
     }
-    if (filters && filters !== prevProps.filters) {
+    if ((filters && filters !== prevProps.filters) || (page && page !== prevProps.page) || (limit && limit !== prevProps.limit)
+      || (term !== prevProps.term)) {
       this.makeQuery();
     }
     if (products && products !== prevProps.products) {
@@ -76,7 +79,9 @@ class ProductList extends React.Component {
   }
 
   componentWillUnmount() {
-    const { onUnsubscribeProducts } = this.props;
+    const { onUnsubscribeProducts, history, onResetTable } = this.props;
+    const { pathname } = history.location;
+    !pathname.includes('products') && !pathname.includes('tasks') ? onResetTable() : null;
     onUnsubscribeProducts();
   }
 
@@ -97,12 +102,11 @@ class ProductList extends React.Component {
   });
 
   getParams = () => {
-    const { filters } = this.props;
-    const { searchTerm, limit, page } = this.state;
+    const { filters, limit, page, term } = this.props;
     const params = {
       offset: page * limit,
       limit,
-      term: searchTerm || '',
+      term,
       with_details: false,
     };
 
@@ -125,9 +129,14 @@ class ProductList extends React.Component {
   };
 
   handleRefreshTable = () => {
-    const { onUpdateProductFilters, } = this.props;
-    onUpdateProductFilters([]);
-    this.setState({ page: 0, limit: 10, searchTerm: '' }, this.makeQuery);
+    const { onResetTable } = this.props;
+    const emptyParams = isEqual(this.getParams(), {
+      offset: 0,
+      limit: 10,
+      term: '',
+      with_details: false,
+    });
+    emptyParams ? this.makeQuery() : onResetTable();
   };
 
   updateRowsSelected = (data, indexList) => {
@@ -154,27 +163,28 @@ class ProductList extends React.Component {
     }
   };
 
-  handleChangePage = (page, searchTerm) => {
-    this.setState({ page, searchTerm }, this.makeQuery);
+  handleChangePage = (page) => {
+    const { onChangePage } = this.props;
+    onChangePage(page);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
-    this.setState({ limit: rowsPerPage }, this.makeQuery);
+    const { onChangeRowsPerPage } = this.props;
+    onChangeRowsPerPage(rowsPerPage);
   };
 
   handleSearch = searchTerm => {
+    const { term, onChangeSearchTerm } = this.props;
     if (searchTerm) {
-      this.setState({ searchTerm }, delay(() => this.makeQuery()));
-    } else {
-      const { searchTerm: _searchTerm } = this.state;
-      if (_searchTerm) {
-        this.setState({ searchTerm: '' }, this.makeQuery);
-      }
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (term) {
+      onChangeSearchTerm('');
     }
   };
 
   onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.makeQuery);
+    const { onChangeSearchTerm } = this.props;
+    onChangeSearchTerm('');
   };
 
   handleIntegrationFilterChange = (integation) => {
@@ -270,9 +280,6 @@ class ProductList extends React.Component {
 
   render() {
     const {
-      limit,
-      page,
-      searchTerm,
       rowsSelectedIndex,
       bulkLinkerAction,
       openPublisherDlg: openPublishDlg,
@@ -284,7 +291,7 @@ class ProductList extends React.Component {
       filterPopover
     } = this.state;
     const {
-      history, products, loading, fromShopifyApp, filters, onUpdateProductFilters
+      history, products, loading, fromShopifyApp, filters, onUpdateProductFilters, limit, page, term
     } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
@@ -415,7 +422,7 @@ class ProductList extends React.Component {
       download: false,
       print: false,
       serverSide: true,
-      searchText: searchTerm,
+      searchText: term,
       searchPlaceholder: 'Search by name',
       rowsPerPage: limit,
       count,
@@ -578,6 +585,9 @@ class ProductList extends React.Component {
 
 const mapStateToProps = state => ({
   products: state.getIn(['product', 'products']),
+  page: state.getIn(['product', 'page']),
+  limit: state.getIn(['product', 'limit']),
+  term: state.getIn(['product', 'term']),
   integrations: state.getIn(['integration', 'integrations']).toJS(),
   filters: state.getIn(['product', 'filters']),
   loading: state.getIn(['product', 'loading']),
@@ -596,6 +606,10 @@ const mapDispatchToProps = dispatch => ({
   onGetProducts: bindActionCreators(getProducts, dispatch),
   onUnsubscribeProducts: bindActionCreators(unsubscribeProducts, dispatch),
   onUpdateProductFilters: bindActionCreators(updateProductFilters, dispatch),
+  onChangePage: bindActionCreators(changePage, dispatch),
+  onChangeRowsPerPage: bindActionCreators(changeRowsPerPage, dispatch),
+  onChangeSearchTerm: bindActionCreators(changeSearchTerm, dispatch),
+  onResetTable: bindActionCreators(resetTable, dispatch),
 });
 
 const ProductListMapped = connect(
@@ -604,13 +618,17 @@ const ProductListMapped = connect(
 )(ProductList);
 
 ProductList.defaultProps = {
-  task: null
+  task: null,
+  term: ''
 };
 
 ProductList.propTypes = {
   products: PropTypes.object.isRequired,
   integrations: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
+  limit: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  term: PropTypes.string,
   task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
@@ -622,6 +640,10 @@ ProductList.propTypes = {
   onDeleteProduct: PropTypes.func.isRequired,
   onUnsubscribeProducts: PropTypes.func.isRequired,
   onUpdateProductFilters: PropTypes.func.isRequired,
+  onResetTable: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  onChangeSearchTerm: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
