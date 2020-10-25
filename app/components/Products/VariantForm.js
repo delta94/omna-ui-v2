@@ -49,19 +49,20 @@ function VariantForm(props) {
 
   const [multipleTabs, setMultipleTabs] = useState(integrations.length > 0);
 
-  const [properties, setProperties] = useState(get(integrations[0], ['variant', 'properties']));
-  const [errorProps, setErrorProps] = useState(get(integrations[0], ['variant', 'errors']));
+  const [properties, setProperties] = useState(get(integrations.find(i => i.id === value), ['variant', 'properties']));
+  const [errorProps, setErrorProps] = useState(get(integrations.find(i => i.id === value), ['variant', 'errors']));
 
   useEffect(() => {
     if (integrations.length > 0) {
       setMultipleTabs(true);
+      setProperties(get(integrations.find(i => i.id === value), ['variant', 'properties']));
     }
   }, [integrations]);
 
   const handleChange = (event, newValue) => {
     const { onIntegrationChange } = props;
     setValue(newValue);
-    const found = integrations.find(item => item.name === newValue);
+    const found = integrations.find(item => item.id === newValue);
     onIntegrationChange(found ? { id: found.id, name: found.name } : newValue);
     if (found) {
       setProperties(get(found, ['variant', 'properties']));
@@ -113,7 +114,7 @@ function VariantForm(props) {
           aria-label="scrollable auto tabs example"
         >
           <Tab label="General" value="general" />
-          {multipleTabs && integrations.map(({ id, name: name_ }) => <Tab key={id} value={name_} label={name_} />)}
+          {multipleTabs && integrations.map(({ id, name: name_ }) => <Tab key={id} value={id} label={name_} />)}
         </Tabs>
       </AppBar>
       <TabPanel value={value} index="general">
@@ -131,8 +132,8 @@ function VariantForm(props) {
         />
         <DimensionProps {...dimension} onDimensionChange={handleDimensionChange} />
       </TabPanel>
-      {multipleTabs && integrations.map(({ id, name: name_ }) => (
-        <TabPanel key={id} value={value} index={name_}>
+      {multipleTabs && integrations.map(({ id }) => (
+        <TabPanel key={id} value={value} index={id}>
           <IntegrationProps
             properties={properties}
             errors={errorProps}

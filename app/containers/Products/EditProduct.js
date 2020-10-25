@@ -120,7 +120,7 @@ function EditProduct(props) {
         const { data } = resp.data;
         const index = integrations.findIndex(item => item.id === data.integration.id);
         if (index !== -1) {
-          integrations[index] = data.integration;
+          integrations[index] = cloneDeep(data.integration);
           setIntegrations(cloneDeep(integrations));
         }
       }

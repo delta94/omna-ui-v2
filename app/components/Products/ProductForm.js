@@ -14,7 +14,6 @@ import IntegrationProps from './IntegrationProps';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
-
   return (
     <Typography
       component="div"
@@ -49,19 +48,20 @@ function ProductForm(props) {
 
   const [multipleTabs, setMultipleTabs] = useState(integrations.length > 0);
 
-  const [properties, setProperties] = useState(get(integrations[0], ['product', 'properties']));
-  const [errorProps, setErrorProps] = useState(get(integrations[0], ['product', 'errors']));
+  const [properties, setProperties] = useState(get(integrations.find(i => i.id === value), ['product', 'properties']));
+  const [errorProps, setErrorProps] = useState(get(integrations.find(i => i.id === value), ['product', 'errors']));
 
   useEffect(() => {
     if (integrations.length > 0) {
       setMultipleTabs(true);
+      setProperties(get(integrations.find(i => i.id === value), ['product', 'properties']));
     }
   }, [integrations]);
 
   const handleChange = (event, newValue) => {
     const { onIntegrationChange } = props;
     setValue(newValue);
-    const found = integrations.find(item => item.name === newValue);
+    const found = integrations.find(item => item.id === newValue);
     onIntegrationChange(found ? { id: found.id, name: found.name } : newValue);
     if (found) {
       setProperties(get(found, ['product', 'properties']));
@@ -92,7 +92,7 @@ function ProductForm(props) {
 
   const onSubmitForm = (e) => {
     e.preventDefault();
-    props.onSubmitForm(value);
+    props.onSubmitForm();
   };
 
   return (
@@ -108,7 +108,7 @@ function ProductForm(props) {
           aria-label="scrollable auto tabs example"
         >
           <Tab label="General" value="general" />
-          {multipleTabs && integrations.map(({ id, name: name_ }) => <Tab key={id} value={name_} label={name_} />)}
+          {multipleTabs && integrations.map(({ id, name: name_ }) => <Tab key={id} value={id} label={name_} />)}
         </Tabs>
       </AppBar>
       <TabPanel value={value} index="general">
@@ -125,8 +125,8 @@ function ProductForm(props) {
         />
         <DimensionProps {...dimension} overwriteOption={action === 'edit' || false} onDimensionChange={handleDimensionChange} />
       </TabPanel>
-      {multipleTabs && integrations.map(({ id, name: name_ }) => (
-        <TabPanel key={id} value={value} index={name_}>
+      {multipleTabs && integrations.map(({ id }) => (
+        <TabPanel key={id} index={id} value={value}>
           <IntegrationProps
             properties={properties}
             errors={errorProps}
