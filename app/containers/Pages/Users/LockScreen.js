@@ -11,6 +11,8 @@ import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertAct
 import { setUser } from 'dan-actions/UserActions';
 import { getSettingsInfo, planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
 import API from 'dan-containers/Utils/api';
+import warning from 'warning';
+import get from 'lodash/get';
 
 class LockScreen extends React.Component {
   state = { shopifyAppStatus: null };
@@ -36,7 +38,7 @@ class LockScreen extends React.Component {
 
     if (store) {
       const firstQuery = await getSettingsInfo(store, admin, enqueueSnackbar);
-      if (firstQuery.shopifyAppStatus !== 'ready') {
+      if (firstQuery.shopifyAppStatus !== 'ready' || firstQuery.shopifyAppStatus !== 'ready_installation_with_error') {
         const intervalStatus = setInterval(async () => {
           const data = await getSettingsInfo(store, admin, enqueueSnackbar);
           const status = data.shopifyAppStatus;
@@ -47,6 +49,16 @@ class LockScreen extends React.Component {
             clearInterval(intervalStatus);
             const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
             notif ? onPushNotification(notif) : null;
+            history.push('/shopify');
+          }
+
+          if (status === 'ready_installation_with_error') {
+
+            onSetUser(data);
+            clearInterval(intervalStatus);
+            enqueueSnackbar(get(warning, 'response.data', 'Warning: The process installation was completed with some internal issues. Please contact with OMNA support'), {
+              variant: 'warning'
+            });
             history.push('/shopify');
           }
         }, 3000);
