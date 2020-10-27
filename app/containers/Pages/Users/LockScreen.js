@@ -44,6 +44,7 @@ class LockScreen extends React.Component {
           const status = data.shopifyAppStatus;
           this.setState({ shopifyAppStatus: status });
 
+
           if (status === 'ready') {
             onSetUser(data);
             clearInterval(intervalStatus);
@@ -53,7 +54,6 @@ class LockScreen extends React.Component {
           }
 
           if (status === 'ready_installation_with_error') {
-
             onSetUser(data);
             clearInterval(intervalStatus);
             enqueueSnackbar(get(warning, 'response.data', 'Warning: The process installation was completed with some internal issues. Please contact with OMNA support'), {
@@ -64,6 +64,7 @@ class LockScreen extends React.Component {
         }, 3000);
       } else {
         onSetUser(firstQuery);
+
         const notif = planStatusNotification(firstQuery.plan_name, firstQuery.plan_status, subscribeShopifyPlanAction);
         notif ? onPushNotification(notif) : null;
         history.push('/shopify');

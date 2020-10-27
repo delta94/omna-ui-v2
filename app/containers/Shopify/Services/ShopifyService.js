@@ -29,7 +29,11 @@ export function planStatusNotification(planName, planStatus, subscribeAction) {
       };
       break;
     default:
-      return null;
+      notification = {
+        message: 'Please select a plan to could use the app',
+        variant: 'error',
+        action: subscribeAction
+      };
   }
 
   return notification;
@@ -46,7 +50,7 @@ export async function getSettingsInfo(store, admin, enqueueSnackbar) {
     });
   }
   return null;
-};
+}
 
 async function reloadTenantInfo(store, admin, enqueueSnackbar) {
   try {
