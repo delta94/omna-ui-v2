@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import isEqual from 'lodash/isEqual';
 import { withSnackbar } from 'notistack';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import classNames from 'classnames';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import Popover from '@material-ui/core/Popover';
 import Badge from '@material-ui/core/Badge';
@@ -35,7 +36,7 @@ import {
   resetTable
 } from 'dan-actions/productActions';
 import {
-  getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay, getRemoteIds
+  getCurrencySymbol, convertListToString, hasCategories, emptyArray, delay, getRemoteIds, updateRowsSelected
 } from 'dan-containers/Common/Utils';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
@@ -43,13 +44,14 @@ import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import BulkEditProducts from './BulkEditProducts';
+import styles from './list-jss';
 
 class ProductList extends React.Component {
   state = {
     integrationFilter: undefined,
     categoryFilter: undefined,
-    rowsSelectedIndex: [],
-    rowsSelectedIds: [],
+    selectedIndexes: [],
+    selectedIds: [],
     anchorElBulkEdit: null,
     selectedItem: null,
     bulkLinkerAction: 'link',
@@ -74,7 +76,8 @@ class ProductList extends React.Component {
       this.makeQuery();
     }
     if (products && products !== prevProps.products) {
-      this.updateRowsSelected(products.data);
+      const { selectedIds } = this.state;
+      updateRowsSelected(products.data, null, selectedIds, this.handleSelectedIds, this.handleSelectedIndexes);
     }
   }
 
@@ -85,11 +88,15 @@ class ProductList extends React.Component {
     onUnsubscribeProducts();
   }
 
+  handleSelectedIds = (ids) => this.setState({ selectedIds: ids });
+
+  handleSelectedIndexes = (indexes) => this.setState({ selectedIndexes: indexes });
+
   getMuiTheme = () => createMuiTheme({
     overrides: {
       MUIDataTableBodyCell: {
         root: {
-          cursor: 'pointer'
+          cursor: 'pointer',
         }
       },
       MUIDataTableToolbar: {
@@ -98,7 +105,7 @@ class ProductList extends React.Component {
           minWidth: '300px'
         }
       }
-    }
+    },
   });
 
   getParams = () => {
@@ -137,30 +144,6 @@ class ProductList extends React.Component {
       with_details: false,
     });
     emptyParams ? this.makeQuery() : onResetTable();
-  };
-
-  updateRowsSelected = (data, indexList) => {
-    const ids = [];
-    const indexes = [];
-    if (indexList) {
-      if (indexList.length > 0) {
-        indexList.forEach(index => ids.push(data[index].id));
-        this.setState({ rowsSelectedIds: ids });
-      } else {
-        this.setState({ rowsSelectedIds: [] });
-      }
-      this.setState({ rowsSelectedIndex: indexList });
-    } else {
-      const { rowsSelectedIds } = this.state;
-      data.forEach((item, index) => {
-        if (rowsSelectedIds.includes(item.id)) {
-          ids.push(item.id);
-          indexes.push(index);
-        }
-      });
-      this.setState({ rowsSelectedIds: ids });
-      this.setState({ rowsSelectedIndex: indexes });
-    }
   };
 
   handleChangePage = (page) => {
@@ -225,12 +208,12 @@ class ProductList extends React.Component {
     const {
       store, enqueueSnackbar, onBulkLinkProducts, onBulkUnlinkProducts
     } = this.props;
-    const { bulkLinkerAction, rowsSelectedIds } = this.state;
+    const { bulkLinkerAction, selectedIds } = this.state;
     const { integrationIds, deleteFromIntegration } = value;
     if (bulkLinkerAction === 'link') {
-      onBulkLinkProducts(store, rowsSelectedIds, integrationIds, enqueueSnackbar);
+      onBulkLinkProducts(store, selectedIds, integrationIds, enqueueSnackbar);
     } else {
-      onBulkUnlinkProducts(store, rowsSelectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
+      onBulkUnlinkProducts(store, selectedIds, integrationIds, deleteFromIntegration, enqueueSnackbar);
     }
     this.setState({ openPublisherDlg: false });
   };
@@ -255,7 +238,7 @@ class ProductList extends React.Component {
   }
 
   handleBulkEdit = (event) => {
-    const { rowsSelectedIndex } = this.state;
+    const { selectedIndexes } = this.state;
     const {
       products, integrations, filters, store
     } = this.props;
@@ -267,7 +250,7 @@ class ProductList extends React.Component {
         this.setState({ anchorElBulkEdit: event.currentTarget });
       } else {
         const { data } = products;
-        const remoteIds = getRemoteIds(data, rowsSelectedIndex, integration);
+        const remoteIds = getRemoteIds(data, selectedIndexes, integration);
         this.setState({
           bulkEditParams: {
             remoteIds, integration, category, store
@@ -280,7 +263,7 @@ class ProductList extends React.Component {
 
   render() {
     const {
-      rowsSelectedIndex,
+      selectedIndexes,
       bulkLinkerAction,
       openPublisherDlg: openPublishDlg,
       openConfirmDlg,
@@ -291,7 +274,7 @@ class ProductList extends React.Component {
       filterPopover
     } = this.state;
     const {
-      history, products, loading, fromShopifyApp, filters, onUpdateProductFilters, limit, page, term
+      history, products, loading, fromShopifyApp, filters, onUpdateProductFilters, limit, page, term, classes
     } = this.props;
     const { pagination, data } = products;
     const count = get(pagination, 'total', 0);
@@ -310,12 +293,7 @@ class ProductList extends React.Component {
             return (
               <Avatar
                 src={imgSrc}
-                style={{
-                  height: 72,
-                  width: 72,
-                  marginRight: 16,
-                  borderRadius: 0
-                }}
+                className={classes.avatar}
                 alt="product"
               />
             );
@@ -329,7 +307,7 @@ class ProductList extends React.Component {
           filter: false,
           viewColumns: false,
           customBodyRender: (value) => (
-            <Typography noWrap variant="subtitle2" component="p">
+            <Typography noWrap variant="subtitle2">
               {value}
             </Typography>
           )
@@ -354,6 +332,20 @@ class ProductList extends React.Component {
               </div>
             );
           }
+        }
+      },
+      {
+        name: 'variants',
+        label: 'Variants',
+        options: {
+          filter: false,
+          viewColumns: false,
+          customBodyRender: (value) => (
+            <Typography noWrap variant="subtitle2" component="p">
+              {value}
+            </Typography>
+          ),
+          setCellProps: () => ({ className: classNames(classes.numericTableBodyCell) })
         }
       },
       {
@@ -415,7 +407,7 @@ class ProductList extends React.Component {
       filter: true,
       sort: false,
       selectableRows: fromShopifyApp ? 'multiple' : 'none',
-      rowsSelected: rowsSelectedIndex,
+      rowsSelected: selectedIndexes,
       selectToolbarPlacement: 'above',
       responsive: 'vertical',
       rowHover: true,
@@ -452,7 +444,7 @@ class ProductList extends React.Component {
         }
       },
       onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {
-        this.updateRowsSelected(data, indexList);
+        updateRowsSelected(data, indexList, null, this.handleSelectedIds, this.handleSelectedIndexes);
       },
       customSort: (customSortData, colIndex, product) => customSortData.sort((a, b) => {
         switch (colIndex) {
@@ -623,6 +615,7 @@ ProductList.defaultProps = {
 };
 
 ProductList.propTypes = {
+  classes: PropTypes.object.isRequired,
   products: PropTypes.object.isRequired,
   integrations: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
@@ -647,4 +640,4 @@ ProductList.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
-export default withSnackbar(ProductListMapped);
+export default withSnackbar(withStyles(styles)(ProductListMapped));

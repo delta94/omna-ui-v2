@@ -293,3 +293,26 @@ export const editDynamicPropsHelper = (event, properties) => {
   }
   return [...properties];
 };
+
+export const updateRowsSelected = (data, indexList, currentSelectedIdsFromState, setStateIdsCallback, setStateIndexesCallback) => {
+  const ids = [];
+  const indexes = [];
+  if (indexList) {
+    if (indexList.length > 0) {
+      indexList.forEach(index => ids.push(data[index].id));
+      setStateIdsCallback(ids);
+    } else {
+      setStateIdsCallback([]);
+    }
+    setStateIndexesCallback(indexList);
+  } else {
+    data.forEach((item, index) => {
+      if (currentSelectedIdsFromState.includes(item.id)) {
+        ids.push(item.id);
+        indexes.push(index);
+      }
+    });
+    setStateIdsCallback(ids);
+    setStateIndexesCallback(indexes);
+  }
+};

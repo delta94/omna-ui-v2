@@ -118,11 +118,11 @@ export const changeRowsPerPage = (limit) => ({
   limit
 });
 
-export const resetTable = () => ({
-  type: types.RESET_PRODUCTS_TABLE
-});
-
 export const changeSearchTerm = (term) => ({
   type: types.CHANGE_PRODUCTS_SEARCH_TERM,
   term
+});
+
+export const resetTable = () => ({
+  type: types.RESET_PRODUCTS_TABLE
 });

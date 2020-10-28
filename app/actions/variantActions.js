@@ -69,3 +69,22 @@ export const updateFilters = (filters) => ({
   type: types.UPDATE_VARIANT_FILTERS,
   filters
 });
+
+export const changePage = (page) => ({
+  type: types.CHANGE_VARIANTS_PAGE,
+  page
+});
+
+export const changeRowsPerPage = (limit) => ({
+  type: types.CHANGE_VARIANTS_ROWS_PER_PAGE,
+  limit
+});
+
+export const changeSearchTerm = (term) => ({
+  type: types.CHANGE_VARIANTS_SEARCH_TERM,
+  term
+});
+
+export const resetTable = () => ({
+  type: types.RESET_VARIANTS_TABLE
+});

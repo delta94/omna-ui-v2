@@ -2,35 +2,42 @@ import React, {
   useState, useEffect, Fragment
 } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
+import Badge from '@material-ui/core/Badge';
 import Ionicon from 'react-ionicons';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, MuiThemeProvider, makeStyles } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
 import Avatar from '@material-ui/core/Avatar';
-import { delay, convertListToString, getRemoteIds, getCategoryVariant } from 'dan-containers/Common/Utils';
+import {
+  delay, convertListToString, getRemoteIds, getCategoryVariant, updateRowsSelected, emptyArray
+} from 'dan-containers/Common/Utils';
 import Loading from 'dan-components/Loading';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import {
-  getVariantList, updateFilters
+  getVariantList, updateFilters, changePage, changeRowsPerPage, changeSearchTerm, resetTable
 } from 'dan-actions/variantActions';
 import deleteVariant from 'dan-api/services/variants';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import filterDlgSizeHelper from 'utils/mediaQueries';
 import BulkEditVariants from './BulkEditVariants';
+import styles from './list-jss';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -48,19 +55,21 @@ const getMuiTheme = () => createMuiTheme({
   }
 });
 
+const useStyles = makeStyles(styles);
+
 function VariantList(props) {
   const {
-    match, loading, variantList, onGetVariants,
-    history, fromShopifyApp, store, filters, onUpdateFilters, enqueueSnackbar
+    match, loading, variantList, params, onGetVariants,
+    history, fromShopifyApp, store, filters, onUpdateFilters, enqueueSnackbar, onChangePage, onChangeRowsPerPage,
+    onChangeSearchTerm, onResetTable
   } = props;
-  const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
-  const [searchText, setSearchText] = useState('');
+
   const [openConfirmDlg, setOpenConfirmDlg] = useState();
   const [openBulkEdit, setOpenBulkEdit] = useState(false);
   const [bulkEditParams, setBulkEditParams] = useState();
   const [selectedItem, setSelectedItem] = useState();
-  const [selectedIndexList, setSelectedIndexList] = useState([]);
+  const [selectedIndexes, setSelectedIndexes] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [integrationFilter, setIntegrationFilter] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,37 +77,52 @@ function VariantList(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+  const classes = useStyles();
+
+  const handleSelectedIds = (ids) => setSelectedIds(ids);
+
+  const handleSelectedIndexes = (indexes) => setSelectedIndexes(indexes);
+
+  const page = params.get('offset') / params.get('limit');
+
+  useEffect(() => {
+    if (data) {
+      updateRowsSelected(data, null, selectedIds, handleSelectedIds, handleSelectedIndexes);
+    }
+  }, [variantList]);
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const makeQuery = () => {
-    const params = {
-      limit,
-      offset: page * limit,
-      term: searchText,
-      with_details: true,
-      integration_id: filters.get(0) ? filters.get(0).value : undefined
-    };
-    onGetVariants(match.params.id, params, enqueueSnackbar);
+    onGetVariants(match.params.id, params.toJS(), enqueueSnackbar);
   };
 
   useEffect(() => {
     makeQuery();
-  }, [page, limit, searchText, filters]);
+  }, [params]);
 
-  const handleChangeRowsPerPage = rowsPerPage => setLimit(rowsPerPage);
-
-  const handleChangePage = (pageValue) => {
-    setPage(pageValue);
-    setSelectedIndexList([]);
+  const handleRefreshTable = () => {
+    const emptyParams = isEqual(params.toJS(), {
+      offset: 0,
+      limit: 10,
+      term: '',
+      integration_id: '',
+      with_details: true,
+    });
+    emptyParams ? makeQuery() : onResetTable();
   };
+
+  const handleChangeRowsPerPage = rowsPerPage => onChangeRowsPerPage(rowsPerPage);
+
+  const handleChangePage = (pageValue) => onChangePage(pageValue);
 
   function handleSearch(searchTerm) {
     if (searchTerm) {
-      delay(() => setSearchText(searchTerm));
-    } else if (searchText) {
-      setSearchText('');
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (params.get('term')) {
+      onChangeSearchTerm('');
     }
   }
 
@@ -126,11 +150,20 @@ function VariantList(props) {
 
   const handleCloseBulkEdit = () => setOpenBulkEdit(false);
 
+  const bulkEditStatus = () => {
+    const status = { available: false, tooltip: 'filters must be applied' };
+    if (!emptyArray(filters)) {
+      status.available = true;
+      status.tooltip = 'Bulk edit';
+    }
+    return status;
+  };
+
   const handleBulkEdit = (event) => {
     const integFilter = filters.get(0);
     if (integFilter) {
-      const remoteIds = getRemoteIds(data, selectedIndexList, integFilter, 'variant');
-      const category = getCategoryVariant(data, selectedIndexList, integFilter);
+      const remoteIds = getRemoteIds(data, selectedIndexes, integFilter, 'variant');
+      const category = getCategoryVariant(data, selectedIndexes, integFilter);
       setBulkEditParams({
         remoteIds, integration: integFilter, category, store
       });
@@ -158,12 +191,7 @@ function VariantList(props) {
           return (
             <Avatar
               src={imgSrc}
-              style={{
-                height: 72,
-                width: 72,
-                marginRight: 16,
-                borderRadius: 0
-              }}
+              className={classes.avatar}
               alt="variant-avatar"
             />
           );
@@ -175,14 +203,7 @@ function VariantList(props) {
       label: 'Sku',
       options: {
         filter: false,
-        viewColumns: false
-      }
-    },
-    {
-      name: 'quantity',
-      label: 'Quantity',
-      options: {
-        filter: false,
+        viewColumns: false,
       }
     },
     {
@@ -196,7 +217,21 @@ function VariantList(props) {
             {' '}
             {parseFloat(value).toFixed(2)}
           </div>
-        )
+        ),
+      }
+    },
+    {
+      name: 'quantity',
+      label: 'Quantity',
+      options: {
+        filter: false,
+        viewColumns: false,
+        customBodyRender: (value) => (
+          <Typography noWrap variant="subtitle2" component="p">
+            {value}
+          </Typography>
+        ),
+        setCellProps: () => ({ className: classNames(classes.numericTableBodyCell) })
       }
     },
     {
@@ -245,14 +280,15 @@ function VariantList(props) {
   const options = {
     filter: true,
     selectableRows: fromShopifyApp ? 'multiple' : 'none',
-    rowsSelected: selectedIndexList,
+    rowsSelected: selectedIndexes,
+    selectToolbarPlacement: 'above',
     responsive: 'vertical',
     download: false,
     print: false,
     serverSide: true,
-    searchText,
+    searchText: params.get('term'),
     searchPlaceholder: 'Search by sku',
-    rowsPerPage: limit,
+    rowsPerPage: params.get('limit'),
     count: get(pagination, 'total', 0),
     page,
     rowHover: true,
@@ -282,7 +318,7 @@ function VariantList(props) {
       }
     },
     onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {
-      setSelectedIndexList(indexList);
+      updateRowsSelected(data, indexList, null, handleSelectedIds, handleSelectedIndexes);
     },
     customToolbar: () => (
       <Fragment>
@@ -297,17 +333,27 @@ function VariantList(props) {
             </IconButton>
           </Tooltip>
         ) : null}
+        <Tooltip title="Reset table">
+          <IconButton
+            aria-label="refresh"
+            onClick={handleRefreshTable}
+          >
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
       </Fragment>
     ),
     customToolbarSelect: () => (
       <div>
-        <Tooltip title="Bulk edit">
+        <Tooltip title={bulkEditStatus().tooltip}>
           <IconButton
             aria-label="edit"
             aria-describedby={anchorEl ? 'simple-popover' : undefined}
             onClick={handleBulkEdit}
           >
-            <EditIcon />
+            <Badge badgeContent="X" color="error" invisible={bulkEditStatus().available}>
+              <EditIcon />
+            </Badge>
           </IconButton>
         </Tooltip>
         <Popover
@@ -368,6 +414,7 @@ function VariantList(props) {
 
 VariantList.propTypes = {
   history: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
@@ -376,11 +423,16 @@ VariantList.propTypes = {
   filters: PropTypes.object.isRequired,
   onGetVariants: PropTypes.func.isRequired,
   onUpdateFilters: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  onChangeSearchTerm: PropTypes.func.isRequired,
+  onResetTable: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   variantList: state.getIn(['variant', 'variantList']).toJS(),
+  params: state.getIn(['variant', 'params']),
   filters: state.getIn(['variant', 'filters']),
   loading: state.getIn(['variant', 'loading']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
@@ -390,7 +442,11 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onGetVariants: bindActionCreators(getVariantList, dispatch),
-  onUpdateFilters: bindActionCreators(updateFilters, dispatch)
+  onUpdateFilters: bindActionCreators(updateFilters, dispatch),
+  onChangePage: bindActionCreators(changePage, dispatch),
+  onChangeRowsPerPage: bindActionCreators(changeRowsPerPage, dispatch),
+  onChangeSearchTerm: bindActionCreators(changeSearchTerm, dispatch),
+  onResetTable: bindActionCreators(resetTable, dispatch),
 });
 
 const VariantListMapped = connect(
