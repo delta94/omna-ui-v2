@@ -307,7 +307,7 @@ class ProductList extends React.Component {
           filter: false,
           viewColumns: false,
           customBodyRender: (value) => (
-            <Typography noWrap variant="subtitle2">
+            <Typography variant="subtitle2">
               {value}
             </Typography>
           )
