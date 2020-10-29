@@ -83,10 +83,6 @@ function VariantForm(props) {
     props.onOriginalPriceChange(e);
   }, []);
 
-  const handleQuantityChange = useCallback((e) => {
-    props.onQuantityChange(e);
-  }, []);
-
   const handleDimensionChange = useCallback((e) => {
     onDimensionChange(e);
   }, []);
@@ -126,7 +122,6 @@ function VariantForm(props) {
           images={images}
           action={action}
           onSkuChange={handleSKUChange}
-          onQuantityChange={handleQuantityChange}
           onPriceChange={handlePriceChange}
           onOriginalPriceChange={handleOriginalPriceChange}
         />
@@ -142,7 +137,7 @@ function VariantForm(props) {
         </TabPanel>
       )
       )}
-      <FormActions onCancelClick={onCancelClick} />
+      <FormActions onCancelClick={onCancelClick} acceptButtonDisabled={!sku || !price || !originalPrice} />
     </form>
   );
 }
@@ -157,7 +152,6 @@ VariantForm.propTypes = {
   action: PropTypes.oneOf(['add', 'edit']),
   integrations: PropTypes.array,
   onSKUChange: PropTypes.func,
-  onQuantityChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onOriginalPriceChange: PropTypes.func.isRequired,
   onDimensionChange: PropTypes.func.isRequired,

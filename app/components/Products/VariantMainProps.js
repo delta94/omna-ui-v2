@@ -16,7 +16,6 @@ const VariantMainProps = memo((props) => {
   const { sku, price, images, originalPrice, quantity, action, classes } = props;
 
   const handleSKUChange = (e) => props.onSkuChange(e.target.value);
-  const handleQtyChange = (e) => props.onQuantityChange(e.target.value);
   const handlePriceChange = (e) => props.onPriceChange(e.target.value);
   const handleOriginalPriceChange = (e) => props.onOriginalPriceChange(e.target.value);
 
@@ -32,6 +31,7 @@ const VariantMainProps = memo((props) => {
               <TextField
                 className={classes.formControl}
                 label="SKU"
+                required
                 name="sku"
                 value={sku}
                 onChange={handleSKUChange}
@@ -46,26 +46,19 @@ const VariantMainProps = memo((props) => {
               </Typography>
             )
             }
-            <TextField
-              className={classes.formControl}
-              label="Quantity"
-              name="quantity"
-              value={quantity}
-              onChange={handleQtyChange}
-              variant="outlined"
-              id="quantity"
-              inputProps={{
-                decimalScale: 0,
-              }}
-              InputProps={{
-                inputComponent: NumberFormatCustom,
-              }}
-            />
+            {action !== 'add' && (
+              <Typography variant="subtitle1" className={classes.formControl} gutterBottom>
+                <span className={classNames(Type.textInfo, Type.bold)}>Quantity:</span>
+                {' '}
+                <span className={Type.bold}>{quantity}</span>
+              </Typography>
+            )}
             <TextField
               className={classes.formControl}
               label="Price"
               name="price"
               value={price}
+              required
               onChange={handlePriceChange}
               variant="outlined"
               id="price"
@@ -81,6 +74,7 @@ const VariantMainProps = memo((props) => {
               label="Original price"
               name="originalPrice"
               value={originalPrice}
+              required
               onChange={handleOriginalPriceChange}
               variant="outlined"
               id="original-price"
@@ -108,7 +102,6 @@ VariantMainProps.propTypes = {
   originalPrice: PropTypes.number,
   action: PropTypes.oneOf(['add', 'edit']),
   onSkuChange: PropTypes.func,
-  onQuantityChange: PropTypes.func.isRequired,
   onPriceChange: PropTypes.func.isRequired,
   onOriginalPriceChange: PropTypes.func.isRequired
 };
@@ -120,7 +113,7 @@ VariantMainProps.defaultProps = {
   originalPrice: undefined,
   images: [],
   action: 'add',
-  onSkuChange: () => {}
+  onSkuChange: () => { }
 };
 
 export default withStyles(styles)(VariantMainProps);

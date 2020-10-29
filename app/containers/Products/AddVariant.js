@@ -15,7 +15,6 @@ function AddVariant(props) {
   const [sku, setSKU] = useState('');
   const [price, setPrice] = useState();
   const [originalPrice, setOriginalPrice] = useState();
-  const [quantity, setQuantity] = useState();
   const [dimension, setDimension] = useState({
     weight: undefined,
     height: undefined,
@@ -35,7 +34,7 @@ function AddVariant(props) {
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const handleSubmitForm = async () => {
-    const data = { sku, quantity, price, original_price: originalPrice, package: dimension };
+    const data = { sku, price, original_price: originalPrice, package: dimension };
     onAddVariant(match.params.id, data, enqueueSnackbar);
   };
 
@@ -45,13 +44,11 @@ function AddVariant(props) {
       <PageHeader title="Add variant" history={history} />
       <VariantForm
         sku={sku}
-        quantity={quantity}
         price={price}
         originalPrice={originalPrice}
         dimension={dimension}
         action="add"
         onSKUChange={(e) => setSKU(e)}
-        onQuantityChange={(e) => setQuantity(e)}
         onPriceChange={e => setPrice(e)}
         onOriginalPriceChange={e => setOriginalPrice(e)}
         onDimensionChange={handleDimensionChange}
@@ -60,7 +57,7 @@ function AddVariant(props) {
       />
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   loading: state.getIn(['variant', 'loading']),

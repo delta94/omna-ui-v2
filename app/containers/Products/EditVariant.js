@@ -89,7 +89,7 @@ function EditVariant(props) {
 
   const editBasicInfo = async () => {
     const { onUpdateVariant } = props;
-    const data = { sku, quantity, price, original_price: originalPrice, package: dimension };
+    const data = { sku, price, original_price: originalPrice, package: dimension };
     onUpdateVariant(match.params.productId, match.params.variantId, data, enqueueSnackbar);
   };
 
@@ -153,7 +153,6 @@ function EditVariant(props) {
           dimension={dimension}
           integrations={integrations}
           action="edit"
-          onQuantityChange={(e) => setQuantity(e)}
           onPriceChange={e => setPrice(e)}
           onOriginalPriceChange={e => setOriginalPrice(e)}
           onDimensionChange={handleDimensionChange}

@@ -14,7 +14,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.type === 'dark' ? fade(theme.palette.grey[800], 0.75) : fade(theme.palette.background.paper, 0.95),
     overflow: 'hidden',
     display: 'flex',
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing(3),
     borderRadius: theme.rounded.medium,
     boxShadow: theme.shade.light
   },
@@ -31,7 +31,7 @@ const styles = theme => ({
   },
   formControl: {
     width: '100%',
-    margin: theme.spacing(1,1,2,0)
+    margin: theme.spacing(1, 1, 2, 0)
   },
   iconRed: {
     color: red[500]
@@ -53,7 +53,7 @@ const styles = theme => ({
     },
     '& button': {
       color: theme.palette.primary.main,
-      marginRight: theme.spacing.unit
+      marginRight: theme.spacing(1)
     }
   },
   flex: {
@@ -135,7 +135,7 @@ const styles = theme => ({
     zIndex: 120,
     marginBottom: theme.spacing(8),
     marginTop: theme.spacing(8),
-    padding: theme.spacing.unit,
+    padding: theme.spacing(1),
     [theme.breakpoints.up('md')]: {
       padding: theme.spacing(3),
       marginBottom: theme.spacing(4),
@@ -197,7 +197,7 @@ const styles = theme => ({
     overflow: 'hidden',
     display: 'flex',
     alignItems: 'center',
-    paddingLeft: theme.spacing.unit,
+    paddingLeft: theme.spacing(1),
     '& $avatar': {
       width: 30,
       height: 30,
