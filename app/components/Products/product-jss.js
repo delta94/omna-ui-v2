@@ -122,8 +122,7 @@ const styles = theme => ({
     padding: theme.spacing(2)
   },
   imgGallery: {
-    marginTop: theme.spacing(3),
-    marginLeft: theme.spacing(8),
+    margin: theme.spacing(3, 4, 5, 4),
     [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(8),
     },
