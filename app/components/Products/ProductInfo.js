@@ -110,6 +110,7 @@ const ProductInfo = memo((props) => {
                       id="formatted-numberformat-input"
                       label="Price"
                       value={price}
+                      required
                       onChange={handlePriceChange}
                       variant="outlined"
                       className={classes.formControl}
@@ -128,7 +129,7 @@ const ProductInfo = memo((props) => {
                     </Typography>
                   )}
               </div>
-              <RichEditor text={description} onTextEditorChange={handleDescriptionChange} />
+              <RichEditor label="Description *" text={description} onTextEditorChange={handleDescriptionChange} />
               {action === 'edit' && (
                 <div className={classes.btnArea}>
                   <span className={classes.variant}>
