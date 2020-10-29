@@ -145,7 +145,7 @@ const styles = theme => ({
   },
   divider: {
     background: 'none',
-    margin: `${theme.spacing.unit}px 0`
+    margin: `${theme.spacing(1)}px 0`
   },
   avatar: {
     margin: 10,
