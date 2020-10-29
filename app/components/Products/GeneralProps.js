@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-duplicate-props */
-import React, {memo, Fragment } from 'react';
+import React, { memo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { PapperBlock } from 'dan-components';
@@ -17,7 +17,7 @@ const styles = () => ({
 
 const GeneralProps = memo((props) => {
   const {
-    price, originalPrice, quantity, dimensions, loading, type, title, description, classes,
+    price, originalPrice, dimensions, loading, type, title, description, classes,
     onChange, onDimensionChange
   } = props;
 
@@ -62,23 +62,6 @@ const GeneralProps = memo((props) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Quantity"
-                    name="quantity"
-                    value={quantity}
-                    onChange={onChange}
-                    variant="outlined"
-                    id="quantity-input"
-                    className={classes.formControl}
-                    inputProps={{
-                      decimalScale: 0,
-                    }}
-                    InputProps={{
-                      inputComponent: NumberFormatCustom,
-                    }}
-                  />
-                </Grid>
               </Fragment>
             )}
           </Grid>
@@ -96,7 +79,6 @@ const GeneralProps = memo((props) => {
 GeneralProps.propTypes = {
   price: PropTypes.number.isRequired,
   originalPrice: PropTypes.number,
-  quantity: PropTypes.number,
   dimensions: PropTypes.object.isRequired,
   type: PropTypes.string,
   title: PropTypes.string,
@@ -109,7 +91,6 @@ GeneralProps.propTypes = {
 
 GeneralProps.defaultProps = {
   originalPrice: undefined,
-  quantity: undefined,
   type: 'product',
   loading: false,
   title: 'General Properties',

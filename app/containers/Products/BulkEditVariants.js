@@ -16,7 +16,6 @@ function BulkEditVariants(props) {
   } = props;
   const [price, setPrice] = useState();
   const [originalPrice, setOriginalPrice] = useState();
-  const [quantity, setQuantity] = useState();
   const [dimension, setDimension] = useState({
     weight: undefined,
     height: undefined,
@@ -41,7 +40,7 @@ function BulkEditVariants(props) {
         error ? setErrorProps(error) : null;
         setLoading(false);
         setInitialBasicProps({
-          price, original_price: originalPrice, quantity, package: dimension
+          price, original_price: originalPrice, package: dimension
         });
         setInitialIntegrationProps(cloneDeep(data));
       }
@@ -56,9 +55,6 @@ function BulkEditVariants(props) {
         break;
       case 'originalPrice':
         setOriginalPrice(e.target.value);
-        break;
-      case 'quantity':
-        setQuantity(e.target.value);
         break;
       default:
         break;
@@ -75,7 +71,7 @@ function BulkEditVariants(props) {
   };
 
   const checkValidityForm = () => {
-    const touchedBasicProps = { price, original_price: originalPrice, quantity, package: dimension };
+    const touchedBasicProps = { price, original_price: originalPrice, package: dimension };
     if (!isEmpty(initialBasicProps) && (!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProps))) {
       setIsValidForm(true);
     } else setIsValidForm(false);
@@ -83,11 +79,11 @@ function BulkEditVariants(props) {
 
   useEffect(() => {
     open ? checkValidityForm() : null;
-  }, [price, originalPrice, quantity, dimension, integrationProps]);
+  }, [price, originalPrice, dimension, integrationProps]);
 
   const handleBulkEdit = async () => {
     const { store, remoteIds } = params;
-    const basicProperties = { price, original_price: originalPrice, quantity, package: dimension };
+    const basicProperties = { price, original_price: originalPrice, package: dimension };
     const data = {
       remotes_variants_id: remoteIds
     };
@@ -107,7 +103,6 @@ function BulkEditVariants(props) {
           description="At this point all general properties can be edited."
           price={price}
           originalPrice={originalPrice}
-          quantity={quantity}
           loading={loading}
           type="variant"
           onChange={handleChange}
