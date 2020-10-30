@@ -141,7 +141,7 @@ const MuiMultiTextField = props => {
         name={id}
         label={label}
         value={value || ''}
-        placeholder="Place multiple values separated by comma"
+        placeholder="You can place multiple values separated by comma"
         onChange={onChange}
         required={required}
         disabled={disabled}
@@ -310,7 +310,6 @@ const MuiAsyncSelect = withSnackbar((props) => {
     try {
       const response = await API.get(path, { params });
       const { data } = response.data;
-      data.unshift({ id: '', name: 'All' });
       setOptions_(data.map(item => ({ id: item.id, name: item.name })));
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -326,12 +325,13 @@ const MuiAsyncSelect = withSnackbar((props) => {
 
   const handleOnChange = async (e, element) => {
     const target = { name: id, value: element };
+    !element ? setTerm('') : null;
     onChange({ target });
   };
 
   const handleOnInputChange = async (e, element) => {
     const index = options_.findIndex(item => item.name === element);
-    if (element === 'All') {
+    if (element === '') {
       setTerm('');
     } else if (index === -1) {
       element === '' ? setTerm(element) : delay(() => setTerm(element));
