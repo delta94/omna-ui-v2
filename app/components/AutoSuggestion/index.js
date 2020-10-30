@@ -25,7 +25,6 @@ export default function AutoSuggestion(props) {
       onClose={() => {
         setOpen(false);
       }}
-      required={required}
       disabled={disabled}
       value={value}
       inputValue={inputValue}
@@ -42,6 +41,7 @@ export default function AutoSuggestion(props) {
           fullWidth
           variant="outlined"
           error={error}
+          required={required}
           helperText={helperText}
           placeholder={placeholder}
           InputProps={{
