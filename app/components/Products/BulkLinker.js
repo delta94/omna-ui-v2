@@ -43,8 +43,8 @@ const MenuProps = {
 
 const LINK_TITLE = 'Link products';
 const UNLINK_TITLE = 'Unlink products';
-const LINK_TEXT = 'To link these products check one of the integrations below';
-const UNLINK_TEXT = 'To unlink these products check one of the integrations below';
+const LINK_TEXT = 'To link these products check the integration(s) below';
+const UNLINK_TEXT = 'To unlink these products check the integration(s) below';
 
 function BulkLinker(props) {
   const { classes, action, open, integrations, onClose, fromShopifyApp, onGetIntegrations } = props;
@@ -96,11 +96,10 @@ function BulkLinker(props) {
           found = true;
         }
         i += 1;
-      };
+      }
       if (found) {
         setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
-      } else
-        setErrors((prevState) => ({ ...prevState, integrations: '' }));
+      } else setErrors((prevState) => ({ ...prevState, integrations: '' }));
     }
 
     if (selectedItems && action === 'link') {
@@ -117,7 +116,7 @@ function BulkLinker(props) {
     if ((dirty || deleteFromIntegration) && selectedItems.length === 0) {
       setErrors((prevState) => ({ ...prevState, integrations: 'You have to check some integration' }));
     }
-  }
+  };
 
   useEffect(() => {
     checkValidity();
@@ -154,28 +153,27 @@ function BulkLinker(props) {
               value={selectedItems}
               onChange={handleOnChange}
               labelWidth={labelWidth}
-              renderValue={selected => selected.join(', ')}
+              renderValue={(selected) => integrations.data.filter(i => selected.includes(i.id)).map(i => i.name).join(', ')}
               MenuProps={MenuProps}
             >
-              {integrations.data.map(option => {
-                return (
-                  <MenuItem key={option.id} value={option.id}>
-                    <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
-                    <ListItemText primary={option.name} />
-                    {!option.authorized ? (
-                      <ListItemSecondaryAction>
-                        <Tooltip title="Unauthorized">
-                          <CancelIcon />
-                        </Tooltip>
-                      </ListItemSecondaryAction>
-                    ) : (
-                        <Tooltip title="Authorized">
-                          <CheckCircleIcon style={{ color: '#4caf50' }} />
-                        </Tooltip>
-                      )}
-                  </MenuItem>
-                );
-              })}
+              {integrations.data.map(option => (
+                <MenuItem key={option.id} value={option.id}>
+                  <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
+                  <ListItemText primary={option.name} />
+                  {!option.authorized ? (
+                    <ListItemSecondaryAction>
+                      <Tooltip title="Unauthorized">
+                        <CancelIcon />
+                      </Tooltip>
+                    </ListItemSecondaryAction>
+                  ) : (
+                    <Tooltip title="Authorized">
+                      <CheckCircleIcon style={{ color: '#4caf50' }} />
+                    </Tooltip>
+                  )}
+                </MenuItem>
+              )
+              )}
             </Select>
             <FormHelperText>{errors.integrations || ''}</FormHelperText>
           </FormControl>

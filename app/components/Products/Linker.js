@@ -43,8 +43,8 @@ const MenuProps = {
 
 const LINK_TITLE = (strings, value) => `Link ${value}`;
 const UNLINK_TITLE = (strings, value) => `Unlink ${value}`;
-const LINK_TEXT = (strings, value) => `To link this ${value} check one of the integrations below`;
-const UNLINK_TEXT = (strings, value) => `To unlink this ${value} check one of the linked integrations below`;
+const LINK_TEXT = (strings, value) => `To link this ${value} check the integration(s) below`;
+const UNLINK_TEXT = (strings, value) => `To unlink this ${value} check the linked integration(s) below`;
 
 function Linker(props) {
   const { classes, action, type, open, id, linkedIntegrations, integrations, fromShopifyApp, onClose, onGetIntegrations } = props;
@@ -94,14 +94,12 @@ function Linker(props) {
           const found = selectedItems.find(item => item === shopifyItem.id);
           if (found) {
             setErrors((prevState) => ({ ...prevState, integrations: 'Shopify integration can not be unlinked' }));
-          } else
-            setErrors((prevState) => ({ ...prevState, integrations: '' }));
+          } else setErrors((prevState) => ({ ...prevState, integrations: '' }));
         }
       }
       if (deleteFromIntegration && selectedItems.length === 0) {
         setErrors((prevState) => ({ ...prevState, delete: 'You have to check some integration' }));
-      } else
-        setErrors((prevState) => ({ ...prevState, delete: '' }));
+      } else setErrors((prevState) => ({ ...prevState, delete: '' }));
 
       if (selectedItems.length === 0) {
         setDirty(false);
@@ -132,7 +130,7 @@ function Linker(props) {
 
   const handleOnChange = e => {
     setDirty(true);
-    setSelectedItems(e.target.value)
+    setSelectedItems(e.target.value);
   };
 
   const handleDeleteChange = e => setDeleteFromIntegration(e.target.checked);
@@ -171,7 +169,7 @@ function Linker(props) {
               value={selectedItems}
               onChange={handleOnChange}
               labelWidth={labelWidth}
-              renderValue={(selected) => selected.join(', ')}
+              renderValue={(selected) => integrations.data.filter(i => selected.includes(i.id)).map(i => i.name).join(', ')}
               MenuProps={MenuProps}
             >
               {id && action === 'link' && integrations.data.map(option => {
@@ -187,21 +185,19 @@ function Linker(props) {
                         </Tooltip>
                       </ListItemSecondaryAction>
                     ) : (
-                        <Tooltip title="Authorized">
-                          <CheckCircleIcon style={{ color: '#4caf50' }} />
-                        </Tooltip>
-                      )}
+                      <Tooltip title="Authorized">
+                        <CheckCircleIcon style={{ color: '#4caf50' }} />
+                      </Tooltip>
+                    )}
                   </MenuItem>
                 );
               })}
-              {id && action === 'unlink' && linkedIntegrations.map(option => {
-                return (
-                  <MenuItem key={option.id} value={option.id}>
-                    <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
-                    <ListItemText primary={option.name} />
-                  </MenuItem>
-                );
-              })}
+              {id && action === 'unlink' && linkedIntegrations.map(option => (
+                <MenuItem key={option.id} value={option.id}>
+                  <Checkbox checked={selectedItems.indexOf(option.id) > -1} />
+                  <ListItemText primary={option.name} />
+                </MenuItem>
+              ))}
             </Select>
             <FormHelperText>{errors.integrations || ''}</FormHelperText>
           </FormControl>
