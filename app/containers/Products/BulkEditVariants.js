@@ -28,24 +28,41 @@ function BulkEditVariants(props) {
   const [initialIntegrationProps, setInitialIntegrationProps] = useState();
   const [errorProps, setErrorProps] = useState();
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [isValidForm, setIsValidForm] = useState(false);
 
+  const resetForm = () => {
+    setPrice(undefined);
+    setOriginalPrice(undefined);
+    setDimension({
+      weight: undefined,
+      height: undefined,
+      width: undefined,
+      length: undefined,
+      content: ''
+    });
+    setIsValidForm(false);
+    setIntegrationProps([]);
+    setInitialIntegrationProps(null);
+    setErrorProps(null);
+  };
 
   useEffect(() => {
     async function getIntegrationProps() {
       if (open) {
+        setInitialBasicProps(cloneDeep({
+          price, original_price: originalPrice, package: dimension
+        }));
         setLoading(true);
         const { data, error } = await getBulkEditProperties({ ...params, enqueueSnackbar });
         data ? setIntegrationProps(data) : null;
         error ? setErrorProps(error) : null;
         setLoading(false);
-        setInitialBasicProps({
-          price, original_price: originalPrice, package: dimension
-        });
         setInitialIntegrationProps(cloneDeep(data));
       }
     }
     getIntegrationProps();
+    return () => resetForm();
   }, [open]);
 
   const handleChange = e => {
@@ -72,7 +89,7 @@ function BulkEditVariants(props) {
 
   const checkValidityForm = () => {
     const touchedBasicProps = { price, original_price: originalPrice, package: dimension };
-    if (!isEmpty(initialBasicProps) && (!isEqual(initialBasicProps, touchedBasicProps) || !isEqual(initialIntegrationProps, integrationProps))) {
+    if (!isEqual(initialBasicProps, touchedBasicProps) || (!isEqual(initialIntegrationProps, integrationProps) && !isEmpty(initialIntegrationProps))) {
       setIsValidForm(true);
     } else setIsValidForm(false);
   };
@@ -90,6 +107,7 @@ function BulkEditVariants(props) {
     !isEqual(initialBasicProps, basicProperties) ? data.basic_properties = basicProperties : null;
     !isEqual(initialIntegrationProps, integrationProps) ? data.integration_properties = integrationProps : null;
     setLoading(true);
+    setSaving(true);
     await bulkEditProperties({
       store, data, enqueueSnackbar
     });
@@ -98,12 +116,12 @@ function BulkEditVariants(props) {
 
   return (
     <div>
-      <FullScreenDlg title="Bulk edit" open={open} handleConfirm={handleBulkEdit} handleClose={onClose} disableConfirm={!isValidForm || loading}>
+      <FullScreenDlg title="Bulk edit" open={open} handleConfirm={handleBulkEdit} handleClose={onClose} disableConfirm={!isValidForm || saving}>
         <GeneralProps
           description="At this point all general properties can be edited."
           price={price}
           originalPrice={originalPrice}
-          loading={loading}
+          loading={saving}
           type="variant"
           onChange={handleChange}
           dimensions={dimension}
