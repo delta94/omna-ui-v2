@@ -62,17 +62,20 @@ class OrderShopifyList extends Component {
       limit,
       page,
       sortCriteria,
-      sortDirection
+      sortDirection,
+      serverSideFilterList
     } = this.state;
 
     let integrationId = store.replace('-', '_');
     integrationId = integrationId.replace('.myshopify.com', '');
 
+    const statusFilter = serverSideFilterList[2] ? serverSideFilterList[2][0] : '';
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
-      integration_id: integrationId
+      integration_id: integrationId,
+      status: statusFilter || ''
     };
 
     if (sortCriteria && sortDirection) {
@@ -126,6 +129,7 @@ class OrderShopifyList extends Component {
   };
 
   handleFilterChange = filterList => {
+
     if (filterList) {
       this.setState(
         { filtering: true, serverSideFilterList: filterList },
@@ -248,7 +252,7 @@ class OrderShopifyList extends Component {
         label: 'Status',
         options: {
           sortDirection: columnSortDirection[2],
-          filter: false,
+          filter: true,
           customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
