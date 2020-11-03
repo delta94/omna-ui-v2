@@ -1,7 +1,6 @@
 
 import get from 'lodash/get';
 import { CENIT_APP } from 'dan-containers/Utils/api';
-import { setLocalStorage } from 'dan-containers/Common/Utils';
 
 export function planStatusNotification(planName, planStatus, subscribeAction) {
   let notification = null;
@@ -60,10 +59,6 @@ async function reloadTenantInfo(store, admin, enqueueSnackbar) {
     const response = await CENIT_APP.get(`/request_tenant_info?search=${store}&admin=${admin}`);
     const { data } = response.data;
     if (data) {
-      setLocalStorage(data);
-      // enqueueSnackbar('Reload app information successfully', {
-      //   variant: 'success'
-      // });
       return data;
     }
   } catch (error) {
