@@ -4,7 +4,7 @@ import DataIcon from '@material-ui/icons/Apps';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-export const ShopifyMenu =  [
+export const ShopifyMenu = [
   {
     key: 'dashboard',
     name: 'Dashboard',
@@ -17,11 +17,6 @@ export const ShopifyMenu =  [
     icon: <DataIcon />,
     child: [
       {
-        key: 'orders',
-        name: 'Orders',
-        link: '/orders'
-      },
-      {
         key: 'products',
         name: 'Products',
         link: '/products'
@@ -30,6 +25,16 @@ export const ShopifyMenu =  [
         key: 'inventory',
         name: 'Inventory',
         link: '/inventory'
+      },
+      {
+        key: 'orders',
+        name: 'Orders',
+        link: '/orders'
+      },
+      {
+        key: 'ordersShopify',
+        name: 'Shopify Orders',
+        link: '/ordersShopify'
       }
     ]
   },
@@ -88,11 +93,6 @@ export const ShopifyAdminMenu = [
     icon: <DataIcon />,
     child: [
       {
-        key: 'orders',
-        name: 'Orders',
-        link: '/orders'
-      },
-      {
         key: 'products',
         name: 'Products',
         link: '/products'
@@ -101,6 +101,16 @@ export const ShopifyAdminMenu = [
         key: 'inventory',
         name: 'Inventory',
         link: '/inventory'
+      },
+      {
+        key: 'orders',
+        name: 'Orders',
+        link: '/orders'
+      },
+      {
+        key: 'ordersShopify',
+        name: 'Shopify Orders',
+        link: '/ordersShopify'
       }
     ]
   },

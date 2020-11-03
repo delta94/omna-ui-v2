@@ -175,3 +175,7 @@ export const BrandList = loadable(() => import('./Brand/BrandList'), {
 export const CategoryList = loadable(() => import('./Category/CategoryList'), {
   fallback: <Loading />
 });
+
+export const OrderShopifyList = loadable(() => import('./Orders/OrderListShopify'), {
+  fallback: <Loading />
+});

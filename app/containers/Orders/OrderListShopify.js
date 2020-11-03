@@ -5,12 +5,13 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import MUIDataTable from 'mui-datatables';
+import CheckIcon from '@material-ui/icons/Check';
 import { Loading, EmptyState } from 'dan-components';
 import { getOrders } from 'dan-actions/orderActions';
-import { getIntegrations } from 'dan-actions/integrationActions';
+import reExportOrder from 'dan-api/services/orders';
 import { getCurrencySymbol } from '../Common/Utils';
-
 import PageHeader from '../Common/PageHeader';
 
 const styles = theme => ({
@@ -32,16 +33,17 @@ const styles = theme => ({
   }
 });
 
-class OrderList extends Component {
+class OrderShopifyList extends Component {
   state = {
     limit: 10,
     page: 0,
     serverSideFilterList: [],
     searchTerm: '',
     filtering: false,
-    columnSortDirection: ['none', 'none', 'none', 'none', 'none', 'none'],
+    columnSortDirection: ['none', 'none', 'none', 'none', 'none', 'none', 'none'],
     sortCriteria: '',
-    sortDirection: ''
+    sortDirection: '',
+    loadingShopify: true
   };
 
   componentDidMount() {
@@ -52,31 +54,31 @@ class OrderList extends Component {
     const {
       enqueueSnackbar,
       error,
-      onGetIntegrations,
-      onGetOrders
+      onGetOrders,
+      store
     } = this.props;
     const {
       searchTerm,
       limit,
       page,
-      serverSideFilterList,
       sortCriteria,
       sortDirection
     } = this.state;
+
+    let integrationId = store.replace('-', '_');
+    integrationId = integrationId.replace('.myshopify.com', '');
 
     const params = {
       offset: page * limit,
       limit,
       term: searchTerm || '',
-      integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
+      integration_id: integrationId
     };
 
     if (sortCriteria && sortDirection) {
       const sortParam = `{"${sortCriteria}":"${sortDirection.toUpperCase()}"}`;
       params.sort = JSON.parse(sortParam);
     }
-
-    onGetIntegrations({ limit: 100, offset: 0 });
     onGetOrders(params);
 
     if (error) {
@@ -84,6 +86,7 @@ class OrderList extends Component {
         variant: 'error'
       });
     }
+    this.setState({ loadingShopify: false });
   };
 
   handleChangePage = (page, searchTerm) => {
@@ -145,8 +148,22 @@ class OrderList extends Component {
     }
   };
 
+  handleReExportOrder = async (number, id) => {
+
+    const { store, enqueueSnackbar } = this.props;
+
+    const data = reExportOrder({ id, number, store, enqueueSnackbar });
+
+    this.setState({ loadingShopify: true });
+    if (data) {
+      this.callAPI();
+    }
+
+  };
+
   sort = (column, order) => {
     const newColumnSortDirections = [
+      'none',
       'none',
       'none',
       'none',
@@ -171,6 +188,9 @@ class OrderList extends Component {
       case 'integration':
         newColumnSortDirections[5] = order;
         break;
+      case 'actions':
+        newColumnSortDirections[6] = order;
+        break;
       default:
         break;
     }
@@ -188,7 +208,8 @@ class OrderList extends Component {
   };
 
   render() {
-    const { classes, history, orders, loading, integrations } = this.props;
+    const { loadingShopify } = this.state;
+    const { classes, history, orders, loading } = this.props;
     const {
       columnSortDirection,
       filtering,
@@ -201,20 +222,14 @@ class OrderList extends Component {
     const { data: orderList, pagination } = orders.toJS();
     const { total: count } = pagination;
 
-    const integrationFilterOptions = integrations.get('data')
-      ? integrations
-        .get('data')
-        .toJS()
-        .map(integration => integration.id)
-      : [];
-
     const columns = [
       {
         name: 'number',
         label: 'Order',
         options: {
           sortDirection: columnSortDirection[0],
-          filter: false
+          filter: false,
+          color: 'secondary'
         }
       },
       {
@@ -263,19 +278,26 @@ class OrderList extends Component {
         }
       },
       {
-        name: 'integration',
-        label: 'Channel / Integration',
+        name: 'actions',
+        label: 'Actions',
         options: {
-          sortDirection: columnSortDirection[5],
-          sort: false,
-          filterType: 'dropdown',
-          filterList: serverSideFilterList[5],
-          filterOptions: {
-            names: integrationFilterOptions
-          },
-          customBodyRender: value => (
-            <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
-          )
+          filter: false,
+          customBodyRender: (value, tableMeta) => {
+            const status = tableMeta.rowData[2];
+            const number = tableMeta.rowData[0];
+            const id = tableMeta.rowData[6];
+            if (status === 'fulfilled' || status === 'unfulfilled' || status === 'IN_PROGRESS') {
+              return (
+                <CheckIcon />
+              );
+            }
+            return(
+              <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleReExportOrder(number, id)}>
+                    Re-export
+              </Button>
+            );
+
+          }
         }
       },
       {
@@ -321,10 +343,13 @@ class OrderList extends Component {
             break;
         }
       },
-      onRowClick: (rowData, { dataIndex }) => {
-        const order = orderList[dataIndex];
-        this.handleDetailsViewClick(order);
+      onCellClick: (rowData, { colIndex }) => {
+        if (colIndex !== 5) {
+          const order = orderList[colIndex];
+          this.handleDetailsViewClick(order);
+        }
       },
+
       onColumnSortChange: (changedColumn, direction) => {
         let order = 'desc';
         if (direction === 'ascending') {
@@ -356,8 +381,9 @@ class OrderList extends Component {
 
     return (
       <div>
-        <PageHeader title="Order List" history={history} />
+        <PageHeader title="Shopify Order List" history={history} />
         <div className={classes.table}>
+          {loadingShopify && <Loading />}
           {loading && !sortCriteria ? (
             <Loading fullPage={!filtering} />
           ) : count > 0 || filtering ? (
@@ -378,13 +404,12 @@ class OrderList extends Component {
   }
 }
 
-OrderList.propTypes = {
+OrderShopifyList.propTypes = {
   orders: PropTypes.object.isRequired,
-  onGetOrders: PropTypes.func.isRequired,
+  store: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
+  onGetOrders: PropTypes.func.isRequired,
   error: PropTypes.object.isRequired,
-  integrations: PropTypes.object.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
@@ -396,17 +421,16 @@ const mapStateToProps = state => ({
   orders: state.getIn(['order', 'orders']),
   loading: state.getIn(['order', 'loading']),
   error: state.getIn(['order', 'error']),
-  integrations: state.getIn(['integration', 'integrations'])
+  store: state.getIn(['user', 'tenantName'])
 });
 
 const mapDispatchToProps = dispatch => ({
-  onGetOrders: params => dispatch(getOrders(params)),
-  onGetIntegrations: params => dispatch(getIntegrations(params))
+  onGetOrders: params => dispatch(getOrders(params))
 });
 
-const OrderListMapped = connect(
+const OrderShopifyListMapped = connect(
   mapStateToProps,
   mapDispatchToProps
-)(OrderList);
+)(OrderShopifyList);
 
-export default withSnackbar(withStyles(styles)(OrderListMapped));
+export default withSnackbar(withStyles(styles)(OrderShopifyListMapped));

@@ -27,13 +27,16 @@ import {
   Inventory,
   ApiKeys,
   BrandList,
-  CategoryList
+  CategoryList,
+  OrderShopifyList
 } from '../pageListAsync';
 import ClientSettings from '../Shopify/Components/Administration/ClientSettings';
 
 export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
 
 export const OrdersRoute = { link: '/orders', component: Orders };
+
+export const OrdersShopifyRoute = { link: '/ordersShopify', component: OrderShopifyList };
 
 export const OrderDetailsRoute = {
   link: '/orders/:id/order-details',
@@ -212,7 +215,8 @@ export const OmnaShopifyRoutes = [
   DashboardPageRoute,
   ApiKeysRoute,
   BrandRoute,
-  CategoryRoute
+  CategoryRoute,
+  OrdersShopifyRoute
 ];
 
 export const OmnaShopifyAdminRoutes = [

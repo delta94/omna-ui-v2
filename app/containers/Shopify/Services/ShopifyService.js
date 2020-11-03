@@ -28,12 +28,15 @@ export function planStatusNotification(planName, planStatus, subscribeAction) {
         action: subscribeAction
       };
       break;
-    default:
+    case '':
       notification = {
         message: 'Please select a plan to could use the app',
         variant: 'error',
         action: subscribeAction
       };
+      break;
+    default:
+      return null;
   }
 
   return notification;
