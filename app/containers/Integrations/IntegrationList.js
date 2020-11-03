@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withSnackbar } from 'notistack';
@@ -15,6 +15,9 @@ import {
   IconButton
 } from '@material-ui/core';
 import Ionicon from 'react-ionicons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import IntegrationCard from 'dan-components/CardPaper/IntegrationCard';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import GenericTablePagination from 'dan-containers/Common/GenericTablePagination';
 import PageHeader from 'dan-containers/Common/PageHeader';
@@ -29,11 +32,13 @@ import { Loading } from 'dan-components';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
-  delay
+  delay,
+  getImage,
+  getIntegrationCardOptions,
+  getChannelGroup
 } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion/index';
 import IntegrationForm from './IntegrationForm';
-import Integration from './Integration';
 
 const styles = theme => ({
   cardList: {
@@ -134,7 +139,7 @@ class IntegrationList extends Component {
 
   handleViewResource = (id, resource) => {
     const { history } = this.props;
-    resource === 'brand' ? history.push(`/installed-integrations/${id}/brands`) : history.push(`/installed-integrations/${id}/categories`);
+    history.push(`/installed-integrations/${id}/${resource}`);
   };
 
   handleDialogConfirm = () => {
@@ -146,7 +151,7 @@ class IntegrationList extends Component {
     this.setState({ editableIntegration, openForm: true });
   };
 
-  handleDeleteClick = (id, name) => {
+  handleDeleteClick = ({ id, name }) => {
     this.setState({
       alertDialog: {
         open: true,
@@ -207,6 +212,70 @@ class IntegrationList extends Component {
     }
   };
 
+  renderCardActions = (item) => {
+    const group = getChannelGroup(item.channelTitle);
+    const { fromShopifyApp } = this.props;
+    const node = (
+      <Fragment>
+        <Tooltip title="Edit">
+          <IconButton aria-label="edit" onClick={() => this.handleEditClick(item)}>
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton aria-label="delete" onClick={() => this.handleDeleteClick(item)}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </Fragment>
+    );
+    if (!fromShopifyApp || (fromShopifyApp && group !== 'Shopify')) {
+      return node;
+    }
+    return undefined;
+  };
+
+  renderCardOptions = (channelTitle) => {
+    const options = getIntegrationCardOptions();
+    const { fromShopifyApp } = this.props;
+    const group = getChannelGroup(channelTitle);
+    if (group === 'Shopify' && fromShopifyApp) {
+      return options.filter(opt => opt.value !== 'authorize' && opt.value !== 'unauthorize');
+    }
+    return options;
+  };
+
+  handleCardClickOption = (opt, id) => {
+    switch (opt) {
+      case 'import products':
+        this.handleImportResource(id, 'products');
+        break;
+      case 'import orders':
+        this.handleImportResource(id, 'orders');
+        break;
+      case 'import brands':
+        this.handleImportResource(id, 'brands');
+        break;
+      case 'import categories':
+        this.handleImportResource(id, 'categories');
+        break;
+      case 'view categories':
+        this.handleViewResource(id, 'categories');
+        break;
+      case 'view brands':
+        this.handleViewResource(id, 'brands');
+        break;
+      case 'authorize':
+        this.handleAuthorization(id);
+        break;
+      case 'unauthorize':
+        this.handleUnAuthorization(id);
+        break;
+      default:
+        break;
+    }
+  };
+
   render() {
     const {
       classes, history, integrations, loading, fromShopifyApp
@@ -246,30 +315,19 @@ class IntegrationList extends Component {
               </Tooltip>
             </div>
           </Paper>
-          <Grid container>
+          <Grid container spacing={2}>
             {data
-              && data.slice(0, limit).map(integration => (
+              && data.slice(0, limit).map(({ id, name, channel, channel_title: channelTitle, authorized }) => (
                 <Grid item md={3} xs={12}>
-                  <Integration
-                    key={integration.id}
-                    name={integration.name}
-                    group={integration.channel_title}
-                    logo
-                    fromShopifyApp={fromShopifyApp}
-                    channel={integration.channel}
-                    authorized={integration.authorized}
-                    onAuthorizeIntegration={() => this.handleAuthorization(integration.id)
-                    }
-                    onEditIntegration={() => this.handleEditClick(integration)}
-                    onUnauthorizeIntegration={() => this.handleUnAuthorization(integration.id)
-                    }
-                    onDeleteIntegration={() => this.handleDeleteClick(integration.id, integration.name)
-                    }
-                    onImportResource={resource => this.handleImportResource(integration.id, resource)
-                    }
-                    onViewResource={resource => this.handleViewResource(integration.id, resource)
-                    }
-                    classes={classes}
+                  <IntegrationCard
+                    key={id}
+                    name={name}
+                    subheader={channelTitle}
+                    image={getImage(channelTitle)}
+                    status={authorized ? 'Authorized' : 'Unauthorized'}
+                    actions={this.renderCardActions({ id, name, channel, channelTitle })}
+                    options={this.renderCardOptions(channelTitle)}
+                    onClickOption={(opt) => this.handleCardClickOption(opt, id)}
                   />
                 </Grid>
               ))}

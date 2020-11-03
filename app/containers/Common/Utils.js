@@ -186,31 +186,51 @@ export const isTenantEnabled = deactivationDate => {
 };
 
 export const getLogo = channel => {
-  const option = channel.replace(/[A-Z]{2}$/, '');
+  const option = channel.replace(/\s*\[.*?\]\s*/g, '').trim();
   switch (option) {
     case 'Amazon':
-      return '/images/logo/amazon_logo.png';
+      return '/images/avatars/amazon_logo.png';
     case 'Lazada':
-      return '/images/logo/lazada_logo.png';
+      return '/images/avatars/lazada_logo.png';
     case 'Qoo10':
-      return '/images/logo/qoo10_logo.png';
+      return '/images/avatars/qoo10_logo.png';
     case 'Shopee':
-      return '/images/logo/shopee_logo.png';
+      return '/images/avatars/shopee_logo.png';
     case 'Shopify':
-      return '/images/logo/shopify_logo.png';
+      return '/images/avatars/shopify_logo.png';
     case 'MercadoLibre':
-      return '/images/logo/mercadolibre_logo.png';
+      return '/images/avatars/mercadolibre_logo.png';
     default:
-      return '/images/logo/marketplace_placeholder.jpg';
+      return '/images/avatars/marketplace_placeholder.jpg';
   }
 };
 
-export const getResourceOptions = () => {
+export const getImage = channel => {
+  const option = channel.replace(/\s*\[.*?\]\s*/g, '').trim();
+  switch (option) {
+    case 'Lazada':
+      return '/images/logo/__lazada.svg';
+    case 'Shopee':
+      return '/images/logo/__shopee.svg';
+    case 'Shopify':
+      return '/images/logo/__shopify.svg';
+    default:
+      return '/images/avatars/marketplace_placeholder.jpg';
+  }
+};
+
+export const getChannelGroup = channelTitle => channelTitle.replace(/\s*\[.*?\]\s*/g, '').trim();
+
+export const getIntegrationCardOptions = () => {
   const options = [
-    { value: 'products', name: 'Products' },
-    { value: 'orders', name: 'Orders' },
-    { value: 'brands', name: 'Brands' },
-    { value: 'categories', name: 'Categories' }
+    { value: 'import products', name: 'Import products' },
+    { value: 'import orders', name: 'Import orders' },
+    { value: 'import brands', name: 'Import brands' },
+    { value: 'import categories', name: 'Import categories' },
+    { value: 'view categories', name: 'View categories' },
+    { value: 'view brands', name: 'View brands' },
+    { value: 'authorize', name: 'Authorize' },
+    { value: 'unauthorize', name: 'Unauthorize' },
   ];
   return options;
 };

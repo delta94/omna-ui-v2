@@ -6,11 +6,17 @@ import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import { Loading } from 'dan-components';
+import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+
+import IntegrationCard from 'dan-components/CardPaper/IntegrationCard';
+
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import PageHeader from 'dan-containers/Common/PageHeader';
+import { getImage } from 'dan-containers/Common/Utils';
 import { getChannels, getIntegrations } from 'dan-actions/integrationActions';
 import IntegrationForm from '../IntegrationForm';
-import Integration from '../Integration';
 
 const styles = theme => ({
   cardList: {
@@ -77,22 +83,29 @@ class ChannelList extends Component {
     this.setState({ openForm: false });
   };
 
-  handleAddIntegrationClick = (event, channel) => {
+  handleAddIntegrationClick = (channel) => {
     this.setState({ channel });
     this.setState({ openForm: true });
   };
 
+  renderCardActions = (item) => (
+    <Tooltip title="add">
+      <IconButton
+        aria-label="add"
+        onClick={() => this.handleAddIntegrationClick(item)}
+      >
+        <AddIcon />
+      </IconButton>
+    </Tooltip>
+  );
+
   renderIntegrationItem = (channel, classes, fromShopifyApp, integrated = false) => (
-    <Grid item md={3} xs={12}>
-      <Integration
-        classes={classes}
-        key={`${channel.id}-${channel.name}`}
-        name={channel.name}
-        group={channel.group}
-        integrated={integrated}
-        fromShopifyApp={fromShopifyApp}
-        noActions
-        handleAddIntegration={event => this.handleAddIntegrationClick(event, channel)}
+    <Grid item md={3} sm={6} xs={12}>
+      <IntegrationCard
+        name={channel.title}
+        image={getImage(channel.title)}
+        status={integrated && fromShopifyApp ? 'connected' : ''}
+        actions={integrated && fromShopifyApp ? undefined : this.renderCardActions(channel)}
       />
     </Grid>
   );

@@ -215,6 +215,18 @@ const styles = theme => ({
     paddingTop: '56.25%', // 16:9
     position: 'relative',
   },
+  mediaGCard: {
+    height: 0,
+    paddingTop: '46.25%', // 16:9
+    position: 'relative',
+    backgroundSize: 'contain',
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3)
+  },
+  actionIcons: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
   playBtn: {
     position: 'absolute',
     top: '50%',
@@ -402,7 +414,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.black,
     opacity: 0.4,
     transition: theme.transitions.create('opacity'),
-  },
+  }
 });
 
 export default styles;
