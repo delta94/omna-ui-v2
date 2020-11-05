@@ -5,9 +5,9 @@ const URL_DEV = 'https://develop.d2px3nipkhew1t.amplifyapp.com';
 const URL_PROD = 'https://app.omna.io';
 export const SECRET_SHOPIFY_APP = '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';
 
-export const baseApiUrl = 'https://cenit.io/app/ecapi-v1';
-
 const currentLocation = window.location.href;
+
+export const baseApiUrl = currentLocation.includes('develop') ? 'https://cenit.io/app/ecapi_v1' : 'https://cenit.io/app/ecapi-v1';
 
 export const baseAppUrl = currentLocation.includes('app.omna.io')
   ? URL_PROD
