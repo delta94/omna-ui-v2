@@ -124,7 +124,7 @@ class ChannelList extends Component {
         {loading ? <Loading /> : null}
         <div>
           <Grid container spacing={2}>
-            {data && data.map(chan => {
+            {data && data.sort(item => (item.group.includes('Shopify') ? -1 : 0)).map(chan => {
               const match = integrations.get('data').find(integration => integration.get('channel') === chan.name);
               return this.renderIntegrationItem(chan, classes, fromShopifyApp, Boolean(match));
             })}
@@ -137,7 +137,7 @@ class ChannelList extends Component {
           handleConfirm={this.handleDialogConfirm}
         />
         <IntegrationForm
-          channel={channel.name}
+          channel={channel}
           classes={classes}
           handleClose={this.handleCloseForm}
           open={openForm}

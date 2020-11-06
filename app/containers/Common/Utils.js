@@ -109,7 +109,7 @@ export const getCurrencySymbol = currency => {
   }
 };
 
-export const returnAfterAuthorization = () => `${baseAppUrl}/installed-integrations`;
+export const returnAfterAuthorization = () => `${baseAppUrl}/connected-integrations`;
 
 export const getHeaders = url => {
   const currentTenant = JSON.parse(localStorage.getItem('currentTenant'));
@@ -229,6 +229,16 @@ export const getIntegrationCardOptions = () => {
     { value: 'import categories', name: 'Import categories' },
     { value: 'view categories', name: 'View categories' },
     { value: 'view brands', name: 'View brands' },
+    { value: 'authorize', name: 'Authorize' },
+    { value: 'unauthorize', name: 'Unauthorize' },
+  ];
+  return options;
+};
+
+export const getShopifyCardOptions = () => {
+  const options = [
+    { value: 'import products', name: 'Import products' },
+    { value: 'import orders', name: 'Import orders' },
     { value: 'authorize', name: 'Authorize' },
     { value: 'unauthorize', name: 'Unauthorize' },
   ];

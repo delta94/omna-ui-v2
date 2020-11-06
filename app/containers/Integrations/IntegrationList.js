@@ -35,6 +35,7 @@ import {
   delay,
   getImage,
   getIntegrationCardOptions,
+  getShopifyCardOptions,
   getChannelGroup
 } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion/index';
@@ -139,7 +140,7 @@ class IntegrationList extends Component {
 
   handleViewResource = (id, resource) => {
     const { history } = this.props;
-    history.push(`/installed-integrations/${id}/${resource}`);
+    history.push(`${history.location.pathname}/${id}/${resource}`);
   };
 
   handleDialogConfirm = () => {
@@ -190,7 +191,7 @@ class IntegrationList extends Component {
   };
 
   handleCloseForm = () => {
-    this.setState({ openForm: false });
+    this.setState({ openForm: false, editableIntegration: null });
   };
 
   handleSearch = e => {
@@ -239,8 +240,12 @@ class IntegrationList extends Component {
     const options = getIntegrationCardOptions();
     const { fromShopifyApp } = this.props;
     const group = getChannelGroup(channelTitle);
-    if (group === 'Shopify' && fromShopifyApp) {
-      return options.filter(opt => opt.value !== 'authorize' && opt.value !== 'unauthorize');
+    if (group === 'Shopify') {
+      const shopifyOpts = getShopifyCardOptions();
+      if (fromShopifyApp) {
+        return shopifyOpts.filter(({ value }) => value === 'import products');
+      }
+      return shopifyOpts;
     }
     return options;
   };
@@ -292,7 +297,7 @@ class IntegrationList extends Component {
     const count = get(pagination, 'total', 0);
     return (
       <div>
-        <PageHeader title="Installed integrations" history={history} />
+        <PageHeader title="Connected integrations" history={history} />
         {loading && <Loading />}
         <div>
           <Paper style={{ margin: '0 4px 8px', padding: 10 }}>
@@ -318,7 +323,7 @@ class IntegrationList extends Component {
           <Grid container spacing={2}>
             {data
               && data.slice(0, limit).map(({ id, name, channel, channel_title: channelTitle, authorized }) => (
-                <Grid item md={3} xs={12}>
+                <Grid item md={3} sm={6} xs={12}>
                   <IntegrationCard
                     key={id}
                     name={name}

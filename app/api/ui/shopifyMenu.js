@@ -49,9 +49,9 @@ export const ShopifyMenu = [
         link: '/channels'
       },
       {
-        key: 'installed-integrations',
-        name: 'Installed Integrations',
-        link: '/installed-integrations'
+        key: 'connected-integrations',
+        name: 'Connected Integrations',
+        link: '/connected-integrations'
       }
     ]
   },
@@ -125,9 +125,9 @@ export const ShopifyAdminMenu = [
         link: '/channels'
       },
       {
-        key: 'installed-integrations',
-        name: 'Installed Integrations',
-        link: '/installed-integrations'
+        key: 'connected-integrations',
+        name: 'Connected Integrations',
+        link: '/connected-integrations'
       }
     ]
   },

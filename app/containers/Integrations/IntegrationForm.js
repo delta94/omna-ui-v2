@@ -12,6 +12,9 @@ import {
   TextField,
   withStyles
 } from '@material-ui/core';
+import classNames from 'classnames';
+import Typography from '@material-ui/core/Typography';
+import Type from 'dan-styles/Typography.scss';
 import Loading from 'dan-components/Loading';
 import FormActions from 'dan-containers/Common/FormActions';
 import {
@@ -21,12 +24,12 @@ import {
   updateIntegration
 } from 'dan-actions/integrationActions';
 
-const styles = () => ({
+const styles = (theme) => ({
   inputWidth: {
     width: '300px'
   },
-  margin: {
-    margin: '10px'
+  typography: {
+    marginTop: theme.spacing(2)
   }
 });
 
@@ -42,7 +45,37 @@ class IntegrationForm extends Component {
   componentDidMount() {
     const { integrations, onGetChannels, onGetIntegrations } = this.props;
     onGetChannels();
-    if (!integrations) onGetIntegrations();
+    !integrations ? onGetIntegrations() : null;
+  }
+
+  componentDidUpdate(prevProps) {
+    const { open } = this.props;
+    open && (open !== prevProps.open) ? this.initForm() : null;
+  }
+
+  initForm = () => {
+    const {
+      channel,
+      open,
+      editableIntegration
+    } = this.props;
+    const {
+      integration,
+    } = this.state;
+    if (channel && open) {
+      channel
+        && this.setState({
+          selectedChannel: channel ? channel.name : '',
+          integration: `My ${channel.title} integration`
+        });
+    }
+    if (editableIntegration && integration === '') {
+      this.setState({
+        authorized: editableIntegration.authorized,
+        integration: editableIntegration.name,
+        selectedChannel: editableIntegration.channel
+      });
+    }
   }
 
   onInputChange = e => {
@@ -79,41 +112,38 @@ class IntegrationForm extends Component {
     } else if (editableIntegration) {
       onUpdateIntegration({
         id: editableIntegration.id,
-        name,
-        channel,
-        authorized
+        name
       });
+      handleClose();
     } else {
       const { data: jsIntegrations } = integrations.toJS();
       const found = jsIntegrations.find(
         integration => integration.channel === channel
       );
       if (found && fromShopify) {
-        enqueueSnackbar('An integration for this channel already exist.', {
-          variant: 'error'
-        });
+        this.setState({ errors: { channel: 'An integration for this channel already exist.' } });
       } else {
         onCreateIntegration({
           authorized, channel, name, enqueueSnackbar
         });
+        handleClose();
       }
     }
 
-    handleClose();
   };
 
   handleClose = () => {
     const { handleClose } = this.props;
     this.setState(
-      { integration: '', selectedChannel: '', authorized: false },
+      { integration: '', selectedChannel: '', authorized: false, errors: {} },
       handleClose()
     );
   };
 
   render() {
     const {
-      channel,
       channels,
+      channel,
       classes,
       loading,
       open,
@@ -126,26 +156,6 @@ class IntegrationForm extends Component {
       loadingState,
       errors
     } = this.state;
-
-    if (selectedChannel === '' && open) {
-      channel
-        && this.setState({
-          selectedChannel: channel,
-          integration: `integration_${channel
-            .slice(3, -2)
-            .concat('_', channel.slice(-2))
-            .toLowerCase()}`
-        });
-    }
-
-    if (editableIntegration && integration === '') {
-      this.setState({
-        authorized: editableIntegration.authorized,
-        integration: editableIntegration.name,
-        selectedChannel: editableIntegration.channel
-      });
-    }
-
     return (
       <div>
         {(loading || loadingState) && <Loading />}
@@ -156,6 +166,7 @@ class IntegrationForm extends Component {
         >
           <DialogTitle id="form-dialog-title">
             {editableIntegration ? 'Edit' : 'Add'}
+            {' '}
             Integration
           </DialogTitle>
           <DialogContent className={classes.formContainer}>
@@ -176,50 +187,60 @@ class IntegrationForm extends Component {
                 margin="normal"
                 variant="outlined"
                 className={classes.inputWidth}
-                error={!!errors.integration}
+                error={errors.integration}
                 helperText={errors.integration}
               />
 
-              <TextField
-                required
-                id="selectedChannel"
-                select
-                label="Channel"
-                value={selectedChannel}
-                name="selectedChannel"
-                onChange={this.onInputChange}
-                SelectProps={{
-                  MenuProps: {
-                    className: classes.inputWidth
-                  }
-                }}
-                margin="normal"
-                variant="outlined"
-                className={classes.inputWidth}
-                error={!!errors.channel}
-                helperText={errors.channel}
-              >
-                {channels.data
-                  && channels.data.map(option => (
-                    <MenuItem key={option.name} value={option.name}>
-                      {option.title}
-                    </MenuItem>
-                  ))}
-              </TextField>
+              {!editableIntegration && !channel ? (
+                <TextField
+                  required
+                  id="selectedChannel"
+                  select
+                  label="Channel"
+                  value={selectedChannel}
+                  name="selectedChannel"
+                  onChange={this.onInputChange}
+                  SelectProps={{
+                    MenuProps: {
+                      className: classes.inputWidth
+                    }
+                  }}
+                  margin="normal"
+                  variant="outlined"
+                  className={classes.inputWidth}
+                  error={errors.channel}
+                  helperText={errors.channel}
+                >
+                  {channels.data
+                    && channels.data.map(option => (
+                      <MenuItem key={option.name} value={option.name}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              ) : (
+                <Typography variant="subtitle1" className={classes.typography} gutterBottom>
+                  <span className={classNames(Type.textInfo, Type.bold)}>Channel:</span>
+                  {' '}
+                  <span className={Type.bold}>{channel ? channel.title : editableIntegration.channelTitle}</span>
+                </Typography>
+              )}
 
-              <FormControlLabel
-                control={
-                  (
-                    <Checkbox
-                      name="authorized"
-                      checked={authorized}
-                      onChange={this.onCheckBoxChange}
-                      value="authorized"
-                    />
-                  )
-                }
-                label="Authorized"
-              />
+              {!editableIntegration && (
+                <FormControlLabel
+                  control={
+                    (
+                      <Checkbox
+                        name="authorized"
+                        checked={authorized}
+                        onChange={this.onCheckBoxChange}
+                        value="authorized"
+                      />
+                    )
+                  }
+                  label="Authorized"
+                />
+              )}
 
               <FormActions onCancelClick={this.handleClose} />
             </form>

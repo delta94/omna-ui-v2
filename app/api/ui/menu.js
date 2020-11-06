@@ -50,9 +50,9 @@ export default [
         link: '/available-integrations'
       },
       {
-        key: 'installed-integrations',
-        name: 'Installed Integrations',
-        link: '/installed-integrations'
+        key: 'connected-integrations',
+        name: 'Connected Integrations',
+        link: '/connected-integrations'
       }
     ]
   },

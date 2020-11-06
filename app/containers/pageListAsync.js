@@ -114,7 +114,7 @@ export const Channels = loadable(() => import('./Integrations/Channels'), {
   fallback: <Loading />
 });
 
-export const InstalledIntegrations = loadable(
+export const Integrations = loadable(
   () => import('./Integrations/IntegrationList'),
   {
     fallback: <Loading />

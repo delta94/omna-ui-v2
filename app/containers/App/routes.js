@@ -12,7 +12,7 @@ import {
   AddVariant,
   AvailableIntegrations,
   Channels,
-  InstalledIntegrations,
+  Integrations,
   IntegrationForm,
   Workflows,
   AddWorkflow,
@@ -83,9 +83,9 @@ export const AvailableIntegrationsRoute = {
 
 export const ChannelsRoute = { link: '/channels', component: Channels };
 
-export const InstalledIntegrationsRoute = {
-  link: '/installed-integrations',
-  component: InstalledIntegrations
+export const IntegrationsRoute = {
+  link: '/connected-integrations',
+  component: Integrations
 };
 
 export const AddIntegrationFormRoute = {
@@ -142,12 +142,12 @@ export const ApiKeysRoute = {
 };
 
 export const BrandRoute = {
-  link: '/installed-integrations/:integration_id/brands',
+  link: '/connected-integrations/:integration_id/brands',
   component: BrandList
 };
 
 export const CategoryRoute = {
-  link: '/installed-integrations/:integration_id/categories',
+  link: '/connected-integrations/:integration_id/categories',
   component: CategoryList
 };
 
@@ -165,7 +165,7 @@ export const OmnaAppRoutes = [
   // Integrations
   AvailableIntegrationsRoute,
   ChannelsRoute,
-  InstalledIntegrationsRoute,
+  IntegrationsRoute,
   AddIntegrationFormRoute,
   OrdersRoute,
   OrderDetailsRoute,
@@ -200,7 +200,7 @@ export const OmnaShopifyRoutes = [
   // Integrations
   AvailableIntegrationsRoute,
   ChannelsRoute,
-  InstalledIntegrationsRoute,
+  IntegrationsRoute,
   AddIntegrationFormRoute,
   // Orders
   OrdersRoute,
