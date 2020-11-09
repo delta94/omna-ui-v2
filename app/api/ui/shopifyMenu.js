@@ -70,11 +70,6 @@ export const ShopifyMenu = [
         key: 'plan',
         name: 'Plans',
         link: '/shopify'
-      },
-      {
-        key: 'workflows',
-        name: 'Workflows',
-        link: '/workflows'
       }
     ]
   }
@@ -151,11 +146,6 @@ export const ShopifyAdminMenu = [
         key: 'client-settings',
         name: 'Client Settings',
         link: '/client-settings'
-      },
-      {
-        key: 'workflows',
-        name: 'Workflows',
-        link: '/workflows'
       }
     ]
   }

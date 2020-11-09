@@ -205,8 +205,6 @@ export const OmnaShopifyRoutes = [
   // Orders
   OrdersRoute,
   OrderDetailsRoute,
-  // Workflows
-  WorkflowsRoute,
   // Tasks
   TasksRoute,
   TaskDetailsRoute,

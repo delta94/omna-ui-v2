@@ -36,7 +36,52 @@ const styles = theme => ({
   navigation: {
     display: 'flex',
     flexDirection: 'row-reverse',
-    margin: theme.spacing(3,0,1,1)
+    margin: theme.spacing(3, 0, 1, 1)
+  },
+  nameDiv: {
+    paddingBottom: '2%'
+  },
+  name: {
+    paddingBottom: '1%'
+  },
+  midmargin: {
+    paddingLeft: '25%'
+  },
+  rightmargin: {
+    paddingLeft: '25%'
+  },
+  errorChip: {
+    display: 'inline-block',
+    width: '100px',
+    height: '20px',
+    'font-size': '15px',
+    'line-height': '20px',
+    color: 'white',
+    'padding-left': '20%',
+    'border-radius': '25px',
+    'background-color': '#d32f2f',
+  },
+  greenChip: {
+    display: 'inline-block',
+    width: '100px',
+    height: '20px',
+    'font-size': '15px',
+    'line-height': '20px',
+    color: 'white',
+    'padding-left': '3%',
+    'border-radius': '25px',
+    'background-color': '#43a047',
+  },
+  grayChip: {
+    display: 'inline-block',
+    width: '100px',
+    height: '20px',
+    'font-size': '15px',
+    'line-height': '20px',
+    color: 'white',
+    'padding-left': '10%',
+    'border-radius': '25px',
+    'background-color': '#607d8b',
   }
 });
 

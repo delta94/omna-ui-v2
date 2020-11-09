@@ -25,7 +25,7 @@ const TaskExecutions = ({ classes, executions }) => {
               {exec.status}
             </Typography>
           </div>
-          <div className={classes.marginLeft2u}>
+          <div className={classes.midmargin}>
             <Typography variant="subtitle2">Start Date:</Typography>
           </div>
           <div className={classes.marginLeft}>
@@ -35,7 +35,7 @@ const TaskExecutions = ({ classes, executions }) => {
                 : '--'}
             </Typography>
           </div>
-          <div className={classes.marginLeft2u}>
+          <div className={classes.rightmargin}>
             <Typography variant="subtitle2">Complete Date:</Typography>
           </div>
           <div className={classes.marginLeft}>
