@@ -73,6 +73,7 @@ class Dashboard extends React.Component {
     ];
     const parts = history.location.pathname.split('/');
     const place = parts[parts.length - 1].replace('-', ' ');
+
     return (
       <div
         className={classNames(
@@ -97,7 +98,6 @@ class Dashboard extends React.Component {
               gradient={gradient}
               deco={deco}
               bgPosition={bgPosition}
-              place={place}
               titleException={titleException}
               handleOpenGuide={this.handleOpenGuide}
             >

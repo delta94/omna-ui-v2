@@ -39,7 +39,7 @@ export const OrdersRoute = { link: '/orders', component: Orders };
 export const OrdersShopifyRoute = { link: '/ordersShopify', component: OrderShopifyList };
 
 export const OrderDetailsRoute = {
-  link: '/orders/:id/order-details',
+  link: '/orders/:id',
   component: OrderDetails
 };
 
@@ -55,7 +55,7 @@ export const AddProductRoute = {
 };
 
 export const EditProductRoute = {
-  link: '/products/:id/edit-product',
+  link: '/products/:id',
   component: EditProduct
 };
 
@@ -70,7 +70,7 @@ export const AddVariantRoute = {
 };
 
 export const EditVariantRoute = {
-  link: '/products/:productId/variants/:variantId/edit-variant',
+  link: '/products/:productId/variants/:variantId',
   component: EditVariant
 };
 
@@ -101,7 +101,7 @@ export const AddWorkflowRoute = {
 };
 
 export const EditWorkflowRoute = {
-  link: '/workflows/:id/edit-workflow',
+  link: '/workflows/:id',
   component: EditWorkflow
 };
 
@@ -115,7 +115,7 @@ export const AddWebhookRoute = {
 };
 
 export const EditWebhookRoute = {
-  link: '/webhooks/:id/edit-webhook',
+  link: '/webhooks/:id',
   component: EditWebhook
 };
 

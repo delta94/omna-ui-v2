@@ -110,7 +110,7 @@ class Flows extends Component {
 
   handleEditFlow = id => {
     const { history } = this.props;
-    history.push(`/workflows/${id}/edit-workflow`);
+    history.push(`/workflows/${id}`);
   };
 
   handleToggleScheduler = async id => {
@@ -370,31 +370,30 @@ class Flows extends Component {
             break;
         }
       },
-      customSort: (customSortData, colIndex, order) =>
-        customSortData.sort((a, b) => {
-          switch (colIndex) {
-            case 3:
-              return (
-                (parseFloat(a.customSortData[colIndex]) <
-                  parseFloat(b.customSortData[colIndex])
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            case 4:
-              return (
-                (a.customSortData[colIndex].name.toLowerCase() <
-                  b.customSortData[colIndex].name.toLowerCase()
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-            default:
-              return (
-                (a.customSortData[colIndex] < b.customSortData[colIndex]
-                  ? -1
-                  : 1) * (order === 'desc' ? 1 : -1)
-              );
-          }
-        }),
+      customSort: (customSortData, colIndex, order) => customSortData.sort((a, b) => {
+        switch (colIndex) {
+          case 3:
+            return (
+              (parseFloat(a.customSortData[colIndex])
+                  < parseFloat(b.customSortData[colIndex])
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          case 4:
+            return (
+              (a.customSortData[colIndex].name.toLowerCase()
+                  < b.customSortData[colIndex].name.toLowerCase()
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+          default:
+            return (
+              (a.customSortData[colIndex] < b.customSortData[colIndex]
+                ? -1
+                : 1) * (order === 'desc' ? 1 : -1)
+            );
+        }
+      }),
       customToolbar: () => !fromShopifyApp && (
         <Tooltip title="add">
           <IconButton aria-label="add" onClick={this.handleAddAction}>
@@ -403,7 +402,7 @@ class Flows extends Component {
         </Tooltip>
       ),
       onCellClick: (rowData, { colIndex, dataIndex }) => {
-        if (colIndex !== 6 && fromShopifyApp) {
+        if (colIndex !== 6) {
           const flow = data[dataIndex];
           this.handleEditFlow(flow.id);
         }

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Typography from '@material-ui/core/Typography';
 import { BreadCrumb } from 'dan-components';
 import { withStyles } from '@material-ui/core';
+import { loadTitle } from 'dan-actions/UiActions';
 
 const styles = theme => ({
   pageTitle: {
@@ -22,10 +25,7 @@ const styles = theme => ({
     }
   },
   darkTitle: {
-    color:
-      theme.palette.type === 'dark'
-        ? theme.palette.primary.main
-        : theme.palette.text
+    color: theme.palette.type === 'dark' ? theme.palette.primary.main : theme.palette.primary.dark,
   },
   lightTitle: {
     color: theme.palette.common.white
@@ -33,11 +33,16 @@ const styles = theme => ({
 });
 
 const PageHeader = props => {
-  const { classes, history, title } = props;
-  
+  const { classes, history, title, onLoadTitle } = props;
+
+  useEffect(() => {
+    onLoadTitle(title);
+    return () => onLoadTitle('');
+  }, []);
+
   return (
     <div className={classes.pageTitle}>
-      <Typography className={classes.darkTitle} component="h5" variant="h5">
+      <Typography className={classes.darkTitle} component="h4" variant="h4">
         {title}
       </Typography>
       <BreadCrumb separator=" / " theme="dark" location={history.location} />
@@ -45,10 +50,21 @@ const PageHeader = props => {
   );
 };
 
-export default withStyles(styles)(PageHeader);
 
 PageHeader.propTypes = {
   title: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  onLoadTitle: PropTypes.func.isRequired,
 };
+
+const mapDispatchToProps = dispatch => ({
+  onLoadTitle: bindActionCreators(loadTitle, dispatch),
+});
+
+const PageHeaderMapped = connect(
+  null,
+  mapDispatchToProps
+)(PageHeader);
+
+export default withStyles(styles)(PageHeaderMapped);

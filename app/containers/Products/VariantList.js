@@ -314,7 +314,7 @@ function VariantList(props) {
       setSelectedItem(data[dataIndex] || null);
       if (colIndex !== 6) {
         const { pathname } = history.location;
-        history.push(`${pathname}/${data[dataIndex].id}/edit-variant`);
+        history.push(`${pathname}/${data[dataIndex].id}`);
       }
     },
     onRowSelectionChange: (rowsSelectedData, allRows, indexList) => {

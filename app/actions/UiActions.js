@@ -34,3 +34,7 @@ export const playTransitionAction = isLoaded => ({
   type: types.LOAD_PAGE,
   isLoaded
 });
+export const loadTitle = title => ({
+  type: types.LOAD_TITLE,
+  title
+});

@@ -9,6 +9,7 @@ export const CHANGE_DECO = 'CHANGE_DECO';
 export const CHANGE_BG_POSITION = 'CHANGE_BG_POSITION';
 export const CHANGE_LAYOUT = 'CHANGE_LAYOUT';
 export const LOAD_PAGE = 'LOAD_PAGE';
+export const LOAD_TITLE = 'LOAD_TITLE';
 // Redux Form
 export const INIT = 'INIT';
 export const CLEAR = 'CLEAR';

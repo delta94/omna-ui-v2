@@ -62,14 +62,14 @@ class WebhookList extends React.Component {
   }
 
   getMuiTheme = () => createMuiTheme({
-      overrides: {
-        MUIDataTableToolbar: {
-          filterPaper: {
-            width: '50%'
-          }
+    overrides: {
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: '50%'
         }
       }
-    });
+    }
+  });
 
   getTopics() {
     API.get('/webhooks/topics', { params: { limit: 100, offset: 0 } })
@@ -121,8 +121,8 @@ class WebhookList extends React.Component {
 
   callAPI = () => {
     const {
- limit, page, searchTerm, serverSideFilterList 
-} = this.state;
+      limit, page, searchTerm, serverSideFilterList
+    } = this.state;
     const params = {
       offset: page * limit,
       limit,
@@ -188,7 +188,7 @@ class WebhookList extends React.Component {
 
   handleEdit = id => {
     const { history } = this.props;
-    history.push(`/webhooks/${id}/edit-webhook`);
+    history.push(`/webhooks/${id}`);
   };
 
   handleOnClickDelete = tableMeta => {

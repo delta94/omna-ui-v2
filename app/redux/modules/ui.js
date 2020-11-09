@@ -10,7 +10,8 @@ import {
   CHANGE_DECO,
   CHANGE_BG_POSITION,
   CHANGE_LAYOUT,
-  LOAD_PAGE
+  LOAD_PAGE,
+  LOAD_TITLE
 } from 'dan-actions/actionConstants';
 
 const initialState = {
@@ -44,7 +45,8 @@ const initialState = {
   ]),
   sidebarOpen: true,
   pageLoaded: false,
-  subMenuOpen: []
+  subMenuOpen: [],
+  title: ''
 };
 
 const getMenus = menuArray => menuArray.map(item => {
@@ -127,6 +129,10 @@ export default function reducer(state = initialImmutableState, action = {}) {
     case CHANGE_LAYOUT:
       return state.withMutations((mutableState) => {
         mutableState.set('layout', action.layout);
+      });
+    case LOAD_TITLE:
+      return state.withMutations((mutableState) => {
+        mutableState.set('title', action.title);
       });
     case LOAD_PAGE:
       return state.withMutations((mutableState) => {
