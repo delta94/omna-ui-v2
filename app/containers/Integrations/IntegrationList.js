@@ -29,13 +29,11 @@ import {
   unauthorizeIntegration
 } from 'dan-actions';
 import { Loading } from 'dan-components';
-import { CENIT_APP } from 'dan-containers/Utils/api';
 import {
   handleAuthorization,
   delay,
   getImage,
   getIntegrationCardOptions,
-  getShopifyCardOptions,
   getChannelGroup
 } from 'dan-containers/Common/Utils';
 import AutoSuggestion from 'dan-components/AutoSuggestion/index';
@@ -93,16 +91,10 @@ class IntegrationList extends Component {
     history.push('/integrations/add-integration');
   };
 
-  handleAuthorization = id => {
-    const { fromShopifyApp, store } = this.props;
-    const path = `integrations/${id}/authorize`;
-    fromShopifyApp ? CENIT_APP.post(`/request_create_flow?integration_id=${id}&shop=${store}`) : null;
-    handleAuthorization(path);
-  };
+  handleAuthorization = id => handleAuthorization(`integrations/${id}/authorize`);
 
   handleUnAuthorization = id => {
     const { enqueueSnackbar, onUnauthorizeIntegration } = this.props;
-
     try {
       onUnauthorizeIntegration(id);
       enqueueSnackbar('Integration unauthorized successfully', {
@@ -237,15 +229,11 @@ class IntegrationList extends Component {
   };
 
   renderCardOptions = (channelTitle) => {
-    const options = getIntegrationCardOptions();
-    const { fromShopifyApp } = this.props;
     const group = getChannelGroup(channelTitle);
-    if (group === 'Shopify') {
-      const shopifyOpts = getShopifyCardOptions();
-      if (fromShopifyApp) {
-        return shopifyOpts.filter(({ value }) => value === 'import products');
-      }
-      return shopifyOpts;
+    const options = getIntegrationCardOptions(group);
+    const { fromShopifyApp } = this.props;
+    if (fromShopifyApp && group === 'Shopify') {
+      return options.filter(({ value }) => value === 'import products');
     }
     return options;
   };
@@ -257,6 +245,9 @@ class IntegrationList extends Component {
         break;
       case 'import orders':
         this.handleImportResource(id, 'orders');
+        break;
+      case 'import logistics':
+        this.handleImportResource(id, 'logistics');
         break;
       case 'import brands':
         this.handleImportResource(id, 'brands');

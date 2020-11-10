@@ -221,28 +221,33 @@ export const getImage = channel => {
 
 export const getChannelGroup = channelTitle => channelTitle.replace(/\s*\[.*?\]\s*/g, '').trim();
 
-export const getIntegrationCardOptions = () => {
-  const options = [
+export const getIntegrationCardOptions = (group) => {
+  const commonOptions = [
     { value: 'import products', name: 'Import products' },
-    { value: 'import orders', name: 'Import orders' },
+    { value: 'import orders', name: 'Import orders' }
+  ];
+  const authOptions = [
+    { value: 'authorize', name: 'Authorize' },
+    { value: 'unauthorize', name: 'Unauthorize' }
+  ];
+  const secondaryOptions = [
     { value: 'import brands', name: 'Import brands' },
     { value: 'import categories', name: 'Import categories' },
     { value: 'view categories', name: 'View categories' },
-    { value: 'view brands', name: 'View brands' },
-    { value: 'authorize', name: 'Authorize' },
-    { value: 'unauthorize', name: 'Unauthorize' },
+    { value: 'view brands', name: 'View brands' }
   ];
-  return options;
-};
+  const logisticOpt = { value: 'import logistics', name: 'Import logistics' };
 
-export const getShopifyCardOptions = () => {
-  const options = [
-    { value: 'import products', name: 'Import products' },
-    { value: 'import orders', name: 'Import orders' },
-    { value: 'authorize', name: 'Authorize' },
-    { value: 'unauthorize', name: 'Unauthorize' },
-  ];
-  return options;
+  switch (group) {
+    case 'Lazada':
+      return [...commonOptions, ...secondaryOptions, ...authOptions];
+    case 'Shopify':
+      return commonOptions;
+    case 'Shopee':
+      return [...commonOptions, logisticOpt, ...secondaryOptions, ...authOptions];
+    default:
+      return [...commonOptions, ...authOptions];
+  }
 };
 
 export const checkTypes = values => {
