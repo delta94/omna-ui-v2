@@ -79,7 +79,11 @@ function* deleteIntegration(params) {
     const { data } = response.data;
     yield put({ type: actionConstants.DELETE_INTEGRATION_SUCCESS, data });
     enqueueSnackbar('Deleting integration ', { variant: 'info' });
+
   } catch (error) {
+    const message = error.response.data.message ? `: ${error.response.data.message}` : '';
+    enqueueSnackbar(`Error deleting integration${message}`, { variant: 'error' });
+
     yield put({ type: actionConstants.DELETE_INTEGRATION_FAILED, error });
   }
 }
