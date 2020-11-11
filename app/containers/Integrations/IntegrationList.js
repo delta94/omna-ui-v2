@@ -28,6 +28,7 @@ import {
   setLoading,
   unauthorizeIntegration
 } from 'dan-actions';
+import { CENIT_APP } from 'dan-containers/Utils/api';
 import { Loading } from 'dan-components';
 import {
   handleAuthorization,
@@ -91,7 +92,12 @@ class IntegrationList extends Component {
     history.push('/integrations/add-integration');
   };
 
-  handleAuthorization = id => handleAuthorization(`integrations/${id}/authorize`);
+  handleAuthorization = id => {
+    const { fromShopifyApp, store } = this.props;
+    const path = `integrations/${id}/authorize`;
+    fromShopifyApp ? CENIT_APP.post(`/request_create_flow?integration_id=${id}&shop=${store}`) : null;
+    handleAuthorization(path);
+  };
 
   handleUnAuthorization = id => {
     const { enqueueSnackbar, onUnauthorizeIntegration } = this.props;
