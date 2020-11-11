@@ -10,6 +10,11 @@ export const getSetPlanStatus = (status) => ({
   status
 });
 
+export const getSetPlanName = (name) => ({
+  type: types.SET_PLAN_NAME,
+  name
+});
+
 // ------------------------------------------------------
 export const getTenant = () => ({
   type: types.GET_TENANT

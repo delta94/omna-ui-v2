@@ -4,24 +4,28 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import { Container } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
-// import Alert from 'dan-components/Notification/Alert';
 import LoadingState from 'dan-containers/Common/LoadingState';
-// import { bindActionCreators } from 'redux';
-// import { connect } from 'react-redux';
-import { getSetPlanStatus } from 'dan-actions/UserActions';
+import { pushNotification } from 'dan-actions/NotificationActions';
+import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
+import { getSetPlanStatus, getSetPlanName } from 'dan-actions/UserActions';
+import { planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
 import PlansBoard from './PlansBoard';
 import { getPlanInfoAvailablePlans } from '../Services/ShopifyService';
-// import CurrentPlan from './CurrentPlan';
-// import {
-//   pushNotification
-// } from '../../../actions/NotificationActions';
 
 function InstallShopify(props) {
-  const { tenantName, enqueueSnackbar, history, onSetPlanStatus } = props;
+  const { tenantName, enqueueSnackbar, history, onSetPlanStatus, planName, planStatus, onSetPlanName, onPushNotification } = props;
   const [planCurrent, setPlanCurrent] = useState({});
   const [planCurrentStatus, setPlanCurrentStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [plansAvailable, setPlansAvailable] = useState([]);
+
+
+  function handleNotification(name, status) {
+    onSetPlanStatus(status);
+    onSetPlanName(name);
+    const notif = planStatusNotification(name, status, subscribeShopifyPlanAction);
+    notif ? onPushNotification(notif) : null;
+  }
 
   async function getPlans() {
     const result = await getPlanInfoAvailablePlans(tenantName, enqueueSnackbar);
@@ -38,7 +42,13 @@ function InstallShopify(props) {
 
   useEffect(() => {
     tenantName ? getPlans() : null;
+    handleNotification(planName, planStatus);
   }, [tenantName]);
+
+
+  useEffect(() => {
+    handleNotification(planCurrent.name, planCurrentStatus);
+  }, [planCurrent, planCurrentStatus]);
 
   function handleCurrentPlan(plan) {
     setPlanCurrent(plan);
@@ -46,7 +56,6 @@ function InstallShopify(props) {
 
   function handleCurrentPlanStatus(status) {
     setPlanCurrentStatus(status);
-    onSetPlanStatus(status);
   }
 
   return (
@@ -76,18 +85,27 @@ function InstallShopify(props) {
 InstallShopify.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   onSetPlanStatus: PropTypes.func.isRequired,
+  onSetPlanName: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   tenantName: PropTypes.string.isRequired,
+  planName: PropTypes.string.isRequired,
+  planStatus: PropTypes.string.isRequired,
+  onPushNotification: PropTypes.func.isRequired
 };
 
 
 const mapStateToProps = state => ({
   tenantName: state.getIn(['user', 'tenantName']),
+  planName: state.getIn(['user', 'planName']),
+  planStatus: state.getIn(['user', 'planStatus']),
   ...state
 });
 // getSetPlanStatus
 const mapDispatchToProps = dispatch => ({
-  onSetPlanStatus: bindActionCreators(getSetPlanStatus, dispatch)
+  onSetPlanStatus: bindActionCreators(getSetPlanStatus, dispatch),
+  onSetPlanName: bindActionCreators(getSetPlanName, dispatch),
+  onPushNotification: bindActionCreators(pushNotification, dispatch),
+
 });
 
 const InstallShopifyMapped = connect(

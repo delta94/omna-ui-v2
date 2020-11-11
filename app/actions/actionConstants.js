@@ -148,6 +148,7 @@ export const SET_TENANT_NAME = 'SET_TENANT_NAME';
 export const GET_TENANT_ID = 'GET_TENANT_ID';
 export const SET_TENANT_ID = 'SET_TENANT_ID';
 export const SET_PLAN_STATUS = 'SET_PLAN_STATUS';
+export const SET_PLAN_NAME = 'SET_PLAN_NAME';
 
 // Tasks
 export const GET_TASKS = 'GET_TASKS';
