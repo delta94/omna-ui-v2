@@ -47,6 +47,10 @@ export default function userReducer(state = initialState, action) {
           .set('planName', data.plan_name)
           .set('planStatus', data.plan_status);
       });
+    case types.SET_PLAN_STATUS:
+      return state.withMutations(mutableState => {
+        mutableState.set('planStatus', action.status);
+      });
     //
     case types.SET_CODE:
       return state.withMutations(mutableState => {

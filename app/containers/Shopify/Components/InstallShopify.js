@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import { Container } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
@@ -7,16 +8,16 @@ import { withSnackbar } from 'notistack';
 import LoadingState from 'dan-containers/Common/LoadingState';
 // import { bindActionCreators } from 'redux';
 // import { connect } from 'react-redux';
+import { getSetPlanStatus } from 'dan-actions/UserActions';
 import PlansBoard from './PlansBoard';
 import { getPlanInfoAvailablePlans } from '../Services/ShopifyService';
-
 // import CurrentPlan from './CurrentPlan';
 // import {
 //   pushNotification
 // } from '../../../actions/NotificationActions';
 
 function InstallShopify(props) {
-  const { tenantName, enqueueSnackbar, history } = props;
+  const { tenantName, enqueueSnackbar, history, onSetPlanStatus } = props;
   const [planCurrent, setPlanCurrent] = useState({});
   const [planCurrentStatus, setPlanCurrentStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -41,11 +42,11 @@ function InstallShopify(props) {
 
   function handleCurrentPlan(plan) {
     setPlanCurrent(plan);
-    // printNotification();
   }
 
   function handleCurrentPlanStatus(status) {
     setPlanCurrentStatus(status);
+    onSetPlanStatus(status);
   }
 
   return (
@@ -74,6 +75,7 @@ function InstallShopify(props) {
 
 InstallShopify.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
+  onSetPlanStatus: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   tenantName: PropTypes.string.isRequired,
 };
@@ -83,10 +85,14 @@ const mapStateToProps = state => ({
   tenantName: state.getIn(['user', 'tenantName']),
   ...state
 });
+// getSetPlanStatus
+const mapDispatchToProps = dispatch => ({
+  onSetPlanStatus: bindActionCreators(getSetPlanStatus, dispatch)
+});
 
 const InstallShopifyMapped = connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(InstallShopify);
 
 export default withSnackbar(InstallShopifyMapped);

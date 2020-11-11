@@ -5,6 +5,11 @@ export const setUser = (data) => ({
   data
 });
 
+export const getSetPlanStatus = (status) => ({
+  type: types.SET_PLAN_STATUS,
+  status
+});
+
 // ------------------------------------------------------
 export const getTenant = () => ({
   type: types.GET_TENANT
