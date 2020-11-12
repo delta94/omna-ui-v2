@@ -14,3 +14,7 @@ export const pushNotification = (notification) => ({
   type: types.PUSH_NOTIFICATION,
   data: notification
 });
+
+export const clearNotifications = () => ({
+  type: types.CLEAR_NOTIFICATIONS
+});

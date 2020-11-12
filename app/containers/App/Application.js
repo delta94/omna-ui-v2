@@ -5,8 +5,10 @@ import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import Loading from 'dan-components/Loading';
+import { pushNotification } from 'dan-actions/NotificationActions';
 import { getter } from 'dan-containers/Common/Utils';
-import { getSettingsInfo } from 'dan-containers/Shopify/Services/ShopifyService';
+import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
+import { getSettingsInfo, planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
 import API from 'dan-containers/Utils/api';
 import { setUser } from 'dan-actions/UserActions';
 import AuthGuardRoute from '../Common/AuthGuardRoute';
@@ -25,7 +27,7 @@ class Application extends React.Component {
 
   async componentDidMount() {
     const {
-      onSetUser, tenantId, fromShopifyAppAdmin, enqueueSnackbar
+      onSetUser, tenantId, fromShopifyAppAdmin, enqueueSnackbar, onPushNotification
     } = this.props;
     if (!tenantId && getter.IS_AUTHENTICATED) {
       this.setState({ loadingApp: true });
@@ -37,6 +39,8 @@ class Application extends React.Component {
       } else if (getter.STORE) {
         const settings = await getSettingsInfo(getter.STORE, fromShopifyAppAdmin, enqueueSnackbar);
         onSetUser(settings);
+        const notif = planStatusNotification(settings.plan_name, settings.plan_status, subscribeShopifyPlanAction);
+        notif ? onPushNotification(notif) : null;
         this.setState({ loadingApp: false });
       }
     }
@@ -85,7 +89,8 @@ Application.propTypes = {
   fromShopifyAppAdmin: PropTypes.bool.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   tenantId: PropTypes.string.isRequired,
-  onSetUser: PropTypes.func.isRequired
+  onSetUser: PropTypes.func.isRequired,
+  onPushNotification: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -96,7 +101,8 @@ const mapStateToProps = state => ({
 });
 
 const dispatchToProps = dispatch => ({
-  onSetUser: bindActionCreators(setUser, dispatch)
+  onSetUser: bindActionCreators(setUser, dispatch),
+  onPushNotification: bindActionCreators(pushNotification, dispatch)
 });
 
 const ApplicationMapped = connect(

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Container } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import LoadingState from 'dan-containers/Common/LoadingState';
-import { pushNotification } from 'dan-actions/NotificationActions';
+import { pushNotification, clearNotifications } from 'dan-actions/NotificationActions';
 import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
 import { getSetPlanStatus, getSetPlanName } from 'dan-actions/UserActions';
 import { planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
@@ -13,7 +13,7 @@ import PlansBoard from './PlansBoard';
 import { getPlanInfoAvailablePlans } from '../Services/ShopifyService';
 
 function InstallShopify(props) {
-  const { tenantName, enqueueSnackbar, history, onSetPlanStatus, planName, planStatus, onSetPlanName, onPushNotification } = props;
+  const { tenantName, enqueueSnackbar, history, onSetPlanStatus, planName, planStatus, onSetPlanName, onPushNotification, onClearNotifications } = props;
   const [planCurrent, setPlanCurrent] = useState({});
   const [planCurrentStatus, setPlanCurrentStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,7 @@ function InstallShopify(props) {
 
 
   function handleNotification(name, status) {
+    onClearNotifications();
     onSetPlanStatus(status);
     onSetPlanName(name);
     const notif = planStatusNotification(name, status, subscribeShopifyPlanAction);
@@ -90,7 +91,8 @@ InstallShopify.propTypes = {
   tenantName: PropTypes.string.isRequired,
   planName: PropTypes.string.isRequired,
   planStatus: PropTypes.string.isRequired,
-  onPushNotification: PropTypes.func.isRequired
+  onPushNotification: PropTypes.func.isRequired,
+  onClearNotifications: PropTypes.func.isRequired
 };
 
 
@@ -105,7 +107,7 @@ const mapDispatchToProps = dispatch => ({
   onSetPlanStatus: bindActionCreators(getSetPlanStatus, dispatch),
   onSetPlanName: bindActionCreators(getSetPlanName, dispatch),
   onPushNotification: bindActionCreators(pushNotification, dispatch),
-
+  onClearNotifications: bindActionCreators(clearNotifications, dispatch)
 });
 
 const InstallShopifyMapped = connect(
