@@ -3,13 +3,23 @@ import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
-import { withStyles } from '@material-ui/core/styles';
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
-import { Loading, EmptyState } from 'dan-components';
-import { getOrders } from 'dan-actions/orderActions';
-import { getIntegrations } from 'dan-actions/integrationActions';
-import { getCurrencySymbol } from '../Common/Utils';
+import { Loading } from 'dan-components';
+import filterDlgSizeHelper from 'utils/mediaQueries';
+import Button from '@material-ui/core/Button';
+import {
+  getOrders,
+  updateFilters,
+  changePage,
+  changeRowsPerPage,
+  changeSearchTerm
+} from 'dan-actions/orderActions';
+import AutoSuggestion from 'dan-components/AutoSuggestion';
+import FiltersDlg from 'dan-components/Products/FiltersDlg';
+import { getCurrencySymbol, delay, getOrderStatusOptions } from 'dan-containers/Common/Utils';
 
 import PageHeader from '../Common/PageHeader';
 
@@ -29,55 +39,54 @@ const styles = theme => ({
         cursor: 'pointer'
       }
     }
+  },
+  select: {
+    margin: theme.spacing(1, 1, 1, 1)
   }
 });
 
 class OrderList extends Component {
   state = {
-    limit: 10,
-    page: 0,
-    serverSideFilterList: [],
-    searchTerm: '',
-    filtering: false,
+    integrationFilter: undefined,
+    statusFilter: undefined,
     columnSortDirection: ['none', 'none', 'none', 'none', 'none', 'none'],
+    /* filtering: false,
     sortCriteria: '',
-    sortDirection: ''
+    sortDirection: '', */
   };
 
   componentDidMount() {
-    this.callAPI();
+    this.makeQuery();
   }
 
-  callAPI = () => {
+  componentDidUpdate(prevProps) {
+    const { params } = this.props;
+    if (params && params !== prevProps.params) {
+      this.makeQuery();
+    }
+  }
+
+  makeQuery = () => {
     const {
       enqueueSnackbar,
       error,
-      onGetIntegrations,
-      onGetOrders
+      onGetOrders,
+      params
     } = this.props;
-    const {
-      searchTerm,
-      limit,
-      page,
-      serverSideFilterList,
-      sortCriteria,
-      sortDirection
-    } = this.state;
 
-    const params = {
-      offset: page * limit,
-      limit,
-      term: searchTerm || '',
-      integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
-    };
+    /*     const params = {
+          offset: page * limit,
+          limit,
+          term: searchTerm || '',
+          integration_id: serverSideFilterList[5] ? serverSideFilterList[5][0] : ''
+        };
 
-    if (sortCriteria && sortDirection) {
-      const sortParam = `{"${sortCriteria}":"${sortDirection.toUpperCase()}"}`;
-      params.sort = JSON.parse(sortParam);
-    }
+        if (sortCriteria && sortDirection) {
+          const sortParam = `{"${sortCriteria}":"${sortDirection.toUpperCase()}"}`;
+          params.sort = JSON.parse(sortParam);
+        } */
 
-    onGetIntegrations({ limit: 100, offset: 0 });
-    onGetOrders(params);
+    onGetOrders(params.toJS());
 
     if (error) {
       enqueueSnackbar(error, {
@@ -86,12 +95,35 @@ class OrderList extends Component {
     }
   };
 
-  handleChangePage = (page, searchTerm) => {
-    this.setState({ page, searchTerm }, this.callAPI);
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          cursor: 'pointer',
+        }
+      },
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: filterDlgSizeHelper,
+          minWidth: '300px'
+        }
+      },
+      MuiGridListTile: {
+        root: {
+          width: filterDlgSizeHelper
+        }
+      }
+    },
+  });
+
+  handleChangePage = (page) => {
+    const { onChangePage } = this.props;
+    onChangePage(page);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
-    this.setState({ limit: rowsPerPage }, this.callAPI);
+    const { onChangeRowsPerPage } = this.props;
+    onChangeRowsPerPage(rowsPerPage);
   };
 
   handleDetailsViewClick = order => {
@@ -102,50 +134,33 @@ class OrderList extends Component {
   };
 
   handleSearch = searchTerm => {
+    const { params, onChangeSearchTerm } = this.props;
     if (searchTerm) {
-      const timer = setTimeout(() => {
-        this.setState({ searchTerm }, this.callAPI);
-        clearTimeout(timer);
-      }, 800);
-      window.addEventListener('keydown', () => {
-        clearTimeout(timer);
-      });
-    } else {
-      const { searchTerm: _searchTerm } = this.state;
-      if (_searchTerm) {
-        this.setState({ searchTerm: '' }, this.callAPI);
-      }
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (params.get('term')) {
+      onChangeSearchTerm('');
     }
   };
 
   onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
-  };
-
-  handleFilterChange = filterList => {
-    if (filterList) {
-      this.setState(
-        { filtering: true, serverSideFilterList: filterList },
-        this.callAPI
-      );
-    } else {
-      this.setState(
-        { filtering: true, serverSideFilterList: [] },
-        this.callAPI
-      );
-    }
+    const { onChangeSearchTerm } = this.props;
+    onChangeSearchTerm('');
   };
 
   handleResetFilters = () => {
-    const { serverSideFilterList } = this.state;
-    this.setState({ filtering: true });
-
-    if (serverSideFilterList.length > 0) {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
+    this.setState({ integrationFilter: null });
   };
 
-  sort = (column, order) => {
+  handleFilterSubmit = () => {
+    const { integrationFilter, statusFilter } = this.state;
+    const { onUpdateFilters } = this.props;
+    const objectFilters = {};
+    integrationFilter ? objectFilters.integrationFilter = [integrationFilter] : null;
+    statusFilter ? objectFilters.statusFilter = [statusFilter] : null;
+    onUpdateFilters(objectFilters);
+  };
+
+  /*  sort = (column, order) => {
     const newColumnSortDirections = [
       'none',
       'none',
@@ -176,37 +191,34 @@ class OrderList extends Component {
     }
 
     newColumnSortDirections[column.index] = order;
-
     this.setState(
       {
         columnSortDirection: newColumnSortDirections,
         sortCriteria: column,
         sortDirection: order
       },
-      this.callAPI
+      this.makeQuery
     );
+  }; */
+
+  handleIntegrationFilterChange = (integation) => {
+    this.setState({ integrationFilter: integation });
   };
 
+  handleStatusChange = (e, value) => {
+    this.setState({ statusFilter: value });
+  }
+
   render() {
-    const { classes, history, orders, loading, integrations } = this.props;
+    const { classes, history, orders, loading, params, filters, onUpdateFilters } = this.props;
     const {
       columnSortDirection,
-      filtering,
-      limit,
-      page,
-      serverSideFilterList,
-      searchTerm,
-      sortCriteria
+    /* filtering,
+      sortCriteria */
     } = this.state;
     const { data: orderList, pagination } = orders.toJS();
     const { total: count } = pagination;
-
-    const integrationFilterOptions = integrations.get('data')
-      ? integrations
-        .get('data')
-        .toJS()
-        .map(integration => integration.id)
-      : [];
+    const page = params.get('offset') / params.get('limit');
 
     const columns = [
       {
@@ -233,7 +245,27 @@ class OrderList extends Component {
         label: 'Status',
         options: {
           sortDirection: columnSortDirection[2],
-          filter: false,
+          filter: true,
+          filterType: 'custom',
+          filterList: filters.getIn(['statusFilter']),
+          customFilterListOptions: {
+            render: v => v[0].name
+          },
+          filterOptions: {
+            display: () => {
+              const { statusFilter } = this.state;
+              return (
+                <AutoSuggestion
+                  id="status"
+                  label="Status"
+                  className={classes.select}
+                  options={getOrderStatusOptions()}
+                  onChange={(e, value) => this.handleStatusChange(e, value)}
+                  value={statusFilter}
+                />
+              );
+            }
+          },
           customBodyRender: value => <div>{value.toUpperCase()}</div>
         }
       },
@@ -266,16 +298,25 @@ class OrderList extends Component {
         name: 'integration',
         label: 'Channel / Integration',
         options: {
-          sortDirection: columnSortDirection[5],
+          filter: true,
           sort: false,
-          filterType: 'dropdown',
-          filterList: serverSideFilterList[5],
-          filterOptions: {
-            names: integrationFilterOptions
+          filterType: 'custom',
+          filterList: filters.getIn(['integrationFilter']),
+          customFilterListOptions: {
+            render: v => v[0].name
           },
-          customBodyRender: value => (
-            <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
-          )
+          filterOptions: {
+            display: () => {
+              const { integrationFilter } = this.state;
+              return (
+                <FiltersDlg
+                  integration={integrationFilter}
+                  onIntegrationChange={this.handleIntegrationFilterChange}
+                />
+              );
+            }
+          },
+          customBodyRender: value => <div>{value ? `${value.channel_title} / ${value.name}` : ''}</div>
         }
       },
       {
@@ -293,11 +334,11 @@ class OrderList extends Component {
       responsive: 'stacked',
       download: false,
       print: false,
+      sort: false,
       serverSide: true,
-      searchText: searchTerm,
-      serverSideFilterList,
+      searchText: params.get('term'),
       searchPlaceholder: 'Search by number or status',
-      rowsPerPage: limit,
+      rowsPerPage: params.get('limit'),
       count,
       page,
       onTableChange: (action, tableState) => {
@@ -310,9 +351,6 @@ class OrderList extends Component {
             break;
           case 'search':
             this.handleSearch(tableState.searchText);
-            break;
-          case 'filterChange':
-            this.handleFilterChange(tableState.filterList);
             break;
           case 'resetFilters':
             this.handleResetFilters();
@@ -333,7 +371,7 @@ class OrderList extends Component {
 
         this.sort(changedColumn, order);
       },
-      customSort: (data, colIndex, order) => data.sort((a, b) => {
+      /* customSort: (data, colIndex, order) => data.sort((a, b) => {
         switch (colIndex) {
           case 4:
             return (
@@ -351,27 +389,40 @@ class OrderList extends Component {
           default:
             return 0;
         }
-      })
+      }), */
+      customFilterDialogFooter: () => (
+        <div style={{ padding: '16px' }}>
+          <Button variant="contained" onClick={this.handleFilterSubmit}>Apply Filters</Button>
+        </div>
+      ),
+      onFilterChipClose: (index) => {
+        const fltrs = filters.toJS();
+        switch (index) {
+          case 5:
+            fltrs.integrationFilter = null;
+            break;
+          case 2:
+            fltrs.statusFilter = null;
+            break;
+          default:
+            break;
+        }
+        onUpdateFilters(fltrs);
+      }
     };
 
     return (
       <div>
         <PageHeader title="Order List" history={history} />
         <div className={classes.table}>
-          {loading && !sortCriteria ? (
-            <Loading fullPage={!filtering} />
-          ) : count > 0 || filtering ? (
-            <div>
-              {sortCriteria && loading && <Loading />}
-              <MUIDataTable
-                columns={columns}
-                data={orderList}
-                options={options}
-              />
-            </div>
-          ) : (
-            <EmptyState text="There's nothing here now, but orders data will show up here later." />
-          )}
+          {loading && <Loading />}
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable
+              columns={columns}
+              data={orderList}
+              options={options}
+            />
+          </MuiThemeProvider>
         </div>
       </div>
     );
@@ -380,11 +431,15 @@ class OrderList extends Component {
 
 OrderList.propTypes = {
   orders: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
   onGetOrders: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.object.isRequired,
-  integrations: PropTypes.object.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired,
+  onUpdateFilters: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  onChangeSearchTerm: PropTypes.func.isRequired,
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   history: PropTypes.shape({
@@ -394,14 +449,18 @@ OrderList.propTypes = {
 
 const mapStateToProps = state => ({
   orders: state.getIn(['order', 'orders']),
+  params: state.getIn(['order', 'params']),
+  filters: state.getIn(['order', 'filters']),
   loading: state.getIn(['order', 'loading']),
   error: state.getIn(['order', 'error']),
-  integrations: state.getIn(['integration', 'integrations'])
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetOrders: params => dispatch(getOrders(params)),
-  onGetIntegrations: params => dispatch(getIntegrations(params))
+  onUpdateFilters: bindActionCreators(updateFilters, dispatch),
+  onChangePage: bindActionCreators(changePage, dispatch),
+  onChangeRowsPerPage: bindActionCreators(changeRowsPerPage, dispatch),
+  onChangeSearchTerm: bindActionCreators(changeSearchTerm, dispatch),
 });
 
 const OrderListMapped = connect(

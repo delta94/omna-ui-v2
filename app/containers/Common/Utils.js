@@ -351,3 +351,32 @@ export const updateRowsSelected = (data, indexList, currentSelectedIdsFromState,
     setStateIndexesCallback(indexes);
   }
 };
+
+export const getOrderStatusOptions = () => {
+  const opts = [
+    { value: 'unpaid', name: 'unpaid' },
+    { value: 'pending', name: 'pending' },
+    { value: 'canceled', name: 'canceled' },
+    { value: 'ready_to_ship', name: 'ready_to_ship' },
+    { value: 'delivered', name: 'delivered' },
+    { value: 'returned', name: 'returned' },
+    { value: 'shipped', name: 'shipped' },
+    { value: 'failed', name: 'failed' },
+    { value: 'UNPAID', name: 'UNPAID' },
+    { value: 'READY_TO_SHIP', name: 'READY_TO_SHIP' },
+    { value: 'SHIPPED', name: 'SHIPPED' },
+    { value: 'TO_CONFIRM_RECEIVE', name: 'TO_CONFIRM_RECEIVE' },
+    { value: 'IN_CANCEL', name: 'IN_CANCEL' },
+    { value: 'CANCELLED', name: 'CANCELLED' },
+    { value: 'TO_RETURN', name: 'TO_RETURN' },
+    { value: 'COMPLETED', name: 'COMPLETED' },
+    { value: 'IN_PROGRESS', name: 'IN_PROGRESS' },
+    { value: 'open', name: 'open' },
+    { value: 'closed', name: 'closed' },
+    { value: 'cancelled', name: 'cancelled' },
+    { value: 'unfulfilled', name: 'unfulfilled' },
+    { value: 'fulfilled', name: 'fulfilled' },
+  ];
+
+  return opts;
+};
