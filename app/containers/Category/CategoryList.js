@@ -4,15 +4,15 @@ import { withSnackbar } from 'notistack';
 import MUIDataTable from 'mui-datatables';
 import Loading from 'dan-components/Loading';
 import { delay } from 'dan-containers/Common/Utils';
-
+import moment from 'moment';
 import { getCategoryList } from 'dan-actions/categoryAction';
 import get from 'lodash/get';
-
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PageHeader from 'dan-containers/Common/PageHeader';
 import AlertDialog from 'dan-containers/Common/AlertDialog';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 const getMuiTheme = () => createMuiTheme({
   overrides: {
@@ -78,6 +78,11 @@ function CategoryList(props) {
       label: 'Updated at',
       options: {
         filter: false,
+        customBodyRender: value => (
+          <Typography variant="caption">
+            {value != null ? moment(value).format('Y-MM-DD H:mm:ss') : '--'}
+          </Typography>
+        )
       }
     }
   ];
@@ -94,6 +99,7 @@ function CategoryList(props) {
     serverSideFilterList,
     rowsPerPage: limit,
     count: get(pagination, 'total', 0),
+    viewColumns: false,
     page,
     rowHover: true,
     onTableChange: (action, tableState) => {

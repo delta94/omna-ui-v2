@@ -34,7 +34,7 @@ export const ShopifyMenu = [
       {
         key: 'ordersShopify',
         name: 'Shopify Orders',
-        link: '/ordersShopify'
+        link: '/shopify-orders'
       }
     ]
   },
@@ -105,7 +105,7 @@ export const ShopifyAdminMenu = [
       {
         key: 'ordersShopify',
         name: 'Shopify Orders',
-        link: '/ordersShopify'
+        link: '/shopify-orders'
       }
     ]
   },

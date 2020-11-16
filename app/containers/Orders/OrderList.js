@@ -413,7 +413,7 @@ class OrderList extends Component {
 
     return (
       <div>
-        <PageHeader title="Order List" history={history} />
+        <PageHeader title="Orders" history={history} />
         <div className={classes.table}>
           {loading && <Loading />}
           <MuiThemeProvider theme={this.getMuiTheme()}>

@@ -51,37 +51,16 @@ const styles = theme => ({
     paddingLeft: '25%'
   },
   errorChip: {
-    display: 'inline-block',
-    width: '100px',
-    height: '20px',
-    'font-size': '15px',
-    'line-height': '20px',
     color: 'white',
-    'padding-left': '20%',
-    'border-radius': '25px',
-    'background-color': '#d32f2f',
+    backgroundColor: '#d32f2f',
   },
   greenChip: {
-    display: 'inline-block',
-    width: '100px',
-    height: '20px',
-    'font-size': '15px',
-    'line-height': '20px',
     color: 'white',
-    'padding-left': '3%',
-    'border-radius': '25px',
-    'background-color': '#43a047',
+    backgroundColor: '#43a047',
   },
   grayChip: {
-    display: 'inline-block',
-    width: '100px',
-    height: '20px',
-    'font-size': '15px',
-    'line-height': '20px',
     color: 'white',
-    'padding-left': '10%',
-    'border-radius': '25px',
-    'background-color': '#607d8b',
+    backgroundColor: '#607d8b',
   }
 });
 

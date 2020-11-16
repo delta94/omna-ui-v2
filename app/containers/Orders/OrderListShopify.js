@@ -385,7 +385,7 @@ class OrderShopifyList extends Component {
 
     return (
       <div>
-        <PageHeader title="Shopify Order List" history={history} />
+        <PageHeader title="Shopify Orders" history={history} />
         <div className={classes.table}>
           {loadingShopify && <Loading />}
           {loading && !sortCriteria ? (

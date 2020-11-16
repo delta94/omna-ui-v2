@@ -36,7 +36,7 @@ export const DashboardRoute = { link: '/dashboard', component: DashboardPage };
 
 export const OrdersRoute = { link: '/orders', component: Orders };
 
-export const OrdersShopifyRoute = { link: '/ordersShopify', component: OrderShopifyList };
+export const OrdersShopifyRoute = { link: '/shopify-orders', component: OrderShopifyList };
 
 export const OrderDetailsRoute = {
   link: '/orders/:id',
