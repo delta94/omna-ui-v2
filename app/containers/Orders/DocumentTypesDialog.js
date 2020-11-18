@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
+import get from 'lodash/get';
 import api from '../Utils/api';
 
 // const useStyles = makeStyles({
@@ -26,17 +27,20 @@ class DocumentTypesDialog extends Component {
   };
 
   handleListItemClick = async value => {
-    const { integrationId, onClose, orderNumber } = this.props;
-    onClose(value);
-    const response = await api.get(
-      `/integrations/${integrationId}/orders/${orderNumber}/doc/${value.type}`
-    );
-
+    const { integrationId, onClose, orderNumber, enqueueSnackbar, onLoading } = this.props;
     try {
-      console.log(response.data);
+
+      onClose(value);
+      onLoading(true);
+      await api.get(
+        `/integrations/${integrationId}/orders/${orderNumber}/doc/${value.type}`
+      );
     } catch (error) {
-      console.log(error);
+      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+        variant: 'error'
+      });
     }
+    onLoading(false);
   };
 
   render() {
@@ -76,7 +80,9 @@ DocumentTypesDialog.propTypes = {
   selectedValue: PropTypes.object.isRequired,
   types: PropTypes.array.isRequired,
   integrationId: PropTypes.string.isRequired,
-  orderNumber: PropTypes.string.isRequired
+  orderNumber: PropTypes.string.isRequired,
+  enqueueSnackbar: PropTypes.func.isRequired,
+  onLoading: PropTypes.func.isRequired
 };
 
 export default DocumentTypesDialog;

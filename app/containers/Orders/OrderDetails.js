@@ -13,8 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { getOrder } from 'dan-actions';
+import { Loading } from 'dan-components';
 import api from '../Utils/api';
-import LoadingState from '../Common/LoadingState';
 import { variantIcon } from '../Common/Utils';
 import OrderPayment from './detail/OrderPayment';
 import OrderCustomer from './detail/OrderCustomer';
@@ -52,13 +52,13 @@ class OrderDetails extends Component {
 
   getOrderDocumentTypes = async () => {
     const { enqueueSnackbar, location } = this.props;
-    const response = await api.get(
-      `/integrations/${location.state.order.integration.id}/orders/${
-        location.state.order.number
-      }/doc/types`
-    );
-
+    this.setState({ loading: true });
     try {
+      const response = await api.get(
+        `/integrations/${location.state.order.integration.id}/orders/${
+          location.state.order.number
+        }/doc/types`
+      );
       this.setState({ documentTypes: response.data.data });
       this.handleOpenDocumentsDialog();
     } catch (error) {
@@ -66,6 +66,7 @@ class OrderDetails extends Component {
         variant: 'error'
       });
     }
+    this.setState({ loading: false });
   };
 
   onPrintHandler = () => {
@@ -81,8 +82,12 @@ class OrderDetails extends Component {
     this.setState({ selectedDocumentType: value });
   };
 
+  handleLoading = (value) => {
+    this.setState({ loading: value });
+  };
+
   render() {
-    const { classes, history, order: orderFromProps } = this.props;
+    const { classes, history, order: orderFromProps, enqueueSnackbar } = this.props;
     const {
       orderFromState,
       loading,
@@ -99,9 +104,11 @@ class OrderDetails extends Component {
     return (
       <div>
         <PageHeader title="Order Details" history={history} />
+        { loading ? <Loading /> : null}
         <div className="item-padding">
-          {loading || !Object.keys(order).length ? (
-            <LoadingState loading={loading} />
+          { !Object.keys(order).length ? (
+            loading ? <Loading /> : null
+            // <LoadingState loading={loading} />
           ) : (
             <div>
               <Paper>
@@ -124,8 +131,7 @@ class OrderDetails extends Component {
                   </Button>
                   <Tooltip title="Reload information">
                     <Button
-                      onClick={() =>
-                        this.onClickGetAPIorder(integrationId, dataNumber)
+                      onClick={() => this.onClickGetAPIorder(integrationId, dataNumber)
                       }
                     >
                       <Ionicon icon={variantIcon.refresh} />
@@ -134,8 +140,7 @@ class OrderDetails extends Component {
                   <Tooltip title="Print order">
                     <Button
                       size="small"
-                      onClick={() =>
-                        this.onPrintHandler(integrationId, dataNumber)
+                      onClick={() => this.onPrintHandler(integrationId, dataNumber)
                       }
                     >
                       <Ionicon icon={variantIcon.print} />
@@ -200,7 +205,9 @@ class OrderDetails extends Component {
                 types={documentTypes}
                 selectedValue={selectedDocumentType}
                 open={openDialog}
+                enqueueSnackbar={enqueueSnackbar}
                 onClose={this.handleClose}
+                onLoading={this.handleLoading}
               />
             </div>
           )}
