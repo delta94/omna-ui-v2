@@ -11,7 +11,8 @@ const FormActions = props => {
     history,
     onAcceptClick,
     onCancelClick,
-    type
+    type,
+    withOutCancel
   } = props;
 
   const handleCancelAction = () => {
@@ -34,15 +35,17 @@ const FormActions = props => {
       >
         {acceptButtonLabel}
       </Button>
-      <Button
-        variant="contained"
-        size="medium"
-        color="default"
-        onClick={handleCancelAction}
-        style={{ marginLeft: '10px' }}
-      >
-        {cancelButtonLabel}
-      </Button>
+      {!withOutCancel && (
+        <Button
+          variant="contained"
+          size="medium"
+          color="default"
+          onClick={handleCancelAction}
+          style={{ marginLeft: '10px' }}
+        >
+          {cancelButtonLabel}
+        </Button>
+      )}
     </div>
   );
 };
@@ -52,9 +55,10 @@ FormActions.defaultProps = {
   cancelButtonLabel: 'Cancel',
   acceptButtonLabel: 'Save',
   type: 'submit',
+  withOutCancel: false,
   acceptButtonDisabled: false,
-  onAcceptClick: () => {},
-  onCancelClick: () => {},
+  onAcceptClick: () => { },
+  onCancelClick: () => { },
 };
 
 FormActions.propTypes = {
@@ -62,6 +66,7 @@ FormActions.propTypes = {
   acceptButtonLabel: PropTypes.string,
   type: PropTypes.string,
   history: PropTypes.object,
+  withOutCancel: PropTypes.bool,
   onAcceptClick: PropTypes.func,
   onCancelClick: PropTypes.func,
   acceptButtonDisabled: PropTypes.bool

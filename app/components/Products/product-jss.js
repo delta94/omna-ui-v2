@@ -194,6 +194,9 @@ const styles = theme => ({
   formControl: {
     width: '100%',
     margin: theme.spacing(1, 0, 1, 0)
+  },
+  sectionDivider: {
+    margin: theme.spacing(3)
   }
 });
 

@@ -18,13 +18,7 @@ import { linkProduct, unLinkProduct, importProductFromIntegration } from 'dan-ac
 import { importResource } from 'dan-actions/integrationActions';
 import { checkTypes } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Products/product-jss';
-
-export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
-  if (name) {
-    return `The product will be edited under "${name}" integration`;
-  }
-  return 'Are you sure you want to edit the product?';
-};
+import { updateIntegrationVariant } from 'dan-api/services/variants';
 
 export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
   `Are you sure you want to ${_action} under "${integration}" integration`
@@ -51,7 +45,6 @@ function EditProduct(props) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('general');
-  const [openDialog, setOpenDialog] = useState(false);
   const [action, setAction] = useState('link');
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [integrationActionsDialog, setIntegrationActionsDialog] = useState(false);
@@ -110,12 +103,27 @@ function EditProduct(props) {
     return result;
   };
 
-  const handleEdit = async () => {
+  const editIntegrationVariantsProps = async (submitData) => {
+    const results = [];
+
+    for (let i = 0; i < submitData.data.length; i += 1) {
+      const { remoteProductId, remoteVariantId, properties } = submitData.data[i];
+      results.push(updateIntegrationVariant({
+        integrationId: selectedTab.id,
+        remoteProductId,
+        remoteVariantId,
+        data: { properties }
+      }));
+    }
+    await Promise.all(results);
+  };
+
+  const handleSubmitForm = async (submitData) => {
     setIsLoading(true);
     try {
       if (selectedTab === 'general') {
         await editBasicInfo();
-      } else {
+      } else if (submitData.section === 'properties') {
         const resp = await editIntegrationProps();
         const { data } = resp.data;
         const index = integrations.findIndex(item => item.id === data.integration.id);
@@ -123,6 +131,8 @@ function EditProduct(props) {
           integrations[index] = cloneDeep(data.integration);
           setIntegrations(cloneDeep(integrations));
         }
+      } else {
+        await editIntegrationVariantsProps(submitData);
       }
       enqueueSnackbar('Product edited successfuly', {
         variant: 'success'
@@ -165,13 +175,6 @@ function EditProduct(props) {
     setOpenLinkerDlg(false);
   };
 
-  const handleDialogCancel = () => setOpenDialog(false);
-
-  const handleDialogConfirm = () => {
-    setOpenDialog(false);
-    handleEdit();
-  };
-
   const handleIntegrationActionsDlgCancel = () => setIntegrationActionsDialog(false);
 
   const handleIntegrationActionsDlgConfirm = () => {
@@ -194,8 +197,6 @@ function EditProduct(props) {
     }
     setIntegrationActionsDialog(false);
   };
-
-  const handleSubmitForm = () => setOpenDialog(true);
 
   const handleImportAction = (actionType) => {
     setIntegrationAction(actionType);
@@ -227,17 +228,10 @@ function EditProduct(props) {
           onDescriptionChange={e => setDescription(e)}
           onDimensionChange={handleDimensionChange}
           onIntegrationChange={(e) => setSelectedTab(e)}
-          onCancelClick={() => history.goBack()}
-          onImportAction={handleImportAction}
+          onCancelClick={() => history.push('/products')}
           onSubmitForm={handleSubmitForm}
         />
       )}
-      <AlertDialog
-        open={openDialog}
-        message={EDIT_PRODUCT_CONFIRM`${selectedTab !== 'general' ? selectedTab.name : ''}`}
-        handleCancel={handleDialogCancel}
-        handleConfirm={handleDialogConfirm}
-      />
       <AlertDialog
         open={integrationActionsDialog}
         message={INTEGRATION_ACTIONS_CONFIRM`${integrationAction}${selectedTab.name}`}
