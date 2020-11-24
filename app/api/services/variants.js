@@ -71,4 +71,37 @@ export const bulkEditProperties = async (payload) => {
   return response;
 };
 
+export const getVariantsFromIntegration = async (payload) => {
+  const { integrationId, remoteProductId, enqueueSnackbar } = payload;
+  let response;
+  try {
+    const resp = await api.get(`/integrations/${integrationId}/products/${remoteProductId}/variants`, { params: { offset: 0, limit: 25, with_details: true } });
+    response = resp.data;
+  } catch (error) {
+    response = { error };
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  return response;
+};
+
+export const updateIntegrationVariant = async (payload) => {
+  const { integrationId, remoteProductId, remoteVariantId, data, enqueueSnackbar } = payload;
+  let response;
+  try {
+    const resp = await api.post(`integrations/${integrationId}/products/${remoteProductId}/variants/${remoteVariantId}`, { data });
+    response = resp.data;
+    enqueueSnackbar ? enqueueSnackbar('Variant edited successfuly', {
+      variant: 'success'
+    }) : null;
+  } catch (error) {
+    response = { error };
+    enqueueSnackbar ? enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    }) : null;
+  }
+  return response;
+};
+
 export default deleteVariant;
