@@ -380,3 +380,15 @@ export const getOrderStatusOptions = () => {
 
   return opts;
 };
+
+export const getTaskStatusOptions = () => {
+  const opts = [
+    { value: 'running', name: 'running' },
+    { value: 'pending', name: 'pending' },
+    { value: 'completed', name: 'completed' },
+    { value: 'failed', name: 'failed' },
+    { value: 'broken', name: 'broken' },
+    { value: 'unscheduled', name: 'unscheduled' },
+  ];
+  return opts;
+};
