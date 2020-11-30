@@ -67,7 +67,7 @@ const IntegrationProps = memo((props) => {
     <Fragment>
       {!unMountPaper ? (
         <PapperBlock title={title} icon="ios-card" desc={description}>
-          {loading ? <TypographySkeleton /> : (
+          {loading ? <div>Loading...<TypographySkeleton /></div> : (
             <Body properties={properties} errors={errors} onChange={onChange} />
           )}
         </PapperBlock>

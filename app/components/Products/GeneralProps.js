@@ -23,7 +23,7 @@ const GeneralProps = memo((props) => {
 
   return (
     <PapperBlock title={title} icon="ios-card" desc={description}>
-      {loading ? <TypographySkeleton /> : (
+      {loading ? <div>Loading...<TypographySkeleton /></div> : (
         <Fragment>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
