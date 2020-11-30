@@ -5,25 +5,35 @@ import moment from 'moment';
 import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
 import MUIDataTable from 'mui-datatables';
-
+import {
+  getTasks,
+  updateFilters,
+  changePage,
+  changeRowsPerPage,
+  changeSearchTerm
+} from 'dan-actions/taskActions';
 import { withStyles } from '@material-ui/styles';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-
+import AutoSuggestion from 'dan-components/AutoSuggestion';
 import Loading from 'dan-components/Loading';
+import { getTaskStatusOptions, delay }from 'dan-containers/Common/Utils';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import Button from '@material-ui/core/Button';
+import filterDlgSizeHelper from 'utils/mediaQueries';
 import API from '../Utils/api';
 import AlertDialog from '../Common/AlertDialog';
 import { variantIcon } from '../Common/Utils';
-import Status from './Status';
 import PageHeader from '../Common/PageHeader';
 
 const NotificationBottom = type => {
   const not = get(type, 'type', null);
-  const Icon =
-    not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
-      ? variantIcon.info
-      : variantIcon[not];
+  const Icon = not !== null && not !== 'success' && not !== 'error' && not !== 'warning'
+    ? variantIcon.info
+    : variantIcon[not];
   return (
     <Tooltip title={`This task has ${not} notifications`}>
       <IconButton aria-label="Notifications">
@@ -57,11 +67,13 @@ const styles = theme => ({
 class TaskList extends React.Component {
   state = {
     isLoading: true,
+    statusFilter: undefined,
     tasks: { data: [], pagination: {} },
     limit: 10,
     page: 0,
     selected: [],
     success: true,
+    columnSortDirection: ['none', 'none'],
     messageError: '',
     alertDialog: {
       open: false,
@@ -69,13 +81,33 @@ class TaskList extends React.Component {
       id: -1
     },
     anchorEl: null,
-    serverSideFilterList: [],
     searchTerm: ''
   };
 
   componentDidMount() {
-    this.callAPI();
+    this.makeQuery();
   }
+
+  componentDidUpdate(prevProps) {
+    const { params } = this.props;
+    if (params && params !== prevProps.params) {
+      this.makeQuery();
+    }
+  }
+
+  makeQuery = () => {
+    const {
+      enqueueSnackbar,
+      error,
+      params
+    } = this.props;
+    this.getTasks(params.toJS());
+    if (error) {
+      enqueueSnackbar(error, {
+        variant: 'error'
+      });
+    }
+  };
 
   getTasks = params => {
     this.setState({ isLoading: true });
@@ -94,20 +126,21 @@ class TaskList extends React.Component {
       });
   };
 
-  callAPI = () => {
-    const { searchTerm, limit, page, serverSideFilterList } = this.state;
-
-    const params = {
-      offset: page * limit,
-      limit,
-      term: searchTerm || '',
-      with_details: true,
-      status: serverSideFilterList[3] ? serverSideFilterList[3][0] : ''
-    };
-
-    this.setState({ isLoading: true });
-    this.getTasks(params);
-  };
+  getMuiTheme = () => createMuiTheme({
+    overrides: {
+      MUIDataTableBodyCell: {
+        root: {
+          cursor: 'pointer',
+        }
+      },
+      MUIDataTableToolbar: {
+        filterPaper: {
+          width: filterDlgSizeHelper,
+          minWidth: '300px'
+        }
+      }
+    }
+  });
 
   reRunTaskAPI = id => {
     const { enqueueSnackbar } = this.props;
@@ -154,22 +187,23 @@ class TaskList extends React.Component {
   };
 
   handleChangePage = page => {
-    this.setState({ page }, this.callAPI);
+    const { onChangePage } = this.props;
+    onChangePage(page);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
-    this.setState({ limit: rowsPerPage }, this.callAPI);
+    const { onChangeRowsPerPage } = this.props;
+    onChangeRowsPerPage(rowsPerPage);
   };
 
-  verifyNotifications = notifications =>
-    notifications.reduce((acc, item) => {
-      if (acc !== 'error') {
-        if (item.type === 'error') return 'error';
-        if (item.type === 'warning') return 'warning';
-        if (item.type === 'info' && acc !== 'warning') return 'info';
-      }
-      return acc;
-    }, '');
+  verifyNotifications = notifications => notifications.reduce((acc, item) => {
+    if (acc !== 'error') {
+      if (item.type === 'error') return 'error';
+      if (item.type === 'warning') return 'warning';
+      if (item.type === 'info' && acc !== 'warning') return 'info';
+    }
+    return acc;
+  }, '');
 
   isSelected = id => get(this.state, 'selected', []).includes(id);
 
@@ -195,7 +229,7 @@ class TaskList extends React.Component {
     }
 
     this.handleDialogCancel();
-    this.callAPI();
+    this.makeQuery();
   };
 
   handleDetailsViewClick = task => {
@@ -206,52 +240,46 @@ class TaskList extends React.Component {
   };
 
   handleSearch = searchTerm => {
+    const { params, onChangeSearchTerm } = this.props;
     if (searchTerm) {
-      const timer = setTimeout(() => {
-        this.setState({ searchTerm }, this.callAPI);
-        clearTimeout(timer);
-      }, 800);
-      window.addEventListener('keydown', () => {
-        clearTimeout(timer);
-      });
-    } else {
-      const { searchTerm: _searchTerm } = this.state;
-      if (_searchTerm) {
-        this.setState({ searchTerm: '' }, this.callAPI);
-      }
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (params.get('term')) {
+      onChangeSearchTerm('');
     }
   };
 
   onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
+    const { onChangeSearchTerm } = this.props;
+    onChangeSearchTerm('');
   };
 
-  handleFilterChange = filterList => {
-    if (filterList) {
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
-    } else {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
+  handleFilterSubmit = () => {
+    const { statusFilter } = this.state;
+    const { onUpdateFilters } = this.props;
+    const objectFilters = {};
+    statusFilter ? objectFilters.statusFilter = [statusFilter] : null;
+    onUpdateFilters(objectFilters);
   };
 
   handleResetFilters = () => {
-    const { serverSideFilterList } = this.state;
-    if (serverSideFilterList.length > 0) {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
+    this.setState({ statusFilter: null });
   };
 
+  handleStatusChange = (e, value) => {
+    this.setState({ statusFilter: value });
+  }
+
   render() {
-    const { classes, history } = this.props;
+    const { classes, history, filters, params, onUpdateFilters } = this.props;
     const {
       isLoading,
-      page,
+      columnSortDirection,
       tasks,
       alertDialog,
-      serverSideFilterList
     } = this.state;
     const { pagination, data } = tasks;
-    const count = get(pagination, 'total', 0);
+    const { total: count } = pagination;
+    const page = params.get('offset') / params.get('limit');
 
     const columns = [
       {
@@ -265,12 +293,42 @@ class TaskList extends React.Component {
         name: 'description',
         label: 'Description',
         options: {
+          sortDirection: columnSortDirection[0],
           filter: false
         }
       },
       {
-        name: 'updated_at',
-        label: 'Date',
+        name: 'status',
+        label: 'Status',
+        options: {
+          sortDirection: columnSortDirection[1],
+          filter: true,
+          filterType: 'custom',
+          filterList: filters.getIn(['statusFilter']),
+          customFilterListOptions: {
+            render: v => v[0].name
+          },
+          filterOptions: {
+            display: () => {
+              const { statusFilter } = this.state;
+              return (
+                <AutoSuggestion
+                  id="status"
+                  label="Status"
+                  className={classes.select}
+                  options={getTaskStatusOptions()}
+                  onChange={(e, value) => this.handleStatusChange(e, value)}
+                  value={statusFilter}
+                />
+              );
+            }
+          },
+          customBodyRender: value => <div>{value.toUpperCase()}</div>
+        }
+      },
+      {
+        name: 'created_at',
+        label: 'Created',
         options: {
           filter: false,
           customBodyRender: value => (
@@ -279,89 +337,20 @@ class TaskList extends React.Component {
             </Typography>
           )
         }
-      },
-      {
-        name: 'status',
-        label: ' ',
-        options: {
-          // display: false,
-          // filterType: 'dropdown',
-          filterList: serverSideFilterList[3],
-          // filterOptions: {
-          //   names: integrationFilterOptions
-          // },
-          customBodyRender: (value, tableMeta) => {
-            const status = tableMeta.rowData[3];
-            const progress = tableMeta.rowData[4];
-            const notificationsArray = tableMeta.rowData[5];
-            const scheduler = tableMeta.rowData[6];
-
-            const notifications =
-              Array.isArray(notificationsArray) && notificationsArray.length > 0
-                ? this.verifyNotifications(notificationsArray)
-                : null;
-
-            return (
-              <div
-                className="display-flex justify-content-flex-end align-items-end"
-                style={{ flexDirection: 'column' }}
-              >
-                <div className="item-margin-left">
-                  {notifications === 'error' ||
-                  notifications === 'warning' ||
-                  notifications === 'info' ? (
-                    <NotificationBottom type={notifications} />
-                  ) : null}
-                  {scheduler ? (
-                    <Tooltip title="This task has a schedule">
-                      <IconButton aria-label="Schedule">
-                        <Ionicon icon={variantIcon.schedule} />
-                      </IconButton>
-                    </Tooltip>
-                  ) : null}
-                </div>
-                <div className={classes.marginLeft2u}>
-                  <Status
-                    status={status}
-                    progress={progress}
-                    classes={classes}
-                  />
-                </div>
-              </div>
-            );
-          }
-        }
-      },
-      {
-        name: 'progress',
-        options: {
-          filter: false,
-          display: false
-        }
-      },
-      {
-        name: 'notifications',
-        options: {
-          filter: false,
-          display: false
-        }
-      },
-      {
-        name: 'scheduler',
-        options: {
-          filter: false,
-          display: false
-        }
       }
     ];
 
     const options = {
       filterType: 'checkbox',
+      filter: true,
       responsive: 'stacked',
       download: false,
       print: false,
       serverSide: true,
       selectableRows: 'none',
+      searchText: params.get('term'),
+      searchPlaceholder: 'Search by description or status',
+      rowsPerPage: params.get('limit'),
       count,
       page,
       onTableChange: (action, tableState) => {
@@ -375,9 +364,6 @@ class TaskList extends React.Component {
           case 'search':
             this.handleSearch(tableState.searchText);
             break;
-          case 'filterChange':
-            this.handleFilterChange(tableState.filterList);
-            break;
           case 'resetFilters':
             this.handleResetFilters();
             break;
@@ -388,6 +374,25 @@ class TaskList extends React.Component {
       onRowClick: (rowData, { dataIndex }) => {
         const task = data[dataIndex];
         this.handleDetailsViewClick(task);
+      },
+      customFilterDialogFooter: () => (
+        <div style={{ padding: '16px' }}>
+          <Button variant="contained" onClick={this.handleFilterSubmit}>Apply Filters</Button>
+        </div>
+      ),
+      onFilterChipClose: (index) => {
+        const fltrs = filters.toJS();
+        switch (index) {
+          case 5:
+            fltrs.integrationFilter = null;
+            break;
+          case 2:
+            fltrs.statusFilter = null;
+            break;
+          default:
+            break;
+        }
+        onUpdateFilters(fltrs);
       }
     };
 
@@ -396,7 +401,9 @@ class TaskList extends React.Component {
         <PageHeader title="Tasks" history={history} />
         <div className={classes.table}>
           {isLoading ? <Loading /> : null}
-          <MUIDataTable data={data} columns={columns} options={options} />
+          <MuiThemeProvider theme={this.getMuiTheme()}>
+            <MUIDataTable data={data} columns={columns} options={options} />
+          </MuiThemeProvider>
         </div>
 
         <AlertDialog
@@ -413,9 +420,35 @@ class TaskList extends React.Component {
 TaskList.propTypes = {
   classes: PropTypes.shape({}).isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  onChangeSearchTerm: PropTypes.func.isRequired,
+  error: PropTypes.object.isRequired,
+  onUpdateFilters: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func
   }).isRequired
 };
 
-export default withSnackbar(withStyles(styles, { withTheme: true })(TaskList));
+const mapStateToProps = state => ({
+  params: state.getIn(['task', 'params']),
+  filters: state.getIn(['task', 'filters']),
+});
+
+const mapDispatchToProps = dispatch => ({
+  onGetTasks: params => dispatch(getTasks(params)),
+  onUpdateFilters: bindActionCreators(updateFilters, dispatch),
+  onChangePage: bindActionCreators(changePage, dispatch),
+  onChangeRowsPerPage: bindActionCreators(changeRowsPerPage, dispatch),
+  onChangeSearchTerm: bindActionCreators(changeSearchTerm, dispatch),
+});
+
+const TaskListMapped = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TaskList);
+
+
+export default withSnackbar(withStyles(styles, { withTheme: true })(TaskListMapped));

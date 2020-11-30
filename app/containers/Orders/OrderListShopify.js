@@ -102,7 +102,7 @@ class OrderShopifyList extends Component {
 
   handleDetailsViewClick = order => {
     const { history } = this.props;
-    history.push(`/orders/${get(order, 'id', 0)}`, {
+    history.push(`/shopify-orders/${get(order, 'id', 0)}`, {
       order
     });
   };
