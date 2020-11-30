@@ -8,6 +8,9 @@ const styles = theme => ({
   marginLeft: {
     marginLeft: theme.spacing.unit
   },
+  marginTopCustom: {
+    width: '500px',
+  },
   padding: {
     padding: theme.spacing.unit
   },

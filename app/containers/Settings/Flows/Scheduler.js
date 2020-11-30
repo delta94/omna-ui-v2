@@ -40,6 +40,9 @@ const styles = theme => ({
     minWidth: 300,
     maxWidth: 350,
   },
+  InputLabel: {
+    margin: theme.spacing.unit,
+  },
   picker: {
     margin: `${theme.spacing(3)}px 5px`,
   }
@@ -100,7 +103,7 @@ function Scheduler(props) {
       </div>
       <div>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-chip">Days of week</InputLabel>
+          <InputLabel className={classes.InputLabel} htmlFor="select-multiple-chip">Days of week</InputLabel>
           <Select
             multiple
             value={daysOfWeek}
@@ -124,7 +127,7 @@ function Scheduler(props) {
         </FormControl>
 
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-chip">Months of year</InputLabel>
+          <InputLabel className={classes.InputLabel} htmlFor="select-multiple-chip">Months of year</InputLabel>
           <Select
             multiple
             value={monthsOfYear}
@@ -148,7 +151,7 @@ function Scheduler(props) {
         </FormControl>
 
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple">Weeks of month</InputLabel>
+          <InputLabel className={classes.InputLabel} htmlFor="select-multiple">Weeks of month</InputLabel>
           <Select
             multiple
             value={weeksOfMonth}

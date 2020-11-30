@@ -151,7 +151,7 @@ function FlowForm(props) {
               getOptionLabel={option => option.name}
               inputValue={integration}
               disabled={disableRule}
-              style={{ width: '300px' }}
+              style={{ width: '300px', marginTop: '0.9%' }}
               renderInput={params => (
                 <TextField
                   {...params}
