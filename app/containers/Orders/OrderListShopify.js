@@ -102,7 +102,7 @@ class OrderShopifyList extends Component {
 
   handleDetailsViewClick = order => {
     const { history } = this.props;
-    history.push(`/orders/${get(order, 'id', 0)}`, {
+    history.push(`/shopify-orders/${get(order, 'id', 0)}`, {
       order
     });
   };
@@ -347,9 +347,9 @@ class OrderShopifyList extends Component {
             break;
         }
       },
-      onCellClick: (rowData, { colIndex }) => {
+      onCellClick: (rowData, { colIndex, dataIndex }) => {
         if (colIndex !== 5) {
-          const order = orderList[colIndex];
+          const order = orderList[dataIndex];
           this.handleDetailsViewClick(order);
         }
       },
