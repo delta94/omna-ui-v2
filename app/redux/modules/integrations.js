@@ -48,7 +48,7 @@ export default (state = initialState, action = {}) => {
       });
     case actionConstants.DELETE_INTEGRATION_SUCCESS:
       return state.withMutations(mutableState => {
-        mutableState.set('task', action.data);
+        mutableState.set('loading', false);
       });
     case actionConstants.DELETE_INTEGRATION_FAILED:
       return state.withMutations(mutableState => {
@@ -61,10 +61,6 @@ export default (state = initialState, action = {}) => {
     case actionConstants.GET_CHANNELS_FAILED:
       return state.withMutations(mutableState => {
         mutableState.set('error', action.error).set('loading', false);
-      });
-    case actionConstants.IMPORT_RESOURCE:
-      return state.withMutations(mutableState => {
-        mutableState.set('task', action.data);
       });
     case actionConstants.SET_LOADING:
       return state.withMutations(mutableState => {

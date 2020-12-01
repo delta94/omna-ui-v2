@@ -1,4 +1,3 @@
-import history from 'utils/history';
 import get from 'lodash/get';
 import api, { CENIT_APP } from 'dan-containers/Utils/api';
 
@@ -60,7 +59,6 @@ export const bulkEditProperties = async (payload) => {
     const url = `/request_products?shop=${store}&task=bulk_variant_properties`;
     const resp = await CENIT_APP.post(url, { data });
     response = resp.data;
-    history.push(`/tasks/${response.data.id}`);
     enqueueSnackbar('Updating variants', { variant: 'info' });
   } catch (error) {
     response = error;

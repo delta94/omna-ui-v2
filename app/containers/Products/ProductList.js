@@ -66,11 +66,8 @@ class ProductList extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {
-      task, history, filters, products, page, limit, term
+      filters, products, page, limit, term
     } = this.props;
-    if (task && task !== prevProps.task) {
-      history.push(`tasks/${task.id}`);
-    }
     if ((filters && filters !== prevProps.filters) || (page && page !== prevProps.page) || (limit && limit !== prevProps.limit)
       || (term !== prevProps.term)) {
       this.makeQuery();
@@ -584,7 +581,6 @@ const mapStateToProps = state => ({
   filters: state.getIn(['product', 'filters']),
   loading: state.getIn(['product', 'loading']),
   deleted: state.getIn(['product', 'deleted']),
-  task: state.getIn(['product', 'task']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   store: state.getIn(['user', 'tenantName']),
   ...state
@@ -610,7 +606,6 @@ const ProductListMapped = connect(
 )(ProductList);
 
 ProductList.defaultProps = {
-  task: null,
   term: ''
 };
 
@@ -622,7 +617,6 @@ ProductList.propTypes = {
   limit: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,
   term: PropTypes.string,
-  task: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
   store: PropTypes.string.isRequired,

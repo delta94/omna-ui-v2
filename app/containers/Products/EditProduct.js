@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -26,7 +26,7 @@ export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
 
 function EditProduct(props) {
   const {
-    match, history, loading, task, importTask, fromShopifyApp, enqueueSnackbar
+    match, history, loading, fromShopifyApp, enqueueSnackbar
   } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -49,8 +49,6 @@ function EditProduct(props) {
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [integrationActionsDialog, setIntegrationActionsDialog] = useState(false);
   const [integrationAction, setIntegrationAction] = useState('import this product');
-  const prevTaskProp = useRef(task);
-  const prevImportTaskProp = useRef(importTask);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -75,18 +73,6 @@ function EditProduct(props) {
     }
     fetchProduct();
   }, [match.params.id]);
-
-  useEffect(() => {
-    if (task && task !== prevTaskProp.current) {
-      history.push(`/tasks/${task.id}`);
-    }
-  }, [task]);
-
-  useEffect(() => {
-    if (importTask && importTask !== prevImportTaskProp.current) {
-      history.push(`/tasks/${importTask.id}`);
-    }
-  }, [importTask]);
 
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
@@ -253,8 +239,6 @@ function EditProduct(props) {
 
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
-  task: state.getIn(['product', 'task']),
-  importTask: state.getIn(['integration', 'task']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
@@ -271,18 +255,11 @@ const EditProductMapped = connect(
   mapDispatchToProps
 )(EditProduct);
 
-EditProduct.defaultProps = {
-  task: null,
-  importTask: null
-};
-
 EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
-  task: PropTypes.object,
-  importTask: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   onImportResource: PropTypes.func.isRequired,

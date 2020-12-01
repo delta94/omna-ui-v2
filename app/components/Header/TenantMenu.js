@@ -42,12 +42,13 @@ import {
 } from 'dan-actions/NotificationActions';
 import { installAvailableIntegration } from 'dan-actions/AvailableIntegrationsActions';
 import {
-  TENANT_NOT_READY_INFO,
-  DISABLED_TENANT_INFO,
-  SUBSCRIBE_INFO
+  TENANT_NOT_READY_MSG,
+  DISABLED_TENANT_MSG,
+  SUBSCRIBE_MSG,
+  SUBSCRIBE_ACTION_TITLE,
+  TENANT_NOT_READY_ACTION_TITLE
 } from '../Notification/AlertConstants';
 import {
-  installOv2AvailableIntegrationAction,
   subscribeAction
 } from '../Notification/AlertActions';
 
@@ -81,22 +82,31 @@ const TenantMenu = props => {
     const { onPushNotification, onInstall } = props;
     const isEnabled = isTenantEnabled(deactivationDate);
     const subscribeNotif = {
-      message: SUBSCRIBE_INFO`${tenantName}`,
+      message: SUBSCRIBE_MSG`${tenantName}`,
       variant: 'error',
-      action: subscribeAction
+      action: {
+        title: SUBSCRIBE_ACTION_TITLE,
+        callback: subscribeAction
+      }
     };
     !isEnabled ? onPushNotification(subscribeNotif) : null;
     const deactivation = getDeactivationDate(deactivationDate);
     const deactivationNotif = {
-      message: DISABLED_TENANT_INFO`${tenantName}${deactivation}`,
+      message: DISABLED_TENANT_MSG`${tenantName}${deactivation}`,
       variant: 'info',
-      action: subscribeAction
+      action: {
+        title: SUBSCRIBE_ACTION_TITLE,
+        callback: subscribeAction
+      }
     };
     deactivation >= 1 ? onPushNotification(deactivationNotif) : null;
     const tenantNotReadyNotif = {
-      message: TENANT_NOT_READY_INFO,
+      message: TENANT_NOT_READY_MSG,
       variant: 'warning',
-      action: installOv2AvailableIntegrationAction(() => onInstall('omna_v2', enqueueSnackbar))
+      action: {
+        title: TENANT_NOT_READY_ACTION_TITLE,
+        callback: () => onInstall('omna_v2', enqueueSnackbar)
+      }
     };
     !isReadyToOmna ? onPushNotification(tenantNotReadyNotif) : null;
   };
@@ -217,13 +227,11 @@ const TenantMenu = props => {
 
   const filterTenants = event => {
     setFilteredTenants(
-      tenantList.map(tenant => {
-        return tenant.name
-          .toLowerCase()
-          .includes(event.target.value.toLowerCase())
-          ? tenant
-          : '';
-      })
+      tenantList.map(tenant => (tenant.name
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase())
+        ? tenant
+        : ''))
     );
   };
 

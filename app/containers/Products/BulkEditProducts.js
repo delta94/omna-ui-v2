@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
@@ -9,10 +11,11 @@ import { editDynamicPropsHelper } from 'dan-containers/Common/Utils';
 import GeneralProps from 'dan-components/Products/GeneralProps';
 import IntegrationProps from 'dan-components/Products/IntegrationProps';
 import FullScreenDlg from 'dan-components/FullScreenDlg/index';
+import { addTaskNotification } from 'dan-actions/NotificationActions';
 
 function BulkEditProducts(props) {
   const {
-    open, params, onClose, enqueueSnackbar
+    open, params, onClose, onAddTaskNotification, enqueueSnackbar
   } = props;
   const [price, setPrice] = useState();
   const [dimension, setDimension] = useState({
@@ -95,10 +98,13 @@ function BulkEditProducts(props) {
     !isEqual(initialIntegrationProps, integrationProperties) ? data.integration_properties = integrationProperties : null;
     setLoading(true);
     setSaving(true);
-    await bulkEditProperties({
+    const response = await bulkEditProperties({
       store, data, enqueueSnackbar
     });
+    onAddTaskNotification(response.data.id);
+    setSaving(false);
     setLoading(false);
+    onClose();
   };
 
   return (
@@ -134,7 +140,17 @@ BulkEditProducts.propTypes = {
   open: PropTypes.bool.isRequired,
   params: PropTypes.object,
   enqueueSnackbar: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  onAddTaskNotification: PropTypes.func.isRequired
 };
 
-export default withSnackbar(BulkEditProducts);
+const mapDispatchToProps = dispatch => ({
+  onAddTaskNotification: bindActionCreators(addTaskNotification, dispatch),
+});
+
+const BulkEditProductsMapped = connect(
+  null,
+  mapDispatchToProps
+)(BulkEditProducts);
+
+export default withSnackbar(BulkEditProductsMapped);

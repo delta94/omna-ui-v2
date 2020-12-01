@@ -18,3 +18,8 @@ export const pushNotification = (notification) => ({
 export const clearNotifications = () => ({
   type: types.CLEAR_NOTIFICATIONS
 });
+
+export const addTaskNotification = (taskId) => ({
+  type: types.ADD_TASK_NOTIFICATION,
+  taskId
+});

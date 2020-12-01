@@ -37,7 +37,7 @@ export const unauthorizeIntegration = id => ({
 });
 
 export const importResource = query => ({
-  type: actionConstants.IMPORT_RESOURCE_ASYNC,
+  type: actionConstants.IMPORT_RESOURCE,
   query
 });
 

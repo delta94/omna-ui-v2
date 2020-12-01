@@ -17,7 +17,6 @@ import Loading from 'dan-components/Loading';
 import Chip from '@material-ui/core/Chip';
 import API from '../Utils/api';
 import GenericTabsHead from '../Common/GenericTabsHead';
-import LoadingState from '../Common/LoadingState';
 import AlertDialog from '../Common/AlertDialog';
 import GenericErrorMessage from '../Common/GenericErrorMessage';
 import { variantIcon } from '../Common/Utils';
@@ -358,15 +357,6 @@ class TaskDetails extends React.Component {
             handleConfirm={this.handleDialogConfirm}
           />
         </Paper>
-        <div className={classes.navigation}>
-          <Button
-            variant="contained"
-            size="medium"
-            color="default"
-            onClick={() => history.goBack()}>
-            Back
-          </Button>
-        </div>
       </div>
     );
   }

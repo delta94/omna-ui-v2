@@ -91,7 +91,7 @@ function* linkVariant(payload) {
     const response = yield api.put(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds } });
     const { data } = response.data;
     enqueueSnackbar('Linking variant', { variant: 'info' });
-    yield put({ type: types.LINK_VARIANT, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -107,7 +107,7 @@ function* unlinkVariant(payload) {
     const response = yield api.patch(`/products/${productId}/variants/${variantId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
     const { data } = response.data;
     enqueueSnackbar('Unlinking variant', { variant: 'info' });
-    yield put({ type: types.UNLINK_VARIANT, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -157,11 +157,11 @@ export function* watchUpdateIntegrationVariant() {
 }
 
 export function* watchLinkVariant() {
-  yield takeLatest(types.LINK_VARIANT_ASYNC, linkVariant);
+  yield takeLatest(types.LINK_VARIANT, linkVariant);
 }
 
 export function* watchUnlinkVariant() {
-  yield takeLatest(types.UNLINK_VARIANT_ASYNC, unlinkVariant);
+  yield takeLatest(types.UNLINK_VARIANT, unlinkVariant);
 }
 
 export function* watchGetProductCategory() {

@@ -1,4 +1,3 @@
-import history from 'utils/history';
 import get from 'lodash/get';
 import { CENIT_APP } from 'dan-containers/Utils/api';
 
@@ -33,7 +32,6 @@ export const bulkEditProperties = async (payload) => {
     const resp = await CENIT_APP.post(url, { data });
     response = resp.data;
     enqueueSnackbar('Updating products', { variant: 'info' });
-    history.push(`/tasks/${response.data.id}`);
   } catch (error) {
     response = { error };
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {

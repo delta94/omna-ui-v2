@@ -45,22 +45,6 @@ export default function integrationsReducer(state = initialState, action) {
       return state.withMutations((mutableState) => {
         mutableState.set('error', action.error).set('loading', false);
       });
-    case types.LINK_PRODUCT:
-      return state.withMutations((mutableState) => {
-        mutableState.set('task', action.data);
-      });
-    case types.UNLINK_PRODUCT:
-      return state.withMutations((mutableState) => {
-        mutableState.set('task', action.data);
-      });
-    case types.BULK_LINK_PRODUCTS:
-      return state.withMutations((mutableState) => {
-        mutableState.set('task', action.data);
-      });
-    case types.BULK_UNLINK_PRODUCTS:
-      return state.withMutations((mutableState) => {
-        mutableState.set('task', action.data);
-      });
     case types.UNSUBSCRIBE_PRODUCTS:
       return state.withMutations((mutableState) => {
         mutableState.set('products', { data: [], pagination: { total: 0 } });
@@ -76,10 +60,6 @@ export default function integrationsReducer(state = initialState, action) {
     case types.BULK_EDIT_PROPERTIES_SUCCESS:
       return state.withMutations(mutableState => {
         mutableState.set('task', action.data).set('products', { data: [], pagination: { total: 0 } });
-      });
-    case types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS:
-      return state.withMutations(mutableState => {
-        mutableState.set('task', action.data);
       });
     case types.UPDATE_PRODUCT_FILTERS:
       return state.withMutations(mutableState => {

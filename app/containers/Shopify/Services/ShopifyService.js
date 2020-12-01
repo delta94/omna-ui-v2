@@ -1,6 +1,7 @@
 
 import get from 'lodash/get';
 import { CENIT_APP } from 'dan-containers/Utils/api';
+import { SUBSCRIBE_SHOPIFY_ACTION_TITLE } from 'dan-components/Notification/AlertConstants';
 
 export function planStatusNotification(planName, planStatus, subscribeAction) {
   let notification = null;
@@ -10,28 +11,40 @@ export function planStatusNotification(planName, planStatus, subscribeAction) {
       notification = {
         message: `The ${planName} plan is ${planStatus}, please select a plan to use the app completely`,
         variant: 'error',
-        action: subscribeAction
+        action: {
+          title: SUBSCRIBE_SHOPIFY_ACTION_TITLE,
+          callback: subscribeAction
+        }
       };
       break;
     case 'pending':
       notification = {
         message: `The ${planName} plan is ${planStatus}, please confirm the plan to use the app completely`,
         variant: 'warning',
-        action: subscribeAction
+        action: {
+          title: SUBSCRIBE_SHOPIFY_ACTION_TITLE,
+          callback: subscribeAction
+        }
       };
       break;
     case 'cancelled':
       notification = {
         message: `The ${planName} plan is ${planStatus}, please select a plan to use the app completely`,
         variant: 'error',
-        action: subscribeAction
+        action: {
+          title: SUBSCRIBE_SHOPIFY_ACTION_TITLE,
+          callback: subscribeAction
+        }
       };
       break;
     case '':
       notification = {
         message: 'Please select a plan to could use the app',
         variant: 'error',
-        action: subscribeAction
+        action: {
+          title: SUBSCRIBE_SHOPIFY_ACTION_TITLE,
+          callback: subscribeAction
+        }
       };
       break;
     default:
