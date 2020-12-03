@@ -9,6 +9,7 @@ import { getFlows } from 'dan-actions/flowActions';
 import { getOrders } from 'dan-actions/orderActions';
 import { getTasks } from 'dan-actions/taskActions';
 import { getWebhooks } from 'dan-actions/webhookActions';
+import { getProducts } from 'dan-actions/productActions';
 import { Grid } from '@material-ui/core';
 import PerformanceChartWidget from './PerformanceChartWidget';
 import CompossedLineBarArea from './CompossedLineBarArea';
@@ -24,12 +25,13 @@ class Dashboard extends Component {
   }
 
   callAPI = () => {
-    const { onGetOrders, onGetFlows, onGetTasks, onGetWebhooks } = this.props;
+    const { onGetOrders, onGetFlows, onGetTasks, onGetWebhooks, onGetProducts } = this.props;
     this.setState({ loadingState: true });
     onGetOrders(this.buildParams());
     onGetFlows(this.buildParams());
     onGetTasks(this.buildParams());
     onGetWebhooks(this.buildParams());
+    onGetProducts(this.buildParams());
   };
 
   buildParams = () => {
@@ -49,6 +51,7 @@ class Dashboard extends Component {
       // loadingTasks,
       // loadingWebhooks,
       orders,
+      products,
       webhooks,
       tasks,
       fromShopifyApp
@@ -92,6 +95,7 @@ class Dashboard extends Component {
           orders={orders}
           webhooks={webhooks}
           tasks={tasks}
+          products={products}
           fromShopifyApp={fromShopifyApp}
         />
 
@@ -135,9 +139,11 @@ Dashboard.propTypes = {
   onGetOrders: PropTypes.func.isRequired,
   onGetFlows: PropTypes.func.isRequired,
   onGetTasks: PropTypes.func.isRequired,
+  onGetProducts: PropTypes.func.isRequired,
   onGetWebhooks: PropTypes.func.isRequired,
   orders: PropTypes.object.isRequired,
   tasks: PropTypes.object.isRequired,
+  products: PropTypes.object.isRequired,
   webhooks: PropTypes.object.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired
 };
@@ -149,6 +155,7 @@ const mapStateToProps = state => ({
   loadingTasks: state.getIn(['task', 'loading']),
   loadingWebhooks: state.getIn(['webhook', 'loading']),
   orders: state.getIn(['order', 'orders']),
+  products: state.getIn(['product', 'products']),
   tasks: state.getIn(['task', 'tasks']),
   webhooks: state.getIn(['webhook', 'webhooks']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp'])
@@ -158,7 +165,8 @@ const mapDispatchToProps = dispatch => ({
   onGetOrders: params => dispatch(getOrders(params)),
   onGetFlows: params => dispatch(getFlows(params)),
   onGetTasks: params => dispatch(getTasks(params)),
-  onGetWebhooks: params => dispatch(getWebhooks(params))
+  onGetWebhooks: params => dispatch(getWebhooks(params)),
+  onGetProducts: params => dispatch(getProducts(params))
 });
 
 const DashboardMapped = withSnackbar(Dashboard);
