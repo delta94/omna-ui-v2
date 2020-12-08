@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import get from 'lodash/get';
 import moment from 'moment';
 import Ionicon from 'react-ionicons';
@@ -86,6 +85,13 @@ class OrderDetails extends Component {
     this.setState({ loading: value });
   };
 
+  handleClickBack = () => {
+    const { history } = this.props;
+    const backPath = history.location.pathname.split('/');
+    const backUrl = '/' + backPath[1] + '/';
+    history.push(backUrl);
+  };
+
   render() {
     const { classes, history, order: orderFromProps, enqueueSnackbar } = this.props;
     const {
@@ -117,8 +123,7 @@ class OrderDetails extends Component {
                     variant="text"
                     size="small"
                     color="primary"
-                    component={Link}
-                    to="/orders"
+                    onClick={this.handleClickBack}
                   >
                     <Ionicon
                       icon={variantIcon.arrowBack}

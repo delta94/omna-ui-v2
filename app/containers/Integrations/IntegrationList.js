@@ -82,11 +82,6 @@ class IntegrationList extends Component {
     this.makeRequest();
   }
 
-  componentDidUpdate(prevProps) {
-    const { task, history } = this.props;
-    task !== prevProps.task ? history.push(`tasks/${task.id}`) : null;
-  }
-
   handleAddIntegrationClick = () => {
     const { history } = this.props;
     history.push('/integrations/add-integration');
@@ -120,13 +115,7 @@ class IntegrationList extends Component {
   handleDeleteIntegration = () => {
     const { onDeleteIntegration, enqueueSnackbar } = this.props;
     const { alertDialog } = this.state;
-    try {
-      onDeleteIntegration(alertDialog.integrationId, enqueueSnackbar);
-    } catch (error) {
-      enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
-        variant: 'error'
-      });
-    }
+    onDeleteIntegration(alertDialog.integrationId, enqueueSnackbar);
   };
 
   handleImportResource = (id, resource) => {
@@ -373,14 +362,9 @@ class IntegrationList extends Component {
   }
 }
 
-IntegrationList.defaultProps = {
-  task: null
-};
-
 IntegrationList.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
-  task: PropTypes.object,
   fromShopifyApp: PropTypes.bool.isRequired,
   store: PropTypes.string.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
@@ -395,7 +379,6 @@ IntegrationList.propTypes = {
 const mapStateToProps = state => ({
   loading: state.getIn(['integration', 'loading']),
   integrations: state.getIn(['integration', 'integrations']),
-  task: state.getIn(['integration', 'task']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   store: state.getIn(['user', 'tenantName'])
 });

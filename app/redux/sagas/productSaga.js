@@ -43,7 +43,7 @@ function* linkProduct(payload) {
     const response = yield api.put(`/products/${productId}`, { data: { integration_ids: integrationIds, link_with_its_variants: 'All' } });
     const { data } = response.data;
     enqueueSnackbar('Linking product', { variant: 'info' });
-    yield put({ type: types.LINK_PRODUCT, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -61,7 +61,7 @@ function* unLinkProduct(payload) {
     const response = yield api.patch(`/products/${productId}`, { data: { integration_ids: integrationIds, delete_from_integration: deleteFromIntegration } });
     const { data } = response.data;
     enqueueSnackbar('Unlinking product', { variant: 'info' });
-    yield put({ type: types.UNLINK_PRODUCT, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -80,7 +80,7 @@ function* bulkLinkProducts(payload) {
     const response = yield CENIT_APP.post(url, { data: { product_ids: productIds, integration_ids: integrationIds } });
     const { data } = response.data;
     enqueueSnackbar('Linking products', { variant: 'info' });
-    yield put({ type: types.BULK_LINK_PRODUCTS, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -99,7 +99,7 @@ function* bulkUnlinkProducts(payload) {
     const response = yield CENIT_APP.post(url, { data: { product_ids: productIds, integration_ids: integrationIds } });
     const { data } = response.data;
     enqueueSnackbar('Unlinking products', { variant: 'info' });
-    yield put({ type: types.BULK_UNLINK_PRODUCTS, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
@@ -173,7 +173,7 @@ function* importProductFromIntegration(payload) {
     const url = `/integrations/${integrationId}/products/${remoteId}/import`;
     const response = yield api.get(url);
     const { data } = response.data;
-    yield put({ type: types.IMPORT_PRODUCT_FROM_INTEGRATION_SUCCESS, data });
+    yield put({ type: types.ADD_TASK_NOTIFICATION, taskId: data.id });
     if (enqueueSnackbar) {
       enqueueSnackbar('Importing product', { variant: 'info' });
     }
@@ -196,11 +196,11 @@ export function* watchUnLinkProduct() {
 }
 
 export function* watchBulkLinkProducts() {
-  yield takeLatest(types.BULK_LINK_PRODUCTS_ASYNC, bulkLinkProducts);
+  yield takeLatest(types.BULK_LINK_PRODUCTS, bulkLinkProducts);
 }
 
 export function* watchBulkUnlinkProducts() {
-  yield takeLatest(types.BULK_UNLINK_PRODUCTS_ASYNC, bulkUnlinkProducts);
+  yield takeLatest(types.BULK_UNLINK_PRODUCTS, bulkUnlinkProducts);
 }
 
 export function* watchDeleteProduct() {

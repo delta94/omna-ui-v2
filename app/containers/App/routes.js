@@ -43,6 +43,11 @@ export const OrderDetailsRoute = {
   component: OrderDetails
 };
 
+export const ShopifyOrderDetailsRoute = {
+  link: '/shopify-orders/:id',
+  component: OrderDetails
+};
+
 export const TasksRoute = { link: '/tasks', component: Tasks };
 
 export const TaskDetailsRoute = { link: '/tasks/:id', component: TaskDetails };
@@ -205,6 +210,8 @@ export const OmnaShopifyRoutes = [
   // Orders
   OrdersRoute,
   OrderDetailsRoute,
+  OrdersShopifyRoute,
+  ShopifyOrderDetailsRoute,
   // Tasks
   TasksRoute,
   TaskDetailsRoute,
@@ -213,8 +220,7 @@ export const OmnaShopifyRoutes = [
   DashboardPageRoute,
   ApiKeysRoute,
   BrandRoute,
-  CategoryRoute,
-  OrdersShopifyRoute
+  CategoryRoute
 ];
 
 export const OmnaShopifyAdminRoutes = [

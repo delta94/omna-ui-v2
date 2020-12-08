@@ -320,7 +320,7 @@ export const editDynamicPropsHelper = (event, properties) => {
   if (index >= 0) {
     const property = properties[index];
     if (property.input_type !== 'single_select_with_remote_options') {
-      property.value = val;
+      property.value = val === '' ? null : val;
     } else {
       property.value = val ? val.id : '';
       property.options = val ? [val] : [];
@@ -378,5 +378,17 @@ export const getOrderStatusOptions = () => {
     { value: 'fulfilled', name: 'fulfilled' },
   ];
 
+  return opts;
+};
+
+export const getTaskStatusOptions = () => {
+  const opts = [
+    { value: 'running', name: 'running' },
+    { value: 'pending', name: 'pending' },
+    { value: 'completed', name: 'completed' },
+    { value: 'failed', name: 'failed' },
+    { value: 'broken', name: 'broken' },
+    { value: 'unscheduled', name: 'unscheduled' },
+  ];
   return opts;
 };

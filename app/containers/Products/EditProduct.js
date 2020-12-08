@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -18,13 +18,7 @@ import { linkProduct, unLinkProduct, importProductFromIntegration } from 'dan-ac
 import { importResource } from 'dan-actions/integrationActions';
 import { checkTypes } from 'dan-containers/Common/Utils';
 import styles from 'dan-components/Products/product-jss';
-
-export const EDIT_PRODUCT_CONFIRM = (strings, name) => {
-  if (name) {
-    return `The product will be edited under "${name}" integration`;
-  }
-  return 'Are you sure you want to edit the product?';
-};
+import { updateIntegrationVariant } from 'dan-api/services/variants';
 
 export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
   `Are you sure you want to ${_action} under "${integration}" integration`
@@ -32,7 +26,7 @@ export const INTEGRATION_ACTIONS_CONFIRM = (strings, _action, integration) => (
 
 function EditProduct(props) {
   const {
-    match, history, loading, task, importTask, fromShopifyApp, enqueueSnackbar
+    match, history, loading, fromShopifyApp, enqueueSnackbar
   } = props;
   const [id, setId] = useState('');
   const [name, setName] = useState('');
@@ -51,13 +45,10 @@ function EditProduct(props) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('general');
-  const [openDialog, setOpenDialog] = useState(false);
   const [action, setAction] = useState('link');
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [integrationActionsDialog, setIntegrationActionsDialog] = useState(false);
   const [integrationAction, setIntegrationAction] = useState('import this product');
-  const prevTaskProp = useRef(task);
-  const prevImportTaskProp = useRef(importTask);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -83,18 +74,6 @@ function EditProduct(props) {
     fetchProduct();
   }, [match.params.id]);
 
-  useEffect(() => {
-    if (task && task !== prevTaskProp.current) {
-      history.push(`/tasks/${task.id}`);
-    }
-  }, [task]);
-
-  useEffect(() => {
-    if (importTask && importTask !== prevImportTaskProp.current) {
-      history.push(`/tasks/${importTask.id}`);
-    }
-  }, [importTask]);
-
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
   const editBasicInfo = async () => {
@@ -110,12 +89,27 @@ function EditProduct(props) {
     return result;
   };
 
-  const handleEdit = async () => {
+  const editIntegrationVariantsProps = async (submitData) => {
+    const results = [];
+
+    for (let i = 0; i < submitData.data.length; i += 1) {
+      const { remoteProductId, remoteVariantId, properties } = submitData.data[i];
+      results.push(updateIntegrationVariant({
+        integrationId: selectedTab.id,
+        remoteProductId,
+        remoteVariantId,
+        data: { properties }
+      }));
+    }
+    await Promise.all(results);
+  };
+
+  const handleSubmitForm = async (submitData) => {
     setIsLoading(true);
     try {
       if (selectedTab === 'general') {
         await editBasicInfo();
-      } else {
+      } else if (submitData.section === 'properties') {
         const resp = await editIntegrationProps();
         const { data } = resp.data;
         const index = integrations.findIndex(item => item.id === data.integration.id);
@@ -123,6 +117,8 @@ function EditProduct(props) {
           integrations[index] = cloneDeep(data.integration);
           setIntegrations(cloneDeep(integrations));
         }
+      } else {
+        await editIntegrationVariantsProps(submitData);
       }
       enqueueSnackbar('Product edited successfuly', {
         variant: 'success'
@@ -165,13 +161,6 @@ function EditProduct(props) {
     setOpenLinkerDlg(false);
   };
 
-  const handleDialogCancel = () => setOpenDialog(false);
-
-  const handleDialogConfirm = () => {
-    setOpenDialog(false);
-    handleEdit();
-  };
-
   const handleIntegrationActionsDlgCancel = () => setIntegrationActionsDialog(false);
 
   const handleIntegrationActionsDlgConfirm = () => {
@@ -194,8 +183,6 @@ function EditProduct(props) {
     }
     setIntegrationActionsDialog(false);
   };
-
-  const handleSubmitForm = () => setOpenDialog(true);
 
   const handleImportAction = (actionType) => {
     setIntegrationAction(actionType);
@@ -227,17 +214,10 @@ function EditProduct(props) {
           onDescriptionChange={e => setDescription(e)}
           onDimensionChange={handleDimensionChange}
           onIntegrationChange={(e) => setSelectedTab(e)}
-          onCancelClick={() => history.goBack()}
-          onImportAction={handleImportAction}
+          onCancelClick={() => history.push('/products')}
           onSubmitForm={handleSubmitForm}
         />
       )}
-      <AlertDialog
-        open={openDialog}
-        message={EDIT_PRODUCT_CONFIRM`${selectedTab !== 'general' ? selectedTab.name : ''}`}
-        handleCancel={handleDialogCancel}
-        handleConfirm={handleDialogConfirm}
-      />
       <AlertDialog
         open={integrationActionsDialog}
         message={INTEGRATION_ACTIONS_CONFIRM`${integrationAction}${selectedTab.name}`}
@@ -259,8 +239,6 @@ function EditProduct(props) {
 
 const mapStateToProps = state => ({
   loading: state.getIn(['product', 'loading']),
-  task: state.getIn(['product', 'task']),
-  importTask: state.getIn(['integration', 'task']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
@@ -277,18 +255,11 @@ const EditProductMapped = connect(
   mapDispatchToProps
 )(EditProduct);
 
-EditProduct.defaultProps = {
-  task: null,
-  importTask: null
-};
-
 EditProduct.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
-  task: PropTypes.object,
-  importTask: PropTypes.object,
   onLinkProduct: PropTypes.func.isRequired,
   onUnlinkProduct: PropTypes.func.isRequired,
   onImportResource: PropTypes.func.isRequired,

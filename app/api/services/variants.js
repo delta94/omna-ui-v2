@@ -1,4 +1,3 @@
-import history from 'utils/history';
 import get from 'lodash/get';
 import api, { CENIT_APP } from 'dan-containers/Utils/api';
 
@@ -60,13 +59,45 @@ export const bulkEditProperties = async (payload) => {
     const url = `/request_products?shop=${store}&task=bulk_variant_properties`;
     const resp = await CENIT_APP.post(url, { data });
     response = resp.data;
-    history.push(`/tasks/${response.data.id}`);
     enqueueSnackbar('Updating variants', { variant: 'info' });
   } catch (error) {
     response = error;
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
       variant: 'error'
     });
+  }
+  return response;
+};
+
+export const getVariantsFromIntegration = async (payload) => {
+  const { integrationId, remoteProductId, enqueueSnackbar } = payload;
+  let response;
+  try {
+    const resp = await api.get(`/integrations/${integrationId}/products/${remoteProductId}/variants`, { params: { offset: 0, limit: 25, with_details: true } });
+    response = resp.data;
+  } catch (error) {
+    response = { error };
+    enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    });
+  }
+  return response;
+};
+
+export const updateIntegrationVariant = async (payload) => {
+  const { integrationId, remoteProductId, remoteVariantId, data, enqueueSnackbar } = payload;
+  let response;
+  try {
+    const resp = await api.post(`integrations/${integrationId}/products/${remoteProductId}/variants/${remoteVariantId}`, { data });
+    response = resp.data;
+    enqueueSnackbar ? enqueueSnackbar('Variant edited successfuly', {
+      variant: 'success'
+    }) : null;
+  } catch (error) {
+    response = { error };
+    enqueueSnackbar ? enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
+      variant: 'error'
+    }) : null;
   }
   return response;
 };

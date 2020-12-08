@@ -77,13 +77,12 @@ function* deleteIntegration(params) {
   try {
     const response = yield api.delete(`${url}/${integrationId}`);
     const { data } = response.data;
+    yield put({ type: actionConstants.ADD_TASK_NOTIFICATION, taskId: data.id });
     yield put({ type: actionConstants.DELETE_INTEGRATION_SUCCESS, data });
     enqueueSnackbar('Deleting integration ', { variant: 'info' });
-
   } catch (error) {
     const message = error.response.data.message ? `: ${error.response.data.message}` : '';
     enqueueSnackbar(`Error deleting integration${message}`, { variant: 'error' });
-
     yield put({ type: actionConstants.DELETE_INTEGRATION_FAILED, error });
   }
 }
@@ -119,7 +118,7 @@ function* importResource(params) {
     } else response = yield api.get(`/integrations/${id}/${resource}/import`);
 
     const { data } = response.data;
-    yield put({ type: actionConstants.IMPORT_RESOURCE, data });
+    yield put({ type: actionConstants.ADD_TASK_NOTIFICATION, taskId: data.id });
     enqueueSnackbar(`Importing ${resource}`, { variant: 'info' });
   } catch (error) {
     enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
@@ -135,7 +134,7 @@ export default function* rootSaga() {
     takeLatest(actionConstants.CREATE_INTEGRATION, createIntegration),
     takeLatest(actionConstants.UPDATE_INTEGRATION, updateIntegration),
     takeLatest(actionConstants.DELETE_INTEGRATION, deleteIntegration),
-    takeLatest(actionConstants.IMPORT_RESOURCE_ASYNC, importResource),
+    takeLatest(actionConstants.IMPORT_RESOURCE, importResource),
     takeLatest(actionConstants.UNAUTHORIZE_INTEGRATION, unauthorizeIntegration)
   ]);
 }

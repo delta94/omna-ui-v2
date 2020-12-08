@@ -43,7 +43,7 @@ export const deleteProduct = (productId, params, enqueueSnackbar) => ({
 });
 
 export const bulkLinkProducts = (shop, productIds, integrationIds, enqueueSnackbar) => ({
-  type: types.BULK_LINK_PRODUCTS_ASYNC,
+  type: types.BULK_LINK_PRODUCTS,
   shop,
   productIds,
   integrationIds,
@@ -51,7 +51,7 @@ export const bulkLinkProducts = (shop, productIds, integrationIds, enqueueSnackb
 });
 
 export const bulkUnlinkProducts = (shop, productIds, integrationIds, deleteFromIntegration, enqueueSnackbar) => ({
-  type: types.BULK_UNLINK_PRODUCTS_ASYNC,
+  type: types.BULK_UNLINK_PRODUCTS,
   shop,
   productIds,
   integrationIds,

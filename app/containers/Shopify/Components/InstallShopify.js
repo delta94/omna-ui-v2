@@ -20,13 +20,13 @@ function InstallShopify(props) {
   const [plansAvailable, setPlansAvailable] = useState([]);
 
 
-  function handleNotification(name, status) {
+  const handleNotification = (name, status) => {
     onClearNotifications();
     onSetPlanStatus(status);
     onSetPlanName(name);
     const notif = planStatusNotification(name, status, subscribeShopifyPlanAction);
     notif ? onPushNotification(notif) : null;
-  }
+  };
 
   async function getPlans() {
     const result = await getPlanInfoAvailablePlans(tenantName, enqueueSnackbar);
@@ -48,7 +48,9 @@ function InstallShopify(props) {
 
 
   useEffect(() => {
-    handleNotification(planCurrent.name, planCurrentStatus);
+    if (planCurrentStatus && JSON.stringify(planCurrent) !== '{}') {
+      handleNotification(planCurrent.name, planCurrentStatus);
+    }
   }, [planCurrent, planCurrentStatus]);
 
   function handleCurrentPlan(plan) {

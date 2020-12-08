@@ -73,8 +73,8 @@ class OrderItems extends Component {
               <div>
                 {`${getCurrencySymbol(currency)}
                   ${(tableMeta.rowData[3] * tableMeta.rowData[4]).toFixed(
-                    2
-                  )} ${currency || ''}`}
+                2
+              )} ${currency || ''}`}
               </div>
             );
           }
@@ -94,6 +94,7 @@ class OrderItems extends Component {
       responsive: 'stacked',
       viewColumns: false,
       download: false,
+      pagination: false,
       print: false,
       search: false,
       selectableRows: 'none',

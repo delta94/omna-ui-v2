@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { connect } from 'react-redux';
@@ -26,7 +26,7 @@ export const EDIT_VARIANT_CONFIRM = (strings, name) => {
 
 function EditVariant(props) {
   const {
-    match, loading, history, linkTask, unlinkTask, fromShopifyApp, enqueueSnackbar
+    match, loading, history, fromShopifyApp, enqueueSnackbar
   } = props;
   const [id, setId] = useState();
   const [sku, setSKU] = useState('');
@@ -47,9 +47,6 @@ function EditVariant(props) {
   const [openLinkerDlg, setOpenLinkerDlg] = useState(false);
   const [selectedTab, setSelectedTab] = useState('general');
   const [openDialog, setOpenDialog] = useState(false);
-  const prevLinkTaskProp = useRef(linkTask);
-  const prevUnlinkTaskProp = useRef(unlinkTask);
-
 
   useEffect(() => {
     async function onGetVariant() {
@@ -72,18 +69,6 @@ function EditVariant(props) {
     }
     onGetVariant();
   }, [match.params.variantId]);
-
-  useEffect(() => {
-    if (linkTask && linkTask !== prevLinkTaskProp.current) {
-      history.push(`/tasks/${linkTask.id}`);
-    }
-  }, [linkTask]);
-
-  useEffect(() => {
-    if (unlinkTask && unlinkTask !== prevUnlinkTaskProp.current) {
-      history.push(`/tasks/${unlinkTask.id}`);
-    }
-  }, [unlinkTask]);
 
   const handleDimensionChange = e => setDimension((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
 
@@ -183,8 +168,6 @@ function EditVariant(props) {
 const mapStateToProps = state => ({
   loading: state.getIn(['variant', 'loading']),
   update: state.getIn(['variant', 'update']),
-  linkTask: state.getIn(['variant', 'link']),
-  unlinkTask: state.getIn(['variant', 'unlink']),
   fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
   ...state
 });
@@ -205,19 +188,12 @@ EditVariant.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
-  linkTask: PropTypes.object,
-  unlinkTask: PropTypes.object,
   fromShopifyApp: PropTypes.bool.isRequired,
   onUpdateVariant: PropTypes.func.isRequired,
   onLinkVariant: PropTypes.func.isRequired,
   onUnlinkVariant: PropTypes.func.isRequired,
   onUpdateIntegrationVariant: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
-};
-
-EditVariant.defaultProps = {
-  linkTask: null,
-  unlinkTask: null
 };
 
 export default withSnackbar(EditVariantMapped);
