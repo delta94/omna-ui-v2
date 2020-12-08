@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import Loading from 'dan-components/Loading';
-import { pushNotification } from 'dan-actions/NotificationActions';
+import { pushNotification, clearNotifications } from 'dan-actions/NotificationActions';
 import { getter } from 'dan-containers/Common/Utils';
 import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
 import { getSettingsInfo, planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
@@ -27,7 +27,7 @@ class Application extends React.Component {
 
   async componentDidMount() {
     const {
-      onSetUser, tenantId, fromShopifyAppAdmin, enqueueSnackbar, onPushNotification
+      onSetUser, tenantId, fromShopifyAppAdmin, enqueueSnackbar, onPushNotification, history, onclearNotifications
     } = this.props;
     if (!tenantId && getter.IS_AUTHENTICATED) {
       this.setState({ loadingApp: true });
@@ -39,10 +39,48 @@ class Application extends React.Component {
       } else if (getter.STORE) {
         const settings = await getSettingsInfo(getter.STORE, fromShopifyAppAdmin, enqueueSnackbar);
         onSetUser(settings);
-        const notif = planStatusNotification(settings.plan_name, settings.plan_status, subscribeShopifyPlanAction);
-        notif ? onPushNotification(notif) : null;
+        const status = settings.shopifyAppStatus;
+
+        this.installingNotification(status);
+
+        if (status !== 'ready') {
+          const intervalStatus = setInterval(async () => {
+            const data = await getSettingsInfo(getter.STORE, fromShopifyAppAdmin, enqueueSnackbar);
+            const { shopifyAppStatus } = data;
+
+            if (shopifyAppStatus === 'ready_installing_products') {
+              this.installingNotification(shopifyAppStatus);
+              onSetUser(data);
+              // call to Cenit app to change the status.
+            }else{
+              clearInterval(intervalStatus);
+              history.push('/dashboard');
+            }
+            this.setState({ loadingApp: false });
+
+          }, 5000);
+        }else{
+          onclearNotifications();
+          const notif = planStatusNotification(settings.plan_name, settings.plan_status, subscribeShopifyPlanAction);
+          notif ? onPushNotification(notif) : null;
+        }
+
         this.setState({ loadingApp: false });
       }
+    }
+  }
+
+  installingNotification = (status) => {
+
+    const { onPushNotification } = this.props;
+
+    if (status === 'ready_installing_products') {
+      const productNotification = {
+        message: 'Please, wait a few minutes before using the app completly, the Shopify products are still importing to OMNA',
+        variant: 'warning'
+      };
+      onPushNotification(productNotification);
+
     }
   }
 
@@ -90,7 +128,8 @@ Application.propTypes = {
   enqueueSnackbar: PropTypes.func.isRequired,
   tenantId: PropTypes.string.isRequired,
   onSetUser: PropTypes.func.isRequired,
-  onPushNotification: PropTypes.func.isRequired
+  onPushNotification: PropTypes.func.isRequired,
+  onclearNotifications: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -102,7 +141,8 @@ const mapStateToProps = state => ({
 
 const dispatchToProps = dispatch => ({
   onSetUser: bindActionCreators(setUser, dispatch),
-  onPushNotification: bindActionCreators(pushNotification, dispatch)
+  onPushNotification: bindActionCreators(pushNotification, dispatch),
+  onclearNotifications: bindActionCreators(clearNotifications, dispatch)
 });
 
 const ApplicationMapped = connect(

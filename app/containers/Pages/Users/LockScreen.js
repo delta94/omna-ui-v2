@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Loading from 'dan-components/Loading';
 import styles from 'dan-components/Forms/user-jss';
-import { pushNotification } from 'dan-actions/NotificationActions';
+import { pushNotification, clearNotifications } from 'dan-actions/NotificationActions';
 import { subscribeShopifyPlanAction } from 'dan-components/Notification/AlertActions';
 import { setUser } from 'dan-actions/UserActions';
 import { getSettingsInfo, planStatusNotification } from 'dan-containers/Shopify/Services/ShopifyService';
@@ -23,7 +23,8 @@ class LockScreen extends React.Component {
       location,
       enqueueSnackbar,
       onSetUser,
-      onPushNotification
+      onPushNotification,
+      onclearNotifications
     } = this.props;
 
     const { redirect, code, path, store, admin } = location.state;
@@ -38,41 +39,91 @@ class LockScreen extends React.Component {
 
     if (store) {
       const firstQuery = await getSettingsInfo(store, admin, enqueueSnackbar);
-      if (firstQuery.shopifyAppStatus !== 'ready' || firstQuery.shopifyAppStatus !== 'ready_installation_with_error') {
+
+      if (firstQuery.shopifyAppStatus !== 'ready') {
+
+        let status = firstQuery.shopifyAppStatus;
+        this.statusNotification(status);
+
         const intervalStatus = setInterval(async () => {
           const data = await getSettingsInfo(store, admin, enqueueSnackbar);
-          const status = data.shopifyAppStatus;
+          status = data.shopifyAppStatus;
           this.setState({ shopifyAppStatus: status });
+          onSetUser(data);
 
+          const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
+          notif ? onPushNotification(notif) : null;
+          // if (status === 'ready' || ) {
+          //   clearInterval(intervalStatus);
+          //   const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
+          //   notif ? onPushNotification(notif) : null;
+          //   history.push('/dashboard');
+          // }
 
-          if (status === 'ready') {
-            onSetUser(data);
-            clearInterval(intervalStatus);
-            const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
-            notif ? onPushNotification(notif) : null;
-            history.push('/shopify');
-          }
+          // if (status === 'ready_installing_products') {
+          //   // clearInterval(intervalStatus);
+          //   const productNotification = {
+          //     message: 'Please, wait a few minutes before using the app completly, the Shopify products are still importing to OMNA',
+          //     variant: 'warning'
+          //   };
+          //   onPushNotification(productNotification);
+          //   // history.push('/dashboard');
+          // }
 
           if (status === 'ready_installation_with_error') {
-            onSetUser(data);
             clearInterval(intervalStatus);
-            enqueueSnackbar(get(warning, 'response.data', 'Warning: The process installation was completed with some internal issues. Please contact with OMNA support'), {
-              variant: 'warning'
-            });
-            history.push('/shopify');
-          }
-        }, 3000);
-      } else {
-        onSetUser(firstQuery);
 
+            // enqueueSnackbar(get(warning, 'response.data', 'Warning: The process installation was completed with some internal issues. Please contact with OMNA support'), {
+            //   variant: 'warning'
+            // });
+            // history.push('/dashboard');
+          }
+
+          this.statusNotification(status);
+        }, 5000);
+      } else {
+        onclearNotifications();
+        onSetUser(firstQuery);
         const notif = planStatusNotification(firstQuery.plan_name, firstQuery.plan_status, subscribeShopifyPlanAction);
         notif ? onPushNotification(notif) : null;
-        history.push('/shopify');
+        history.push('/dashboard');
       }
     }
 
     if (!code && !store) {
       window.location.replace(redirect);
+    }
+  }
+
+  statusNotification = (status) => {
+
+    const {
+      history,
+      enqueueSnackbar,
+      onPushNotification
+    } = this.props;
+    // if (status === 'ready') {
+    //   const notif = planStatusNotification(data.plan_name, data.plan_status, subscribeShopifyPlanAction);
+    //   notif ? onPushNotification(notif) : null;
+    //   history.push('/dashboard');
+    // }
+
+    if (status === 'ready_installing_products') {
+      // clearInterval(intervalStatus);
+      const productNotification = {
+        message: 'Please, wait a few minutes before using the app completly, the Shopify products are still importing to OMNA',
+        variant: 'warning'
+      };
+      onPushNotification(productNotification);
+
+      // history.push('/dashboard');
+    }
+
+    if (status === 'ready_installation_with_error') {
+      enqueueSnackbar(get(warning, 'response.data', 'Warning: The process installation was completed with some internal issues. Please contact with OMNA support'), {
+        variant: 'warning'
+      });
+      history.push('/dashboard');
     }
   }
 
@@ -93,12 +144,14 @@ LockScreen.propTypes = {
   history: PropTypes.object.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired,
   onSetUser: PropTypes.func.isRequired,
-  onPushNotification: PropTypes.func.isRequired
+  onPushNotification: PropTypes.func.isRequired,
+  onclearNotifications: PropTypes.func.isRequired
 };
 
 const dispatchToProps = dispatch => ({
   onSetUser: bindActionCreators(setUser, dispatch),
   onPushNotification: bindActionCreators(pushNotification, dispatch),
+  onclearNotifications: bindActionCreators(clearNotifications, dispatch)
 });
 
 const LockScreenMapped = connect(
