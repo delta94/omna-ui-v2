@@ -14,7 +14,7 @@ const styles = theme => ({
     margin: theme.spacing(1),
   },
   select: {
-    margin: theme.spacing(1, 1, 2, 1)
+    marginTop: theme.spacing(2)
   },
   instructions: {
     marginTop: theme.spacing(3),
@@ -114,7 +114,6 @@ function FiltersDlg(props) {
       <AutoSuggestion
         id="integration-select-id"
         label="Integrations"
-        className={classes.select}
         options={integrationOptions}
         loading={loadingIntegrations}
         value={integration}
