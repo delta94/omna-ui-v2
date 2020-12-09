@@ -5,10 +5,9 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withSnackbar } from 'notistack';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
-import MUIDataTable from 'mui-datatables';
+import { withStyles } from '@material-ui/core/styles';
+import DataTable from 'dan-components/Tables/DataTable';
 import { Loading } from 'dan-components';
-import filterDlgSizeHelper from 'utils/mediaQueries';
 import Button from '@material-ui/core/Button';
 import {
   getOrders,
@@ -94,27 +93,6 @@ class OrderList extends Component {
       });
     }
   };
-
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableBodyCell: {
-        root: {
-          cursor: 'pointer',
-        }
-      },
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: filterDlgSizeHelper,
-          minWidth: '300px'
-        }
-      },
-      MuiGridListTile: {
-        root: {
-          width: filterDlgSizeHelper
-        }
-      }
-    },
-  });
 
   handleChangePage = (page) => {
     const { onChangePage } = this.props;
@@ -416,13 +394,7 @@ class OrderList extends Component {
         <PageHeader title="Orders" history={history} />
         <div className={classes.table}>
           {loading && <Loading />}
-          <MuiThemeProvider theme={this.getMuiTheme()}>
-            <MUIDataTable
-              columns={columns}
-              data={orderList}
-              options={options}
-            />
-          </MuiThemeProvider>
+          <DataTable columns={columns} data={orderList} options={options} />
         </div>
       </div>
     );

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import isEqual from 'lodash/isEqual';
 import { withSnackbar } from 'notistack';
 import classNames from 'classnames';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import Popover from '@material-ui/core/Popover';
 import Badge from '@material-ui/core/Badge';
@@ -17,10 +17,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Link } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
-import filterDlgSizeHelper from 'utils/mediaQueries';
 
 import { Avatar, Typography } from '@material-ui/core';
-import MUIDataTable from 'mui-datatables';
 import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import {
@@ -43,6 +41,7 @@ import AlertDialog from 'dan-containers/Common/AlertDialog';
 import ToolbarActions from 'dan-components/Products/ToolbarActions';
 import BulkLinker from 'dan-components/Products/BulkLinker';
 import FiltersDlg from 'dan-components/Products/FiltersDlg';
+import DataTable from 'dan-components/Tables/DataTable';
 import BulkEditProducts from './BulkEditProducts';
 import styles from './list-jss';
 
@@ -88,22 +87,6 @@ class ProductList extends React.Component {
   handleSelectedIds = (ids) => this.setState({ selectedIds: ids });
 
   handleSelectedIndexes = (indexes) => this.setState({ selectedIndexes: indexes });
-
-  getMuiTheme = () => createMuiTheme({
-    overrides: {
-      MUIDataTableBodyCell: {
-        root: {
-          cursor: 'pointer',
-        }
-      },
-      MUIDataTableToolbar: {
-        filterPaper: {
-          width: filterDlgSizeHelper,
-          minWidth: '300px'
-        }
-      }
-    },
-  });
 
   getParams = () => {
     const { filters, limit, page, term } = this.props;
@@ -546,9 +529,7 @@ class ProductList extends React.Component {
       <div>
         <PageHeader title="Products" history={history} />
         {loading ? <Loading /> : null}
-        <MuiThemeProvider theme={this.getMuiTheme()}>
-          <MUIDataTable columns={columns} data={data} options={options} />
-        </MuiThemeProvider>
+        <DataTable columns={columns} data={data} options={options} />
         <AlertDialog
           open={openConfirmDlg}
           message={`Are you sure you want to remove the product: "${selectedItem ? selectedItem.name : ''}" ?`}
