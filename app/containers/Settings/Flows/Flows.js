@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
+import { addTaskNotification } from 'dan-actions/NotificationActions';
 import {
   IconButton,
   ListItemIcon,
@@ -93,14 +95,15 @@ class Flows extends Component {
   };
 
   handleStartFlow = async id => {
-    const { enqueueSnackbar } = this.props;
+    const { enqueueSnackbar, onAddTaskNotification } = this.props;
     this.handleClose();
 
     try {
-      await API.get(`flows/${id}/start`);
+      const response = await API.get(`flows/${id}/start`);
       enqueueSnackbar('Workflow started successfully', {
-        variant: 'success'
+        variant: 'info',
       });
+      onAddTaskNotification(response.data.data.id);
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -447,6 +450,7 @@ Flows.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
+  onAddTaskNotification: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
@@ -459,6 +463,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onGetFlows: params => dispatch(getFlows(params)),
+  onAddTaskNotification: bindActionCreators(addTaskNotification, dispatch),
   onGetIntegrations: params => dispatch(getIntegrations(params))
 });
 

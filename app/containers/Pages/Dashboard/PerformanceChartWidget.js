@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper } from '@material-ui/core';
 import classNames from 'classnames';
+import get from 'lodash/get';
 import Dvr from '@material-ui/icons/Dvr';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Healing from '@material-ui/icons/Healing';
 import Avatar from '@material-ui/core/Avatar';
 import TasksIcon from '@material-ui/icons/PlaylistAddCheck';
 import Typography from '@material-ui/core/Typography';
-
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
@@ -36,6 +37,22 @@ class PerformanceChartWidget extends PureComponent {
               </Typography>
             </Button>
           </li>
+          <li>
+            <Button color="primary" component={Link} to="/products">
+              <Avatar
+                className={classNames(classes.avatar, classes.orangeAvatar)}
+                onClick={this.handleClick}
+              >
+                <ShoppingCartIcon />
+              </Avatar>
+              <Typography variant="h6">
+                <span className={classes.orangeText}>
+                  { get(['products', 'pagination', 'total']) }
+                </span>
+                <Typography>Products</Typography>
+              </Typography>
+            </Button>
+          </li>
           {!fromShopifyApp && (
             <li>
               <Button color="primary" component={Link} to="/webhooks">
@@ -53,21 +70,23 @@ class PerformanceChartWidget extends PureComponent {
               </Button>
             </li>
           )}
-          <li>
-            <Button color="primary" component={Link} to="/workflows">
-              <Avatar
-                className={classNames(classes.avatar, classes.pinkAvatar)}
-              >
-                <Healing />
-              </Avatar>
-              <Typography variant="h6">
-                <span className={classes.pinkText}>
-                  {flows.getIn(['pagination', 'total'])}
-                </span>
-                <Typography>Workflows</Typography>
-              </Typography>
-            </Button>
-          </li>
+          {!fromShopifyApp && (
+            <li>
+              <Button color="primary" component={Link} to="/workflows">
+                <Avatar
+                  className={classNames(classes.avatar, classes.pinkAvatar)}
+                >
+                  <Healing />
+                </Avatar>
+                <Typography variant="h6">
+                  <span className={classes.pinkText}>
+                    {flows.getIn(['pagination', 'total'])}
+                  </span>
+                  <Typography>Workflows</Typography>
+                </Typography>
+              </Button>
+            </li>
+          )}
           <li>
             <Button color="primary" component={Link} to="/tasks">
               <Avatar
