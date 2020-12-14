@@ -5,6 +5,16 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { withSnackbar } from 'notistack';
 import Ionicon from 'react-ionicons';
+import Button from '@material-ui/core/Button';
+import { delay } from 'dan-containers/Common/Utils';
+import DataTable from 'dan-components/Tables/DataTable';
+import {
+  getFlows,
+  updateFilters,
+  changePage,
+  changeRowsPerPage,
+  changeSearchTerm
+} from 'dan-actions/flowActions';
 import { addTaskNotification } from 'dan-actions/NotificationActions';
 import {
   IconButton,
@@ -13,12 +23,11 @@ import {
   MenuItem,
   Tooltip
 } from '@material-ui/core';
+import FiltersDlg from 'dan-components/Products/FiltersDlg';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import get from 'lodash/get';
 import moment from 'moment';
-import MUIDataTable from 'mui-datatables';
-import { EmptyState, Loading } from 'dan-components';
-import { getFlows } from 'dan-actions/flowActions';
+import { Loading } from 'dan-components';
 import { getIntegrations } from 'dan-actions/integrationActions';
 import API from '../../Utils/api';
 import AlertDialog from '../../Common/AlertDialog';
@@ -34,7 +43,8 @@ class Flows extends Component {
       message: ''
     },
     isLoading: false,
-    integrationFilterOptions: [],
+    integrationFilter: undefined,
+    columnSortDirection: ['none'],
     limit: 10,
     page: 0,
     serverSideFilterList: [],
@@ -44,10 +54,32 @@ class Flows extends Component {
   };
 
   componentDidMount() {
-    const { onGetIntegrations } = this.props;
-    onGetIntegrations({ limit: 100, offset: 0 });
-    this.callAPI();
+    this.makeQuery();
   }
+
+  componentDidUpdate(prevProps) {
+    const { params } = this.props;
+    if (params && params !== prevProps.params) {
+      this.makeQuery();
+    }
+  }
+
+  makeQuery = () => {
+    const {
+      enqueueSnackbar,
+      error,
+      onGetFlows,
+      params
+    } = this.props;
+
+    onGetFlows(params.toJS());
+
+    if (error) {
+      enqueueSnackbar(error, {
+        variant: 'error'
+      });
+    }
+  };
 
   handleDeleteFlow = async () => {
     const { enqueueSnackbar } = this.props;
@@ -149,55 +181,72 @@ class Flows extends Component {
     onGetFlows(params);
   };
 
-  handleChangePage = (page, searchTerm) => {
-    this.setState({ page, searchTerm }, this.callAPI);
+  handleChangePage = (page) => {
+    const { onChangePage } = this.props;
+    onChangePage(page);
   };
 
   handleChangeRowsPerPage = rowsPerPage => {
-    this.setState({ limit: rowsPerPage }, this.callAPI);
+    const { onChangeRowsPerPage } = this.props;
+    onChangeRowsPerPage(rowsPerPage);
   };
 
   handleSearch = searchTerm => {
+    const { params, onChangeSearchTerm } = this.props;
     if (searchTerm) {
-      const timer = setTimeout(() => {
-        this.setState({ searchTerm }, this.callAPI);
-        clearTimeout(timer);
-      }, 800);
-      window.addEventListener('keydown', () => {
-        clearTimeout(timer);
-      });
-    } else {
-      const { searchTerm: _searchTerm } = this.state;
-      if (_searchTerm) {
-        this.setState({ searchTerm: '' }, this.callAPI);
-      }
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (params.get('term')) {
+      onChangeSearchTerm('');
     }
   };
 
   onHandleCloseSearch = () => {
-    this.setState({ searchTerm: '' }, this.callAPI);
+    const { onChangeSearchTerm } = this.props;
+    onChangeSearchTerm('');
   };
 
-  handleFilterChange = filterList => {
-    if (filterList) {
-      this.setState({ serverSideFilterList: filterList }, this.callAPI);
-    } else {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
-  };
-
-  handleResetFilters = () => {
-    const { serverSideFilterList } = this.state;
-    if (serverSideFilterList.length > 0) {
-      this.setState({ serverSideFilterList: [] }, this.callAPI);
-    }
-  };
+  // handleResetFilters = () => {
+  //   const { serverSideFilterList } = this.state;
+  //   if (serverSideFilterList.length > 0) {
+  //     this.setState({ serverSideFilterList: [] }, this.callAPI);
+  //   }
+  // };
 
   handleMenu = (event, id, task, title) => {
     this.setState({
       anchorEl: event.currentTarget,
       selectedItem: { id, task, title }
     });
+  };
+
+  handleSearch = searchTerm => {
+    const { params, onChangeSearchTerm } = this.props;
+    if (searchTerm) {
+      delay(() => onChangeSearchTerm(searchTerm));
+    } else if (params.get('term')) {
+      onChangeSearchTerm('');
+    }
+  };
+
+  onHandleCloseSearch = () => {
+    const { onChangeSearchTerm } = this.props;
+    onChangeSearchTerm('');
+  };
+
+  handleIntegrationFilterChange = (integation) => {
+    this.setState({ integrationFilter: integation });
+  };
+
+  handleResetFilters = () => {
+    this.setState({ integrationFilter: null });
+  };
+
+  handleFilterSubmit = () => {
+    const { integrationFilter } = this.state;
+    const { onUpdateFilters } = this.props;
+    const objectFilters = {};
+    integrationFilter ? objectFilters.integrationFilter = [integrationFilter] : null;
+    onUpdateFilters(objectFilters);
   };
 
   handleClose = () => {
@@ -249,18 +298,15 @@ class Flows extends Component {
   };
 
   render() {
-    const { classes, flows, history, loading, fromShopifyApp } = this.props;
+    const { classes, flows, history, loading, filters, params, onUpdateFilters, fromShopifyApp } = this.props;
     const {
-      integrationFilterOptions,
       alertDialog,
-      limit,
       isLoading,
-      page,
-      searchTerm,
-      serverSideFilterList
+      columnSortDirection,
     } = this.state;
     const { data, pagination } = flows.toJS();
     const { total: count } = pagination;
+    const page = params.get('offset') / params.get('limit');
 
     const columns = [
       {
@@ -281,11 +327,27 @@ class Flows extends Component {
         name: 'integration',
         label: 'Integration',
         options: {
+          filter: true,
+          sortDirection: columnSortDirection[0],
           sort: true,
-          filterType: 'dropdown',
-          filterList: serverSideFilterList[2],
+          filterType: 'custom',
+          filterList: filters.getIn(['integrationFilter']),
+          // filterOptions: {
+          //   names: integrationFilterOptions
+          // },
+          customFilterListOptions: {
+            render: v => v[0].name
+          },
           filterOptions: {
-            names: integrationFilterOptions
+            display: () => {
+              const { integrationFilter } = this.state;
+              return (
+                <FiltersDlg
+                  integration={integrationFilter}
+                  onIntegrationChange={this.handleIntegrationFilterChange}
+                />
+              );
+            }
           },
           customBodyRender: value => <div>{value.name}</div>
         }
@@ -346,10 +408,9 @@ class Flows extends Component {
       download: false,
       print: false,
       serverSide: true,
-      searchText: searchTerm,
-      serverSideFilterList,
+      searchText: params.get('term'),
       searchPlaceholder: 'Search by type',
-      rowsPerPage: limit,
+      rowsPerPage: params.get('limit'),
       count,
       page,
       onTableChange: (action, tableState) => {
@@ -363,9 +424,9 @@ class Flows extends Component {
           case 'search':
             this.handleSearch(tableState.searchText);
             break;
-          case 'filterChange':
-            this.handleFilterChange(tableState.filterList);
-            break;
+          // case 'filterChange':
+          //   this.handleFilterChange(tableState.filterList);
+          //   break;
           case 'resetFilters':
             this.handleResetFilters();
             break;
@@ -409,33 +470,39 @@ class Flows extends Component {
           const flow = data[dataIndex];
           this.handleEditFlow(flow.id);
         }
+      },
+      customFilterDialogFooter: () => (
+        <div style={{ padding: '16px' }}>
+          <Button variant="contained" onClick={this.handleFilterSubmit}>Apply Filters</Button>
+        </div>
+      ),
+      onFilterChipClose: (index) => {
+        const fltrs = filters.toJS();
+        switch (index) {
+          case 2:
+            fltrs.integrationFilter = null;
+            break;
+          default:
+            break;
+        }
+        onUpdateFilters(fltrs);
       }
     };
 
     return (
       <div>
         <PageHeader title="Workflows" history={history} />
-        {loading || isLoading ? (
-          <Loading />
-        ) : count > 0 ? (
-          <div className={classes.table}>
-            <MUIDataTable columns={columns} data={data} options={options} />
-            {this.renderActionsMenu()}
-
-            <AlertDialog
-              open={alertDialog.open}
-              message={alertDialog.message}
-              handleCancel={this.handleDialogCancel}
-              handleConfirm={this.handleDialogConfirm}
-            />
-          </div>
-        ) : (
-          <EmptyState
-            action={!fromShopifyApp && this.handleAddAction}
-            actionText="Add Flow"
-            text="There is nothing here now, but products data will show up here later. You can add them clicking the button below."
+        {loading || isLoading && <Loading />}
+        <div className={classes.table}>
+          <DataTable columns={columns} data={data} options={options} />
+          {this.renderActionsMenu()}
+          <AlertDialog
+            open={alertDialog.open}
+            message={alertDialog.message}
+            handleCancel={this.handleDialogCancel}
+            handleConfirm={this.handleDialogConfirm}
           />
-        )}
+        </div>
       </div>
     );
   }
@@ -443,28 +510,42 @@ class Flows extends Component {
 
 Flows.propTypes = {
   flows: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
   onGetFlows: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   // integrations: PropTypes.object.isRequired,
-  onGetIntegrations: PropTypes.func.isRequired,
+  // onGetIntegrations: PropTypes.func.isRequired,
+  error: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired,
   onAddTaskNotification: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired,
+  onUpdateFilters: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onChangeRowsPerPage: PropTypes.func.isRequired,
+  onChangeSearchTerm: PropTypes.func.isRequired,
   enqueueSnackbar: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   loading: state.getIn(['flow', 'loading']),
   flows: state.getIn(['flow', 'flows']),
+  params: state.getIn(['flow', 'params']),
+  filters: state.getIn(['flow', 'filters']),
   integrations: state.getIn(['integration', 'integrations']),
-  fromShopifyApp: state.getIn(['user', 'fromShopifyApp'])
+  fromShopifyApp: state.getIn(['user', 'fromShopifyApp']),
+  error: state.getIn(['flow', 'error'])
 });
 
 const mapDispatchToProps = dispatch => ({
   onGetFlows: params => dispatch(getFlows(params)),
   onAddTaskNotification: bindActionCreators(addTaskNotification, dispatch),
-  onGetIntegrations: params => dispatch(getIntegrations(params))
+  onGetIntegrations: params => dispatch(getIntegrations(params)),
+  onUpdateFilters: bindActionCreators(updateFilters, dispatch),
+  onChangePage: bindActionCreators(changePage, dispatch),
+  onChangeRowsPerPage: bindActionCreators(changeRowsPerPage, dispatch),
+  onChangeSearchTerm: bindActionCreators(changeSearchTerm, dispatch)
 });
 
 const FlowsMapped = withSnackbar(withStyles(styles)(Flows));
