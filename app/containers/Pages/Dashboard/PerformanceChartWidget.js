@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Paper } from '@material-ui/core';
 import classNames from 'classnames';
-import get from 'lodash/get';
 import Dvr from '@material-ui/icons/Dvr';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 import Healing from '@material-ui/icons/Healing';
@@ -16,7 +15,7 @@ import styles from './widget-jss';
 
 class PerformanceChartWidget extends PureComponent {
   render() {
-    const { classes, flows, orders, webhooks, tasks, fromShopifyApp } = this.props;
+    const { classes, flows, orders, webhooks, tasks, products, fromShopifyApp } = this.props;
 
     return (
       <Paper style={{ padding: '8px 16px', marginBottom: 16 }}>
@@ -47,7 +46,7 @@ class PerformanceChartWidget extends PureComponent {
               </Avatar>
               <Typography variant="h6">
                 <span className={classes.orangeText}>
-                  { get(['products', 'pagination', 'total']) }
+                  {products.pagination ? `${products.pagination.total}` : '0'}
                 </span>
                 <Typography>Products</Typography>
               </Typography>
@@ -114,6 +113,7 @@ PerformanceChartWidget.propTypes = {
   webhooks: PropTypes.object.isRequired,
   flows: PropTypes.object.isRequired,
   tasks: PropTypes.object.isRequired,
+  products: PropTypes.object.isRequired,
   fromShopifyApp: PropTypes.bool.isRequired
 };
 
