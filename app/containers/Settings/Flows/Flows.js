@@ -492,7 +492,7 @@ class Flows extends Component {
     return (
       <div>
         <PageHeader title="Workflows" history={history} />
-        {loading || isLoading && <Loading />}
+        {isLoading || loading && <Loading />}
         <div className={classes.table}>
           <DataTable columns={columns} data={data} options={options} />
           {this.renderActionsMenu()}
