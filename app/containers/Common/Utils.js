@@ -191,13 +191,13 @@ export const getLogo = channel => {
     case 'Amazon':
       return '/images/avatars/amazon_logo.png';
     case 'Lazada':
-      return '/images/avatars/lazada_logo.png';
+      return '/images/avatars/__lazada.svg';
     case 'Qoo10':
       return '/images/avatars/qoo10_logo.png';
     case 'Shopee':
-      return '/images/avatars/shopee_logo.png';
+      return '/images/avatars/__shopee.svg';
     case 'Shopify':
-      return '/images/avatars/shopify_logo.png';
+      return '/images/avatars/__shopify.svg';
     case 'MercadoLibre':
       return '/images/avatars/mercadolibre_logo.png';
     default:

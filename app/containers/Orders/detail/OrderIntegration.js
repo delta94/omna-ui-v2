@@ -12,8 +12,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { getLogo } from 'dan-containers/Common/Utils';
 import styles from './order-detail-jss';
 
-const OrderIntegration = ({ classes, integration }) => {
-  const logo = getLogo(integration.channel);
+const OrderIntegration = ({ classes, integration, updatedAt, lastImport }) => {
+  const logo = getLogo(integration.channel_title);
 
   return (
     <Card
@@ -32,7 +32,7 @@ const OrderIntegration = ({ classes, integration }) => {
           ) : null
         }
         title="Integration"
-        subheader={integration.channel}
+        subheader={integration.name}
       />
 
       <List className={classes.root} dense>
@@ -41,52 +41,23 @@ const OrderIntegration = ({ classes, integration }) => {
             primary={
               <Fragment>
                 <Typography className={classes.inline} variant="subtitle2">
-                  {`ID: `}
+                  {'Channel: '}
                 </Typography>
-                {integration.id}
+                {integration.channel_title}
               </Fragment>
             }
           />
         </ListItem>
+
         <ListItem>
           <ListItemText
             primary={
               <Fragment>
                 <Typography className={classes.inline} variant="subtitle2">
-                  {`Name: `}
+                  {'Order updated at: '}
                 </Typography>
-                {integration.name}
-              </Fragment>
-            }
-          />
-        </ListItem>
-        {/* <ListItem>
-            <Typography variant="subtitle2">Authorized:</Typography>
-            <ListItemText primary={integration.authorized} />
-          </ListItem>
-          <ListItem>
-            <Typography variant="subtitle2">
-              Last Import Orders Date:
-            </Typography>
-            <ListItemText
-              primary={
-                integration.last_import_orders_date != null
-                  ? moment(integration.last_import_orders_date).format(
-                    'Y-MM-DD H:mm:ss'
-                  )
-                  : '--'
-              }
-            />
-          </ListItem> */}
-        <ListItem>
-          <ListItemText
-            primary={
-              <Fragment>
-                <Typography className={classes.inline} variant="subtitle2">
-                  {`Created at: `}
-                </Typography>
-                {integration.created_at != null
-                  ? moment(integration.created_at).format('Y-MM-DD H:mm')
+                {updatedAt != null
+                  ? moment(updatedAt).format('Y-MM-DD H:mm')
                   : ''}
               </Fragment>
             }
@@ -97,10 +68,10 @@ const OrderIntegration = ({ classes, integration }) => {
             primary={
               <Fragment>
                 <Typography className={classes.inline} variant="subtitle2">
-                  {`Updated at: `}
+                  {'Order last import: '}
                 </Typography>
-                {integration.updated_at != null
-                  ? moment(integration.updated_at).format('Y-MM-DD H:mm')
+                {lastImport != null
+                  ? moment(lastImport).format('Y-MM-DD H:mm')
                   : ''}
               </Fragment>
             }
@@ -113,7 +84,9 @@ const OrderIntegration = ({ classes, integration }) => {
 
 OrderIntegration.propTypes = {
   classes: PropTypes.object.isRequired,
-  integration: PropTypes.object.isRequired
+  integration: PropTypes.object.isRequired,
+  updatedAt: PropTypes.object.isRequired,
+  lastImport: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(OrderIntegration);

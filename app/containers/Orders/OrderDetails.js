@@ -167,8 +167,8 @@ class OrderDetails extends Component {
                     className={classes.marginLeft}
                   >
                     <strong>
-                      {get(order, 'data.updated_date', null) != null
-                        ? moment(order.data.updated_date).format('Y-MM-DD H:mm')
+                      {get(order, 'data.created_date', null) != null
+                        ? moment(order.data.created_date).format('Y-MM-DD H:mm')
                         : ''}
                     </strong>
                   </Typography>
@@ -181,6 +181,8 @@ class OrderDetails extends Component {
                     <OrderIntegration
                       classes={classes}
                       integration={get(order, 'data.integration', null)}
+                      updatedAt={get(order, 'data.updated_date', null)}
+                      lastImport={get(order, 'data.last_import_date', null)}
                     />
                     <OrderPayment
                       classes={classes}
