@@ -5,14 +5,13 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
 import MomentUtils from '@date-io/moment';
-import { DatePicker, TimePicker, MuiPickersUtilsProvider } from 'material-ui-pickers';
+import { DatePicker, TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+/* import { TimePicker } from 'material-ui-pickers'; */
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
-import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 //
 const WEEKS_OF_MONTH = ['First', 'Second', 'Third', 'Last'];
@@ -36,19 +35,18 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    margin: theme.spacing.unit,
     minWidth: 300,
-    maxWidth: 350,
+    width: '100%',
   },
-  picker: {
-    margin: `${theme.spacing(3)}px 5px`,
+  gridItem: {
+    margin: theme.spacing(1),
   }
 });
 
 
 function Scheduler(props) {
   const {
-    classes, daysOfWeek, weeksOfMonth, monthsOfYear, startDate, endDate, time, active, status
+    classes, daysOfWeek, weeksOfMonth, monthsOfYear, startDate, endDate, time, active, action
   } = props;
 
   const onStartDateChange = (e) => { props.onStartDateChange(e); };
@@ -57,134 +55,140 @@ function Scheduler(props) {
 
   const onTimeChange = (e) => { props.onTimeChange(e); };
 
-  const onActiveChange = (e) => { props.onActiveChange(e.target.checked); };
-
   const onDaysOfWeekChange = (e) => { props.onDaysOfWeekChange(e.target.value); };
 
   const onWeeksOfMonthChange = (e) => { props.onWeeksOfMonthChange(e.target.value); };
 
   const onMonthsOfYearChange = (e) => { props.onMonthsOfYearChange(e.target.value); };
 
+  const inputLabel = React.useRef(null);
+
+  const [labelWidth, setLabelWidth] = React.useState(0);
+  React.useEffect(() => {
+    setLabelWidth(inputLabel.current.offsetWidth);
+  }, []);
+
   return (
-    <div>
-      <div className="display-flex flex-wrap-wrap">
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <DatePicker
-            label="Start date"
-            value={startDate}
-            onChange={onStartDateChange}
-            animateYearScrolling={false}
-            className={classes.formControl}
-          />
-        </MuiPickersUtilsProvider>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <DatePicker
-            label="End date"
-            value={endDate}
-            onChange={onEndDateChange}
-            animateYearScrolling={false}
-            className={classes.formControl}
-          />
-        </MuiPickersUtilsProvider>
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <div>
+    <Grid cpontainer>
+      <Grid container spacing={2} wrap="wrap">
+        <Grid item xs={12} sm={6} md={4}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <DatePicker
+              id="starDate-id"
+              label="Start date"
+              format="YYYY/MM/DD"
+              placeholder="2018/10/10"
+              value={startDate}
+              onChange={onStartDateChange}
+              animateYearScrolling={false}
+              inputVariant="outlined"
+              className={classes.formControl}
+            />
+          </MuiPickersUtilsProvider>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <DatePicker
+              label="End date"
+              format="YYYY/MM/DD"
+              placeholder="2018/10/10"
+              value={endDate}
+              onChange={onEndDateChange}
+              animateYearScrolling={false}
+              inputVariant="outlined"
+              className={classes.formControl}
+            />
+          </MuiPickersUtilsProvider>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
             <TimePicker
               className={classNames(classes.formControl)}
               ampm={false}
               label="Time"
+              inputVariant="outlined"
               value={time}
               onChange={onTimeChange}
             />
-          </div>
-        </MuiPickersUtilsProvider>
-      </div>
-      <div>
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-chip">Days of week</InputLabel>
-          <Select
-            multiple
-            value={daysOfWeek}
-            onChange={onDaysOfWeekChange}
-            input={<Input id="select-multiple-chip" />}
-            renderValue={selected => (
-              <div className={classes.chips}>
-                {selected.map(value => (
-                  <Chip key={value} label={value} className={classes.chip} />
-                ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {DAYS_OF_WEEK.map(value => (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple-chip">Months of year</InputLabel>
-          <Select
-            multiple
-            value={monthsOfYear}
-            onChange={onMonthsOfYearChange}
-            input={<Input id="select-multiple-chip" />}
-            renderValue={selected => (
-              <div className={classes.chips}>
-                {selected.map(value => (
-                  <Chip key={value} label={value} className={classes.chip} />
-                ))}
-              </div>
-            )}
-            MenuProps={MenuProps}
-          >
-            {MONTHS_OF_YEAR.map(value => (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="select-multiple">Weeks of month</InputLabel>
-          <Select
-            multiple
-            value={weeksOfMonth}
-            onChange={onWeeksOfMonthChange}
-            input={<Input id="select-multiple" />}
-            MenuProps={MenuProps}
-          >
-            {WEEKS_OF_MONTH.map(value => (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-      {status && (
-        <div>
-          <FormControlLabel
-            className={classes.formControl}
-            disabled
-            control={
-              (
-                <Checkbox
-                  name="active"
-                  checked={active}
-                  onChange={onActiveChange}
-                  value="active"
-                  color="default"
-                />
-              )
-            }
-            label="Active"
-          />
-        </div>
+          </MuiPickersUtilsProvider>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel ref={inputLabel}>Days of week</InputLabel>
+            <Select
+              multiple
+              value={daysOfWeek}
+              onChange={onDaysOfWeekChange}
+              labelWidth={labelWidth}
+              renderValue={selected => (
+                <div className={classes.chips}>
+                  {selected.map(value => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
+              {DAYS_OF_WEEK.map(value => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel ref={inputLabel}>Months of year</InputLabel>
+            <Select
+              multiple
+              value={monthsOfYear}
+              onChange={onMonthsOfYearChange}
+              labelWidth={labelWidth}
+              renderValue={selected => (
+                <div className={classes.chips}>
+                  {selected.map(value => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
+              {MONTHS_OF_YEAR.map(value => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel ref={inputLabel}>Weeks of month</InputLabel>
+            <Select
+              multiple
+              value={weeksOfMonth}
+              onChange={onWeeksOfMonthChange}
+              labelWidth={labelWidth}
+              MenuProps={MenuProps}
+            >
+              {WEEKS_OF_MONTH.map(value => (
+                <MenuItem key={value} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+      {action === 'edit' && (
+        <Grid style={{ marginTop: '16px' }}>
+          <Chip color={active ? 'primary' : 'default'} label={active ? 'Scheduler is activated' : 'Scheduler is disactivated'} />
+        </Grid>
       )}
-    </div>
+    </Grid>
   );
 }
 
@@ -196,7 +200,6 @@ Scheduler.defaultProps = {
   endDate: new Date(),
   time: new Date(),
   active: false,
-  status: true
 };
 
 Scheduler.propTypes = {
@@ -208,11 +211,10 @@ Scheduler.propTypes = {
   endDate: PropTypes.shape({}),
   time: PropTypes.shape({}),
   active: PropTypes.bool,
-  status: PropTypes.bool,
+  action: PropTypes.string.isRequired,
   onStartDateChange: PropTypes.func.isRequired,
   onEndDateChange: PropTypes.func.isRequired,
   onTimeChange: PropTypes.func.isRequired,
-  onActiveChange: PropTypes.func.isRequired,
   onDaysOfWeekChange: PropTypes.func.isRequired,
   onWeeksOfMonthChange: PropTypes.func.isRequired,
   onMonthsOfYearChange: PropTypes.func.isRequired,

@@ -16,7 +16,7 @@ import PageHeader from '../../Common/PageHeader';
 function AddFlowForm(props) {
   const [loading, setLoading] = useState(false);
   const [flowType, setFlowType] = useState('');
-  const [integration, setIntegration] = useState('');
+  const [integration, setIntegration] = useState();
   const [scheduler, setScheduler] = useState({
     status: false,
     daysOfWeek: [],
@@ -60,11 +60,11 @@ function AddFlowForm(props) {
         weeks_of_month: scheduler.weeksOfMonth,
         months_of_year: scheduler.monthsOfYear
       };
-      await API.post('flows', { data: { integration_id: integration, type: flowType, scheduler: _scheduler } });
+      await API.post('flows', { data: { integration_id: integration ? integration.value : '', type: flowType, scheduler: _scheduler } });
       enqueueSnackbar('Workflow created successfully', {
         variant: 'success'
       });
-      history.goBack();
+      history.push('/workflows');
     } catch (error) {
       enqueueSnackbar(get(error, 'response.data.message', 'Unknown error'), {
         variant: 'error'
@@ -88,6 +88,7 @@ function AddFlowForm(props) {
         integrationsOptions={integrations}
         scheduler={scheduler}
         history={history}
+        action="add"
         onInputFlowChange={onInputFlowChange}
         onIntegrationChange={onIntegrationChange}
         onActiveChange={onActiveChange}

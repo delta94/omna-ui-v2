@@ -19,6 +19,7 @@ function EditFlowForm(props) {
   } = props;
 
   const [loading, setLoading] = useState(true);
+  const [flowTitle, setFlowTitle] = useState('');
   const [flowType, setFlowType] = useState('');
   const [integration, setIntegration] = useState('');
   const [scheduler, setScheduler] = useState({
@@ -40,7 +41,8 @@ function EditFlowForm(props) {
         const response = await API.get(`flows/${match.params.id}`);
         const { data } = response.data;
         setFlowType(data.type);
-        setIntegration(data.integration.id);
+        setFlowTitle(data.title);
+        setIntegration(data.integration);
         const _scheduler = data.task.scheduler;
         const schedulerToShow = {
           active: _scheduler.active,
@@ -114,6 +116,7 @@ function EditFlowForm(props) {
     <Fragment>
       <PageHeader title="Edit Workflow" history={history} />
       <FlowForm
+        flowTitle={flowTitle}
         flowType={flowType}
         flowsTypes={flowTypes}
         integration={integration}
@@ -121,6 +124,8 @@ function EditFlowForm(props) {
         scheduler={scheduler}
         history={history}
         disableRule
+        action="edit"
+        loading={loading}
         onInputFlowChange={onInputFlowChange}
         onIntegrationChange={onIntegrationChange}
         onActiveChange={onActiveChange}
